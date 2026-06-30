@@ -8,12 +8,12 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="fonts.css">
-<link rel="stylesheet" href="colors.css">
-<link rel="stylesheet" href="typography.css">
-<link rel="stylesheet" href="spacing.css">
-<link rel="stylesheet" href="base.css">
-<script src="_ds_bundle.js"></script>
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/colors.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/typography.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/base.css">
+<script src="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/_ds_bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -38,7 +38,7 @@
           <svg width="380" height="380" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"/><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"/></svg>
         </div>
         <div style="display:flex;align-items:center;gap:13px;position:relative;">
-          <img src="logo-wordmark-white.png" alt="Oasis del Alma" style="height:180px;width:auto;display:block;">
+          <img src="uploads/logo-wordmark-white.png" alt="Oasis del Alma" style="height:180px;width:auto;display:block;">
         </div>
         <div style="position:relative;">
           <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:18px;">Hub Intelligence de Negocio</div>
@@ -58,13 +58,22 @@
             <input type="email" value="{{ loginEmail }}" onInput="{{ onLoginEmailInput }}" onKeyDown="{{ onLoginPwdKey }}" autocomplete="username" placeholder="tucorreo@oasisdelalma.co" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;">
           </label>
           <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:20px;">Contraseña
-            <input type="password" value="{{ loginPwd }}" onInput="{{ onLoginPwdInput }}" onKeyDown="{{ onLoginPwdKey }}" autocomplete="current-password" placeholder="Ingresa tu contraseña" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;">
+            <span style="position:relative;display:block;margin-top:6px;">
+              <input type="{{ loginPwdType }}" value="{{ loginPwd }}" onInput="{{ onLoginPwdInput }}" onKeyDown="{{ onLoginPwdKey }}" autocomplete="current-password" placeholder="Ingresa tu contraseña" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:12px 44px 12px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);">
+              <button type="button" onClick="{{ toggleLoginPwd }}" title="{{ loginPwdToggleTitle }}" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;padding:7px;border-radius:8px;" style-hover="color:var(--brand-primary);">{{ loginPwdIcon }}</button>
+            </span>
           </label>
           <sc-if value="{{ loginHasError }}" hint-placeholder-val="{{ false }}">
             <div style="font-size:12.5px;color:#B5503C;background:rgba(181,80,60,0.09);border-radius:var(--radius-sm);padding:9px 13px;margin-bottom:14px;font-weight:600;">{{ loginError }}</div>
           </sc-if>
           <button onClick="{{ onAppCloudSignIn }}" disabled="{{ loginBusy }}" style="width:100%;font-family:inherit;font-size:14px;font-weight:700;padding:13px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;transition:background 160ms;" style-hover="background:var(--brand-hover);">{{ loginBtnLabel }}</button>
-          <p style="font-size:11.5px;color:var(--text-muted);margin:18px 0 0;line-height:1.5;text-align:center;">¿Olvidaste tu contraseña o necesitas una cuenta? Contacta al administrador.</p>
+          <sc-if value="{{ loginHasInfo }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;color:#4C6149;background:rgba(76,97,73,0.10);border-radius:var(--radius-sm);padding:10px 13px;margin-top:14px;font-weight:600;line-height:1.5;">{{ loginInfo }}</div>
+          </sc-if>
+          <div style="text-align:center;margin-top:16px;">
+            <button onClick="{{ onSendRecovery }}" style="background:none;border:none;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--brand-primary);cursor:pointer;padding:4px;" style-hover="text-decoration:underline;">¿Olvidaste tu contraseña?</button>
+          </div>
+          <p style="font-size:11.5px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;text-align:center;">Escribe tu correo arriba y te enviaremos un enlace para restablecerla. ¿Necesitas una cuenta? Contacta al administrador.</p>
         </div>
       </div>
     </div>
@@ -77,7 +86,7 @@
       <!-- SIDEBAR -->
       <aside style="background:#2A2419;color:var(--text-inverse);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;">
         <div style="padding:22px 22px 16px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
-          <img src="logo-wordmark-white.png" alt="OdA" style="height:46px;width:auto;display:block;flex-shrink:0;">
+          <img src="uploads/logo-wordmark-white.png" alt="OdA" style="height:46px;width:auto;display:block;flex-shrink:0;">
           <div style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
             <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;color:rgba(251,248,242,0.92);">Hub</div>
             <div style="font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(251,248,242,0.45);margin-top:3px;">Intelligence de Negocio</div>
@@ -87,6 +96,7 @@
         <nav class="oda-scroll" style="flex:1;overflow-y:auto;padding:16px 12px;">
           <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:6px 10px 8px;">Módulos</div>
 
+          <sc-if value="{{ canCompras }}" hint-placeholder-val="{{ true }}">
           <!-- COMPRAS -->
           <div class="oda-navitem" onClick="{{ nav.compras }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ comprasNavColor }};background:{{ comprasNavBg }};">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
@@ -94,76 +104,87 @@
           </div>
           <sc-if value="{{ showComprasSub }}" hint-placeholder-val="{{ true }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
-              <div class="oda-navitem" onClick="{{ subnav.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subResumen.c }};background:{{ subResumen.bg }};border-left:2px solid {{ subResumen.b }};">{{ subResumen.dot }}Resumen</div>
-              <div class="oda-navitem" onClick="{{ subnav.proveedores }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProv.c }};background:{{ subProv.bg }};border-left:2px solid {{ subProv.b }};">Proveedores</div>
-              <div class="oda-navitem" onClick="{{ subnav.materias }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMat.c }};background:{{ subMat.bg }};border-left:2px solid {{ subMat.b }};">Materias e insumos</div>
-              <div class="oda-navitem" onClick="{{ subnav.servicios }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subSvc.c }};background:{{ subSvc.bg }};border-left:2px solid {{ subSvc.b }};">Servicios</div>
-              <div class="oda-navitem" onClick="{{ subnav.ordenes }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subOrd.c }};background:{{ subOrd.bg }};border-left:2px solid {{ subOrd.b }};"><span>Órdenes y pagos</span><sc-if value="{{ aprobarBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ aprobarCount }}</span></sc-if></div>
+              <sc-if value="{{ vC_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subResumen.c }};background:{{ subResumen.bg }};border-left:2px solid {{ subResumen.b }};">{{ subResumen.dot }}Resumen</div></sc-if>
+              <sc-if value="{{ vC_prov }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.proveedores }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProv.c }};background:{{ subProv.bg }};border-left:2px solid {{ subProv.b }};">Proveedores</div></sc-if>
+              <sc-if value="{{ vC_mat }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.materias }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMat.c }};background:{{ subMat.bg }};border-left:2px solid {{ subMat.b }};">Materias e insumos</div></sc-if>
+              <sc-if value="{{ vC_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.servicios }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subSvc.c }};background:{{ subSvc.bg }};border-left:2px solid {{ subSvc.b }};">Servicios</div></sc-if>
+              <sc-if value="{{ vC_ord }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.ordenes }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subOrd.c }};background:{{ subOrd.bg }};border-left:2px solid {{ subOrd.b }};"><span>Órdenes y pagos</span><sc-if value="{{ aprobarBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ aprobarCount }}</span></sc-if></div></sc-if>
             </div>
           </sc-if>
 
+          </sc-if>
+          <sc-if value="{{ canDesarrollo }}" hint-placeholder-val="{{ false }}">
           <div class="oda-navitem" onClick="{{ nav.desarrollo }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ desNavColor }};background:{{ desNavBg }};margin-top:2px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3h15"/><path d="M6 3v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3"/><path d="M6 13h12"/></svg>
             <span style="flex:1;">Desarrollo de producto</span>
           </div>
           <sc-if value="{{ showDesarrolloSub }}" hint-placeholder-val="{{ false }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
-              <div class="oda-navitem" onClick="{{ subnavDes.mezclas }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMez.c }};background:{{ subMez.bg }};border-left:2px solid {{ subMez.b }};">Creación de mezclas</div>
-              <div class="oda-navitem" onClick="{{ subnavDes.productos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProd.c }};background:{{ subProd.bg }};border-left:2px solid {{ subProd.b }};">Creación de producto</div>
-              <div class="oda-navitem" onClick="{{ subnavDes.kits }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subKits.c }};background:{{ subKits.bg }};border-left:2px solid {{ subKits.b }};">Creación de kits</div>
+              <sc-if value="{{ vD_mez }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavDes.mezclas }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMez.c }};background:{{ subMez.bg }};border-left:2px solid {{ subMez.b }};">Creación de mezclas</div></sc-if>
+              <sc-if value="{{ vD_prod }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavDes.productos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProd.c }};background:{{ subProd.bg }};border-left:2px solid {{ subProd.b }};">Creación de producto</div></sc-if>
+              <sc-if value="{{ vD_kits }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavDes.kits }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subKits.c }};background:{{ subKits.bg }};border-left:2px solid {{ subKits.b }};">Creación de kits</div></sc-if>
             </div>
           </sc-if>
 
+          </sc-if>
+          <sc-if value="{{ canProduccion }}" hint-placeholder-val="{{ false }}">
           <div class="oda-navitem" onClick="{{ nav.produccion }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ prodNavColor }};background:{{ prodNavBg }};margin-top:2px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M7 18h.01"/><path d="M12 18h.01"/><path d="M17 18h.01"/></svg>
             <span style="flex:1;">Producción</span>
           </div>
           <sc-if value="{{ showProduccionSub }}" hint-placeholder-val="{{ false }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
-              <div class="oda-navitem" onClick="{{ subnavProd.mez }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProdMez.c }};background:{{ subProdMez.bg }};border-left:2px solid {{ subProdMez.b }};">Producción de mezclas</div>
-              <div class="oda-navitem" onClick="{{ subnavProd.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subPT.c }};background:{{ subPT.bg }};border-left:2px solid {{ subPT.b }};">Producción de PT</div>
+              <sc-if value="{{ vP_mez }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavProd.mez }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProdMez.c }};background:{{ subProdMez.bg }};border-left:2px solid {{ subProdMez.b }};">Producción de mezclas</div></sc-if>
+              <sc-if value="{{ vP_pt }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavProd.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subPT.c }};background:{{ subPT.bg }};border-left:2px solid {{ subPT.b }};">Producción de PT</div></sc-if>
             </div>
           </sc-if>
+          </sc-if>
+          <sc-if value="{{ canInventario }}" hint-placeholder-val="{{ false }}">
           <div class="oda-navitem" onClick="{{ nav.inventario }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ invNavColor }};background:{{ invNavBg }};margin-top:2px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
             <span style="flex:1;">Inventario</span>
           </div>
           <sc-if value="{{ showInventarioSub }}" hint-placeholder-val="{{ false }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
-              <div class="oda-navitem" onClick="{{ subnavInv.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvResumen.c }};background:{{ subInvResumen.bg }};border-left:2px solid {{ subInvResumen.b }};">Resumen</div>
-              <div class="oda-navitem" onClick="{{ subnavInv.mp }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvMP.c }};background:{{ subInvMP.bg }};border-left:2px solid {{ subInvMP.b }};">Materia prima</div>
-              <div class="oda-navitem" onClick="{{ subnavInv.insumos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvIns.c }};background:{{ subInvIns.bg }};border-left:2px solid {{ subInvIns.b }};">Insumos y empaques</div>
-              <div class="oda-navitem" onClick="{{ subnavInv.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvPT.c }};background:{{ subInvPT.bg }};border-left:2px solid {{ subInvPT.b }};">Producto terminado</div>
-              <div class="oda-navitem" onClick="{{ subnavInv.consig }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConsig.c }};background:{{ subInvConsig.bg }};border-left:2px solid {{ subInvConsig.b }};">Consignación</div>
-              <div class="oda-navitem" onClick="{{ subnavInv.kardex }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvKardex.c }};background:{{ subInvKardex.bg }};border-left:2px solid {{ subInvKardex.b }};">Kardex</div>
+              <sc-if value="{{ vI_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvResumen.c }};background:{{ subInvResumen.bg }};border-left:2px solid {{ subInvResumen.b }};">Resumen</div></sc-if>
+              <sc-if value="{{ vI_mp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.mp }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvMP.c }};background:{{ subInvMP.bg }};border-left:2px solid {{ subInvMP.b }};">Materia prima</div></sc-if>
+              <sc-if value="{{ vI_ins }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.insumos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvIns.c }};background:{{ subInvIns.bg }};border-left:2px solid {{ subInvIns.b }};">Insumos y empaques</div></sc-if>
+              <sc-if value="{{ vI_pt }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvPT.c }};background:{{ subInvPT.bg }};border-left:2px solid {{ subInvPT.b }};">Producto terminado</div></sc-if>
+              <sc-if value="{{ vI_consig }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.consig }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConsig.c }};background:{{ subInvConsig.bg }};border-left:2px solid {{ subInvConsig.b }};">Consignación</div></sc-if>
+              <sc-if value="{{ vI_kardex }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.kardex }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvKardex.c }};background:{{ subInvKardex.bg }};border-left:2px solid {{ subInvKardex.b }};">Kardex</div></sc-if>
             </div>
           </sc-if>
+          </sc-if>
+          <sc-if value="{{ canVentas }}" hint-placeholder-val="{{ false }}">
           <div class="oda-navitem" onClick="{{ nav.ventas }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ ventasNavColor }};background:{{ ventasNavBg }};">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>
             <span style="flex:1;">Ventas</span>
           </div>
           <sc-if value="{{ showVentasSub }}" hint-placeholder-val="{{ false }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
-              <div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div>
-              <div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div>
-              <div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div>
+              <sc-if value="{{ vV_reg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div></sc-if>
+              <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
+              <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
             </div>
           </sc-if>
+          </sc-if>
+          <sc-if value="{{ canFinanzas }}" hint-placeholder-val="{{ false }}">
           <div class="oda-navitem" onClick="{{ nav.finanzas }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ finNavColor }};background:{{ finNavBg }};">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a1 1 0 0 0-1-1H4a2 2 0 0 0 0 4h16a1 1 0 0 1 1 1v3h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/></svg>
             <span style="flex:1;">Finanzas</span>
           </div>
           <sc-if value="{{ showFinanzasSub }}" hint-placeholder-val="{{ false }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
-              <div class="oda-navitem" onClick="{{ subnavFin.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinResumen.c }};background:{{ subFinResumen.bg }};border-left:2px solid {{ subFinResumen.b }};">Tablero</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.pagar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPagar.c }};background:{{ subFinPagar.bg }};border-left:2px solid {{ subFinPagar.b }};">Cuentas por pagar</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.cobrar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCobrar.c }};background:{{ subFinCobrar.bg }};border-left:2px solid {{ subFinCobrar.b }};">Cuentas por cobrar</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.recaudos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinRecaudos.c }};background:{{ subFinRecaudos.bg }};border-left:2px solid {{ subFinRecaudos.b }};">Recaudos por cruzar</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.caja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCaja.c }};background:{{ subFinCaja.bg }};border-left:2px solid {{ subFinCaja.b }};">Caja y bancos</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.gastos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinGastos.c }};background:{{ subFinGastos.bg }};border-left:2px solid {{ subFinGastos.b }};">Gastos</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.pyg }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPyg.c }};background:{{ subFinPyg.bg }};border-left:2px solid {{ subFinPyg.b }};">Estado de resultados</div>
-              <div class="oda-navitem" onClick="{{ subnavFin.impuestos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinImp.c }};background:{{ subFinImp.bg }};border-left:2px solid {{ subFinImp.b }};">IVA y retenciones</div>
+              <sc-if value="{{ vF_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinResumen.c }};background:{{ subFinResumen.bg }};border-left:2px solid {{ subFinResumen.b }};">Tablero</div></sc-if>
+              <sc-if value="{{ vF_pagar }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.pagar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPagar.c }};background:{{ subFinPagar.bg }};border-left:2px solid {{ subFinPagar.b }};">Cuentas por pagar</div></sc-if>
+              <sc-if value="{{ vF_cobrar }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.cobrar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCobrar.c }};background:{{ subFinCobrar.bg }};border-left:2px solid {{ subFinCobrar.b }};">Cuentas por cobrar</div></sc-if>
+              <sc-if value="{{ vF_recaudos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.recaudos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinRecaudos.c }};background:{{ subFinRecaudos.bg }};border-left:2px solid {{ subFinRecaudos.b }};">Recaudos por cruzar</div></sc-if>
+              <sc-if value="{{ vF_caja }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.caja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCaja.c }};background:{{ subFinCaja.bg }};border-left:2px solid {{ subFinCaja.b }};">Caja y bancos</div></sc-if>
+              <sc-if value="{{ vF_gastos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.gastos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinGastos.c }};background:{{ subFinGastos.bg }};border-left:2px solid {{ subFinGastos.b }};">Gastos</div></sc-if>
+              <sc-if value="{{ vF_pyg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.pyg }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPyg.c }};background:{{ subFinPyg.bg }};border-left:2px solid {{ subFinPyg.b }};">Estado de resultados</div></sc-if>
+              <sc-if value="{{ vF_imp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.impuestos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinImp.c }};background:{{ subFinImp.bg }};border-left:2px solid {{ subFinImp.b }};">IVA y retenciones</div></sc-if>
             </div>
+          </sc-if>
           </sc-if>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
             <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:18px 10px 8px;">Administración</div>
@@ -184,6 +205,9 @@
             <span style="display:block;font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ userName }}</span>
             <span style="display:block;font-size:10.5px;color:rgba(251,248,242,0.5);">{{ userRole }}</span>
           </span>
+          <button onClick="{{ openChangePwd }}" title="Cambiar contraseña" style="background:none;border:none;color:rgba(251,248,242,0.55);cursor:pointer;display:flex;padding:6px;border-radius:8px;" style-hover="color:#fff;background:rgba(251,248,242,0.08);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 3 3L22 7l-3-3"/><path d="m9.6 13.4 4-4"/><circle cx="6.5" cy="16.5" r="3.5"/></svg>
+          </button>
           <button onClick="{{ logout }}" title="Cerrar sesión" style="background:none;border:none;color:rgba(251,248,242,0.55);cursor:pointer;display:flex;padding:6px;border-radius:8px;" style-hover="color:#fff;background:rgba(251,248,242,0.08);">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
           </button>
@@ -307,7 +331,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#b1caca91c19fd4dcd0d8dd91cccc" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#1a61613a6a347f777b73763a6767" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -3728,6 +3752,32 @@
         <span style="color:var(--brand-primary);display:flex;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>{{ toastMsg }}
       </div>
     </sc-if>
+
+    <!-- CAMBIAR CONTRASEÑA -->
+    <sc-if value="{{ pwdModalOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeChangePwd }}" style="position:fixed;inset:0;z-index:90;background:rgba(58,51,38,0.4);display:flex;align-items:center;justify-content:center;padding:24px;">
+        <div onClick="{{ stop }}" style="background:var(--surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:420px;padding:26px 26px 24px;">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px;">
+            <span style="width:34px;height:34px;border-radius:50%;background:rgba(167,134,89,0.16);display:flex;align-items:center;justify-content:center;color:var(--brand-primary);flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 3 3L22 7l-3-3"/><path d="m9.6 13.4 4-4"/><circle cx="6.5" cy="16.5" r="3.5"/></svg></span>
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;">Cambiar contraseña</h3>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 18px;line-height:1.5;">Elige una nueva contraseña para tu cuenta. La usarás la próxima vez que inicies sesión.</p>
+          <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:13px;">Nueva contraseña
+            <input type="password" value="{{ pwdNew }}" onInput="{{ onPwdNew }}" autocomplete="new-password" placeholder="Mínimo 6 caracteres" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:11px 13px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);margin-top:6px;">
+          </label>
+          <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:16px;">Confirmar contraseña
+            <input type="password" value="{{ pwdNew2 }}" onInput="{{ onPwdNew2 }}" onKeyDown="{{ onPwdKey }}" autocomplete="new-password" placeholder="Repite la contraseña" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:11px 13px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);margin-top:6px;">
+          </label>
+          <sc-if value="{{ pwdHasError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;color:#B5503C;background:rgba(181,80,60,0.09);border-radius:var(--radius-sm);padding:9px 13px;margin-bottom:14px;font-weight:600;">{{ pwdError }}</div>
+          </sc-if>
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button onClick="{{ closeChangePwd }}" style="flex:1;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px;border-radius:var(--radius-pill);background:var(--surface-raised);color:var(--text-body);border:1px solid var(--border-strong);cursor:pointer;">Cancelar</button>
+            <button onClick="{{ submitChangePwd }}" disabled="{{ pwdBusy }}" style="flex:1.4;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;" style-hover="background:var(--brand-hover);">{{ pwdBtnLabel }}</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
   </sc-if>
 
 </div>
@@ -3964,7 +4014,14 @@ class Component extends DCLogic {
   login(id){ this.setState({userId:id,view:'app',module:'compras',sub:'resumen',loginStep:'select',loginPendingId:null,loginPwd:'',loginError:''}); try{localStorage.setItem(this.SESSION,JSON.stringify({userId:id}));}catch(e){} }
   logout(){ try{ const sb=this._sb; if(sb){ sb.auth.signOut().catch(()=>{}); } if(this._sbSub){ this._sbSub.unsubscribe(); this._sbSub=null; } }catch(e){} this.setState({userId:null,view:'login',loginStep:'select',loginPendingId:null,loginEmail:'',loginPwd:'',loginError:'',cloudUser:null,cloudLeads:[],cloudProfiles:[]}); try{localStorage.removeItem(this.SESSION);}catch(e){} }
   // ---- inicio de sesión único (nube) ----
-  onLoginEmailInput(e){ this.setState({loginEmail:e.target.value,loginError:''}); }
+  onLoginEmailInput(e){ this.setState({loginEmail:e.target.value,loginError:'',loginInfo:''}); }
+  async sendRecovery(){ const sb=this._sbClient(); if(!sb){ this.setState({loginError:'Conectando con la nube… intenta de nuevo en un momento.'}); this.cloudInit(); return; }
+    const email=String(this.state.loginEmail||'').trim().toLowerCase();
+    if(!email){ this.setState({loginError:'Escribe tu correo arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».', loginInfo:''}); return; }
+    this.setState({loginBusy:true, loginError:'', loginInfo:''});
+    try{ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin}); if(error) throw error; this.setState({loginBusy:false, loginInfo:'Te enviamos un correo a '+email+' con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada (y la carpeta de spam).'}); }
+    catch(e){ this.setState({loginBusy:false, loginError:this._cloudErrEs((e&&e.message)||'No se pudo enviar el correo de recuperación.')}); }
+  }
   async appCloudSignIn(){ const sb=this._sbClient(); if(!sb){ this.setState({loginError:'Conectando con la nube… intenta de nuevo en un momento.'}); this.cloudInit(); return; }
     const email=String(this.state.loginEmail||'').trim().toLowerCase(); const pwd=String(this.state.loginPwd||'');
     if(!email||!pwd){ this.setState({loginError:'Escribe tu correo y contraseña.'}); return; }
@@ -3975,7 +4032,8 @@ class Component extends DCLogic {
   _enterAppFromCloud(user){ const email=(user.email||'').toLowerCase(); const lu=this.users.find(x=>(x.email||'').toLowerCase()===email);
     if(!lu){ this.setState({loginBusy:false,loginError:'Tu cuenta de nube no está vinculada a un usuario del sistema. Avísale al administrador.'}); try{ if(this._sb) this._sb.auth.signOut(); }catch(e){} return; }
     this._afterCloudLogin(user);
-    this.setState({userId:lu.id, view:'app', module:'compras', sub:'resumen', loginPwd:'', loginEmail:'', loginError:'', loginBusy:false});
+    const fm=this._firstModuleFor(lu);
+    this.setState({userId:lu.id, view:'app', loginPwd:'', loginEmail:'', loginError:'', loginBusy:false}, ()=>this.goModule(fm));
     try{ localStorage.setItem(this.SESSION,JSON.stringify({userId:lu.id})); }catch(e){}
   }
   selectUser(id){ this.setState({loginStep:'password',loginPendingId:id,loginPwd:'',loginError:''}); }
@@ -3983,6 +4041,20 @@ class Component extends DCLogic {
   backToSelect(){ this.setState({loginStep:'select',loginPendingId:null,loginPwd:'',loginError:''}); }
   onLoginPwdInput(e){ this.setState({loginPwd:e.target.value,loginError:''}); }
   onLoginPwdKey(e){ if(e.key==='Enter') this.appCloudSignIn(); }
+  // ---- cambiar contraseña (nube) ----
+  openChangePwd(){ this.setState({pwdModalOpen:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); }
+  closeChangePwd(){ this.setState({pwdModalOpen:false, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); }
+  onPwdNew(e){ this.setState({pwdNew:e.target.value, pwdError:''}); }
+  onPwdNew2(e){ this.setState({pwdNew2:e.target.value, pwdError:''}); }
+  onPwdKey(e){ if(e.key==='Enter') this.submitChangePwd(); }
+  async submitChangePwd(){ const a=String(this.state.pwdNew||''); const b=String(this.state.pwdNew2||'');
+    if(a.length<6){ this.setState({pwdError:'La contraseña debe tener al menos 6 caracteres.'}); return; }
+    if(a!==b){ this.setState({pwdError:'Las contraseñas no coinciden.'}); return; }
+    const sb=this._sbClient(); if(!sb){ this.setState({pwdError:'No hay conexión con la nube. Intenta de nuevo.'}); return; }
+    this.setState({pwdBusy:true, pwdError:''});
+    try{ const {error}=await sb.auth.updateUser({password:a}); if(error) throw error; this.setState({pwdModalOpen:false, pwdNew:'', pwdNew2:'', pwdBusy:false}); this.toast('Contraseña actualizada'); }
+    catch(e){ const m=(e&&e.message)||''; let es='No se pudo cambiar la contraseña.'; if(/different from the old/i.test(m)) es='La nueva contraseña debe ser distinta a la actual.'; else if(/weak|at least/i.test(m)) es='La contraseña es muy débil. Usa al menos 6 caracteres.'; else if(/session|JWT|expired/i.test(m)) es='Tu sesión expiró. Vuelve a iniciar sesión e inténtalo.'; this.setState({pwdBusy:false, pwdError:es}); }
+  }
   access(){ const u=this.users.find(x=>x.id===this.state.userId); if(!u) return null; const p=(this.state.userPerms||{})[u.id]; return p||this.roles[u.role]||null; }
   togglePerm(uid,mod){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const curr=base[mod]||'none'; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[mod]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} }
   toggleAdmin(uid){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const updated={...perms,[uid]:{...base,admin:!base.admin}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} }
@@ -3991,6 +4063,8 @@ class Component extends DCLogic {
   // ---- nav ----
   goModule(m){ if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _firstModuleFor(lu){ const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
   open(type,draft){ this.setState({modal:type,draft:draft||{}}); }
@@ -4489,7 +4563,7 @@ Instrucciones de respuesta:
       if((this._cloudTries=(this._cloudTries||0)+1)<40){ setTimeout(()=>this.cloudInit(),250); } return; }
     this.setState({cloudReady:true});
     sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else this._afterCloudLogin(s.user); } });
-    try{ sb.auth.onAuthStateChange((_e,session)=>{ if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
+    try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
   }
   _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); }
   cloudStartAutoRefresh(){ if(this._cloudAutoSet) return; this._cloudAutoSet=true;
@@ -5046,6 +5120,13 @@ Instrucciones de respuesta:
       onAppCloudSignIn: ()=>this.appCloudSignIn(),
       loginBusy: !!st.loginBusy,
       loginBtnLabel: st.loginBusy?'Entrando…':'Entrar',
+      loginInfo: st.loginInfo||'', loginHasInfo: !!st.loginInfo, onSendRecovery: ()=>this.sendRecovery(),
+      loginPwdType: st.loginPwdShow?'text':'password',
+      loginPwdToggleTitle: st.loginPwdShow?'Ocultar contraseña':'Mostrar contraseña',
+      toggleLoginPwd: ()=>this.setState({loginPwdShow:!this.state.loginPwdShow}),
+      loginPwdIcon: st.loginPwdShow
+        ? React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','strokeWidth':1.8,'strokeLinecap':'round','strokeLinejoin':'round'},React.createElement('path',{d:'M9.88 9.88a3 3 0 0 0 4.24 4.24'}),React.createElement('path',{d:'M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68'}),React.createElement('path',{d:'M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61'}),React.createElement('line',{x1:2,y1:2,x2:22,y2:22}))
+        : React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','strokeWidth':1.8,'strokeLinecap':'round','strokeLinejoin':'round'},React.createElement('path',{d:'M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'}),React.createElement('circle',{cx:12,cy:12,r:3})),
       ...( (()=>{ const pu=this.users.find(x=>x.id===st.loginPendingId); return pu?{loginPendingName:pu.name,loginPendingEmail:pu.email,loginPendingInitials:pu.initials,loginPendingColor:pu.color,loginPendingRole:pu.role}:{loginPendingName:'',loginPendingEmail:'',loginPendingInitials:'',loginPendingColor:'',loginPendingRole:''}; })() ),
       stop:(e)=>{ e.stopPropagation(); },
     };
@@ -5054,12 +5135,25 @@ Instrucciones de respuesta:
 
     out.userName=u.name; out.userInitials=u.initials; out.userRole=u.role; out.userColor=u.color; out.isAdmin=isAdmin;
     out.canWrite=canWrite;
+    const subVis=(mod,key)=>{ const a=acc||{}; if(a.admin) return true; const k=mod+'__'+key; if(a[k]!==undefined) return a[k]!=='none'; return (a[mod]||'none')!=='none'; };
+    out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
+    out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
+    out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
+    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex');
+    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador');
+    out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
+    // un módulo se muestra solo si tiene al menos un subgrupo visible
+    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp;
     const PX='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
     out.propPortadaImg=PX; out.propQuienesImg=PX; out.propBenImg=PX;
     out.propPortadaHas=false; out.propQuienesHas=false; out.propBenHas=false;
     out.propPortadaImgEl=null; out.propQuienesImgEl=null; out.propBenImgEl=null;
     out.propDocCache=st.propuestaDocCache||'';
     out.logout=()=>this.logout();
+    out.openChangePwd=()=>this.openChangePwd(); out.closeChangePwd=()=>this.closeChangePwd();
+    out.pwdModalOpen=!!st.pwdModalOpen; out.pwdNew=st.pwdNew||''; out.pwdNew2=st.pwdNew2||'';
+    out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
+    out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.nav={ compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
