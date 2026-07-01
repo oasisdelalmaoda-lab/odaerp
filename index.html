@@ -332,7 +332,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#ef9494cf9fc18a828e8683cf9292" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#dda6a6fdadf3b8b0bcb4b1fda0a0" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -478,6 +478,7 @@
             <div style="">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
                 <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;">
+                  <button onClick="{{ filtro.activas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 15px;border:none;border-radius:99px;cursor:pointer;background:{{ fActivasBg }};color:{{ fActivasFg }};">Activas ({{ ordenActivasN }})</button>
                   <button onClick="{{ filtro.todas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 15px;border:none;border-radius:99px;cursor:pointer;background:{{ fTodasBg }};color:{{ fTodasFg }};">Todas</button>
                   <button onClick="{{ filtro.pendiente }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 15px;border:none;border-radius:99px;cursor:pointer;background:{{ fPendBg }};color:{{ fPendFg }};">Por aprobar</button>
                   <button onClick="{{ filtro.aprobada }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 15px;border:none;border-radius:99px;cursor:pointer;background:{{ fAprBg }};color:{{ fAprFg }};">Por pagar</button>
@@ -530,6 +531,9 @@
                       </sc-if>
                       <sc-if value="{{ o.canFactura }}" hint-placeholder-val="{{ false }}">
                         <button onClick="{{ o.onFactura }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-strong);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/></svg>Registrar factura</button>
+                      </sc-if>
+                      <sc-if value="{{ o.canAdjuntarFactura }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ o.onAdjuntarFactura }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--oda-warning);background:rgba(167,134,89,0.12);color:#7A5E36;cursor:pointer;" style-hover="background:rgba(167,134,89,0.2);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Adjuntar factura</button>
                       </sc-if>
                       <sc-if value="{{ o.canPago }}" hint-placeholder-val="{{ false }}">
                         <button onClick="{{ o.onPago }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a1 1 0 0 0-1-1H4a2 2 0 0 0 0 4h16a1 1 0 0 1 1 1v3h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/></svg>Registrar pago</button>
@@ -3957,7 +3961,7 @@ class Component extends DCLogic {
     module:'compras', sub:'resumen',
     proveedores:[], materias:[], ordenes:[], productos:[], kits:[], mezclas:[], producciones:[], produccionesMezcla:[], servicios:[], ventas:[], cotizaciones:[], leads:[], tiendas:[], remisiones:[],
     cuentasFin:[], movimientos:[], gastosFijos:[], retenConfig:null, finMes:null, metodosFin:null, liquidaciones:[],
-    qProv:'', qMat:'', qProd:'', qKit:'', qMez:'', qSvc:'', qVenta:'', qPedido:'', qListado:'', qLead:'', leadFiltroEstado:'todos', filtroTipo:'todos', filtroProvMat:'todos', filtroEstado:'todas', filtroCanal:'todos', baseAnio:'todos', baseDim:'mes',
+    qProv:'', qMat:'', qProd:'', qKit:'', qMez:'', qSvc:'', qVenta:'', qPedido:'', qListado:'', qLead:'', leadFiltroEstado:'todos', filtroTipo:'todos', filtroProvMat:'todos', filtroEstado:'activas', filtroCanal:'todos', baseAnio:'todos', baseDim:'mes',
     baseTab:'panorama', baseAiQuery:'', baseAiAnswer:'', baseAiLoading:false, baseSegFiltro:'todos', baseCliSort:'total', baseCliQ:'', baseCliAnios:[], baseCliMeses:[], baseCliCanales:[], clienteSelKey:null, clienteMsg:'', clienteMsgLoading:false,
     modal:null, draft:{}, detalleId:null,
     importType:null, importRows:[], importError:'', importName:'',
@@ -4078,6 +4082,7 @@ class Component extends DCLogic {
   ordenPagada(o){ const t=this.ordenTotal(o); return t>0 ? this.ordenPagado(o)>=t : false; }
   ordenCerrada(o){ return o.estado==='recibida' && this.ordenPagada(o); }
   ordenAbierta(o){ return o.estado!=='rechazada' && !this.ordenCerrada(o); }
+  ordenNumSort(o){ const m=String(o.numero||'').match(/(\d+)\s*$/); return m? Number(m[1]) : 0; }
   provNombre(c){ const p=this.state.proveedores.find(x=>x.codigo===c); return p? p.nombre : (c||'—'); }
 
   toast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:null}),2300); }
@@ -5124,6 +5129,7 @@ Instrucciones de respuesta:
     this.setState({ordenes, materias, productos},()=>this.persist()); if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); } this.toast('Orden recibida · inventario y costo promedio actualizados'); }
 
   openFactura(o){ this.open('factura',{ _id:o.id, _numero:o.numero, _proveedor:this.provNombre(o.proveedorCodigo), _totalFmt:this.fmt(this.ordenTotal(o)), facturaNumero:(o.factura&&o.factura.numero)||'', facturaFecha:(o.factura&&o.factura.fecha)||new Date().toISOString().slice(0,10), _archivo:(o.factura&&o.factura.archivo)||'', _archivoNombre:(o.factura&&o.factura.archivoNombre)||'' }); }
+  adjuntarFacturaPick(o){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*,application/pdf'; inp.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; if(f.size>4*1024*1024){ this.toast('El archivo es muy grande (máx 4MB)'); return; } const r=new FileReader(); r.onload=(ev)=>{ const list=this.state.ordenes.map(x=> x.id===o.id? {...x, factura:{...(x.factura||{}), archivo:ev.target.result, archivoNombre:f.name}} : x); this.setState({ordenes:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Factura adjuntada'); }; r.readAsDataURL(f); }; inp.click(); }
   saveFactura(){ const d=this.state.draft; if(!d.facturaNumero){ this.toast('Escribe el N° de factura'); return; }
     const list=this.state.ordenes.map(o=> o._id===d._id||o.id===d._id? {...o,factura:{numero:d.facturaNumero,fecha:d.facturaFecha, archivo:(d._archivo||''), archivoNombre:(d._archivoNombre||'')}} : o);
     this.setState({ordenes:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Factura registrada'); }
@@ -5386,7 +5392,7 @@ Instrucciones de respuesta:
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.nav={ compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
-    out.filtro={ todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
+    out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
 
     const onComp = st.module==='compras';
     out.showComprasSub = onComp;
@@ -5557,14 +5563,18 @@ Instrucciones de respuesta:
     if(out.showOrdenes){
       const f=st.filtroEstado;
       const sel=(k)=> f===k;
+      out.fActivasBg=sel('activas')?'var(--surface-card)':'transparent'; out.fActivasFg=sel('activas')?'var(--brand-ink)':'var(--text-muted)';
       out.fTodasBg=sel('todas')?'var(--surface-card)':'transparent'; out.fTodasFg=sel('todas')?'var(--brand-ink)':'var(--text-muted)';
       out.fPendBg=sel('pendiente')?'var(--surface-card)':'transparent'; out.fPendFg=sel('pendiente')?'var(--brand-ink)':'var(--text-muted)';
       out.fAprBg=sel('aprobada')?'var(--surface-card)':'transparent'; out.fAprFg=sel('aprobada')?'var(--brand-ink)':'var(--text-muted)';
       out.fRecBg=sel('recibida')?'var(--surface-card)':'transparent'; out.fRecFg=sel('recibida')?'var(--brand-ink)':'var(--text-muted)';
-      let list=st.ordenes.slice();
-      if(f==='pendiente') list=list.filter(o=>o.estado==='pendiente');
+      const esActivaOrden=(o)=> o.estado!=='rechazada' && (o.estado==='pendiente' || !this.ordenCerrada(o) || this.ordenSaldo(o)>0);
+      let list=st.ordenes.slice().sort((a,b)=>{ const na=this.ordenNumSort(a), nb=this.ordenNumSort(b); if(nb!==na) return nb-na; return (b.fecha||'').localeCompare(a.fecha||''); });
+      if(f==='activas') list=list.filter(esActivaOrden);
+      else if(f==='pendiente') list=list.filter(o=>o.estado==='pendiente');
       else if(f==='aprobada') list=list.filter(o=>this.ordenAbierta(o) && o.estado!=='pendiente' && this.ordenSaldo(o)>0);
       else if(f==='recibida') list=list.filter(o=>this.ordenCerrada(o));
+      out.ordenActivasN=st.ordenes.filter(esActivaOrden).length;
       out.ordenesVacio=list.length===0;
       out.ordenesView=list.map(o=>{ const total=this.ordenTotal(o); const eo=this.estadoBadge(o); const ep=this.estadoPagoStyle(o); const saldo=this.ordenSaldo(o);
         const hasFactura=!!o.factura;
@@ -5576,6 +5586,8 @@ Instrucciones de respuesta:
           canEdit: canWrite && (o.estado==='pendiente' || isAdmin),
           waitApprove: !isAdmin && o.estado==='pendiente',
           canFactura: canWrite && (o.estado==='aprobada'||o.estado==='recibida') && !hasFactura,
+          canAdjuntarFactura: canWrite && hasFactura && !(o.factura && o.factura.archivo),
+          onAdjuntarFactura:()=>this.adjuntarFacturaPick(o),
           canPago: canWrite && hasFactura && ep.key!=='pagada' && o.estado!=='rechazada',
           canRecibir: canWrite && o.estado==='aprobada',
           canEntrega: canWrite && o.estado==='aprobada',
