@@ -332,7 +332,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#52292972227c373f333b3e722f2f" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#0f74742f7f216a626e66632f7272" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1646,7 +1646,7 @@
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0 0 16px;">Evolución de ventas</h3>
                   <div style="display:flex;flex-direction:column;gap:11px;">
                     <sc-for list="{{ baseEvo }}" as="e" hint-placeholder-count="6">
-                      <div style="display:flex;align-items:center;gap:12px;">
+                      <div onClick="{{ e.onClick }}" class="oda-row" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:2px 4px;margin:-2px -4px;border-radius:8px;">
                         <span style="width:38px;font-size:12px;color:var(--text-muted);flex-shrink:0;">{{ e.label }}</span>
                         <div style="flex:1;height:14px;background:var(--surface-raised);border-radius:99px;overflow:hidden;"><div style="height:100%;background:var(--brand-primary);border-radius:99px;width:{{ e.bar }};"></div></div>
                         <span style="width:104px;text-align:right;font-size:12px;font-weight:700;white-space:nowrap;">{{ e.totalFmt }}</span>
@@ -1658,7 +1658,7 @@
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0 0 16px;">Ventas por canal</h3>
                   <div style="display:flex;flex-direction:column;gap:12px;">
                     <sc-for list="{{ baseCanales }}" as="c" hint-placeholder-count="4">
-                      <div>
+                      <div onClick="{{ c.onClick }}" class="oda-row" style="cursor:pointer;padding:4px;margin:-4px;border-radius:8px;">
                         <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;"><span style="font-weight:600;">{{ c.canal }}</span><span style="color:var(--text-muted);">{{ c.totalFmt }} · {{ c.pct }}</span></div>
                         <div style="height:10px;background:var(--surface-raised);border-radius:99px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:{{ c.color }};width:{{ c.bar }};"></div></div>
                       </div>
@@ -1683,7 +1683,7 @@
                   <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);"><h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Top ciudades</h3></div>
                   <div>
                     <sc-for list="{{ baseCiudades }}" as="c" hint-placeholder-count="5">
-                      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;"><span style="font-weight:600;">{{ c.ciudad }}</span><span style="font-weight:700;">{{ c.totalFmt }}</span></div>
+                      <div onClick="{{ c.onClick }}" class="oda-row" style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;cursor:pointer;"><span style="font-weight:600;">{{ c.ciudad }}</span><span style="font-weight:700;">{{ c.totalFmt }}</span></div>
                     </sc-for>
                   </div>
                 </div>
@@ -3273,6 +3273,40 @@
               </div>
             </sc-if>
 
+            <!-- DETALLE POR DIMENSIÓN (mes/canal/ciudad) -->
+            <sc-if value="{{ isModalBaseDet }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;padding:3px 9px;border-radius:99px;background:rgba(167,134,89,0.16);color:#7A5E36;">{{ baseDetDimLabel }}</span>
+                <span style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;line-height:1.1;">{{ baseDetTitulo }}</span>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+                <div style="flex:1;min-width:130px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;"><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Ventas</div><div style="font-size:20px;font-weight:700;font-family:'Cormorant Garamond',serif;">{{ baseDetCount }}</div></div>
+                <div style="flex:1;min-width:130px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;"><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Total</div><div style="font-size:20px;font-weight:700;font-family:'Cormorant Garamond',serif;">{{ baseDetTotalFmt }}</div></div>
+                <div style="flex:1;min-width:130px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;"><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Unidades</div><div style="font-size:20px;font-weight:700;font-family:'Cormorant Garamond',serif;">{{ baseDetUnidades }}</div></div>
+              </div>
+              <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--surface-raised);border-bottom:1px solid var(--border-subtle);font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);">
+                  <span style="width:88px;flex-shrink:0;">Fecha</span><span style="width:88px;flex-shrink:0;">Pedido int.</span><span style="width:88px;flex-shrink:0;">Shopify</span><span style="flex:1;min-width:0;">Cliente</span><sc-if value="{{ baseDetShowCanal }}" hint-placeholder-val="{{ true }}"><span style="width:110px;flex-shrink:0;">Canal</span></sc-if><sc-if value="{{ baseDetShowCiudad }}" hint-placeholder-val="{{ true }}"><span style="width:110px;flex-shrink:0;">Ciudad</span></sc-if><span style="width:48px;flex-shrink:0;text-align:right;">Und</span><span style="width:110px;flex-shrink:0;text-align:right;">Total</span>
+                </div>
+                <div style="max-height:60vh;overflow-y:auto;">
+                  <sc-for list="{{ baseDetRows }}" as="r" hint-placeholder-count="8">
+                    <div onClick="{{ r.onClick }}" class="oda-row" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border-subtle);font-size:14px;cursor:pointer;">
+                      <span style="width:88px;flex-shrink:0;color:var(--text-muted);">{{ r.fechaFmt }}</span>
+                      <span style="width:88px;flex-shrink:0;font-weight:700;color:var(--brand-primary);">{{ r.pedidoInterno }}</span>
+                      <span style="width:88px;flex-shrink:0;color:var(--text-muted);">{{ r.pedidoShopify }}</span>
+                      <span style="flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.cliente }}</span>
+                      <sc-if value="{{ baseDetShowCanal }}" hint-placeholder-val="{{ true }}"><span style="width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.canal }}</span></sc-if>
+                      <sc-if value="{{ baseDetShowCiudad }}" hint-placeholder-val="{{ true }}"><span style="width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.ciudad }}</span></sc-if>
+                      <span style="width:48px;flex-shrink:0;text-align:right;">{{ r.unidades }}</span>
+                      <span style="width:110px;flex-shrink:0;text-align:right;font-weight:700;">{{ r.totalFmt }}</span>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ baseDetVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;font-size:14px;color:var(--text-muted);">No hay ventas en este segmento.</div></sc-if>
+                </div>
+              </div>
+              <sc-if value="{{ baseDetMas }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">{{ baseDetMas }}</div></sc-if>
+            </sc-if>
+
             <!-- SEGUIMIENTO DE LEAD -->
             <sc-if value="{{ isModalLeadSeg }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px;flex-wrap:wrap;">
@@ -4662,6 +4696,7 @@ Instrucciones de respuesta:
   async cloudSaveVenta(v){ const sb=this._sbClient(); if(!sb||!v) return; try{ await sb.from('ventas').upsert(this._ventaToDb(v)); }catch(e){} }
   async cloudBulkVentas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from('ventas').upsert(list.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} }
   async cloudDeleteVenta(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('ventas').delete().eq('id',id); }catch(e){} }
+  openBaseDetalle(dim, key, label){ this.setState({modal:'basedetalle', baseDetDim:dim, baseDetKey:key, baseDetLabel:label}); }
   async limpiarHistorico(){ const hist=(this.state.ventas||[]).filter(v=>v.origen==='historico'); if(!hist.length){ this.toast('No hay ventas de histórico para limpiar'); return; } if(!window.confirm('Se eliminarán '+hist.length+' ventas de histórico (de la nube y este equipo). Esta acción no se puede deshacer. ¿Continuar?')) return; const resto=(this.state.ventas||[]).filter(v=>v.origen!=='historico'); this.setState({ventas:resto},()=>this.persist()); const sb=this._sbClient(); if(sb){ try{ for(let att=0; att<3; att++){ const {error}=await sb.from('ventas').delete().eq('data->>origen','historico'); if(!error) break; await new Promise(r=>setTimeout(r,600)); } }catch(e){} } this.toast(hist.length+' ventas de histórico eliminadas · ya puedes reimportar'); }
   cloudSubscribeVentas(){ const sb=this._sbClient(); if(!sb||this._venSub) return; try{ this._venSub=sb.channel('oda-ventas').on('postgres_changes',{event:'*',schema:'public',table:'ventas'},()=>{ clearTimeout(this._venReload); this._venReload=setTimeout(()=>this.cloudLoadVentas(),2500); }).subscribe(); }catch(e){} }
   // ---- cotizaciones compartidas (nube) ----
@@ -5935,22 +5970,22 @@ Instrucciones de respuesta:
       out.bkTotal=this.fmt(Math.round(totalNeto)); out.bkCount=count; out.bkTicket=this.fmt(Math.round(count?totalHist/count:0)); out.bkUnidades=fil.reduce((a,v)=>a+this.ventaUnidades(v),0);
       const canMap={}; fil.forEach(v=>{ canMap[v.canal]=(canMap[v.canal]||0)+this.ventaTotal(v); });
       const canArr=Object.keys(canMap).map(k=>({k,val:canMap[k]})).sort((a,b)=>b.val-a.val); const canMax=Math.max(1,...canArr.map(x=>x.val));
-      out.baseCanales=canArr.map(x=>{const cs=this.canalStyle(x.k);return {canal:x.k, totalFmt:this.fmt(Math.round(x.val)), pct:(totalHist>0?Math.round(x.val/totalHist*100):0)+'%', bar:(x.val/canMax*100).toFixed(1)+'%', color:cs.fg};});
+      out.baseCanales=canArr.map(x=>{const cs=this.canalStyle(x.k);return {canal:x.k, totalFmt:this.fmt(Math.round(x.val)), pct:(totalHist>0?Math.round(x.val/totalHist*100):0)+'%', bar:(x.val/canMax*100).toFixed(1)+'%', color:cs.fg, onClick:()=>this.openBaseDetalle('canal',x.k,x.k)};});
       out.bkMejorCanal=canArr.length?canArr[0].k:'—';
       const margenTotal=fil.reduce((a,v)=>a+(this.ventaNetaProductos(v)-this.ventaCosto(v)),0);
       out.bkMargenPct=(totalNeto>0?(margenTotal/totalNeto*100):0).toFixed(1)+'%'; out.bkMargenSub='margen '+this.fmt(Math.round(margenTotal));
       let evo=[];
-      if(st.baseAnio==='todos'){ const ym={}; all.forEach(v=>{const y=(v.fecha||'').slice(0,4); if(y) ym[y]=(ym[y]||0)+this.ventaTotal(v);}); evo=Object.keys(ym).sort().map(y=>({label:y,val:ym[y]})); }
-      else { const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const mm=new Array(12).fill(0); fil.forEach(v=>{const mo=parseInt((v.fecha||'').slice(5,7),10)-1; if(mo>=0&&mo<12) mm[mo]+=this.ventaTotal(v);}); evo=mm.map((val,i)=>({label:meses[i],val})); }
+      if(st.baseAnio==='todos'){ const ym={}; all.forEach(v=>{const y=(v.fecha||'').slice(0,4); if(y) ym[y]=(ym[y]||0)+this.ventaTotal(v);}); evo=Object.keys(ym).sort().map(y=>({label:y,val:ym[y],key:y})); }
+      else { const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const mm=new Array(12).fill(0); fil.forEach(v=>{const mo=parseInt((v.fecha||'').slice(5,7),10)-1; if(mo>=0&&mo<12) mm[mo]+=this.ventaTotal(v);}); evo=mm.map((val,i)=>({label:meses[i],val,key:st.baseAnio+'-'+String(i+1).padStart(2,'0')})); }
       const evoMax=Math.max(1,...evo.map(x=>x.val));
-      out.baseEvo=evo.map(x=>({label:x.label, totalFmt:this.fmt(Math.round(x.val)), bar:(x.val/evoMax*100).toFixed(1)+'%'}));
+      out.baseEvo=evo.map(x=>({label:x.label, totalFmt:this.fmt(Math.round(x.val)), bar:(x.val/evoMax*100).toFixed(1)+'%', onClick:()=>this.openBaseDetalle('periodo',x.key,(st.baseAnio==='todos'?('Año '+x.label):(x.label+' '+st.baseAnio)))}));
       const pm={}; fil.forEach(v=>{(v.items||[]).forEach(it=>{const nm=it.producto||it.referencia||'—'; pm[nm]=(pm[nm]||0)+(Number(it.unidades)||0)*(Number(it.valorUnit)||0);});});
       const pArr=Object.keys(pm).map(k=>({k,val:pm[k]})).sort((a,b)=>b.val-a.val).slice(0,6); const pMax=Math.max(1,...pArr.map(x=>x.val));
       out.baseProductos=pArr.map(x=>({nombre:x.k, totalFmt:this.fmt(Math.round(x.val)), bar:(x.val/pMax*100).toFixed(1)+'%'}));
       out.bkMejorProducto=pArr.length?pArr[0].k:'—';
       const cm={}; fil.forEach(v=>{const c=v.ciudad||'—'; cm[c]=(cm[c]||0)+this.ventaTotal(v);});
       const cArr=Object.keys(cm).map(k=>({k,val:cm[k]})).sort((a,b)=>b.val-a.val).slice(0,5);
-      out.baseCiudades=cArr.map(x=>({ciudad:x.k, totalFmt:this.fmt(Math.round(x.val))}));
+      out.baseCiudades=cArr.map(x=>({ciudad:x.k, totalFmt:this.fmt(Math.round(x.val)), onClick:()=>this.openBaseDetalle('ciudad',x.k,x.k)}));
       out.baseVacio=all.length===0; out.nuevaBaseImport=()=>this.openImport('ventasHist');
       // ---- Pestaña + inteligencia de clientes ----
       const tab=st.baseTab||'panorama';
@@ -6119,7 +6154,7 @@ Instrucciones de respuesta:
       out.waCampVacio=withTel.length===0;
       out.waCampList=withTel.slice(0,200).map(c=>{ const sty=this.segmentoStyle(c.segmento); return {nombre:c.cliente, tel:c.celular, segmento:c.segmento, segBg:sty.bg, segFg:sty.fg, waUrl:this.waLink(c.celular, subst(c))}; });
     }
-    out.isModalLead=st.modal==='lead'; out.isModalLeadSeg=st.modal==='leadseg'; out.leadEstadoOptions=this.LEAD_ESTADOS; out.leadOrigenOptions=this.LEAD_ORIGENES; out.leadUserOptions=this.users.map(x=>({id:x.id,name:x.name})); out.leadDraftCreador=(st.draft&&st.draft.creadoPor)?this.uName(st.draft.creadoPor):''; out.leadDraftHasCreador=!!(st.draft&&st.draft.creadoPor&&!st.draft._new);
+    out.isModalLead=st.modal==='lead'; out.isModalLeadSeg=st.modal==='leadseg'; out.isModalBaseDet=st.modal==='basedetalle'; out.leadEstadoOptions=this.LEAD_ESTADOS; out.leadOrigenOptions=this.LEAD_ORIGENES; out.leadUserOptions=this.users.map(x=>({id:x.id,name:x.name})); out.leadDraftCreador=(st.draft&&st.draft.creadoPor)?this.uName(st.draft.creadoPor):''; out.leadDraftHasCreador=!!(st.draft&&st.draft.creadoPor&&!st.draft._new);
     if(st.modal==='leadseg'){ const l=this.leadById(st.segLeadId)||{}; const sty=this.leadEstadoStyle(l.estado); const todaySeg=new Date().toISOString().slice(0,10);
       out.segNombre=l.nombre||'Lead'; out.segEstado=l.estado||'Nuevo'; out.segEstadoBg=sty.bg; out.segEstadoFg=sty.fg; out.segAsignado=(l.asignadoA?('Responsable: '+this.leadUName(l.asignadoA)):'Sin responsable asignado');
       out.segComment=(st.draft&&st.draft._segComment)||''; out.onSegComment=(e)=>this.updateDraft('_segComment',e.target.value); out.addLeadComment=()=>this.addLeadComment();
@@ -6135,8 +6170,19 @@ Instrucciones de respuesta:
     out.onDraftInput=(e)=>this.updateDraft(e.target.name,e.target.value);
     out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     const titles={proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
-    out.modalTitle = st.modal? (st.modal==='detalle'? (st.detalleId? 'Detalle de orden':'Detalle') : (st.modal==='cliente'? 'Ficha de cliente' : (st.modal==='wacampaign'? 'Campaña de WhatsApp' : titles[st.modal]))) : '';
-    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg';
+    out.modalTitle = st.modal ? (st.modal==='basedetalle' ? ('Ventas · '+(st.baseDetLabel||'')) : st.modal==='detalle' ? (st.detalleId? 'Detalle de orden':'Detalle') : st.modal==='cliente' ? 'Ficha de cliente' : st.modal==='wacampaign' ? 'Campaña de WhatsApp' : titles[st.modal]) : '';
+    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle';
+    if(st.modal==='basedetalle'){ const dim=st.baseDetDim, key=st.baseDetKey;
+      const all=(st.ventas||[]); const match=(v)=>{ if(dim==='canal') return (v.canal||'')===key; if(dim==='ciudad') return (v.ciudad||'—')===key; if(dim==='periodo'){ return (v.fecha||'').slice(0, key.length)===key; } return false; };
+      const sel=all.filter(match).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+      out.baseDetTitulo=st.baseDetLabel||key; out.baseDetDimLabel=(dim==='canal'?'Canal':dim==='ciudad'?'Ciudad':'Periodo');
+      out.baseDetCount=sel.length; out.baseDetTotalFmt=this.fmt(Math.round(sel.reduce((a,v)=>a+this.ventaTotal(v),0))); out.baseDetUnidades=sel.reduce((a,v)=>a+this.ventaUnidades(v),0);
+      out.baseDetVacio=sel.length===0;
+      out.baseDetRows=sel.slice(0,400).map(v=>({ fechaFmt:this.fmtFecha(v.fecha), cliente:this.fixTxt(v.cliente)||'—', pedidoInterno:(v.ov||'—'), pedidoShopify:(v.pedido||'—'), canal:v.canal||'—', ciudad:this.fixTxt(v.ciudad)||'—', unidades:this.ventaUnidades(v), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), onClick:()=>this.verVenta(v) }));
+      out.baseDetMas=(sel.length>400)?('Mostrando las primeras 400 de '+sel.length):'';
+      out.baseDetShowCanal=(dim!=='canal'); out.baseDetShowCiudad=(dim!=='ciudad');
+      out.closeBaseDet=()=>this.setState({modal:null});
+    }
     if(st.modal==='movdetalle'){ const d=st.draft||{};
       out.mdConcepto=d.concepto||d.categoria||'Movimiento';
       out.mdFechaFmt=this.fmtFecha(d.fecha);
@@ -6153,7 +6199,7 @@ Instrucciones de respuesta:
       out.mdEditable=!!d.editable; out.mdOnEditar=()=>{ if(d.editable) this.editarMovimiento(d.id); };
       out.mdHayArchivo=!!d.archivo; out.mdArchivo=d.archivo||''; out.mdArchivoNombre=d.archivoNombre||'Factura adjunta';
     }
-    out.modalMaxW = (st.modal==='venta'||st.modal==='cotizacion'||st.modal==='wacampaign'||st.modal==='remision')? '720px' : '560px';
+    out.modalMaxW = (st.modal==='basedetalle')? '1040px' : (st.modal==='venta'||st.modal==='cotizacion'||st.modal==='wacampaign'||st.modal==='remision')? '720px' : '560px';
     const saveLabels={proveedor:'Guardar proveedor',materia:'Guardar materia',orden:(st.draft._id?'Guardar cambios':'Crear orden'),factura:'Registrar factura',pago:'Registrar pago',producto:'Guardar producto',kit:'Guardar kit',mezcla:'Guardar mezcla',bulkproducto:'Generar productos',produccion:'Registrar producción',ajusteinv:'Guardar ajuste',servicio:'Guardar servicio',entrega:'Registrar entrega',produccionmez:'Registrar producción',venta:'Guardar venta',cotizacion:'Guardar cotización',movimiento:'Guardar movimiento',cuentafin:'Guardar cuenta',cobro:'Registrar cobro',gastofijo:'Guardar gasto fijo',retenconfig:'Guardar tasas',liquidacion:'Registrar liquidación',metodofin:'Guardar método',tienda:'Guardar tienda',remision:'Generar remisión',lead:'Guardar lead'};
     out.saveLabel=saveLabels[st.modal]||'Guardar';
     out.provDeleteShow = st.modal==='proveedor' && !st.draft._new; out.onProvDelete=()=>this.askDeleteProveedorEdit();
