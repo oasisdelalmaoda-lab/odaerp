@@ -25,6 +25,7 @@
   .oda-navitem:hover{background:rgba(251,248,242,0.06);}
   @keyframes odaFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
   @keyframes odaPop{from{opacity:0;transform:translateY(12px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  @keyframes odaPulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
   input:focus,select:focus{outline:none;box-shadow:var(--shadow-focus);border-color:var(--brand-primary)!important;}
 </style>
 </helmet>
@@ -331,7 +332,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#275c5c075709424a464e4b075a5a" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#88f3f3a8f8a6ede5e9e1e4a8f5f5" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1599,6 +1600,7 @@
             <div>
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
                 <p style="font-size:12.5px;color:var(--text-muted);margin:0;max-width:480px;line-height:1.55;text-wrap:pretty;">Toda la historia de ventas para analizar y definir estrategias. Importa el histórico desde 2020 por Excel/CSV.</p>
+                <sc-if value="{{ ventasCargando }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--brand-primary);background:rgba(167,134,89,0.14);border-radius:99px;padding:5px 12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand-primary);animation:odaPulse 1s ease-in-out infinite;"></span>Cargando ventas de la nube…</span></sc-if>
                 <div style="flex:1;"></div>
                 <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
                   <sc-for list="{{ baseYears }}" as="y" hint-placeholder-count="4"><button onClick="{{ y.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ y.bg }};color:{{ y.fg }};">{{ y.label }}</button></sc-for>
@@ -4638,7 +4640,21 @@ Instrucciones de respuesta:
   cloudSubscribeProdMez(){ const sb=this._sbClient(); if(!sb||this._pomSub) return; try{ this._pomSub=sb.channel('oda-prodmez').on('postgres_changes',{event:'*',schema:'public',table:'producciones_mezcla'},()=>{ this.cloudLoadProdMez(); }).subscribe(); }catch(e){} }
   // ---- ventas compartidas (nube) ----
   _ventaToDb(v){ return { id:v.id, data:v, actualizado:new Date().toISOString() }; }
-  async cloudLoadVentas(){ const sb=this._sbClient(); if(!sb) return; try{ let all=[]; let from=0; const page=1000; while(true){ const {data,error}=await sb.from('ventas').select('id,data').order('id',{ascending:true}).range(from,from+page-1); if(error) throw error; if(!data||!data.length) break; all=all.concat(data); if(data.length<page) break; from+=page; if(from>500000) break; } if(all.length){ this.setState({ventas:all.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } } }catch(e){} }
+  async cloudLoadVentas(){ const sb=this._sbClient(); if(!sb) return; if(this._venLoading){ this._venLoadAgain=true; return; } this._venLoading=true; this.setState({ventasCargando:true});
+    try{ let all=[]; let from=0; const page=500; let guard=0;
+      while(guard++<400){ let data=null, lastErr=null;
+        for(let att=0; att<4; att++){ const res=await sb.from('ventas').select('id,data').order('id',{ascending:true}).range(from,from+page-1); if(!res.error){ data=res.data; lastErr=null; break; } lastErr=res.error; await new Promise(r=>setTimeout(r, 400*(att+1))); }
+        if(lastErr) throw lastErr;
+        if(!data||!data.length) break;
+        all=all.concat(data);
+        if(data.length<page) break;
+        from+=page;
+      }
+      if(all.length){ this.setState({ventas:all.map(r=>({...(r.data||{}), id:r.id})), ventasCargando:false}); }
+      else { this.setState({ventasCargando:false}); const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } }
+    }catch(e){ this.setState({ventasCargando:false}); this.toast('Reintentando cargar ventas…'); setTimeout(()=>{ this._venLoading=false; this.cloudLoadVentas(); }, 1500); return; }
+    this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
+  }
   async cloudSaveVenta(v){ const sb=this._sbClient(); if(!sb||!v) return; try{ await sb.from('ventas').upsert(this._ventaToDb(v)); }catch(e){} }
   async cloudBulkVentas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from('ventas').upsert(list.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} }
   async cloudDeleteVenta(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('ventas').delete().eq('id',id); }catch(e){} }
@@ -5279,7 +5295,7 @@ Instrucciones de respuesta:
     out.propPortadaHas=false; out.propQuienesHas=false; out.propBenHas=false;
     out.propPortadaImgEl=null; out.propQuienesImgEl=null; out.propBenImgEl=null;
     out.propDocCache=st.propuestaDocCache||'';
-    out.logout=()=>this.logout();
+    out.logout=()=>this.logout(); out.ventasCargando=!!st.ventasCargando;
     out.openChangePwd=()=>this.openChangePwd(); out.closeChangePwd=()=>this.closeChangePwd();
     out.pwdModalOpen=!!st.pwdModalOpen; out.pwdNew=st.pwdNew||''; out.pwdNew2=st.pwdNew2||'';
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
