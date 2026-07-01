@@ -332,7 +332,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#a1dada81d18fc4ccc0c8cd81dcdc" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#bec5c59ece90dbd3dfd7d29ec3c3" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1723,15 +1723,11 @@
               </div>
 
               <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;">
-                <select value="{{ cliAnio }}" onChange="{{ onCliAnio }}" style="font-family:inherit;font-size:13px;font-weight:600;padding:8px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
-                  <sc-for list="{{ cliAnioOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.val }}">{{ o.label }}</option></sc-for>
-                </select>
-                <select value="{{ cliMes }}" onChange="{{ onCliMes }}" style="font-family:inherit;font-size:13px;font-weight:600;padding:8px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
-                  <sc-for list="{{ cliMesOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.val }}">{{ o.label }}</option></sc-for>
-                </select>
-                <select value="{{ cliCanal }}" onChange="{{ onCliCanal }}" style="font-family:inherit;font-size:13px;font-weight:600;padding:8px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
-                  <sc-for list="{{ cliCanalOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.val }}">{{ o.label }}</option></sc-for>
-                </select>
+                <div style="display:flex;flex-direction:column;gap:8px;width:100%;margin-bottom:10px;">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);width:52px;flex-shrink:0;">Año</span><sc-for list="{{ cliAnioChips }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-subtle);border-radius:99px;cursor:pointer;background:{{ o.bg }};color:{{ o.fg }};">{{ o.label }}</button></sc-for></div>
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);width:52px;flex-shrink:0;">Mes</span><sc-for list="{{ cliMesChips }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border:1px solid var(--border-subtle);border-radius:99px;cursor:pointer;background:{{ o.bg }};color:{{ o.fg }};">{{ o.label }}</button></sc-for></div>
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);width:52px;flex-shrink:0;">Canal</span><sc-for list="{{ cliCanalChips }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-subtle);border-radius:99px;cursor:pointer;background:{{ o.bg }};color:{{ o.fg }};">{{ o.label }}</button></sc-for></div>
+                </div>
                 <div style="flex:1;"></div>
                 <button onClick="{{ abrirWaCampaign }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);background:#25D366;color:#0A3D2A;border:none;cursor:pointer;" style-hover="opacity:0.9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.13c-.24.68-1.42 1.32-1.95 1.36-.5.05-.96.24-3.23-.67-2.73-1.08-4.45-3.88-4.58-4.06-.13-.18-1.1-1.46-1.1-2.79 0-1.33.7-1.98.95-2.25.24-.27.53-.34.71-.34.18 0 .35 0 .51.01.16.01.39-.06.6.46.24.58.81 2 .88 2.15.07.15.12.32.02.5-.09.18-.14.29-.27.45-.13.16-.28.35-.4.47-.13.13-.27.28-.12.54.15.27.66 1.09 1.42 1.76.97.87 1.79 1.13 2.05 1.27.26.13.41.11.56-.07.15-.18.65-.76.82-1.02.17-.26.34-.21.58-.13.24.09 1.51.71 1.77.84.26.13.43.2.49.31.06.11.06.62-.18 1.3Z"/></svg>Campaña WhatsApp</button>
                 <button onClick="{{ onExportClientes }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Descargar base (Excel)</button>
@@ -3934,7 +3930,7 @@ class Component extends DCLogic {
     proveedores:[], materias:[], ordenes:[], productos:[], kits:[], mezclas:[], producciones:[], produccionesMezcla:[], servicios:[], ventas:[], cotizaciones:[], leads:[], tiendas:[], remisiones:[],
     cuentasFin:[], movimientos:[], gastosFijos:[], retenConfig:null, finMes:null, metodosFin:null, liquidaciones:[],
     qProv:'', qMat:'', qProd:'', qKit:'', qMez:'', qSvc:'', qVenta:'', qPedido:'', qListado:'', qLead:'', leadFiltroEstado:'todos', filtroTipo:'todos', filtroProvMat:'todos', filtroEstado:'todas', filtroCanal:'todos', baseAnio:'todos', baseDim:'mes',
-    baseTab:'panorama', baseAiQuery:'', baseAiAnswer:'', baseAiLoading:false, baseSegFiltro:'todos', baseCliSort:'total', baseCliQ:'', baseCliAnio:'todos', baseCliMes:'todos', baseCliCanal:'todos', clienteSelKey:null, clienteMsg:'', clienteMsgLoading:false,
+    baseTab:'panorama', baseAiQuery:'', baseAiAnswer:'', baseAiLoading:false, baseSegFiltro:'todos', baseCliSort:'total', baseCliQ:'', baseCliAnios:[], baseCliMeses:[], baseCliCanales:[], clienteSelKey:null, clienteMsg:'', clienteMsgLoading:false,
     modal:null, draft:{}, detalleId:null,
     importType:null, importRows:[], importError:'', importName:'',
     toast:null, confirmDel:null, fechaCorte:'2026-06-18', loginStep:'select', loginPendingId:null, loginPwd:'', loginError:'', userPerms:null, expandedPermUser:null, reglasNeg:null, reglasEmpaque:null, clienteWaUrl:'', waCampTpl:'', waCampLoading:false, invCatSel:null,
@@ -4314,8 +4310,12 @@ class Component extends DCLogic {
   ventaUnidades(v){ return (v.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0),0); }
   // ---- Inteligencia de clientes: RFM + segmentos ----
   clientesData(filtros){
-    const fa=(filtros&&filtros.anio)||'todos'; const fm=(filtros&&filtros.mes)||'todos'; const fc=(filtros&&filtros.canal)||'todos';
-    const ventas=(this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=v.fecha||''; if(fa!=='todos'&&f.slice(0,4)!==fa) return false; if(fm!=='todos'&&f.slice(5,7)!==fm) return false; if(fc!=='todos'&&v.canal!==fc) return false; return true; });
+    const norm=(x)=>{ if(Array.isArray(x)) return x.length? x : 'todos'; return (x==null||x==='')?'todos':x; };
+    const fa=norm(filtros&&filtros.anio); const fm=norm(filtros&&filtros.mes); const fc=norm(filtros&&filtros.canal);
+    const okA=(y)=>fa==='todos'||(Array.isArray(fa)?fa.includes(y):fa===y);
+    const okM=(m)=>fm==='todos'||(Array.isArray(fm)?fm.includes(m):fm===m);
+    const okC=(c)=>fc==='todos'||(Array.isArray(fc)?fc.includes(c):fc===c);
+    const ventas=(this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=v.fecha||''; if(!okA(f.slice(0,4))) return false; if(!okM(f.slice(5,7))) return false; if(!okC(v.canal)) return false; return true; });
     const map={};
     ventas.forEach(v=>{ const key=String(v.celular||v.correo||v.cliente||'').trim().toLowerCase(); if(!key) return;
       if(!map[key]) map[key]={key, cliente:v.cliente||'—', celular:v.celular||'', correo:v.correo||'', ciudad:v.ciudad||'', canal:v.canal||'', ordenes:0, total:0, unidades:0, fechas:[], productos:{}};
@@ -4698,6 +4698,8 @@ Instrucciones de respuesta:
   async cloudBulkVentas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from('ventas').upsert(list.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} }
   async cloudDeleteVenta(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('ventas').delete().eq('id',id); }catch(e){} }
   openBaseDetalle(dim, key, label){ this.setState({modal:'basedetalle', baseDetDim:dim, baseDetKey:key, baseDetLabel:label}); }
+  toggleBaseAnio(y){ if(y==='todos'){ this.setState({baseAnios:[]}); return; } const cur=Array.isArray(this.state.baseAnios)?this.state.baseAnios.slice():[]; const i=cur.indexOf(y); if(i>=0) cur.splice(i,1); else cur.push(y); this.setState({baseAnios:cur}); }
+  toggleCliFiltro(key, val){ if(val==='todos'){ this.setState({[key]:[]}); return; } const cur=Array.isArray(this.state[key])?this.state[key].slice():[]; const i=cur.indexOf(val); if(i>=0) cur.splice(i,1); else cur.push(val); this.setState({[key]:cur}); }
   async limpiarHistorico(){ const hist=(this.state.ventas||[]).filter(v=>v.origen==='historico'); if(!hist.length){ this.toast('No hay ventas de histórico para limpiar'); return; } if(!window.confirm('Se eliminarán '+hist.length+' ventas de histórico (de la nube y este equipo). Esta acción no se puede deshacer. ¿Continuar?')) return; const resto=(this.state.ventas||[]).filter(v=>v.origen!=='historico'); this.setState({ventas:resto},()=>this.persist()); const sb=this._sbClient(); if(sb){ try{ for(let att=0; att<3; att++){ const {error}=await sb.from('ventas').delete().eq('data->>origen','historico'); if(!error) break; await new Promise(r=>setTimeout(r,600)); } }catch(e){} } this.toast(hist.length+' ventas de histórico eliminadas · ya puedes reimportar'); }
   cloudSubscribeVentas(){ const sb=this._sbClient(); if(!sb||this._venSub) return; try{ this._venSub=sb.channel('oda-ventas').on('postgres_changes',{event:'*',schema:'public',table:'ventas'},()=>{ clearTimeout(this._venReload); this._venReload=setTimeout(()=>this.cloudLoadVentas(),2500); }).subscribe(); }catch(e){} }
   // ---- cotizaciones compartidas (nube) ----
@@ -5181,8 +5183,8 @@ Instrucciones de respuesta:
         else if(flete>0 && remainder>0 && Math.abs(remainder-flete)<=Math.max(50, flete*0.02)){ remainder=Math.max(0, remainder-flete); flete=0; }
         // Cualquier otro descuento (a pedido o por ítem) se aplica SOLO a los productos, nunca al flete.
         const baseSum=g.items.reduce((a,it)=>a+(it._price*it.unidades),0);
-        const items=g.items.map(it=>{ const lineGross=it._price*it.unidades; const share=(remainder>0&&baseSum>0)? remainder*(lineGross/baseSum):0; const finalLine=Math.max(0, lineGross-(Number(it._lineDisc)||0)-share); const vu=it.unidades>0? Math.round(finalLine/it.unidades):0; return {referencia:it.referencia, producto:it.producto, productoCodigo:it.productoCodigo, unidades:it.unidades, valorUnit:vu, taxable:it.taxable, obsequio:(vu===0)}; });
-        const mercancia=items.reduce((a,it)=>a+it.unidades*it.valorUnit,0); const esObsequio=(mercancia<=0 && items.length>0); let canal=g.canal; if(esObsequio) canal='MSVC';
+        const items=g.items.map(it=>{ const lineGross=it._price*it.unidades; const esRetorno=(lineGross<0); const share=(remainder>0&&baseSum>0&&lineGross>0)? remainder*(lineGross/baseSum):0; const finalLine=esRetorno? lineGross : Math.max(0, lineGross-(Number(it._lineDisc)||0)-share); const vu=it.unidades!==0? Math.round(finalLine/it.unidades):0; return {referencia:it.referencia, producto:it.producto, productoCodigo:it.productoCodigo, unidades:it.unidades, valorUnit:vu, taxable:it.taxable, obsequio:(vu===0), devolucion:esRetorno }; });
+        const mercancia=items.reduce((a,it)=>a+it.unidades*it.valorUnit,0); const esDevol=(mercancia<0); const esObsequio=(mercancia===0 && items.length>0); let canal=g.canal; if(esObsequio) canal='MSVC';
         // Contraentrega (COD) fuera de Cali -> el courier es Coordinadora por defecto.
         const ciudadNorm=this.normKey(g.ciudad||''); const esCod=/cash on delivery|contraentrega|\bcod\b/.test(this.normKey(g.metodoPago||'')); if(esCod && ciudadNorm && !/cali/.test(ciudadNorm)){ g.metodoPago='Coordinadora'; }
         const nuevaV={ id:'v'+Date.now()+Math.floor(Math.random()*99999), pedido:g.pedido, ov:g.ov, fecha:g.fecha, canal, bodega:g.bodega, cliente:g.cliente, celular:g.celular, correo:g.correo, ciudad:g.ciudad, items, envio:flete, guia:g.guia, metodoPago:g.metodoPago, cancelada:(g.cancelada===true), pagado:((g.cancelada!==true) && this.metodoAutoPagado(g.metodoPago)?(mercancia+flete):0), esObsequio, origen:(t==='ventasHist'?'historico':'shopify') };
@@ -5965,8 +5967,9 @@ Instrucciones de respuesta:
     if(out.showVentasBase){
       const all=(st.ventas||[]);
       const years=[...new Set(all.map(v=>(v.fecha||'').slice(0,4)).filter(Boolean))].sort();
-      out.baseYears=['todos',...years].map(y=>({label:(y==='todos'?'Todo':y), active:st.baseAnio===y, bg:(st.baseAnio===y?'var(--brand-primary)':'transparent'), fg:(st.baseAnio===y?'var(--text-on-brand)':'var(--text-muted)'), onClick:()=>this.setState({baseAnio:y})}));
-      const fil = st.baseAnio==='todos'? all : all.filter(v=>(v.fecha||'').slice(0,4)===st.baseAnio);
+      const selA=Array.isArray(st.baseAnios)?st.baseAnios:[]; const allSel=selA.length===0;
+      out.baseYears=['todos',...years].map(y=>{ const on=(y==='todos')? allSel : selA.includes(y); return {label:(y==='todos'?'Todo':y), active:on, bg:(on?'var(--brand-primary)':'transparent'), fg:(on?'var(--text-on-brand)':'var(--text-muted)'), onClick:()=>this.toggleBaseAnio(y)}; });
+      const fil = allSel? all : all.filter(v=>selA.includes((v.fecha||'').slice(0,4)));
       const totalHist=fil.reduce((a,v)=>a+this.ventaTotal(v),0); const totalNeto=fil.reduce((a,v)=>a+this.ventaNetaProductos(v),0); const count=fil.length;
       out.bkTotal=this.fmt(Math.round(totalNeto)); out.bkCount=count; out.bkTicket=this.fmt(Math.round(count?totalHist/count:0)); out.bkUnidades=fil.reduce((a,v)=>a+this.ventaUnidades(v),0);
       const canMap={}; fil.forEach(v=>{ canMap[v.canal]=(canMap[v.canal]||0)+this.ventaTotal(v); });
@@ -5976,10 +5979,11 @@ Instrucciones de respuesta:
       const margenTotal=fil.reduce((a,v)=>a+(this.ventaNetaProductos(v)-this.ventaCosto(v)),0);
       out.bkMargenPct=(totalNeto>0?(margenTotal/totalNeto*100):0).toFixed(1)+'%'; out.bkMargenSub='margen '+this.fmt(Math.round(margenTotal));
       let evo=[];
-      if(st.baseAnio==='todos'){ const ym={}; all.forEach(v=>{const y=(v.fecha||'').slice(0,4); if(y) ym[y]=(ym[y]||0)+this.ventaTotal(v);}); evo=Object.keys(ym).sort().map(y=>({label:y,val:ym[y],key:y})); }
-      else { const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const mm=new Array(12).fill(0); fil.forEach(v=>{const mo=parseInt((v.fecha||'').slice(5,7),10)-1; if(mo>=0&&mo<12) mm[mo]+=this.ventaTotal(v);}); evo=mm.map((val,i)=>({label:meses[i],val,key:st.baseAnio+'-'+String(i+1).padStart(2,'0')})); }
+      const oneYear=(selA.length===1)? selA[0] : null;
+      if(!oneYear){ const ym={}; fil.forEach(v=>{const y=(v.fecha||'').slice(0,4); if(y) ym[y]=(ym[y]||0)+this.ventaTotal(v);}); evo=Object.keys(ym).sort().map(y=>({label:y,val:ym[y],key:y})); }
+      else { const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const mm=new Array(12).fill(0); fil.forEach(v=>{const mo=parseInt((v.fecha||'').slice(5,7),10)-1; if(mo>=0&&mo<12) mm[mo]+=this.ventaTotal(v);}); evo=mm.map((val,i)=>({label:meses[i],val,key:oneYear+'-'+String(i+1).padStart(2,'0')})); }
       const evoMax=Math.max(1,...evo.map(x=>x.val));
-      out.baseEvo=evo.map(x=>({label:x.label, totalFmt:this.fmt(Math.round(x.val)), bar:(x.val/evoMax*100).toFixed(1)+'%', onClick:()=>this.openBaseDetalle('periodo',x.key,(st.baseAnio==='todos'?('Año '+x.label):(x.label+' '+st.baseAnio)))}));
+      out.baseEvo=evo.map(x=>({label:x.label, totalFmt:this.fmt(Math.round(x.val)), bar:(x.val/evoMax*100).toFixed(1)+'%', onClick:()=>this.openBaseDetalle('periodo',x.key,(!oneYear?('Año '+x.label):(x.label+' '+oneYear)))}));
       const pm={}; fil.forEach(v=>{(v.items||[]).forEach(it=>{const nm=it.producto||it.referencia||'—'; pm[nm]=(pm[nm]||0)+(Number(it.unidades)||0)*(Number(it.valorUnit)||0);});});
       const pArr=Object.keys(pm).map(k=>({k,val:pm[k]})).sort((a,b)=>b.val-a.val).slice(0,6); const pMax=Math.max(1,...pArr.map(x=>x.val));
       out.baseProductos=pArr.map(x=>({nombre:x.k, totalFmt:this.fmt(Math.round(x.val)), bar:(x.val/pMax*100).toFixed(1)+'%'}));
@@ -5995,17 +5999,17 @@ Instrucciones de respuesta:
       out.baseTabCliBg=tab==='clientes'?'var(--brand-ink)':'transparent'; out.baseTabCliFg=tab==='clientes'?'#fff':'var(--text-muted)';
       out.onBaseTabPanorama=()=>this.setState({baseTab:'panorama'}); out.onBaseTabClientes=()=>this.setState({baseTab:'clientes'});
       if(tab==='clientes'){
-        const cl=this.clientesData({anio:st.baseCliAnio, mes:st.baseCliMes, canal:st.baseCliCanal});
+        const cl=this.clientesData({anio:st.baseCliAnios, mes:st.baseCliMeses, canal:st.baseCliCanales});
         out.cliTotal=cl.length;
         const allV=(st.ventas||[]).filter(v=>!v.cancelada);
+        const selAn=st.baseCliAnios||[], selMe=st.baseCliMeses||[], selCa=st.baseCliCanales||[];
+        const chip=(on)=>({active:on, bg:(on?'var(--brand-primary)':'transparent'), fg:(on?'var(--text-on-brand)':'var(--text-muted)')});
         const cliYears=[...new Set(allV.map(v=>(v.fecha||'').slice(0,4)).filter(Boolean))].sort();
-        out.cliAnioOpts=['todos',...cliYears].map(y=>({val:y,label:(y==='todos'?'Todos los años':y)}));
-        const mesNames={'01':'Enero','02':'Febrero','03':'Marzo','04':'Abril','05':'Mayo','06':'Junio','07':'Julio','08':'Agosto','09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre'};
-        out.cliMesOpts=['todos','01','02','03','04','05','06','07','08','09','10','11','12'].map(m=>({val:m,label:(m==='todos'?'Todos los meses':mesNames[m])}));
+        out.cliAnioChips=[{val:'todos',label:'Todos'}, ...cliYears.map(y=>({val:y,label:y}))].map(o=>({label:o.label, ...chip(o.val==='todos'? selAn.length===0 : selAn.includes(o.val)), onClick:()=>this.toggleCliFiltro('baseCliAnios',o.val)}));
+        const mesNames={'01':'Ene','02':'Feb','03':'Mar','04':'Abr','05':'May','06':'Jun','07':'Jul','08':'Ago','09':'Sep','10':'Oct','11':'Nov','12':'Dic'};
+        out.cliMesChips=[{val:'todos',label:'Todos'}, ...['01','02','03','04','05','06','07','08','09','10','11','12'].map(m=>({val:m,label:mesNames[m]}))].map(o=>({label:o.label, ...chip(o.val==='todos'? selMe.length===0 : selMe.includes(o.val)), onClick:()=>this.toggleCliFiltro('baseCliMeses',o.val)}));
         const cliCanales=[...new Set(allV.map(v=>v.canal).filter(Boolean))].sort();
-        out.cliCanalOpts=['todos',...cliCanales].map(c=>({val:c,label:(c==='todos'?'Todos los canales':c)}));
-        out.cliAnio=st.baseCliAnio; out.cliMes=st.baseCliMes; out.cliCanal=st.baseCliCanal;
-        out.onCliAnio=(e)=>this.setState({baseCliAnio:e.target.value}); out.onCliMes=(e)=>this.setState({baseCliMes:e.target.value}); out.onCliCanal=(e)=>this.setState({baseCliCanal:e.target.value});
+        out.cliCanalChips=[{val:'todos',label:'Todos'}, ...cliCanales.map(c=>({val:c,label:c}))].map(o=>({label:o.label, ...chip(o.val==='todos'? selCa.length===0 : selCa.includes(o.val)), onClick:()=>this.toggleCliFiltro('baseCliCanales',o.val)}));
         const segOrder=['Campeón','Alto valor','Fiel','Nuevo','Ocasional','En riesgo','Dormido','Por reactivar'];
         const segCount={}; cl.forEach(c=>segCount[c.segmento]=(segCount[c.segmento]||0)+1);
         out.segCards=segOrder.filter(s=>segCount[s]).map(s=>{ const sty=this.segmentoStyle(s); const tot=cl.filter(c=>c.segmento===s).reduce((a,c)=>a+c.total,0); return {seg:s, n:segCount[s], bg:sty.bg, fg:sty.fg, totalFmt:this.fmt(Math.round(tot)), active:st.baseSegFiltro===s, onClick:()=>this.setState({baseSegFiltro:st.baseSegFiltro===s?'todos':s})}; });
@@ -6139,7 +6143,7 @@ Instrucciones de respuesta:
       }
     }
     if(st.modal==='wacampaign'){
-      const cl=this.clientesData({anio:st.baseCliAnio, mes:st.baseCliMes, canal:st.baseCliCanal});
+      const cl=this.clientesData({anio:st.baseCliAnios, mes:st.baseCliMeses, canal:st.baseCliCanales});
       let view=cl.slice();
       if(st.baseSegFiltro!=='todos') view=view.filter(c=>c.segmento===st.baseSegFiltro);
       const q=(st.baseCliQ||'').toLowerCase().trim();
