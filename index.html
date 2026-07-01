@@ -332,7 +332,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#bec5c59ece90dbd3dfd7d29ec3c3" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#ef9494cf9fc18a828e8683cf9292" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1074,6 +1074,12 @@
                         <span style="flex:1;min-width:0;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ op.productoNombre }}</span><span style="display:block;font-size:11.5px;color:var(--text-muted);">{{ op.fechaFmt }} · {{ op.costoUnitFmt }}/und</span></span>
                         <span style="font-size:13px;font-weight:800;width:70px;text-align:right;">{{ op.cantidad }} und</span>
                         <span style="font-size:12.5px;font-weight:700;width:104px;text-align:right;color:var(--text-body);">{{ op.totalFmt }}</span>
+                        <sc-if value="{{ op.canEdit }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;gap:6px;flex-shrink:0;">
+                            <button onClick="{{ op.onEdit }}" title="Editar" style="background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;display:inline-flex;padding:6px;border-radius:8px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+                            <button onClick="{{ op.onDelete }}" title="Eliminar" style="background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;display:inline-flex;padding:6px;border-radius:8px;" style-hover="border-color:#B5503C;color:#B5503C;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                          </div>
+                        </sc-if>
                       </div>
                     </sc-for>
                   </div>
@@ -1522,7 +1528,7 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
                   <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Total facturado</div>
                   <div style="font-family:'Cormorant Garamond',serif;font-size:33px;font-weight:600;line-height:1;margin-top:11px;">{{ vkTotal }}</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">incluye envíos</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">productos, sin envíos · <strong>{{ vkEnvios }}</strong> recibido por envíos</div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
                   <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Unidades vendidas</div>
@@ -1863,14 +1869,8 @@
               </div>
 
               <sc-if value="{{ cotTabLeads }}" hint-placeholder-val="{{ true }}">
-              <!-- BANNER NUBE: conectado -->
+              <!-- BANNER NUBE: conectado (oculto — la nube está siempre activa tras el login) -->
               <sc-if value="{{ cloudConnected }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;align-items:center;gap:12px;background:rgba(76,97,73,0.10);border:1px solid rgba(76,97,73,0.28);border-radius:var(--radius-md);padding:11px 16px;margin-bottom:16px;flex-wrap:wrap;">
-                  <span style="display:flex;width:30px;height:30px;border-radius:50%;background:rgba(76,97,73,0.2);align-items:center;justify-content:center;color:#4C6149;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
-                  <div style="flex:1;min-width:180px;"><div style="font-size:13px;font-weight:700;color:var(--text-strong);">Leads del equipo · en la nube <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;padding:2px 8px;border-radius:99px;background:rgba(76,97,73,0.18);color:#4C6149;margin-left:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#4C6149;"></span>En vivo</span></div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Conectado como <strong>{{ cloudUserName }}</strong> · {{ cloudTeamCount }} miembros del equipo · los cambios se ven al instante en todos los computadores.</div></div>
-                  <button onClick="{{ onCloudRefresh }}" title="Actualizar ahora" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;flex-shrink:0;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>{{ cloudRefreshLabel }}</button>
-                  <button onClick="{{ onCloudSignOut }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;flex-shrink:0;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Cerrar sesión de nube</button>
-                </div>
                 <sc-if value="{{ cloudHasLeadsErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.25);border-radius:var(--radius-sm);padding:9px 14px;margin-bottom:14px;font-size:12px;color:#B5503C;">No se pudieron cargar los leads de la nube: {{ cloudLeadsErr }}</div></sc-if>
               </sc-if>
               <!-- BANNER NUBE: desconectado (formulario de inicio de sesión) -->
@@ -1975,7 +1975,9 @@
                     <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1;white-space:nowrap;">{{ c.totalFmt }}</div>
                     <div style="display:flex;gap:8px;flex-shrink:0;">
                       <button onClick="{{ c.onVer }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:99px;border:1px solid var(--border-subtle);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Editar</button>
+                      <button onClick="{{ c.onPreview }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:99px;border:1px solid var(--border-subtle);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Vista previa</button>
                       <button onClick="{{ c.onDescargar }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Descargar PDF</button>
+                      <button onClick="{{ c.onBorrar }}" title="Eliminar" style="display:flex;align-items:center;justify-content:center;padding:8px;border-radius:99px;border:1px solid var(--border-subtle);background:var(--surface-card);color:var(--text-muted);cursor:pointer;" style-hover="border-color:#B5503C;color:#B5503C;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                     </div>
                   </div>
                 </sc-for>
@@ -2121,6 +2123,20 @@
                   <div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1;margin-top:8px;color:{{ frUtilidadColor }};">{{ frUtilidad }}</div>
                   <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">Ingresos − costos − gastos</div>
                 </div>
+              </div>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+                <div style="padding:15px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Inventario para cierre contable</h3>
+                  <span style="font-size:11.5px;font-weight:700;color:var(--text-muted);">{{ invMesLabel }} · valorizado a costo</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-subtle);">
+                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Inventario inicial</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;">{{ invIniFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">al comenzar el mes</div></div>
+                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#4C6149;">(+) Entradas</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:#4C6149;">{{ invEntFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">compras + producción</div></div>
+                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--oda-sale);">(−) Salidas</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:var(--oda-sale);">{{ invSalFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">costo de lo vendido</div></div>
+                  <div style="background:var(--surface-raised);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-primary);">Inventario final</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:var(--brand-primary);">{{ invFinFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">variación {{ invVarFmt }}</div></div>
+                </div>
+                <div style="padding:11px 20px;background:var(--surface-raised);border-top:1px solid var(--border-subtle);font-size:11.5px;color:var(--text-muted);line-height:1.5;">Reconstruido desde los movimientos registrados (compras recibidas, producción y ventas). Usa el selector de mes de arriba para revisar otros cierres.</div>
               </div>
 
               <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;">
@@ -3269,6 +3285,18 @@
               </div>
             </sc-if>
 
+            <!-- VISTA PREVIA COTIZACIÓN -->
+            <sc-if value="{{ isModalCotPreview }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+                <span style="font-size:13px;color:var(--text-muted);">Así se verá el PDF de la cotización <strong>{{ cotPreviewNum }}</strong>.</span>
+                <div style="display:flex;gap:8px;">
+                  <button onClick="{{ onPrintCotPreview }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6Z"/></svg>Imprimir</button>
+                  <button onClick="{{ onDescargarCotPreview }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Descargar PDF</button>
+                </div>
+              </div>
+              <iframe id="cotPreviewFrame" srcDoc="{{ cotPreviewHtml }}" style="width:100%;height:64vh;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:#fff;"></iframe>
+            </sc-if>
+
             <!-- DETALLE POR DIMENSIÓN (mes/canal/ciudad) -->
             <sc-if value="{{ isModalBaseDet }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
@@ -4277,8 +4305,11 @@ class Component extends DCLogic {
   productoStockActual(p){ if(p&&p.esReventa){ const m=this.state.materias.find(x=>x.codigo===p.codigo); const base = m? (Number(m.stockActual)||0) : ((Number(p.stockInicial)||0)+this.productoComprado(p.codigo)); return base - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo); } return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo); }
   nextCodeProduccion(){ let max=0; (this.state.producciones||[]).forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OP-2026-'+String(max+1).padStart(3,'0'); }
   nuevaProduccion(){ this.open('produccion',{ _numero:this.nextCodeProduccion(), productoCodigo:'', cantidad:'', fecha:new Date().toISOString().slice(0,10) }); }
+  editProduccion(op){ this.open('produccion',{ _id:op.id, _numero:op.numero, productoCodigo:op.productoCodigo, cantidad:op.cantidad, fecha:op.fecha||new Date().toISOString().slice(0,10) }); }
+  borrarProduccion(id){ const op=(this.state.producciones||[]).find(x=>x.id===id); if(!op) return; if(!window.confirm('¿Eliminar la producción '+(op.numero||'')+'? El inventario se recalculará automáticamente.')) return; const list=(this.state.producciones||[]).filter(x=>x.id!==id); this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()){ this._cloudDelOne('producciones', id); } this.toast('Producción eliminada · stock recalculado'); }
   saveProduccion(){ const d=this.state.draft; if(!d.productoCodigo){ this.toast('Selecciona un producto'); return; } const cant=Number(d.cantidad)||0; if(cant<=0){ this.toast('Indica la cantidad a producir'); return; }
     const list=(this.state.producciones||[]).slice(); const num=d._numero||this.nextCodeProduccion();
+    if(d._id){ const i=list.findIndex(x=>x.id===d._id); if(i>=0){ list[i]={...list[i], productoCodigo:d.productoCodigo, cantidad:cant, fecha:d.fecha||list[i].fecha}; this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProduccion(list[i]); this.toast('Producción '+num+' actualizada · stock recalculado'); return; } }
     list.unshift({ id:'op'+Date.now(), numero:num, productoCodigo:d.productoCodigo, cantidad:cant, fecha:d.fecha||new Date().toISOString().slice(0,10) });
     this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProduccion(list[0]); this.toast('Producción '+num+' registrada · stock actualizado'); }
 
@@ -4558,7 +4589,7 @@ Instrucciones de respuesta:
     const row={ id:d.id||('c'+Date.now()), numero:d._numero||this.nextCotizacion(), fecha:d.fecha||new Date().toISOString().slice(0,10), cliente:d.cliente, celular:d.celular||'', correo:d.correo||'', ciudad:d.ciudad||'', items:(d.items||[]).map(it=>({referencia:it.referencia||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', tipo:it.tipo||'producto', unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:Number(it.valorBruto!=null?it.valorBruto:it.valorUnit)||0, descPct:Number(it.descPct)||0})), envio:Number(d.envio)||0, descuentoPct:Number(d.descuentoPct)||0, validez:Number(d.validez)||15, nota:d.nota||'', estado:d.estado||'borrador' };
     let list=(this.state.cotizaciones||[]).slice(); const i=list.findIndex(x=>x.id===row.id); if(i>=0 && !d._new) list[i]=row; else list.unshift(row);
     this.setState({cotizaciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveCotizacion(row); this.toast('Cotización '+row.numero+' guardada'); }
-  descargarCotizacion(c){ const hayDesc=(c.items||[]).some(it=>(Number(it.descPct)||0)>0 || (Number(it.valorBruto)||0)>(Number(it.valorUnit)||0));
+  cotDocHtml(c){ const hayDesc=(c.items||[]).some(it=>(Number(it.descPct)||0)>0 || (Number(it.valorBruto)||0)>(Number(it.valorUnit)||0));
     const filas=(c.items||[]).map(it=>{ const u=Number(it.unidades)||0; const neto=Number(it.valorUnit)||0; const bruto=Number(it.valorBruto!=null?it.valorBruto:neto)||0; const sub=u*neto; const dpct=bruto>0?Math.round((1-neto/bruto)*100):0;
       return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+(it.producto||it.referencia)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td>'+(hayDesc?('<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;color:#8A8073;">'+(dpct>0?this.fmt(bruto):'—')+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;color:#B5503C;font-weight:700;">'+(dpct>0?('-'+dpct+'%'):'—')+'</td>'):'')+'<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(neto)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(sub)+'</td></tr>'; }).join('');
     const total=this.cotTotal(c);
@@ -4581,9 +4612,12 @@ Instrucciones de respuesta:
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
-      +'<script>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/script>'
       +'</body></html>';
-    try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Cotizacion-'+(c.numero||'OdA')+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Cotización descargada · ábrela para guardarla como PDF'); }catch(e){ this.toast('No se pudo descargar la cotización'); } }
+    return html; }
+  descargarCotizacion(c){ const html=this.cotDocHtml(c).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Cotizacion-'+(c.numero||'OdA')+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Cotización descargada · ábrela para guardarla como PDF'); }catch(e){ this.toast('No se pudo descargar la cotización'); } }
+  previewCotizacion(c){ this.setState({modal:'cotpreview', cotPreviewHtml:this.cotDocHtml(c), cotPreviewNum:(c.numero||''), cotPreviewC:c}); }
+  borrarCotizacion(id){ const c=(this.state.cotizaciones||[]).find(x=>x.id===id); if(!c) return; if(!window.confirm('¿Eliminar la cotización '+(c.numero||'')+'? Esta acción no se puede deshacer.')) return; const list=(this.state.cotizaciones||[]).filter(x=>x.id!==id); this.setState({cotizaciones:list,modal:null},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteCotizacion(id); this.toast('Cotización eliminada'); }
+  printCotPreview(){ try{ const f=document.getElementById('cotPreviewFrame'); if(f&&f.contentWindow){ f.contentWindow.focus(); f.contentWindow.print(); } }catch(e){} }
 
   cotProdOptionsLabeled(){ return this.cotItemOptions().map(o=>{ const esCost=(o.tipo==='materia'||o.tipo==='mezcla'); const suf=esCost?(' · costo '+this.fmt(Math.round(o.costo))+' (solo costo)'):(o.precio?(' ('+this.fmt(o.precio)+')'):''); return {codigo:o.codigo, precio:o.precio, label:({producto:'PT',kit:'Kit',materia:'Materia',mezcla:'Mezcla'}[o.tipo]||'')+' · '+o.nombre+suf}; }); }
   onPickCotProd(e){ const val=String(e.target.value||''); const opt=this.cotProdOptionsLabeled().find(o=>o.label===val); this.setState(s=>({draft:{...s.draft,_selProdText:val,_selProd:(opt?opt.codigo:''),_selValor:(opt?(opt.precio||''):s.draft._selValor),_selDesc:''}})); }
@@ -4908,6 +4942,13 @@ Instrucciones de respuesta:
 
   // ===================== FINANZAS =====================
   mesActual(){ return new Date().toISOString().slice(0,7); }
+  // ---- valoración de inventario a fecha de corte (para cierres mensuales) ----
+  invValorActualTotal(){ const rev=new Set((this.state.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); const valMat=(this.state.materias||[]).filter(m=>!rev.has(m.codigo)).reduce((a,m)=>a+Math.max(0,this.materiaStockActual(m))*(Number(m.costo)||0),0); const valMez=(this.state.mezclas||[]).reduce((a,mz)=>a+this.mezclaMlStock(mz.codigo)*this.mezclaCostoUnit(mz),0); const valPT=(this.state.productos||[]).reduce((a,p)=>a+this.productoValor(p),0); return valMat+valMez+valPT; }
+  invEntradasCosto(desde,hasta){ let n=0; (this.state.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ const f=this.parseFecha(e.fecha||o.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; (e.items||[]).forEach(it=>{ const m=(this.state.materias||[]).find(x=>x.codigo===it.materiaCodigo); const costo=m?(Number(m.costo)||0):0; n+=(Number(it.cantidad)||0)*costo; }); }); }); (this.state.producciones||[]).forEach(op=>{ const f=this.parseFecha(op.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); n+=(p?this.productoCosto(p):0)*(Number(op.cantidad)||0); }); return n; }
+  invSalidasCosto(desde,hasta){ let n=0; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const f=this.parseFecha(v.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; n+=this.ventaCosto(v); }); return n; }
+  invValorAFecha(hasta){ return this.invValorActualTotal() - this.invEntradasCosto(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), '') + this.invSalidasCosto(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), ''); }
+  dayAfter(d){ try{ const dt=new Date(d+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+1); return dt.toISOString().slice(0,10); }catch(e){ return d; } }
+  ultimoDiaMes(ym){ const p=String(ym).split('-').map(Number); const d=new Date(Date.UTC(p[0], p[1], 0)); return d.toISOString().slice(0,10); }
   finMes(){ return this.state.finMes || this.mesActual(); }
   mesDe(f){ const s=this.parseFecha(f); return s? s.slice(0,7) : ''; }
   mesShift(ym, n){ const p=String(ym||this.mesActual()).split('-').map(Number); const d=new Date(p[0], (p[1]-1)+n, 1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
@@ -5532,7 +5573,7 @@ Instrucciones de respuesta:
           facturaTxt: hasFactura? ' · '+o.factura.numero : '',
           saldoTxt: ep.key==='pagada'?'Pagada': (this.ordenPagado(o)>0? 'Saldo '+this.fmt(saldo):'Por pagar'),
           canApprove: isAdmin && o.estado==='pendiente',
-          canEdit: canWrite && o.estado==='pendiente',
+          canEdit: canWrite && (o.estado==='pendiente' || isAdmin),
           waitApprove: !isAdmin && o.estado==='pendiente',
           canFactura: canWrite && (o.estado==='aprobada'||o.estado==='recibida') && !hasFactura,
           canPago: canWrite && hasFactura && ep.key!=='pagada' && o.estado!=='rechazada',
@@ -5589,7 +5630,7 @@ Instrucciones de respuesta:
       out.opUnidades=(st.producciones||[]).reduce((a,x)=>a+(Number(x.cantidad)||0),0);
       const costoTot=(st.producciones||[]).reduce((a,op)=>{ const p=st.productos.find(x=>x.codigo===op.productoCodigo); const cu=p?this.productoCosto(p):0; return a+cu*(Number(op.cantidad)||0); },0);
       out.opCostoTotalFmt=this.fmt(Math.round(costoTot));
-      out.produccionesView=(st.producciones||[]).map(op=>{ const p=st.productos.find(x=>x.codigo===op.productoCodigo); const cu=p?this.productoCosto(p):0; return {...op, productoNombre:p?p.nombre:op.productoCodigo, productoFormato:p?this.formatoLabel(p.formato):'', fechaFmt:this.fmtFecha(op.fecha), costoUnitFmt:this.fmt(Math.round(cu)), totalFmt:this.fmt(Math.round(cu*(Number(op.cantidad)||0)))}; });
+      out.produccionesView=(st.producciones||[]).map(op=>{ const p=st.productos.find(x=>x.codigo===op.productoCodigo); const cu=p?this.productoCosto(p):0; return {...op, productoNombre:p?p.nombre:op.productoCodigo, productoFormato:p?this.formatoLabel(p.formato):'', fechaFmt:this.fmtFecha(op.fecha), costoUnitFmt:this.fmt(Math.round(cu)), totalFmt:this.fmt(Math.round(cu*(Number(op.cantidad)||0))), canEdit:out.isAdmin, onEdit:()=>this.editProduccion(op), onDelete:()=>this.borrarProduccion(op.id)}; });
       out.stockPTView=st.productos.map(p=>({codigo:p.codigo, nombre:p.nombre, inicial:(p.stockInicial||0), producido:this.productoStockProducido(p.codigo), stock:this.productoStockActual(p)}));
       out.nuevaProduccion=()=>this.nuevaProduccion();
       out.nuevaProduccionImport=()=>this.openImport('produccionpt');
@@ -5720,6 +5761,11 @@ Instrucciones de respuesta:
     }
     if(out.showFinResumen){
       const ym=this.finMes(); const pyg=this.finPyG(ym); const pygPrev=this.finPyG(this.mesShift(ym,-1)); const cajaMes=this.finCajaMes(ym); const iva=this.finIva(ym);
+      // ---- inventario para cierre contable ----
+      { const finDia=this.ultimoDiaMes(ym); const iniDia=this.ultimoDiaMes(this.mesShift(ym,-1)); const desdeM=ym+'-01'; const hastaM=finDia;
+        const vIni=this.invValorAFecha(iniDia); const vFin=this.invValorAFecha(finDia); const ent=this.invEntradasCosto(desdeM,hastaM); const sal=this.invSalidasCosto(desdeM,hastaM);
+        out.invIniFmt=this.fmt(Math.round(vIni)); out.invFinFmt=this.fmt(Math.round(vFin)); out.invEntFmt=this.fmt(Math.round(ent)); out.invSalFmt=this.fmt(Math.round(sal));
+        out.invVarFmt=(vFin-vIni>=0?'+':'−')+this.fmt(Math.abs(Math.round(vFin-vIni))); out.invMesLabel=this.mesLabel(ym); }
       out.frCaja=this.fmt(Math.round(this.cajaSaldoTotal()));
       const pp=this.finPorPagar().reduce((a,o)=>a+this.ordenSaldo(o),0); out.frPorPagar=this.fmt(Math.round(pp)); out.frPorPagarN=this.finPorPagar().length;
       const pc=this.finPorCobrar().reduce((a,v)=>a+this.ventaSaldo(v),0); out.frPorCobrar=this.fmt(Math.round(pc)); out.frPorCobrarN=this.finPorCobrar().length;
@@ -5935,7 +5981,9 @@ Instrucciones de respuesta:
       const q=(st.qVenta||'').toLowerCase(); const fcanal=st.filtroCanal||'todos'; const fpago=st.filtroPago||'todos'; const fmet=st.filtroMetodoVenta||'todos'; const vd=st.venDesde||''; const vh=st.venHasta||'';
       const vivas=(st.ventas||[]).filter(v=>v.origen!=='historico'); const vivasOK=vivas.filter(v=>!v.cancelada);
       out.vkCount=vivasOK.length;
-      out.vkTotal=this.fmt(Math.round(vivasOK.reduce((a,v)=>a+this.ventaTotal(v),0)));
+      out.vkTotal=this.fmt(Math.round(vivasOK.reduce((a,v)=>a+this.ventaSubtotal(v),0)));
+      out.vkEnvios=this.fmt(Math.round(vivasOK.reduce((a,v)=>a+(Number(v.envio)||0),0)));
+      out.vkConEnvios=this.fmt(Math.round(vivasOK.reduce((a,v)=>a+this.ventaTotal(v),0)));
       out.vkUnidades=vivasOK.reduce((a,v)=>a+this.ventaUnidades(v),0);
       out.vkPorCobrar=this.fmt(Math.round(vivasOK.reduce((a,v)=>{const s=this.ventaSaldo(v);return a+(s>0?s:0);},0)));
       let list=vivas.filter(v=>{ if(!(fcanal==='todos'||v.canal===fcanal)) return false; if(fmet!=='todos' && v.metodoPago!==fmet) return false; if(fpago!=='todos' && this.ventaEstadoPago(v).key!==fpago) return false; const f=this.parseFecha(v.fecha)||''; if(vd&&f<vd) return false; if(vh&&f>vh) return false; if(q && !((v.cliente||'')+(v.pedido||'')+(v.ov||'')+(v.ciudad||'')+(v.items||[]).map(i=>i.producto).join(' ')).toLowerCase().includes(q)) return false; return true; });
@@ -6032,7 +6080,7 @@ Instrucciones de respuesta:
       }
     }
     if(out.showVentasCotizador){
-      out.cotizacionesView=(st.cotizaciones||[]).slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).map(c=>({ numero:c.numero, fechaFmt:this.fmtFecha(c.fecha), cliente:c.cliente, ciudad:c.ciudad||'—', totalFmt:this.fmt(Math.round(this.cotTotal(c))), nItems:(c.items||[]).length, validez:c.validez, onVer:()=>this.editCotizacion(c), onDescargar:()=>this.descargarCotizacion(c)}));
+      out.cotizacionesView=(st.cotizaciones||[]).slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).map(c=>({ numero:c.numero, fechaFmt:this.fmtFecha(c.fecha), cliente:c.cliente, ciudad:c.ciudad||'—', totalFmt:this.fmt(Math.round(this.cotTotal(c))), nItems:(c.items||[]).length, validez:c.validez, onVer:()=>this.editCotizacion(c), onPreview:()=>this.previewCotizacion(c), onDescargar:()=>this.descargarCotizacion(c), onBorrar:()=>this.borrarCotizacion(c.id)}));
       out.cotizacionesVacio=(st.cotizaciones||[]).length===0; out.nuevaCotizacion=()=>this.nuevaCotizacion();
       // tabs
       out.cotTabLeads = st.cotTab==='leads'; out.cotTabCotiz = st.cotTab==='cotiz'; out.cotTabProp = st.cotTab==='propuesta';
@@ -6159,7 +6207,7 @@ Instrucciones de respuesta:
       out.waCampVacio=withTel.length===0;
       out.waCampList=withTel.slice(0,200).map(c=>{ const sty=this.segmentoStyle(c.segmento); return {nombre:c.cliente, tel:c.celular, segmento:c.segmento, segBg:sty.bg, segFg:sty.fg, waUrl:this.waLink(c.celular, subst(c))}; });
     }
-    out.isModalLead=st.modal==='lead'; out.isModalLeadSeg=st.modal==='leadseg'; out.isModalBaseDet=st.modal==='basedetalle'; out.leadEstadoOptions=this.LEAD_ESTADOS; out.leadOrigenOptions=this.LEAD_ORIGENES; out.leadUserOptions=this.users.map(x=>({id:x.id,name:x.name})); out.leadDraftCreador=(st.draft&&st.draft.creadoPor)?this.uName(st.draft.creadoPor):''; out.leadDraftHasCreador=!!(st.draft&&st.draft.creadoPor&&!st.draft._new);
+    out.isModalLead=st.modal==='lead'; out.isModalLeadSeg=st.modal==='leadseg'; out.isModalBaseDet=st.modal==='basedetalle'; out.isModalCotPreview=st.modal==='cotpreview'; out.cotPreviewHtml=st.cotPreviewHtml||''; out.cotPreviewNum=st.cotPreviewNum||''; out.onPrintCotPreview=()=>this.printCotPreview(); out.onDescargarCotPreview=()=>{ if(st.cotPreviewC) this.descargarCotizacion(st.cotPreviewC); }; out.leadEstadoOptions=this.LEAD_ESTADOS; out.leadOrigenOptions=this.LEAD_ORIGENES; out.leadUserOptions=this.users.map(x=>({id:x.id,name:x.name})); out.leadDraftCreador=(st.draft&&st.draft.creadoPor)?this.uName(st.draft.creadoPor):''; out.leadDraftHasCreador=!!(st.draft&&st.draft.creadoPor&&!st.draft._new);
     if(st.modal==='leadseg'){ const l=this.leadById(st.segLeadId)||{}; const sty=this.leadEstadoStyle(l.estado); const todaySeg=new Date().toISOString().slice(0,10);
       out.segNombre=l.nombre||'Lead'; out.segEstado=l.estado||'Nuevo'; out.segEstadoBg=sty.bg; out.segEstadoFg=sty.fg; out.segAsignado=(l.asignadoA?('Responsable: '+this.leadUName(l.asignadoA)):'Sin responsable asignado');
       out.segComment=(st.draft&&st.draft._segComment)||''; out.onSegComment=(e)=>this.updateDraft('_segComment',e.target.value); out.addLeadComment=()=>this.addLeadComment();
@@ -6176,7 +6224,7 @@ Instrucciones de respuesta:
     out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     const titles={proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
     out.modalTitle = st.modal ? (st.modal==='basedetalle' ? ('Ventas · '+(st.baseDetLabel||'')) : st.modal==='detalle' ? (st.detalleId? 'Detalle de orden':'Detalle') : st.modal==='cliente' ? 'Ficha de cliente' : st.modal==='wacampaign' ? 'Campaña de WhatsApp' : titles[st.modal]) : '';
-    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle';
+    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview';
     if(st.modal==='basedetalle'){ const dim=st.baseDetDim, key=st.baseDetKey;
       const all=(st.ventas||[]); const match=(v)=>{ if(dim==='canal') return (v.canal||'')===key; if(dim==='ciudad') return (v.ciudad||'—')===key; if(dim==='periodo'){ return (v.fecha||'').slice(0, key.length)===key; } return false; };
       const sel=all.filter(match);
@@ -6215,7 +6263,7 @@ Instrucciones de respuesta:
       out.mdEditable=!!d.editable; out.mdOnEditar=()=>{ if(d.editable) this.editarMovimiento(d.id); };
       out.mdHayArchivo=!!d.archivo; out.mdArchivo=d.archivo||''; out.mdArchivoNombre=d.archivoNombre||'Factura adjunta';
     }
-    out.modalMaxW = (st.modal==='basedetalle')? '1040px' : (st.modal==='venta'||st.modal==='cotizacion'||st.modal==='wacampaign'||st.modal==='remision')? '720px' : '560px';
+    out.modalMaxW = (st.modal==='cotpreview')? '860px' : (st.modal==='basedetalle')? '1040px' : (st.modal==='venta'||st.modal==='cotizacion'||st.modal==='wacampaign'||st.modal==='remision')? '720px' : '560px';
     const saveLabels={proveedor:'Guardar proveedor',materia:'Guardar materia',orden:(st.draft._id?'Guardar cambios':'Crear orden'),factura:'Registrar factura',pago:'Registrar pago',producto:'Guardar producto',kit:'Guardar kit',mezcla:'Guardar mezcla',bulkproducto:'Generar productos',produccion:'Registrar producción',ajusteinv:'Guardar ajuste',servicio:'Guardar servicio',entrega:'Registrar entrega',produccionmez:'Registrar producción',venta:'Guardar venta',cotizacion:'Guardar cotización',movimiento:'Guardar movimiento',cuentafin:'Guardar cuenta',cobro:'Registrar cobro',gastofijo:'Guardar gasto fijo',retenconfig:'Guardar tasas',liquidacion:'Registrar liquidación',metodofin:'Guardar método',tienda:'Guardar tienda',remision:'Generar remisión',lead:'Guardar lead'};
     out.saveLabel=saveLabels[st.modal]||'Guardar';
     out.provDeleteShow = st.modal==='proveedor' && !st.draft._new; out.onProvDelete=()=>this.askDeleteProveedorEdit();
