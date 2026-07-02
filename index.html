@@ -590,7 +590,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#e89393c898c68d85898184c89595" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#354e4e15451b5058545c59154848" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -958,22 +958,39 @@ img { max-width: 100%; display: block; }
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Inteligencia Artificial</h3>
                   <span style="display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:{{ aiStateBg }};color:{{ aiStateFg }};"><span style="width:7px;height:7px;border-radius:50%;background:{{ aiStateFg }};"></span>{{ aiStateLabel }}</span>
                 </div>
-                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-muted);line-height:1.55;">Los módulos como <strong style="color:var(--text-body);">Inteligencia de ventas</strong> y los textos sugeridos con IA usan una cuenta de un proveedor de inteligencia artificial. Aquí registras la <strong style="color:var(--text-body);">clave de acceso (API key)</strong> de esa cuenta para que esos módulos sigan funcionando cuando la app esté en línea.</div>
-                <div style="display:flex;align-items:flex-end;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;">
-                  <label style="flex:1;min-width:240px;font-size:11.5px;font-weight:700;color:var(--text-body);">Clave de IA (API key)
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-muted);line-height:1.55;">Los módulos como <strong style="color:var(--text-body);">Inteligencia de ventas</strong> y los textos sugeridos con IA usan una cuenta de un proveedor de IA. Registra aquí la <strong style="color:var(--text-body);">clave de acceso (API key)</strong>. Puedes usar <strong style="color:var(--text-body);">Google Gemini</strong> (tiene nivel gratuito) o <strong style="color:var(--text-body);">Anthropic (Claude)</strong>. Si registras las dos, elige cuál usar.</div>
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;flex-direction:column;gap:16px;">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Clave de Google Gemini <span style="font-weight:600;color:var(--text-muted);">· gratis · empieza con AIza…</span>
                     <div style="display:flex;gap:8px;margin-top:5px;">
-                      <input type="{{ aiKeyInputType }}" value="{{ aiKeyValue }}" onInput="{{ onAiKeyInput }}" placeholder="sk-ant-… (pega aquí tu clave)" style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);letter-spacing:0.02em;">
-                      <button onClick="{{ onAiKeyReveal }}" title="Mostrar / ocultar" style="font-family:inherit;font-size:12px;font-weight:700;padding:0 14px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">{{ aiRevealLabel }}</button>
+                      <input type="{{ aiGemType }}" value="{{ aiGemValue }}" onInput="{{ onAiGemInput }}" placeholder="AIza… (pega aquí tu clave de Gemini)" style="flex:1;min-width:200px;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);letter-spacing:0.02em;">
+                      <button onClick="{{ onAiGemReveal }}" title="Mostrar / ocultar" style="font-family:inherit;font-size:12px;font-weight:700;padding:0 14px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">{{ aiGemRevealLabel }}</button>
                     </div>
                   </label>
-                  <button onClick="{{ onAiKeySave }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;flex-shrink:0;" style-hover="background:var(--brand-hover);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Guardar clave</button>
-                  <sc-if value="{{ aiHasKey }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onAiKeyClear }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:#B5503C;cursor:pointer;flex-shrink:0;" style-hover="border-color:#B5503C;">Quitar</button></sc-if>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Clave de Anthropic (Claude) <span style="font-weight:600;color:var(--text-muted);">· opcional · empieza con sk-ant-…</span>
+                    <div style="display:flex;gap:8px;margin-top:5px;">
+                      <input type="{{ aiAntType }}" value="{{ aiAntValue }}" onInput="{{ onAiAntInput }}" placeholder="sk-ant-… (opcional, para el futuro)" style="flex:1;min-width:200px;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);letter-spacing:0.02em;">
+                      <button onClick="{{ onAiAntReveal }}" title="Mostrar / ocultar" style="font-family:inherit;font-size:12px;font-weight:700;padding:0 14px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">{{ aiAntRevealLabel }}</button>
+                    </div>
+                  </label>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <button onClick="{{ onAiKeysSave }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;flex-shrink:0;" style-hover="background:var(--brand-hover);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Guardar claves</button>
+                    <sc-if value="{{ aiHasKey }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onAiKeyClear }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:#B5503C;cursor:pointer;flex-shrink:0;" style-hover="border-color:#B5503C;">Quitar todo</button></sc-if>
+                  </div>
+                  <sc-if value="{{ aiBothSet }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:4px;border-top:1px dashed var(--border-subtle);margin-top:2px;padding-top:14px;">
+                    <span style="font-size:11.5px;font-weight:700;color:var(--text-body);">Proveedor activo:</span>
+                    <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;">
+                      <button onClick="{{ onAiProviderGemini }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:none;cursor:pointer;background:{{ aiGemTabBg }};color:{{ aiGemTabFg }};">Gemini</button>
+                      <button onClick="{{ onAiProviderAnthropic }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:none;cursor:pointer;background:{{ aiAntTabBg }};color:{{ aiAntTabFg }};">Anthropic</button>
+                    </div>
+                  </div>
+                  </sc-if>
                 </div>
                 <div style="padding:14px 20px;background:rgba(181,80,60,0.07);border-bottom:1px solid var(--border-subtle);display:flex;gap:11px;align-items:flex-start;">
                   <span style="color:#B5503C;flex-shrink:0;margin-top:1px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="m10.29 3.86-8.48 14.7A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.72-3.44l-8.48-14.7a2 2 0 0 0-3.42 0z"/></svg></span>
-                  <div style="font-size:12px;color:var(--text-body);line-height:1.55;"><strong>Seguridad:</strong> la clave es como la contraseña de tu cuenta de pago de IA. Por ahora se guarda solo en este equipo y <strong>no se comparte</strong>. Cuando la app pase a la nube, esta clave debe vivir en el <strong>servidor</strong> (nunca en la app) para que los usuarios usen la IA sin poder verla ni copiarla. Te guiaré en ese paso al momento del despliegue.</div>
+                  <div style="font-size:12px;color:var(--text-body);line-height:1.55;"><strong>Seguridad:</strong> la clave es como la contraseña de tu cuenta de IA. Se guarda solo en este equipo y <strong>no se comparte</strong>. No la registres en computadores públicos o compartidos.</div>
                 </div>
-                <div style="padding:13px 20px;background:var(--surface-raised);font-size:11.5px;color:var(--text-muted);line-height:1.5;">¿No tienes clave aún? Se obtiene creando una cuenta con el proveedor de IA (por ejemplo Anthropic). Cada uso de IA tiene un costo bajo por petición. Si dejas este campo vacío, los módulos de IA quedarán inactivos pero el resto de la app funciona con normalidad.</div>
+                <div style="padding:13px 20px;background:var(--surface-raised);font-size:11.5px;color:var(--text-muted);line-height:1.5;">¿No tienes clave? La de <strong>Gemini</strong> es gratis: entra a <strong>aistudio.google.com/apikey</strong> con tu cuenta de Google y crea una (empieza con AIza…). Si dejas todo vacío, los módulos de IA quedan inactivos pero el resto de la app funciona normal.</div>
               </div>
               </sc-if>
             </div>
@@ -4220,7 +4237,7 @@ class Component extends DCLogic {
   save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,leads:d.leads})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
   persist(extra){ const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, leads:this.state.leads, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
-  respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1']; }
+  respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
   writeAutoBackup(){ try{ const dump={_fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); localStorage.setItem('oda_hub_backup_v1', JSON.stringify(dump)); }catch(e){} }
   descargarRespaldo(){ try{ const dump={_app:'OdA Hub Intelligence', _version:1, _fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='OdA-Hub-respaldo-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1200); this.toast('Respaldo descargado'); }catch(e){ this.toast('No se pudo descargar el respaldo'); } }
   restaurarRespaldo(e){ const f=e.target.files&&e.target.files[0]; if(!f){ return; } const reader=new FileReader(); reader.onload=()=>{ try{ const dump=JSON.parse(reader.result); if(!dump||!dump.keys||typeof dump.keys!=='object') throw new Error('bad'); let n=0; Object.keys(dump.keys).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n) throw new Error('empty'); this.toast('Respaldo restaurado · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(err){ this.toast('Archivo de respaldo inválido'); } try{ e.target.value=''; }catch(x){} }; reader.readAsText(f); }
@@ -4905,28 +4922,47 @@ Instrucciones de respuesta:
   CLOUD_URL='https://xsolfiytdekybynboofa.supabase.co';
   CLOUD_KEY='sb_publishable_TqTZJFOrnudKAc28SNMwEg_T8nUOJUf';
   cloudOn(){ return !!(this._sb && this.state.cloudUser); }
-  // ---- IA: en el taller de diseño usa el ayudante interno; en producción usa la clave guardada (Opción A) o la función 'ai' de Supabase (Opción B) ----
+  // ---- IA: en el taller de diseño usa el ayudante interno; en producción usa la clave guardada (Gemini o Anthropic) ----
+  aiGetKeys(){
+    let gem='', ant='', pref='';
+    try{ gem=(localStorage.getItem('oda_hub_ai_gemini_v1')||'').trim(); }catch(e){}
+    try{ ant=(localStorage.getItem('oda_hub_ai_anthropic_v1')||'').trim(); }catch(e){}
+    try{ pref=(localStorage.getItem('oda_hub_ai_provider_v1')||'').trim(); }catch(e){}
+    // migración de la clave antigua (campo único)
+    if(!gem && !ant){ let old=''; try{ old=(localStorage.getItem('oda_hub_aikey_v1')||'').trim(); }catch(e){}
+      if(old){ if(/^AIza/.test(old)) gem=old; else ant=old; } }
+    return { gem, ant, pref };
+  }
+  aiActiveProvider(){ const {gem,ant,pref}=this.aiGetKeys();
+    let p=pref; if(p!=='gemini'&&p!=='anthropic') p=''; 
+    if(!p) p = gem ? 'gemini' : (ant ? 'anthropic' : '');
+    if(p==='gemini' && !gem) p = ant ? 'anthropic' : '';
+    if(p==='anthropic' && !ant) p = gem ? 'gemini' : '';
+    return p;
+  }
   async aiComplete(prompt){
     try{ if(window.claude && typeof window.claude.complete==='function'){ return await window.claude.complete(prompt); } }catch(e){}
-    // Opción A — clave pegada en la app (Administración → Inteligencia Artificial): llamada directa a Anthropic.
-    let key=''; try{ key=(localStorage.getItem('oda_hub_aikey_v1')||'').trim(); }catch(e){}
-    if(key){
-      const r=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{ 'content-type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
-        body:JSON.stringify({ model:'claude-3-5-sonnet-latest', max_tokens:1024, messages:[{ role:'user', content:prompt }] })
+    const {gem,ant}=this.aiGetKeys(); const prov=this.aiActiveProvider();
+    if(!prov) throw new Error('Falta la clave de IA. Ve a Administración → Inteligencia Artificial y pega tu clave.');
+    if(prov==='gemini'){
+      const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(gem),{
+        method:'POST', headers:{ 'content-type':'application/json' },
+        body:JSON.stringify({ contents:[{ parts:[{ text:prompt }] }] })
       });
       const data=await r.json().catch(()=>({}));
-      if(!r.ok) throw new Error((data && data.error && data.error.message) || 'Error al llamar a la IA');
-      return (data.content||[]).map(b=>(b&&b.text)||'').join('').trim();
+      if(!r.ok) throw new Error((data && data.error && data.error.message) || 'Error al llamar a la IA (Gemini)');
+      const c=data && data.candidates && data.candidates[0];
+      return ((c && c.content && c.content.parts)||[]).map(p=>(p&&p.text)||'').join('').trim();
     }
-    // Opción B — sin clave local: intenta la función 'ai' de Supabase (la clave vive en el servidor).
-    const sb=this._sbClient();
-    if(!sb) throw new Error('Falta la clave de IA. Ve a Administración → Inteligencia Artificial y pega tu clave.');
-    const { data, error } = await sb.functions.invoke('ai', { body:{ prompt } });
-    if(error) throw new Error('Falta la clave de IA. Ve a Administración → Inteligencia Artificial y pega tu clave.');
-    if(data && data.error) throw new Error(data.error);
-    return (data && (data.text || data.completion)) || '';
+    // anthropic
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{ 'content-type':'application/json', 'x-api-key':ant, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+      body:JSON.stringify({ model:'claude-3-5-sonnet-latest', max_tokens:1024, messages:[{ role:'user', content:prompt }] })
+    });
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error((data && data.error && data.error.message) || 'Error al llamar a la IA (Anthropic)');
+    return (data.content||[]).map(b=>(b&&b.text)||'').join('').trim();
   }
   _sbClient(){ if(this._sb) return this._sb; try{ if(window.supabase&&window.supabase.createClient){ this._sb=window.supabase.createClient(this.CLOUD_URL,this.CLOUD_KEY,{auth:{persistSession:true,storageKey:'oda_cloud_auth_v1'}}); } }catch(e){} return this._sb; }
   cloudInit(){ const sb=this._sbClient(); if(!sb){ // librería aún no cargó: reintenta
@@ -6233,21 +6269,43 @@ Instrucciones de respuesta:
       out.onDescargarRespaldo=()=>this.descargarRespaldo();
       out.onRestaurarRespaldo=(e)=>this.restaurarRespaldo(e);
       out.onRestaurarAuto=()=>this.restaurarAutoBackup();
-      // ---- clave de IA ----
-      let _aiKey=''; try{ _aiKey=localStorage.getItem('oda_hub_aikey_v1')||''; }catch(e){}
-      const _aiDraft = (st.aiKeyDraft!=null) ? st.aiKeyDraft : _aiKey;
-      out.aiHasKey=!!_aiKey;
-      out.aiKeyValue=_aiDraft;
-      out.aiReveal=!!st.aiKeyReveal;
-      out.aiKeyInputType=st.aiKeyReveal? 'text':'password';
-      out.aiRevealLabel=st.aiKeyReveal? 'Ocultar':'Mostrar';
-      out.aiStateLabel=_aiKey? 'IA activa':'IA inactiva';
-      out.aiStateBg=_aiKey? 'rgba(76,97,73,0.16)':'rgba(167,134,89,0.16)';
-      out.aiStateFg=_aiKey? '#4C6149':'#7A5E36';
-      out.onAiKeyInput=(e)=>this.setState({aiKeyDraft:e.target.value});
-      out.onAiKeyReveal=()=>this.setState({aiKeyReveal:!this.state.aiKeyReveal});
-      out.onAiKeySave=()=>{ const v=String((this.state.aiKeyDraft!=null)?this.state.aiKeyDraft:_aiKey).trim(); try{ if(v){ localStorage.setItem('oda_hub_aikey_v1',v); this.toast('Clave de IA guardada'); } else { localStorage.removeItem('oda_hub_aikey_v1'); this.toast('Clave de IA vacía'); } }catch(e){ this.toast('No se pudo guardar la clave'); } this.setState({aiKeyDraft:null, aiKeyReveal:false}); };
-      out.onAiKeyClear=()=>{ try{ localStorage.removeItem('oda_hub_aikey_v1'); }catch(e){} this.setState({aiKeyDraft:'', aiKeyReveal:false}); this.toast('Clave de IA eliminada'); };
+      // ---- claves de IA (Gemini + Anthropic) ----
+      const _aiK=this.aiGetKeys(); const _aiProv=this.aiActiveProvider();
+      const _gemStored=_aiK.gem, _antStored=_aiK.ant;
+      const _gemDraft=(st.aiGemDraft!=null)?st.aiGemDraft:_gemStored;
+      const _antDraft=(st.aiAntDraft!=null)?st.aiAntDraft:_antStored;
+      out.aiGemValue=_gemDraft; out.aiAntValue=_antDraft;
+      out.aiGemType=st.aiGemReveal?'text':'password'; out.aiAntType=st.aiAntReveal?'text':'password';
+      out.aiGemRevealLabel=st.aiGemReveal?'Ocultar':'Mostrar'; out.aiAntRevealLabel=st.aiAntReveal?'Ocultar':'Mostrar';
+      out.onAiGemInput=(e)=>this.setState({aiGemDraft:e.target.value});
+      out.onAiAntInput=(e)=>this.setState({aiAntDraft:e.target.value});
+      out.onAiGemReveal=()=>this.setState({aiGemReveal:!this.state.aiGemReveal});
+      out.onAiAntReveal=()=>this.setState({aiAntReveal:!this.state.aiAntReveal});
+      out.aiHasKey=!!(_gemStored||_antStored);
+      out.aiBothSet=!!(_gemStored&&_antStored);
+      out.aiProvider=_aiProv||'gemini';
+      out.aiGemTabBg=_aiProv==='anthropic'?'transparent':'var(--brand-primary)';
+      out.aiGemTabFg=_aiProv==='anthropic'?'var(--text-muted)':'var(--text-on-brand)';
+      out.aiAntTabBg=_aiProv==='anthropic'?'var(--brand-primary)':'transparent';
+      out.aiAntTabFg=_aiProv==='anthropic'?'var(--text-on-brand)':'var(--text-muted)';
+      out.aiProviderLabel=_aiProv==='anthropic'?'Anthropic (Claude)':(_aiProv==='gemini'?'Google Gemini':'—');
+      out.onAiProviderGemini=()=>{ try{ localStorage.setItem('oda_hub_ai_provider_v1','gemini'); }catch(e){} this.toast('Usando Google Gemini'); this.forceUpdate(); };
+      out.onAiProviderAnthropic=()=>{ try{ localStorage.setItem('oda_hub_ai_provider_v1','anthropic'); }catch(e){} this.toast('Usando Anthropic (Claude)'); this.forceUpdate(); };
+      const _aiActive=!!_aiProv;
+      out.aiStateLabel=_aiActive?('IA activa · '+(_aiProv==='anthropic'?'Anthropic':'Gemini')):'IA inactiva';
+      out.aiStateBg=_aiActive?'rgba(76,97,73,0.16)':'rgba(167,134,89,0.16)';
+      out.aiStateFg=_aiActive?'#4C6149':'#7A5E36';
+      out.onAiKeysSave=()=>{ const g=String((this.state.aiGemDraft!=null)?this.state.aiGemDraft:_gemStored).trim(); const a=String((this.state.aiAntDraft!=null)?this.state.aiAntDraft:_antStored).trim();
+        try{ if(g) localStorage.setItem('oda_hub_ai_gemini_v1',g); else localStorage.removeItem('oda_hub_ai_gemini_v1');
+             if(a) localStorage.setItem('oda_hub_ai_anthropic_v1',a); else localStorage.removeItem('oda_hub_ai_anthropic_v1');
+             try{ localStorage.removeItem('oda_hub_aikey_v1'); }catch(e){}
+             // si el proveedor preferido ya no tiene clave, límpialo
+             let pref=''; try{ pref=localStorage.getItem('oda_hub_ai_provider_v1')||''; }catch(e){}
+             if((pref==='gemini'&&!g)||(pref==='anthropic'&&!a)) try{ localStorage.removeItem('oda_hub_ai_provider_v1'); }catch(e){}
+             this.toast((g||a)?'Claves de IA guardadas':'Claves de IA vacías'); }
+        catch(e){ this.toast('No se pudo guardar'); }
+        this.setState({aiGemDraft:null, aiAntDraft:null, aiGemReveal:false, aiAntReveal:false}); };
+      out.onAiKeyClear=()=>{ try{ localStorage.removeItem('oda_hub_ai_gemini_v1'); localStorage.removeItem('oda_hub_ai_anthropic_v1'); localStorage.removeItem('oda_hub_aikey_v1'); localStorage.removeItem('oda_hub_ai_provider_v1'); }catch(e){} this.setState({aiGemDraft:'', aiAntDraft:'', aiGemReveal:false, aiAntReveal:false}); this.toast('Claves de IA eliminadas'); };
       out.fechaCorteLabel=this.fmtFecha(st.fechaCorte||'2026-06-18');
       out.onFechaCorte=(e)=>{ const v=e.target.value; if(v) this.setState({fechaCorte:v},()=>this.persist()); };
       const rn=st.reglasNeg||{margenMinPct:'',descuentoMaxPct:'',umbralAprobacion:'',envioGratisDesde:''};
