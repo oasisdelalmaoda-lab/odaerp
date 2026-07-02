@@ -590,7 +590,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#354e4e15451b5058545c59154848" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#ceb5b5eebee0aba3afa7a2eeb3b3" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -2986,18 +2986,22 @@ img { max-width: 100%; display: block; }
                 <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">N° de orden de producción</span>
                 <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ draft._numero }}</span>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-                <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Producto a producir<select name="productoCodigo" value="{{ draft.productoCodigo }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">Selecciona…</option><sc-for list="{{ productosOptions }}" as="p" hint-placeholder-count="3"><option value="{{ p.codigo }}">{{ p.label }}</option></sc-for></select></label>
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Cantidad a producir (und)<input name="cantidad" type="number" value="{{ draft.cantidad }}" onInput="{{ onDraftInput }}" placeholder="0" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Fecha<input name="fecha" type="date" value="{{ draft.fecha }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);width:200px;">Fecha<input name="fecha" type="date" value="{{ draft.fecha }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <div style="flex:1;"></div>
+                <label style="font-family:inherit;font-size:12px;font-weight:700;padding:9px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;display:inline-flex;align-items:center;gap:6px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Subir Excel<input type="file" accept=".xlsx,.xls,.csv" onChange="{{ onProdItemsFile }}" style="display:none;"></label>
+                <button onClick="{{ descargarProdPlantilla }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:9px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--surface-raised);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);">Plantilla</button>
               </div>
 
-              <sc-if value="{{ prodSelSinProducto }}" hint-placeholder-val="{{ true }}">
-                <div style="margin-top:16px;padding:18px;text-align:center;color:var(--text-muted);font-size:12.5px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);">Elige un producto para ver las materias que se consumirán.</div>
-              </sc-if>
+              <div style="margin-top:16px;display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px;">
+                <label style="flex:1;min-width:200px;font-size:11.5px;font-weight:700;color:var(--text-body);">Producto a producir<select value="{{ prodSelProd }}" onChange="{{ onProdSelProd }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">Selecciona…</option><sc-for list="{{ productosOptions }}" as="p" hint-placeholder-count="3"><option value="{{ p.codigo }}">{{ p.label }}</option></sc-for></select></label>
+                <label style="width:130px;font-size:11.5px;font-weight:700;color:var(--text-body);">Cantidad (und)<input type="number" value="{{ prodSelCant }}" onInput="{{ onProdSelCant }}" placeholder="0" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <button onClick="{{ addProdItem }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 16px;border-radius:var(--radius-sm);border:none;background:var(--brand-ink);color:var(--text-on-brand);cursor:pointer;flex-shrink:0;">Agregar</button>
+              </div>
+
               <sc-if value="{{ prodSelHasProducto }}" hint-placeholder-val="{{ false }}">
-                <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px;">
-                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Materias e insumos que se consumirán</div>
+                <div style="margin-top:12px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Materias e insumos que se consumirán · según la cantidad indicada</div>
                   <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card);">
                     <sc-for list="{{ prodReqItems }}" as="r" hint-placeholder-count="2">
                       <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;">
@@ -3010,13 +3014,26 @@ img { max-width: 100%; display: block; }
                       <div style="padding:14px;text-align:center;color:var(--text-muted);font-size:12.5px;">Este producto no tiene fórmula registrada.</div>
                     </sc-if>
                   </div>
+                  <div style="margin-top:9px;font-size:12px;color:var(--text-muted);">Costo unitario <strong style="color:var(--text-body);">{{ prodOpCostoUnitFmt }}</strong> · Costo del lote <strong style="color:var(--text-body);">{{ prodOpTotalFmt }}</strong> · Stock resultante <strong style="color:var(--brand-ink);">{{ prodOpStockResultante }}</strong> <span style="color:var(--text-muted);">(desde {{ prodOpStockActual }} und)</span></div>
                 </div>
+              </sc-if>
 
-                <div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 13px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Costo unitario</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;line-height:1.1;margin-top:3px;">{{ prodOpCostoUnitFmt }}</div></div>
-                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 13px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Costo del lote</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;line-height:1.1;margin-top:3px;">{{ prodOpTotalFmt }}</div></div>
-                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 13px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Stock resultante</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;line-height:1.1;margin-top:3px;color:var(--brand-ink);">{{ prodOpStockResultante }}</div><div style="font-size:11px;color:var(--text-muted);">desde {{ prodOpStockActual }} und</div></div>
-                </div>
+              <div style="margin-top:14px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;">
+                <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface-raised);border-bottom:1px solid var(--border-subtle);font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;"><span style="flex:1;">Producto</span><span style="white-space:nowrap;">Cantidad</span><span style="width:92px;text-align:right;">Costo lote</span><span style="width:22px;"></span></div>
+                <sc-for list="{{ prodItemsView }}" as="it" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;">
+                    <span style="flex:1;min-width:0;">{{ it.nombre }}</span>
+                    <span style="color:var(--text-muted);white-space:nowrap;">{{ it.cantidad }} und</span>
+                    <span style="font-weight:700;width:92px;text-align:right;">{{ it.costoLineaFmt }}</span>
+                    <button onClick="{{ it.onRemove }}" style="background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;padding:3px;" style-hover="color:var(--oda-sale);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ prodItemsVacio }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:12.5px;">Aún no has agregado productos. Agrégalos arriba uno por uno o sube un Excel.</div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ prodItemsCount }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:20px;font-size:13px;"><span style="color:var(--text-muted);">Total: <strong style="color:var(--text-body);">{{ prodTotalCant }} und</strong></span><span style="color:var(--text-muted);">Costo de producción: <strong style="color:var(--text-body);">{{ prodTotalCostoFmt }}</strong></span></div>
               </sc-if>
             </sc-if>
 
@@ -4540,14 +4557,25 @@ class Component extends DCLogic {
   materiaStockActual(m){ if(!m) return 0; return (Number(m.stockActual)||0) - this.materiaConsumoTotal(m.codigo); }
   productoStockActual(p){ if(p&&p.esReventa){ const m=this.state.materias.find(x=>x.codigo===p.codigo); const base = m? (Number(m.stockActual)||0) : ((Number(p.stockInicial)||0)+this.productoComprado(p.codigo)); return base - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo); } return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo); }
   nextCodeProduccion(){ let max=0; (this.state.producciones||[]).forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OP-2026-'+String(max+1).padStart(3,'0'); }
-  nuevaProduccion(){ this.open('produccion',{ _numero:this.nextCodeProduccion(), productoCodigo:'', cantidad:'', fecha:new Date().toISOString().slice(0,10) }); }
-  editProduccion(op){ this.open('produccion',{ _id:op.id, _numero:op.numero, productoCodigo:op.productoCodigo, cantidad:op.cantidad, fecha:op.fecha||new Date().toISOString().slice(0,10) }); }
+  nuevaProduccion(){ this.open('produccion',{ _numero:this.nextCodeProduccion(), items:[], _selProd:'', _selProdText:'', _selCantidad:'', fecha:new Date().toISOString().slice(0,10) }); }
+  editProduccion(op){ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); this.open('produccion',{ _id:op.id, _numero:op.numero, items:[{productoCodigo:op.productoCodigo, cantidad:op.cantidad, nombre:p?p.nombre:op.productoCodigo}], _selProd:'', _selProdText:'', _selCantidad:'', fecha:op.fecha||new Date().toISOString().slice(0,10) }); }
+  addProdItem(){ const d=this.state.draft; const code=d._selProd; if(!code){ this.toast('Elige un producto'); return; } const cant=Number(d._selCantidad)||0; if(cant<=0){ this.toast('Indica la cantidad a producir'); return; } const p=(this.state.productos||[]).find(x=>x.codigo===code); const items=(d.items||[]).slice(); items.push({productoCodigo:code, cantidad:cant, nombre:p?p.nombre:code}); this.setState({draft:{...d,items,_selProd:'',_selProdText:'',_selCantidad:''}}); }
+  removeProdItem(i){ const d=this.state.draft; const items=(d.items||[]).slice(); items.splice(i,1); this.setState({draft:{...d,items}}); }
+  onProdItemsFile(e){ const f=e.target.files && e.target.files[0]; if(!f) return; if(typeof XLSX==='undefined'){ this.toast('El lector de Excel aún está cargando, intenta de nuevo'); return; }
+    const r=new FileReader(); r.onload=(ev)=>{ try{ const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      const prods=(this.state.productos||[]).filter(p=>!p.esReventa); const d=this.state.draft; const items=(d.items||[]).slice(); let n=0;
+      rows.forEach(row=>{ const ref=String(this.rowGet(row,['sku','codigo','código','referencia','producto','ref','pt'])||'').trim(); if(!ref) return; const opt=prods.find(x=>this.normKey(x.codigo)===this.normKey(ref)) || prods.find(x=>this.normKey(x.nombre)===this.normKey(ref)); const code=opt?opt.codigo:ref; const cant=Number(String(this.rowGet(row,['cantidad','unidades','cant','und'])||0).toString().replace(/[^\d.-]/g,''))||0; if(cant<=0) return; items.push({productoCodigo:code, cantidad:cant, nombre:opt?opt.nombre:code}); n++; });
+      if(!n){ this.toast('No se encontraron filas válidas. Revisa las columnas «sku» y «cantidad».'); } else { this.setState({draft:{...this.state.draft, items}}); this.toast(n+' línea(s) agregada(s) desde el archivo'); }
+    }catch(err){ this.toast('No se pudo leer el archivo. Usa la plantilla (.xlsx o .csv).'); } };
+    r.readAsArrayBuffer(f); e.target.value=''; }
+  descargarPlantillaProd(){ if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando'); return; } const headers=['sku','nombre','cantidad']; const prods=(this.state.productos||[]).filter(p=>!p.esReventa).slice(0,3); const ejemplos=prods.length?prods.map(p=>[p.codigo,p.nombre,24]):[['PT-001','Roll-on Calma 10ml',24]]; const aoa=[headers,...ejemplos]; const ws=XLSX.utils.aoa_to_sheet(aoa); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Produccion'); XLSX.writeFile(wb,'plantilla-produccion.xlsx'); }
   borrarProduccion(id){ const op=(this.state.producciones||[]).find(x=>x.id===id); if(!op) return; if(!window.confirm('¿Eliminar la producción '+(op.numero||'')+'? El inventario se recalculará automáticamente.')) return; const list=(this.state.producciones||[]).filter(x=>x.id!==id); this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()){ this._cloudDelOne('producciones', id); } this.toast('Producción eliminada · stock recalculado'); }
-  saveProduccion(){ const d=this.state.draft; if(!d.productoCodigo){ this.toast('Selecciona un producto'); return; } const cant=Number(d.cantidad)||0; if(cant<=0){ this.toast('Indica la cantidad a producir'); return; }
-    const list=(this.state.producciones||[]).slice(); const num=d._numero||this.nextCodeProduccion();
-    if(d._id){ const i=list.findIndex(x=>x.id===d._id); if(i>=0){ list[i]={...list[i], productoCodigo:d.productoCodigo, cantidad:cant, fecha:d.fecha||list[i].fecha}; this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProduccion(list[i]); this.toast('Producción '+num+' actualizada · stock recalculado'); return; } }
-    list.unshift({ id:'op'+Date.now(), numero:num, productoCodigo:d.productoCodigo, cantidad:cant, fecha:d.fecha||new Date().toISOString().slice(0,10) });
-    this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProduccion(list[0]); this.toast('Producción '+num+' registrada · stock actualizado'); }
+  saveProduccion(){ const d=this.state.draft; const items=(d.items||[]).filter(it=>it.productoCodigo && (Number(it.cantidad)||0)>0); if(!items.length){ this.toast('Agrega al menos un producto con cantidad'); return; }
+    const num=d._numero||this.nextCodeProduccion(); const fecha=d.fecha||new Date().toISOString().slice(0,10);
+    let list=(this.state.producciones||[]).slice(); const nuevos=[];
+    items.forEach((it,idx)=>{ const rec={ id:(idx===0&&d._id)?d._id:('op'+Date.now()+idx), numero:num, productoCodigo:it.productoCodigo, cantidad:Number(it.cantidad)||0, fecha }; nuevos.push(rec); if(idx===0 && d._id){ const i=list.findIndex(x=>x.id===d._id); if(i>=0) list[i]=rec; else list.unshift(rec); } else list.unshift(rec); });
+    this.setState({producciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkProducciones(nuevos);
+    this.toast(nuevos.length>1? (nuevos.length+' líneas registradas en '+num+' · stock actualizado') : ('Producción '+num+' registrada · stock actualizado')); }
 
   // ---- producción de mezclas ----
   mezclaLotesProducidos(code){ return (this.state.produccionesMezcla||[]).filter(x=>x.mezclaCodigo===code).reduce((a,x)=>a+(Number(x.lotes)||0),0); }
@@ -4861,9 +4889,11 @@ Instrucciones de respuesta:
   // ---- documento PDF de pedido (mismo diseño que la cotización) ----
   pedidoNombreItem(it){ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||c||'Producto')); }
   pedidoDocHtml(v){ const conIva=this.ventaConIva(v);
-    const filas=(v.items||[]).map(it=>{ const u=Number(it.unidades)||0; const vu=Number(it.valorUnit)||0; const grava=conIva && (it.taxable!==false); const lineInc=u*vu; const baseLine=grava?Math.round(lineInc/1.19):lineInc; const baseUnit=grava?Math.round(vu/1.19):vu; const nombre=this.pedidoNombreItem(it)+((it.obsequio===true)?' <span style="color:#B5503C;font-weight:700;">(obsequio)</span>':'');
-      return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+nombre+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(baseUnit)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(baseLine)+'</td></tr>'; }).join('');
+    const fullUnitBase=(it)=>{ const vu=Number(it.valorUnit)||0; const bruto=Number(it.valorBruto!=null?it.valorBruto:vu)||0; const grava=conIva && (it.taxable!==false); return grava?Math.round(bruto/1.19):bruto; };
+    const filas=(v.items||[]).map(it=>{ const u=Number(it.unidades)||0; const fUnit=fullUnitBase(it); const fLine=Math.round(u*fUnit); const nombre=this.pedidoNombreItem(it)+((it.obsequio===true)?' <span style="color:#B5503C;font-weight:700;">(obsequio)</span>':'');
+      return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+nombre+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(fUnit)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(fLine)+'</td></tr>'; }).join('');
     const neto=Math.round(this.ventaNetaProductos(v)); const iva=Math.round(this.ventaIvaTotal(v)); const envio=Number(v.envio)||0; const total=Math.round(this.ventaTotal(v)); const saldo=Math.round(this.ventaSaldo(v)); const pagado=Math.round(Number(v.pagado)||0); const ep=this.ventaEstadoPago(v);
+    const subFull=(v.items||[]).reduce((a,it)=>a+Math.round((Number(it.unidades)||0)*fullUnitBase(it)),0); const descMonto=Math.max(0, subFull-neto); const descPctG=subFull>0?Math.round(descMonto/subFull*100):0;
     const ths='<tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:11px 14px;font-weight:600;">Producto</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Unid.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Valor unit.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Subtotal</th></tr>';
     const num=v.ov||v.pedido||'—'; const metodo=v.metodoPago&&v.metodoPago!=='—'?v.metodoPago:'';
     const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+num+'</title></head>'
@@ -4875,7 +4905,8 @@ Instrucciones de respuesta:
       +'<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:22px;line-height:1.6;"><div><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Para</span><br><strong style="font-size:15px;">'+(this.titleCase(v.cliente)||'Cliente')+'</strong><br>'+[this.titleCase(v.ciudad),v.celular].filter(Boolean).join(' · ')+(v.correo?('<br>'+v.correo):'')+'</div><div style="text-align:right;"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Detalles</span><br><strong>Fecha:</strong> '+this.fmtFecha(v.fecha)+'<br><strong>Canal:</strong> '+(v.canal||'—')+(metodo?('<br><strong>Pago:</strong> '+metodo):'')+'</div></div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead>'+ths+'</thead><tbody>'+filas+'</tbody></table>'
       +'<div style="margin-top:18px;margin-left:auto;width:300px;font-size:13px;">'
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>'+(conIva?'Subtotal (sin IVA)':'Subtotal')+'</span><span>'+this.fmt(neto)+'</span></div>'
+        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>'+(conIva?'Subtotal (sin IVA)':'Subtotal')+'</span><span>'+this.fmt(subFull)+'</span></div>'
+        +(descMonto>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Descuento'+(descPctG>0?(' ('+descPctG+'%)'):'')+'</span><span>−'+this.fmt(descMonto)+'</span></div>'):'')
         +(envio>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Envío</span><span>'+this.fmt(envio)+'</span></div>'):'')
         +(conIva?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#8A8073;font-size:12px;"><span>IVA (19%)</span><span>'+this.fmt(iva)+'</span></div>'):'')
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
@@ -4945,14 +4976,20 @@ Instrucciones de respuesta:
     const {gem,ant}=this.aiGetKeys(); const prov=this.aiActiveProvider();
     if(!prov) throw new Error('Falta la clave de IA. Ve a Administración → Inteligencia Artificial y pega tu clave.');
     if(prov==='gemini'){
-      const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(gem),{
-        method:'POST', headers:{ 'content-type':'application/json' },
-        body:JSON.stringify({ contents:[{ parts:[{ text:prompt }] }] })
-      });
-      const data=await r.json().catch(()=>({}));
-      if(!r.ok) throw new Error((data && data.error && data.error.message) || 'Error al llamar a la IA (Gemini)');
-      const c=data && data.candidates && data.candidates[0];
-      return ((c && c.content && c.content.parts)||[]).map(p=>(p&&p.text)||'').join('').trim();
+      const models=['gemini-2.5-flash','gemini-flash-latest','gemini-2.5-flash-lite'];
+      let lastErr='Error al llamar a la IA (Gemini)';
+      for(const model of models){
+        const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(gem),{
+          method:'POST', headers:{ 'content-type':'application/json' },
+          body:JSON.stringify({ contents:[{ parts:[{ text:prompt }] }] })
+        });
+        const data=await r.json().catch(()=>({}));
+        if(r.ok){ const c=data && data.candidates && data.candidates[0]; return ((c && c.content && c.content.parts)||[]).map(p=>(p&&p.text)||'').join('').trim(); }
+        lastErr=(data && data.error && data.error.message) || lastErr;
+        const code=data && data.error && data.error.code;
+        if(code!==404 && !/not found|not supported/i.test(lastErr)) break; // solo probar otro modelo si el actual no existe
+      }
+      throw new Error(lastErr);
     }
     // anthropic
     const r=await fetch('https://api.anthropic.com/v1/messages',{
@@ -6732,13 +6769,21 @@ Instrucciones de respuesta:
     }
     if(st.modal==='produccion'){ const d=st.draft;
       out.productosOptions=st.productos.filter(p=>!p.esReventa).map(p=>({codigo:p.codigo,label:p.codigo+' · '+p.nombre}));
-      const p=st.productos.find(x=>x.codigo===d.productoCodigo); const cant=Number(d.cantidad)||0;
+      out.prodSelProd=d._selProd||''; out.onProdSelProd=(e)=>this.setState(s=>({draft:{...s.draft,_selProd:e.target.value}}));
+      out.prodSelCant=(d._selCantidad!=null?d._selCantidad:''); out.onProdSelCant=(e)=>this.setState(s=>({draft:{...s.draft,_selCantidad:(e.target.value===''?'':Number(e.target.value))}}));
+      out.addProdItem=()=>this.addProdItem(); out.onProdItemsFile=(e)=>this.onProdItemsFile(e); out.descargarProdPlantilla=()=>this.descargarPlantillaProd();
+      const p=st.productos.find(x=>x.codigo===d._selProd); const cant=Number(d._selCantidad)||0;
       out.prodSelHasProducto=!!p; out.prodSelSinProducto=!p;
       out.prodReqItems= p? (p.formula||[]).map(f=>{ const cu=this.refCostoUnit(f.materiaCodigo); const req=(Number(f.cantidad)||0)*cant; return {nombre:this.refNombre(f.materiaCodigo), unidad:this.refUnidad(f.materiaCodigo), requerido:(Math.round(req*100)/100), costoLineaFmt:this.fmt(Math.round(cu*req))}; }) : [];
       out.prodReqVacio=!p || !(p.formula||[]).length;
       const cu=p?this.productoCosto(p):0;
       out.prodOpCostoUnitFmt=this.fmt(Math.round(cu)); out.prodOpTotalFmt=this.fmt(Math.round(cu*cant)); out.prodOpCant=cant;
       out.prodOpStockActual= p? this.productoStockActual(p):0; out.prodOpStockResultante= p? this.productoStockActual(p)+cant : 0;
+      const _pitems=(d.items||[]);
+      out.prodItemsView=_pitems.map((it,i)=>{ const pp=st.productos.find(x=>x.codigo===it.productoCodigo); const c=pp?this.productoCosto(pp):0; const q=Number(it.cantidad)||0; return { nombre:(pp?pp.nombre:it.nombre||it.productoCodigo), codigo:it.productoCodigo, cantidad:q, costoLineaFmt:this.fmt(Math.round(c*q)), onRemove:()=>this.removeProdItem(i) }; });
+      out.prodItemsVacio=_pitems.length===0; out.prodItemsCount=_pitems.length;
+      out.prodTotalCant=_pitems.reduce((a,it)=>a+(Number(it.cantidad)||0),0);
+      out.prodTotalCostoFmt=this.fmt(_pitems.reduce((a,it)=>{ const pp=st.productos.find(x=>x.codigo===it.productoCodigo); const c=pp?this.productoCosto(pp):0; return a+Math.round(c*(Number(it.cantidad)||0)); },0));
     }
     if(st.modal==='produccionmez'){ const d=st.draft;
       out.mezclasProdOptions=(st.mezclas||[]).map(mz=>({codigo:mz.codigo,label:mz.codigo+' · '+mz.nombre}));
