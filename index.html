@@ -424,6 +424,7 @@ img { max-width: 100%; display: block; }
               <sc-if value="{{ vV_reg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div></sc-if>
               <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
               <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
+              <sc-if value="{{ vV_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.servicio }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenSvc.c }};background:{{ subVenSvc.bg }};border-left:2px solid {{ subVenSvc.b }};"><span>Servicio al cliente</span><sc-if value="{{ casoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ casoBadge }}</span></sc-if></div></sc-if>
             </div>
           </sc-if>
           </sc-if>
@@ -590,7 +591,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#8bf0f0abfba5eee6eae2e7abf6f6" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#a6dddd86d688c3cbc7cfca86dbdb" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -2325,6 +2326,116 @@ img { max-width: 100%; display: block; }
                   </div>
                 </div>
               </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ===== VENTAS · SERVICIO AL CLIENTE ===== -->
+          <sc-if value="{{ showVentasServicio }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+                <p style="font-size:12.5px;color:var(--text-muted);margin:0;max-width:560px;line-height:1.55;text-wrap:pretty;">Reclamaciones, garantías, cambios, devoluciones y novedades de envío. Liga cada caso a un pedido para traer cliente y productos, o regístralo suelto. Al resolver, el costo se registra en Finanzas.</p>
+                <div style="flex:1;"></div>
+                <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ nuevoCasoBtn }}" style="display:flex;align-items:center;gap:7px;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="background:var(--brand-hover);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Nuevo caso</button>
+                </sc-if>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Casos abiertos</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;line-height:1;margin-top:8px;color:#8A6321;">{{ casoKAbiertos }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ casoKEnGestion }} en gestión · {{ casoKVencidos }} vencidos</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Cerrados</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ casoKCerrados }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">de {{ casoKTotal }} casos en total</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Costo postventa</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:33px;font-weight:600;line-height:1;margin-top:11px;color:var(--oda-sale,#B5503C);">{{ casoKCosto }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">reembolsos, reenvíos y notas crédito</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Tasa de devoluciones</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;line-height:1;margin-top:8px;">{{ casoKTasa }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ casoKDevolCount }} de {{ casoKVentasMes }} ventas del mes</div>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0 0 15px;">Casos por tipo</h3>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <sc-for list="{{ casoPorTipo }}" as="t" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="width:118px;flex-shrink:0;font-size:12.5px;font-weight:600;color:var(--text-body);">{{ t.label }}</span>
+                        <div style="flex:1;height:9px;border-radius:99px;background:var(--surface-raised);overflow:hidden;"><div style="height:100%;width:{{ t.pct }};background:{{ t.color }};border-radius:99px;"></div></div>
+                        <span style="width:26px;text-align:right;font-size:13px;font-weight:800;color:var(--text-strong);">{{ t.n }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0 0 15px;">Qué falla más <span style="font-size:12px;color:var(--text-muted);font-family:'Mulish',sans-serif;font-weight:600;">· por producto</span></h3>
+                  <sc-if value="{{ casoPorMotivoVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-muted);padding:14px 0;">Aún no hay casos suficientes para el desglose.</div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <sc-for list="{{ casoPorMotivo }}" as="m" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="width:160px;flex-shrink:0;font-size:12.5px;font-weight:600;color:var(--text-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.label }}</span>
+                        <div style="flex:1;height:9px;border-radius:99px;background:var(--surface-raised);overflow:hidden;"><div style="height:100%;width:{{ m.pct }};background:var(--brand-primary);border-radius:99px;"></div></div>
+                        <span style="width:26px;text-align:right;font-size:13px;font-weight:800;color:var(--text-strong);">{{ m.n }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                <div style="position:relative;flex:1;max-width:300px;">
+                  <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                  <input value="{{ qCaso }}" onInput="{{ onQCaso }}" placeholder="Buscar caso, cliente, pedido o producto…" style="width:100%;font-family:inherit;font-size:13px;padding:10px 13px 10px 36px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);">
+                </div>
+                <select value="{{ fCasoTipo }}" onChange="{{ onFCasoTipo }}" style="font-family:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
+                  <option value="todos">Todos los tipos</option>
+                  <sc-for list="{{ casoTipoOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o.k }}">{{ o.l }}</option></sc-for>
+                </select>
+                <div style="display:inline-flex;gap:3px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:3px;flex-wrap:wrap;">
+                  <sc-for list="{{ casoEstadoChips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.onClick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 13px;border-radius:var(--radius-pill);border:none;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};">{{ c.l }}</button></sc-for>
+                </div>
+              </div>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1020px;">
+                  <thead><tr style="background:var(--surface-raised);text-align:left;">
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Caso</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Tipo</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Cliente / pedido</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Producto · motivo</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Estado</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Resolución</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Costo</th>
+                    <th style="padding:12px 16px;"></th>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{ casoRows }}" as="r" hint-placeholder-count="6">
+                      <tr class="oda-row" onClick="{{ r.onOpen }}" style="border-top:1px solid var(--border-subtle);cursor:pointer;">
+                        <td style="padding:13px 16px;white-space:nowrap;"><span style="font-weight:700;color:var(--brand-ink);">{{ r.folio }}</span><span style="display:block;font-size:11px;color:var(--text-muted);">{{ r.fechaFmt }}</span></td>
+                        <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;padding:4px 10px;border-radius:99px;white-space:nowrap;background:{{ r.tipoBg }};color:{{ r.tipoFg }};">{{ r.tipoL }}</span></td>
+                        <td style="padding:13px 16px;"><span style="font-weight:600;">{{ r.cliente }}</span><span style="display:block;font-size:11px;color:var(--text-muted);">{{ r.pedidoTxt }} · {{ r.ciudad }}</span></td>
+                        <td style="padding:13px 16px;color:var(--text-body);max-width:280px;">{{ r.producto }}<span style="display:block;font-size:11px;color:var(--text-muted);text-wrap:pretty;">{{ r.motivo }}</span></td>
+                        <td style="padding:13px 16px;"><span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 11px;border-radius:99px;white-space:nowrap;background:{{ r.estBg }};color:{{ r.estFg }};"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.estDot }};"></span>{{ r.estL }}</span></td>
+                        <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;">{{ r.resolL }}</td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;color:{{ r.costoColor }};">{{ r.costoFmt }}</td>
+                        <td style="padding:13px 16px;text-align:right;"><button onClick="{{ r.onOpen }}" title="Ver caso" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-primary);cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+                <sc-if value="{{ casoRowsVacio }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;padding:42px 20px;color:var(--text-muted);font-size:14px;">No hay casos con este filtro. Registra el primer caso de servicio al cliente.</div>
+                </sc-if>
+              </div>
             </div>
           </sc-if>
 
@@ -4218,6 +4329,133 @@ img { max-width: 100%; display: block; }
       </div>
     </sc-if>
 
+    <!-- ===================== SERVICIO · DRAWER DETALLE ===================== -->
+    <sc-if value="{{ casoDrawerOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeCasoDrawer }}" style="position:fixed;inset:0;background:rgba(58,51,38,0.4);backdrop-filter:blur(2px);z-index:60;display:flex;justify-content:flex-end;">
+        <div onClick="{{ stopCaso }}" class="oda-scroll" style="width:100%;max-width:520px;height:100%;background:var(--surface-card);box-shadow:var(--shadow-lg);overflow-y:auto;animation:odaPop 260ms var(--ease-out);">
+          <div style="padding:20px 26px;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;background:var(--surface-card);z-index:2;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;white-space:nowrap;">{{ cd.folio }}</span>
+                <span style="font-size:10.5px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:{{ cd.tipoBg }};color:{{ cd.tipoFg }};">{{ cd.tipoL }}</span>
+              </div>
+              <button onClick="{{ closeCasoDrawer }}" style="background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;padding:6px;border-radius:8px;" style-hover="background:var(--surface-raised);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-size:12px;font-weight:700;padding:5px 13px;border-radius:99px;background:{{ cd.estBg }};color:{{ cd.estFg }};"><span style="width:7px;height:7px;border-radius:50%;background:{{ cd.estDot }};"></span>{{ cd.estL }}</div>
+          </div>
+          <div style="padding:22px 26px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+              <div><div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Cliente</div><div style="font-size:14px;font-weight:700;">{{ cd.cliente }}</div><div style="font-size:12px;color:var(--text-muted);">{{ cd.ciudad }} · {{ cd.canal }}</div></div>
+              <div><div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Pedido</div><div style="font-size:14px;font-weight:700;color:var(--brand-ink);">{{ cd.pedidoTxt }}</div><div style="font-size:12px;color:var(--text-muted);">{{ cd.ov }}</div></div>
+            </div>
+            <div style="background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:20px;">
+              <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Producto y motivo</div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px;">{{ cd.producto }}</div>
+              <div style="font-size:13px;color:var(--text-body);line-height:1.5;text-wrap:pretty;">{{ cd.motivoLargo }}</div>
+            </div>
+            <sc-if value="{{ cd.hasAdjuntos }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Evidencia <span style="color:var(--text-body);font-weight:700;">· {{ cd.adjuntosCount }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px;">
+                <sc-for list="{{ cd.adjuntos }}" as="a" hint-placeholder-count="2">
+                  <div style="width:78px;"><div style="height:70px;border-radius:10px;background:{{ a.thumb }};display:flex;align-items:center;justify-content:center;color:#fff;border:1px solid var(--border-subtle);"><sc-if value="{{ a.isImg }}" hint-placeholder-val="{{ true }}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></sc-if><sc-if value="{{ a.isPdf }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></sc-if></div><div style="font-size:9.5px;color:var(--text-muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ a.name }}</div></div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">Línea de tiempo</div>
+            <div style="display:flex;flex-direction:column;gap:0;margin-bottom:22px;">
+              <sc-for list="{{ cd.timeline }}" as="e" hint-placeholder-count="3">
+                <div style="display:flex;gap:13px;">
+                  <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;"><span style="width:13px;height:13px;border-radius:50%;background:{{ e.dot }};box-sizing:border-box;"></span><sc-if value="{{ e.line }}" hint-placeholder-val="{{ true }}"><span style="width:2px;flex:1;background:var(--border-subtle);min-height:26px;"></span></sc-if></div>
+                  <div style="padding-bottom:16px;"><div style="font-size:13px;font-weight:700;color:var(--text-strong);">{{ e.label }}</div><div style="font-size:11.5px;color:var(--text-muted);">{{ e.fecha }}<sc-if value="{{ e.hasWho }}" hint-placeholder-val="{{ false }}"> · {{ e.who }}</sc-if></div><sc-if value="{{ e.hasNota }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-body);margin-top:3px;line-height:1.45;text-wrap:pretty;">{{ e.nota }}</div></sc-if></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="border:1px solid var(--border-brand);background:rgba(167,134,89,0.07);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;"><div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#7A5E36;font-weight:700;">Resolución</div><span style="font-size:13px;font-weight:800;color:{{ cd.costoColor }};">{{ cd.costoFmt }}</span></div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:10px;">{{ cd.resolL }}</div>
+              <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:7px;">{{ cd.impactosTitle }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px;">
+                <sc-for list="{{ cd.impactos }}" as="i" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:{{ i.chipBg }};border:1px solid {{ i.chipBorder }};color:{{ i.chipFg }};"><sc-if value="{{ i.applied }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></sc-if><sc-if value="{{ i.pending }}" hint-placeholder-val="{{ true }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ i.color }};"></span></sc-if>{{ i.l }}</span></sc-for>
+                <sc-if value="{{ cd.sinImpactos }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:var(--text-muted);font-style:italic;">Sin impactos en otros módulos</span></sc-if>
+              </div>
+              <sc-if value="{{ cd.destinoShow }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border-subtle);"><span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Producto original</span><span style="font-size:12px;font-weight:700;color:var(--text-body);">{{ cd.destinoLabel }}</span></div>
+              </sc-if>
+              <sc-if value="{{ cd.costeoShow }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border-subtle);"><span style="color:var(--brand-primary);display:flex;flex-shrink:0;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><div style="font-size:12px;color:var(--text-body);line-height:1.5;text-wrap:pretty;"><strong style="color:var(--text-strong);">{{ cd.costeoTitulo }}:</strong> {{ cd.costeoNota }}</div></div>
+              </sc-if>
+            </div>
+            <div style="border:1px solid rgba(76,97,73,0.28);background:rgba(98,123,96,0.06);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;"><span style="width:26px;height:26px;border-radius:50%;background:#4C6149;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg></span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#3A4A38;">Responder por WhatsApp</div><div style="font-size:11.5px;color:var(--text-muted);">{{ cd.telFmt }} · {{ cd.cliente }}</div></div></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"><sc-for list="{{ casoWaChips }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.onClick }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border-radius:var(--radius-pill);cursor:pointer;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.fg }};">{{ t.l }}</button></sc-for></div>
+              <textarea value="{{ casoWaMsg }}" onInput="{{ onCasoWaInput }}" rows="4" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:12.5px;line-height:1.5;padding:11px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);resize:vertical;"></textarea>
+              <button onClick="{{ casoWaSendBtn }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:none;background:#4C6149;color:#fff;cursor:pointer;" style-hover="background:#3F5A3C;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>Abrir WhatsApp con el mensaje</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.5;text-wrap:pretty;margin-bottom:18px;"><strong style="color:var(--text-body);">Responsable:</strong> {{ cd.responsable }} · <strong style="color:var(--text-body);">Vence:</strong> {{ cd.venceFmt }}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <sc-if value="{{ cd.canAdvance }}" hint-placeholder-val="{{ true }}"><button onClick="{{ casoAdvanceBtn }}" style="flex:1;min-width:150px;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);">{{ cd.advanceLabel }}</button></sc-if>
+              <sc-if value="{{ cd.canClose }}" hint-placeholder-val="{{ false }}"><button onClick="{{ casoCerrarBtn }}" style="flex:1;min-width:120px;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Cerrar caso</button></sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ===================== SERVICIO · NUEVO CASO ===================== -->
+    <sc-if value="{{ casoModalOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeCasoModalBtn }}" style="position:fixed;inset:0;background:rgba(58,51,38,0.4);backdrop-filter:blur(2px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;">
+        <div onClick="{{ stopCaso }}" class="oda-scroll" style="background:var(--surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:640px;max-height:88vh;overflow-y:auto;animation:odaPop 220ms var(--ease-out);">
+          <div style="padding:20px 24px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface-card);z-index:2;">
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0;">Registrar caso de servicio</h3>
+            <button onClick="{{ closeCasoModalBtn }}" style="background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;padding:6px;border-radius:8px;" style-hover="background:var(--surface-raised);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div style="padding:22px 24px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:8px;">Tipo de caso</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;"><sc-for list="{{ casoTipoPicker }}" as="t" hint-placeholder-count="6"><button onClick="{{ t.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);cursor:pointer;border:1.5px solid {{ t.border }};background:{{ t.bg }};color:{{ t.fg }};">{{ t.l }}</button></sc-for></div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-raised);">
+              <span style="font-size:12.5px;font-weight:700;color:var(--text-body);flex:1;">¿Está ligado a un pedido?</span>
+              <button onClick="{{ casoToggleSinPedido }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:var(--radius-pill);border:none;cursor:pointer;background:{{ casoPedToggle.aBg }};color:{{ casoPedToggle.aFg }};">Con pedido</button>
+              <button onClick="{{ casoToggleSinPedido }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:var(--radius-pill);border:none;cursor:pointer;background:{{ casoPedToggle.bBg }};color:{{ casoPedToggle.bFg }};">Suelto</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <sc-if value="{{ casoConPedido }}" hint-placeholder-val="{{ true }}">
+                <div style="grid-column:1/3;display:flex;gap:8px;align-items:flex-end;">
+                  <label style="flex:1;font-size:12px;font-weight:700;color:var(--text-body);">Pedido / OV<input name="pedido" value="{{ casoDraft.pedido }}" onInput="{{ onCasoDraft }}" placeholder="Escribe #1287 o ODA-01287…" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+                  <button onClick="{{ casoAplicarPedidoBtn }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:11px 15px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Buscar</button>
+                </div>
+              </sc-if>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Cliente<input name="cliente" value="{{ casoDraft.cliente }}" onInput="{{ onCasoDraft }}" placeholder="Nombre" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Ciudad<input name="ciudad" value="{{ casoDraft.ciudad }}" onInput="{{ onCasoDraft }}" placeholder="Ciudad" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Teléfono (WhatsApp)<input name="telefono" value="{{ casoDraft.telefono }}" onInput="{{ onCasoDraft }}" placeholder="3134063259" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Canal de contacto<select name="canal" value="{{ casoDraft.canal }}" onChange="{{ onCasoDraft }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;cursor:pointer;"><option>WhatsApp</option><option>Correo</option><option>Instagram</option><option>Teléfono</option><option>Tienda / punto físico</option></select></label>
+              <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Producto<input name="producto" value="{{ casoDraft.producto }}" onInput="{{ onCasoDraft }}" placeholder="Kit Inhala, Roll-on Calma…" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+              <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Motivo<textarea name="motivo" value="{{ casoDraft.motivo }}" onInput="{{ onCasoDraft }}" rows="2" placeholder="Describe qué pasó…" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;resize:vertical;"></textarea></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Resolución propuesta<select name="resolucion" value="{{ casoDraft.resolucion }}" onChange="{{ onCasoDraft }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;cursor:pointer;"><option value="pendiente">Por definir</option><option value="reenvio">Reenvío del producto</option><option value="cambio_prod">Cambio por otro producto</option><option value="reembolso">Reembolso / devolución</option><option value="nota_credito">Nota crédito / bono</option><option value="rechazado">Rechazado (no procede)</option></select></label>
+              <sc-if value="{{ casoShowDestino }}" hint-placeholder-val="{{ false }}"><label style="font-size:12px;font-weight:700;color:var(--text-body);">¿Qué pasó con el producto original?<select name="destino" value="{{ casoDraft.destino }}" onChange="{{ onCasoDraft }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;cursor:pointer;"><option value="">Selecciona…</option><option value="bodega">Volvió a bodega (reutilizable)</option><option value="cliente">Se le dejó al cliente</option><option value="baja">Se dio de baja (dañado)</option></select></label></sc-if>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Costo estimado<input name="costo" value="{{ casoDraft.costo }}" onInput="{{ onCasoDraft }}" placeholder="$0" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Responsable<input name="responsable" value="{{ casoDraft.responsable }}" onInput="{{ onCasoDraft }}" placeholder="Encargado" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Fecha límite<input name="vence" type="date" value="{{ casoDraft.vence }}" onInput="{{ onCasoDraft }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);margin-top:6px;"></label>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:8px;">Evidencia adjunta</div>
+              <label for="casoFileInput" style="display:flex;align-items:center;gap:12px;padding:16px 18px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-raised);cursor:pointer;" style-hover="border-color:var(--brand-primary);"><span style="color:var(--brand-primary);display:flex;flex-shrink:0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg></span><span style="font-size:12.5px;color:var(--text-body);line-height:1.4;">Arrastra o <strong style="color:var(--brand-primary);">selecciona fotos o documentos</strong><span style="display:block;font-size:11px;color:var(--text-muted);">JPG, PNG o PDF · evidencia del reclamo</span></span></label>
+              <input id="casoFileInput" type="file" multiple accept="image/*,.pdf" onChange="{{ onCasoFiles }}" style="display:none;">
+              <sc-if value="{{ casoDraftHasAdjuntos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"><sc-for list="{{ casoDraftAdjuntos }}" as="a" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;padding:6px 8px 6px 11px;border-radius:99px;background:var(--surface-card);border:1px solid var(--border-subtle);color:var(--text-body);"><span style="color:var(--brand-primary);display:flex;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>{{ a.name }}<button onClick="{{ a.onRemove }}" style="display:flex;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;border-radius:6px;" style-hover="color:#B5503C;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span></sc-for></div></sc-if>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:8px;">Al resolver, conectar con:</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;"><sc-for list="{{ casoImpactoPicker }}" as="i" hint-placeholder-count="3"><button onClick="{{ i.onClick }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:var(--radius-pill);cursor:pointer;border:1.5px solid {{ i.border }};background:{{ i.bg }};color:{{ i.fg }};"><span style="width:7px;height:7px;border-radius:50%;background:{{ i.dot }};"></span>{{ i.l }}</button></sc-for></div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:9px;line-height:1.5;text-wrap:pretty;">El <strong style="color:var(--text-body);">costo en finanzas</strong> crea un egreso automático en Caja al marcar el caso como resuelto.</div>
+            </div>
+          </div>
+          <div style="padding:16px 24px;border-top:1px solid var(--border-subtle);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--surface-card);">
+            <button onClick="{{ closeCasoModalBtn }}" style="font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Cancelar</button>
+            <button onClick="{{ saveCasoBtn }}" style="font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 22px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);">Guardar caso</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
     <!-- TOAST -->
     <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
       <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:80;background:#2A2419;color:var(--text-inverse);font-size:13.5px;font-weight:600;padding:13px 22px;border-radius:var(--radius-pill);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:9px;animation:odaPop 240ms var(--ease-out);">
@@ -4355,7 +4593,7 @@ class Component extends DCLogic {
   state = {
     view:'login', userId:null,
     module:'compras', sub:'resumen',
-    proveedores:[], materias:[], ordenes:[], productos:[], kits:[], mezclas:[], producciones:[], produccionesMezcla:[], servicios:[], ventas:[], cotizaciones:[], leads:[], tiendas:[], remisiones:[],
+    proveedores:[], materias:[], ordenes:[], productos:[], kits:[], mezclas:[], producciones:[], produccionesMezcla:[], servicios:[], ventas:[], cotizaciones:[], leads:[], tiendas:[], remisiones:[], casos:[],
     cuentasFin:[], movimientos:[], gastosFijos:[], retenConfig:null, finMes:null, metodosFin:null, liquidaciones:[], msvc:[],
     qProv:'', qMat:'', qProd:'', qKit:'', qMez:'', qSvc:'', qVenta:'', qPedido:'', qListado:'', qLead:'', leadFiltroEstado:'todos', filtroTipo:'todos', filtroProvMat:'todos', filtroEstado:'activas', filtroCanal:'todos', baseAnio:'todos', baseDim:'mes',
     baseTab:'panorama', baseAiQuery:'', baseAiAnswer:'', baseAiLoading:false, baseSegFiltro:'todos', baseCliSort:'total', baseCliQ:'', baseCliAnios:[], baseCliMeses:[], baseCliCanales:[], clienteSelKey:null, clienteMsg:'', clienteMsgLoading:false,
@@ -4363,6 +4601,7 @@ class Component extends DCLogic {
     importType:null, importRows:[], importError:'', importName:'',
     toast:null, confirmDel:null, fechaCorte:'2026-06-18', loginStep:'select', loginPendingId:null, loginPwd:'', loginError:'', userPerms:null, expandedPermUser:null, reglasNeg:null, reglasEmpaque:null, clienteWaUrl:'', waCampTpl:'', waCampLoading:false, invCatSel:null,
     cotTab:'leads', propuesta:null, propuestaDocCache:'', consignSel:null, segLeadId:null,
+    casoOpenId:null, casoModal:false, casoDraft:null, casoWaMsg:null, casoWaTpl:null, qCaso:'', fCasoTipo:'todos', fCasoEstado:'todos',
   };
 
   componentDidMount(){
@@ -4397,7 +4636,7 @@ class Component extends DCLogic {
     if(!savedReglas) savedReglas={margenMinPct:'',descuentoMaxPct:'',umbralAprobacion:'',envioGratisDesde:''};
     let savedEmpaque=null; try{savedEmpaque=JSON.parse(localStorage.getItem('oda_hub_empaque_v1'));}catch(e){}if(!savedEmpaque) savedEmpaque={bolsaDefault:'MP-0087',mapeoCajas:{'006003':'MP-0095','006004':'MP-0096','006005':'MP-0097','006006':'MP-0098','009002':['MP-0092','MP-0107'],'009003':['MP-0092','MP-0107'],'009004':['MP-0092','MP-0107']}};
     try{ if(savedEmpaque&&!localStorage.getItem('oda_hub_empaque_v2')){ const adds={'009002':['MP-0092','MP-0107'],'009003':['MP-0092','MP-0107'],'009004':['MP-0092','MP-0107']}; Object.keys(adds).forEach(k=>{ if(!savedEmpaque.mapeoCajas||!(k in savedEmpaque.mapeoCajas)) savedEmpaque.mapeoCajas={...(savedEmpaque.mapeoCajas||{}),[k]:adds[k]}; }); localStorage.setItem('oda_hub_empaque_v2','1'); } }catch(e){}
-    const patch={ proveedores:data.proveedores, materias:data.materias, ordenes:data.ordenes, productos:data.productos, kits:data.kits, mezclas:data.mezclas, producciones:data.producciones, produccionesMezcla:data.produccionesMezcla, servicios:data.servicios, ventas:data.ventas, cotizaciones:data.cotizaciones, cuentasFin:data.cuentasFin, movimientos:data.movimientos, gastosFijos:data.gastosFijos, retenConfig:data.retenConfig, metodosFin:data.metodosFin, liquidaciones:data.liquidaciones, userPerms:savedPerms, reglasNeg:savedReglas, reglasEmpaque:savedEmpaque, tiendas:(data.tiendas||[]), remisiones:(data.remisiones||[]), leads:(data.leads||[]) };
+    const patch={ proveedores:data.proveedores, materias:data.materias, ordenes:data.ordenes, productos:data.productos, kits:data.kits, mezclas:data.mezclas, producciones:data.producciones, produccionesMezcla:data.produccionesMezcla, servicios:data.servicios, ventas:data.ventas, cotizaciones:data.cotizaciones, cuentasFin:data.cuentasFin, movimientos:data.movimientos, gastosFijos:data.gastosFijos, retenConfig:data.retenConfig, metodosFin:data.metodosFin, liquidaciones:data.liquidaciones, userPerms:savedPerms, reglasNeg:savedReglas, reglasEmpaque:savedEmpaque, tiendas:(data.tiendas||[]), remisiones:(data.remisiones||[]), leads:(data.leads||[]), casos:(data.casos||[]) };
     let savedProp=null; try{savedProp=JSON.parse(localStorage.getItem('oda_hub_propuesta_v1'));}catch(e){} patch.propuesta=savedProp||this.propuestaDefault();
     // El ingreso a la app ahora lo controla la sesión de nube (cloudInit). No auto-entramos con sesión local.
     this.setState(patch);
@@ -4406,8 +4645,8 @@ class Component extends DCLogic {
     try{ const _pd=(window.__resources&&window.__resources.propuestaDoc)||'./propuesta-doc.js'; import(_pd).then(m=>{ this._buildPropDoc=m.buildPropuestaDoc; }).catch(()=>{}); }catch(e){}
   }
 
-  save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,leads:d.leads,msvc:d.msvc})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
-  persist(extra){ const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, leads:this.state.leads, msvc:this.state.msvc, ...extra }; this.save(d); }
+  save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,leads:d.leads,msvc:d.msvc,casos:d.casos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
+  persist(extra){ const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
   respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
   writeAutoBackup(){ try{ const dump={_fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); localStorage.setItem('oda_hub_backup_v1', JSON.stringify(dump)); }catch(e){} }
@@ -4415,6 +4654,7 @@ class Component extends DCLogic {
   restaurarRespaldo(e){ const f=e.target.files&&e.target.files[0]; if(!f){ return; } const reader=new FileReader(); reader.onload=()=>{ try{ const dump=JSON.parse(reader.result); if(!dump||!dump.keys||typeof dump.keys!=='object') throw new Error('bad'); let n=0; Object.keys(dump.keys).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n) throw new Error('empty'); this.toast('Respaldo restaurado · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(err){ this.toast('Archivo de respaldo inválido'); } try{ e.target.value=''; }catch(x){} }; reader.readAsText(f); }
   restaurarAutoBackup(){ try{ const raw=localStorage.getItem('oda_hub_backup_v1'); if(!raw){ this.toast('Aún no hay copia automática'); return; } const dump=JSON.parse(raw); let n=0; Object.keys(dump.keys||{}).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n){ this.toast('Copia automática vacía'); return; } this.toast('Copia automática restaurada · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(e){ this.toast('No se pudo restaurar la copia'); } }
   migrate(d){
+    d.casos=Array.isArray(d.casos)?d.casos:[];
     d.proveedores=(d.proveedores||[]).map(p=>{ p={...p};
       if(p.contactoNombre===undefined){ let n='',t=''; if(p.contacto){ const parts=String(p.contacto).split('·'); n=(parts[0]||'').trim(); t=(parts[1]||'').trim(); } p.contactoNombre=n; p.telefonos=t?[t]:[]; }
       if(!Array.isArray(p.telefonos)) p.telefonos = p.telefonos? [p.telefonos] : [];
@@ -5208,7 +5448,7 @@ Instrucciones de respuesta:
     sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else this._afterCloudLogin(s.user); } });
     try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
   }
-  _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); }
+  _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); this.cloudLoadCasos(); this.cloudSubscribeCasos(); }
   // ---- permisos compartidos (nube) ----
   async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; data.forEach(r=>{ m[r.user_key]=r.perms||{}; }); this.setState({userPerms:m}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
@@ -5331,6 +5571,11 @@ Instrucciones de respuesta:
   cloudLoadMsvc(){ this._cloudLoadList('msvc','msvc', this.state.msvc); }
   cloudSaveMsvc(o){ this._cloudSaveOne('msvc', o); }
   cloudSubscribeMsvc(){ this._cloudSubTable('msvc','_msvcSub', ()=>this.cloudLoadMsvc()); }
+  // ---- casos de servicio al cliente (nube) ----
+  cloudLoadCasos(){ this._cloudLoadList('casos','casos', this.state.casos); }
+  cloudSaveCaso(o){ this._cloudSaveOne('casos', o); }
+  cloudDeleteCaso(id){ this._cloudDelOne('casos', id); }
+  cloudSubscribeCasos(){ this._cloudSubTable('casos','_casSub', ()=>this.cloudLoadCasos()); }
   // ---- servicios / ordenes / tiendas / remisiones (nube) ----
   cloudLoadServicios(){ const sb=this._sbClient(); if(!sb) return; sb.from('servicios').select('id,data').then(({data,error})=>{ if(error) return; if(data&&data.length){ this.setState({servicios:data.map(r=>r.data||{})},()=>this.persist()); } else { const cur=this.state.servicios||[]; if(cur.length){ try{ sb.from('servicios').upsert(cur.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} } } }).catch(()=>{}); }
   cloudSaveServicio(s){ const sb=this._sbClient(); if(!sb||!s) return; try{ sb.from('servicios').upsert({id:s.codigo, data:s, actualizado:new Date().toISOString()}); }catch(e){} }
@@ -5946,6 +6191,43 @@ Instrucciones de respuesta:
   permPill(v){ const m={ write:{t:'Escritura',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}, read:{t:'Lectura',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, none:{t:'—',bg:'#EFE9DD',fg:'#A89F8E'} }; return m[v]||m.none; }
   stars(n){ n=Math.round(Number(n)||0); return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n); }
 
+  // ===== SERVICIO AL CLIENTE (postventa) =====
+  casoEstados(){ return ['abierto','gestion','resuelto','cerrado']; }
+  casoEstadoMeta(k){ return ({abierto:{l:'Abierto',bg:'rgba(196,146,63,0.18)',fg:'#8A6321',dot:'#C4923F'}, gestion:{l:'En gestión',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',dot:'#6596A6'}, resuelto:{l:'Resuelto',bg:'rgba(98,123,96,0.16)',fg:'#4C6149',dot:'#627B60'}, cerrado:{l:'Cerrado',bg:'#EFE9DD',fg:'#8A8069',dot:'#B4A98F'}})[k]||{l:k,bg:'#EFE9DD',fg:'#8A8069',dot:'#B4A98F'}; }
+  casoTipoOrder(){ return ['reclamacion','garantia','cambio','devolucion','dano_envio','faltante']; }
+  casoTipoMeta(k){ return ({reclamacion:{l:'Reclamación',bg:'rgba(181,80,60,0.14)',fg:'#B5503C'}, garantia:{l:'Garantía',bg:'rgba(167,134,89,0.18)',fg:'#7A5E36'}, cambio:{l:'Cambio',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, devolucion:{l:'Devolución',bg:'rgba(154,68,51,0.13)',fg:'#9A4433'}, dano_envio:{l:'Daño en envío',bg:'rgba(196,146,63,0.16)',fg:'#8A6321'}, faltante:{l:'Faltante',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}})[k]||{l:k,bg:'#EFE9DD',fg:'#8A8069'}; }
+  casoResolMeta(k){ return ({pendiente:'Por definir',reenvio:'Reenvío del producto',cambio_prod:'Cambio por otro producto',reembolso:'Reembolso / devolución',nota_credito:'Nota crédito / bono',rechazado:'Rechazado (no procede)'})[k]||'Por definir'; }
+  casoNeedsDestino(t){ return t==='devolucion'||t==='cambio'; }
+  casoDestinoLabel(k){ return ({bodega:'Volvió a bodega (reutilizable)', cliente:'Se le dejó al cliente', baja:'Se dio de baja (dañado)'})[k]||''; }
+  casoImpactoMeta(k){ return ({finanzas:{l:'Costo en finanzas',color:'#B5503C'}, inventario:{l:'Ajuste de inventario',color:'#627B60'}, cxp:{l:'Reembolso al cliente',color:'#3F6A7A'}})[k]||{l:k,color:'#8A8069'}; }
+  casoCop(n){ n=Math.round(Number(n)||0); return '$'+n.toLocaleString('es-CO'); }
+  casoUserName(){ return (this.state.cloudUser&&this.state.cloudUser.nombre) || ((this.users.find(x=>x.id===this.state.userId)||{}).nombre) || ''; }
+  nextFolio(){ let mx=0; (this.state.casos||[]).forEach(c=>{ const m=String(c.folio||'').match(/(\d+)/); if(m){ const n=parseInt(m[1],10); if(n>mx) mx=n; } }); return 'SC-'+String(mx+1).padStart(4,'0'); }
+  casoVentaLink(c){ if(!c||(!c.pedido&&!c.ov)) return null; const vs=this.state.ventas||[]; return vs.find(v=> (c.ov&&v.ov===c.ov) || (c.pedido&&(String(v.pedido)===String(c.pedido)||('#'+String(v.pedido))===String(c.pedido)))) || null; }
+  casoTel(c){ const v=this.casoVentaLink(c); const t=(c&&c.telefono)|| (v&&(v.celular||v.telefono)) || ''; return String(t||'').replace(/\D/g,''); }
+  casoTelFmt(c){ const s=this.casoTel(c); const m=s.match(/^(?:57)?(\d{3})(\d{3})(\d{4})$/); return m?('+57 '+m[1]+' '+m[2]+' '+m[3]):(s?('+'+s):'Sin teléfono'); }
+  buscarPedidoCaso(q){ q=String(q||'').trim().toLowerCase(); if(!q) return null; const vs=this.state.ventas||[]; return vs.find(v=> String(v.ov||'').toLowerCase()===q || String(v.pedido||'').toLowerCase()===q || ('#'+String(v.pedido||'')).toLowerCase()===q) || vs.find(v=> String(v.ov||'').toLowerCase().includes(q) || String(v.pedido||'').toLowerCase().includes(q)) || null; }
+  openCaso(id){ this.setState({casoOpenId:id, casoWaMsg:null, casoWaTpl:null}); }
+  closeCasoDrawer(){ this.setState({casoOpenId:null}); }
+  nuevoCaso(){ this.setState({casoModal:true, casoDraft:{tipo:'reclamacion', sinPedido:false, canal:'WhatsApp', resolucion:'pendiente', responsable:this.casoUserName(), impactos:[], adjuntos:[], fecha:new Date().toISOString().slice(0,10)}}); }
+  cerrarCasoModal(){ this.setState({casoModal:false, casoDraft:null}); }
+  casoDraftInput(name,val){ this.setState({casoDraft:{...(this.state.casoDraft||{}), [name]:val}}); }
+  casoToggleImpacto(k){ const d=this.state.casoDraft||{}; const imp=d.impactos||[]; const has=imp.includes(k); this.setState({casoDraft:{...d, impactos: has? imp.filter(x=>x!==k): imp.concat([k])}}); }
+  casoAplicarPedido(){ const d=this.state.casoDraft||{}; const v=this.buscarPedidoCaso(d.pedido); if(!v){ this.toast('No se encontró ese pedido/OV'); return; } const prod=(v.items||[]).map(it=>this.pedidoNombreItem(it)).filter(Boolean).join(', '); this.setState({casoDraft:{...d, pedido:(v.pedido||v.ov), ov:(v.ov||''), cliente:(v.cliente||d.cliente), ciudad:(v.ciudad||d.ciudad), telefono:(v.celular||v.telefono||d.telefono||''), producto:(prod||d.producto)}}); this.toast('Pedido '+(v.ov||v.pedido)+' vinculado'); }
+  casoFilesInput(e){ const files=[...(e.target.files||[])].map(f=>({name:f.name, isImg:/^image\//.test(f.type)})); if(!files.length) return; const d=this.state.casoDraft||{}; this.setState({casoDraft:{...d, adjuntos:(d.adjuntos||[]).concat(files)}}); e.target.value=''; }
+  casoQuitarAdjunto(i){ const d=this.state.casoDraft||{}; this.setState({casoDraft:{...d, adjuntos:(d.adjuntos||[]).filter((_,j)=>j!==i)}}); }
+  saveCaso(){ const d=this.state.casoDraft||{}; if(!d.cliente||!String(d.cliente).trim()){ this.toast('Escribe el nombre del cliente'); return; } const fch=d.fecha||new Date().toISOString().slice(0,10); const nuevo={ id:'sc'+Date.now(), folio:this.nextFolio(), tipo:d.tipo||'reclamacion', fecha:fch, pedido:d.sinPedido?'':(d.pedido||''), ov:d.sinPedido?'':(d.ov||''), cliente:String(d.cliente).trim(), ciudad:d.ciudad||'', telefono:String(d.telefono||'').replace(/\D/g,''), canal:d.canal||'WhatsApp', producto:d.producto||'', motivo:d.motivo||'', motivoLargo:d.motivo||'', estado:'abierto', responsable:d.responsable||this.casoUserName(), resolucion:d.resolucion||'pendiente', destino:(this.casoNeedsDestino(d.tipo)?(d.destino||''):''), costo:Number(String(d.costo||'').replace(/[^0-9]/g,''))||0, impactos:d.impactos||[], adjuntos:d.adjuntos||[], vence:d.vence||'', creado:new Date().toISOString(), timeline:[{estado:'abierto', fecha:fch, who:(d.responsable||this.casoUserName()), nota:(d.motivo||'Caso registrado.')}] }; const list=[nuevo].concat(this.state.casos||[]); this.setState({casos:list, casoModal:false, casoDraft:null},()=>this.persist()); if(this.cloudOn()) this.cloudSaveCaso(nuevo); this.toast('Caso '+nuevo.folio+' registrado'); }
+  aplicarImpactosCaso(c){ if(c._impAplicados) return {...c, _impAplicados:true}; const imp=c.impactos||[]; const costo=Number(c.costo)||0; let movId=c.movimientoId||null;
+    if(costo>0 && (imp.includes('finanzas')||imp.includes('cxp'))){ const mv={ id:'mv'+Date.now(), tipo:'egreso', fecha:new Date().toISOString().slice(0,10), cuenta:this.primeraCuenta(), monto:costo, categoria:'Servicio al cliente · Postventa', concepto:'Caso '+c.folio+' · '+this.casoResolMeta(c.resolucion)+' · '+(c.cliente||''), casoId:c.id }; const mlist=[mv].concat(this.state.movimientos||[]); this.setState({movimientos:mlist},()=>this.persist()); if(this.cloudOn()) this.cloudSaveMovimiento(mv); movId=mv.id; }
+    const invNota = imp.includes('inventario') ? ( c.destino==='bodega' ? ('El producto regresó a bodega: reingresa al inventario al costo de salida'+(costo?(' ('+this.casoCop(costo)+')'):'')) : (c.destino==='baja' ? 'El producto se dio de baja: sale del inventario como pérdida, no se reingresa.' : (c.destino==='cliente' ? 'El cliente conservó el producto original: no se reingresa a bodega.' : (c.tipo==='devolucion' ? 'Reingreso al inventario al costo de salida.' : 'Salida de inventario al costo actual de producción.'))) ) : '';
+    return {...c, _impAplicados:true, movimientoId:movId, invNota:invNota }; }
+  casoAvanzar(){ const id=this.state.casoOpenId; const est=this.casoEstados(); let saved=null, msg='Caso actualizado'; const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; const i=est.indexOf(c.estado); if(i>=est.length-1) return c; const next=est[i+1]; let nc={...c, estado:next}; if(next==='resuelto'){ nc=this.aplicarImpactosCaso(nc); const acc=(nc.impactos||[]).map(k=>this.casoImpactoMeta(k).l); msg=acc.length?('Resuelto · aplicado: '+acc.join(' · ')):'Caso resuelto'; } nc.timeline=(c.timeline||[]).concat([{estado:next, fecha:new Date().toISOString().slice(0,10), who:(c.responsable||''), nota: (next==='resuelto'&&(nc.impactos||[]).length)?('Impactos aplicados automáticamente: '+(nc.impactos||[]).map(k=>this.casoImpactoMeta(k).l).join(', ')+'.'):''}]); saved=nc; return nc; }); this.setState({casos:list},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); this.toast(msg); }
+  casoCerrar(){ const id=this.state.casoOpenId; let saved=null; const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; const nc={...c, estado:'cerrado', timeline:(c.timeline||[]).concat([{estado:'cerrado', fecha:new Date().toISOString().slice(0,10), who:(c.responsable||''), nota:''}])}; saved=nc; return nc; }); this.setState({casos:list},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); this.toast('Caso cerrado'); }
+  eliminarCaso(id){ const list=(this.state.casos||[]).filter(c=>c.id!==id); this.setState({casos:list, casoOpenId:null},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteCaso(id); this.toast('Caso eliminado'); }
+  casoWaSend(c){ const tel=this.casoTel(c); const msg=(this.state.casoWaMsg!=null)?this.state.casoWaMsg:this.casoWaDefault(c); if(!tel){ this.toast('Este caso no tiene teléfono'); return; } try{ window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank'); }catch(e){} this.toast('WhatsApp abierto con el mensaje'); }
+  casoWaTemplates(c){ const nombre=(c.cliente||'').split(' ')[0]; const rt={ reenvio:'ya despachamos la reposición de tu '+c.producto, cambio_prod:'confirmamos el cambio de tu '+c.producto+' y ya va en camino', reembolso:'procesamos el reembolso de tu '+c.producto, nota_credito:'te generamos un bono como gesto de disculpa por tu '+c.producto, rechazado:'revisamos tu caso y te compartimos los detalles', pendiente:'sobre tu '+c.producto }; return { gestion:'Hola '+nombre+', recibimos tu caso '+c.folio+' sobre '+c.producto+' y ya lo estamos gestionando. Te contamos muy pronto. 🌿', solucion:'¡Hola '+nombre+'! Buenas noticias: '+(rt[c.resolucion]||('avanzamos con tu caso '+c.folio))+'. Caso '+c.folio+'. Cualquier cosa, aquí estamos. 🤍', cierre:'Hola '+nombre+', tu caso '+c.folio+' quedó resuelto. ¡Gracias por tu paciencia y por confiar en Oasis del Alma! 🤍' }; }
+  casoWaDefault(c){ const t=this.casoWaTemplates(c); const k=(c.estado==='cerrado')?'cierre':((c.estado==='resuelto')?'solucion':'gestion'); return t[k]; }
+
   renderVals(){
     const st=this.state;
     const u=this.users.find(x=>x.id===st.userId);
@@ -5990,7 +6272,7 @@ Instrucciones de respuesta:
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
     out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex');
-    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador');
+    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp;
@@ -6057,8 +6339,8 @@ Instrucciones de respuesta:
     out.ventasNavBg = onVen? 'rgba(167,134,89,0.18)':'transparent';
     out.ventasNavColor = onVen? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyV=(k)=>{ const a=onVen&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador');
-    out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}) };
+    out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador'); out.subVenSvc=subStyV('servicio');
+    out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}), servicio:()=>this.setState({module:'ventas',sub:'servicio'}) };
     const venAcc = acc? (acc.admin?'write':(acc.ventas||'none')) : 'none';
     out.canWriteVentas = venAcc==='write';
 
@@ -6112,6 +6394,7 @@ Instrucciones de respuesta:
     out.showVentasListado = onVen && st.sub==='listado';
     out.showVentasPedidos = onVen && st.sub==='pedidos';
     out.showVentasCotizador = onVen && st.sub==='cotizador';
+    out.showVentasServicio = onVen && st.sub==='servicio';
     out.showFinResumen = onFin && st.sub==='finresumen';
     out.showFinPagar = onFin && st.sub==='finpagar';
     out.showFinCobrar = onFin && st.sub==='fincobrar';
@@ -6837,6 +7120,67 @@ Instrucciones de respuesta:
         out.propDocCache=st.propuestaDocCache||'';
       }
     }
+    // ===== SERVICIO AL CLIENTE · render =====
+    const casos=st.casos||[];
+    out.stopCaso=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); };
+    out.casoBadge=String(casos.filter(c=>c.estado!=='cerrado').length);
+    out.casoBadgeShow=onVen && casos.some(c=>c.estado!=='cerrado');
+    out.nuevoCasoBtn=()=>this.nuevoCaso();
+    if(out.showVentasServicio){
+      const abiertos=casos.filter(c=>c.estado!=='cerrado'); const hoy=new Date().toISOString().slice(0,10); const ym=hoy.slice(0,7);
+      out.casoKAbiertos=abiertos.length; out.casoKEnGestion=casos.filter(c=>c.estado==='gestion').length;
+      out.casoKVencidos=abiertos.filter(c=>c.vence && c.vence<hoy).length;
+      out.casoKCerrados=casos.filter(c=>c.estado==='cerrado').length; out.casoKTotal=casos.length;
+      out.casoKCosto=this.casoCop(casos.reduce((a,c)=>a+(Number(c.costo)||0),0));
+      const ventasMes=(st.ventas||[]).filter(v=>!v.cancelada && String(v.fecha||'').slice(0,7)===ym).length;
+      const devolMes=casos.filter(c=>(c.tipo==='devolucion'||c.tipo==='dano_envio'||c.tipo==='faltante') && String(c.fecha||'').slice(0,7)===ym).length;
+      out.casoKDevolCount=devolMes; out.casoKVentasMes=ventasMes;
+      out.casoKTasa=ventasMes>0? ((devolMes/ventasMes*100).toFixed(1).replace('.',',')+'%') : '0,0%';
+      const maxTipo=Math.max(1,...this.casoTipoOrder().map(k=>casos.filter(c=>c.tipo===k).length));
+      out.casoPorTipo=this.casoTipoOrder().map(k=>{ const n=casos.filter(c=>c.tipo===k).length; const m=this.casoTipoMeta(k); return {label:m.l, n, pct:(n/maxTipo*100)+'%', color:m.fg}; });
+      const prods={}; casos.forEach(c=>{ const key=(c.producto||'—').split(',')[0].trim()||'—'; prods[key]=(prods[key]||0)+1; });
+      const parr=Object.keys(prods).map(k=>({label:k,n:prods[k]})).sort((a,b)=>b.n-a.n).slice(0,6); const maxP=Math.max(1,...parr.map(x=>x.n));
+      out.casoPorMotivo=parr.map(x=>({label:x.label,n:x.n,pct:(x.n/maxP*100)+'%'})); out.casoPorMotivoVacio=parr.length===0;
+      out.qCaso=st.qCaso; out.onQCaso=(e)=>this.setState({qCaso:e.target.value});
+      out.fCasoTipo=st.fCasoTipo; out.onFCasoTipo=(e)=>this.setState({fCasoTipo:e.target.value});
+      out.casoTipoOptions=this.casoTipoOrder().map(k=>({k,l:this.casoTipoMeta(k).l}));
+      out.casoEstadoChips=[{k:'todos',l:'Todos'},{k:'abierto',l:'Abiertos'},{k:'gestion',l:'En gestión'},{k:'resuelto',l:'Resueltos'},{k:'cerrado',l:'Cerrados'}].map(c=>{ const a=(st.fCasoEstado||'todos')===c.k; return {l:c.l, onClick:()=>this.setState({fCasoEstado:c.k}), bg:a?'var(--brand-primary)':'transparent', fg:a?'var(--text-on-brand)':'var(--text-body)'}; });
+      const qq=(st.qCaso||'').toLowerCase();
+      let crows=casos.filter(c=>{ if(st.fCasoTipo!=='todos'&&c.tipo!==st.fCasoTipo) return false; if((st.fCasoEstado||'todos')!=='todos'&&c.estado!==st.fCasoEstado) return false; if(qq){ const hay=((c.folio||'')+' '+(c.cliente||'')+' '+(c.pedido||'')+' '+(c.ov||'')+' '+(c.producto||'')+' '+(c.motivo||'')).toLowerCase(); if(!hay.includes(qq)) return false; } return true; }).slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+      out.casoRows=crows.map(c=>{ const tm=this.casoTipoMeta(c.tipo), em=this.casoEstadoMeta(c.estado); return { folio:c.folio, fechaFmt:this.fmtFecha(c.fecha), tipoL:tm.l, tipoBg:tm.bg, tipoFg:tm.fg, cliente:c.cliente, pedidoTxt:(c.pedido||c.ov||'Sin pedido'), ciudad:c.ciudad||'—', producto:c.producto||'—', motivo:c.motivo||'', estL:em.l, estBg:em.bg, estFg:em.fg, estDot:em.dot, resolL:this.casoResolMeta(c.resolucion), costoFmt:(Number(c.costo)>0?this.casoCop(c.costo):'—'), costoColor:((c.resolucion==='rechazado'||c.resolucion==='pendiente')?'var(--text-body)':'var(--oda-sale,#B5503C)'), onOpen:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openCaso(c.id); } }; });
+      out.casoRowsVacio=crows.length===0;
+    }
+    // drawer detalle
+    const curCaso=casos.find(c=>c.id===st.casoOpenId);
+    out.casoDrawerOpen=!!curCaso; out.closeCasoDrawer=()=>this.closeCasoDrawer(); out.casoAdvanceBtn=()=>this.casoAvanzar(); out.casoCerrarBtn=()=>this.casoCerrar();
+    if(curCaso){ const cc=curCaso; const tm=this.casoTipoMeta(cc.tipo), em=this.casoEstadoMeta(cc.estado); const applied=(cc.estado==='resuelto'||cc.estado==='cerrado'); const tl=cc.timeline||[];
+      out.cd={ folio:cc.folio, tipoL:tm.l, tipoBg:tm.bg, tipoFg:tm.fg, estL:em.l, estBg:em.bg, estFg:em.fg, estDot:em.dot, cliente:cc.cliente, ciudad:cc.ciudad||'—', canal:cc.canal, pedidoTxt:(cc.pedido||cc.ov||'Sin pedido'), ov:(cc.ov||'Caso suelto'), producto:cc.producto||'—', motivoLargo:cc.motivoLargo||cc.motivo||'', resolL:this.casoResolMeta(cc.resolucion), costoFmt:(Number(cc.costo)>0?this.casoCop(cc.costo):'Sin costo'), costoColor:((cc.resolucion==='rechazado'||cc.resolucion==='pendiente')?'var(--text-body)':'var(--oda-sale,#B5503C)'), responsable:cc.responsable||'—', venceFmt:cc.vence?this.fmtFecha(cc.vence):'—', telFmt:this.casoTelFmt(cc),
+        hasAdjuntos:(cc.adjuntos||[]).length>0, adjuntosCount:(cc.adjuntos||[]).length, adjuntos:(cc.adjuntos||[]).map((a,i)=>({name:a.name,isImg:!!a.isImg,isPdf:!a.isImg,thumb:['#8A9B8A','#A78659','#6596A6','#B58A6A','#627B60'][i%5]})),
+        impactosTitle:applied?'Aplicado automáticamente al resolver':'Se aplicará automáticamente al resolver', sinImpactos:(cc.impactos||[]).length===0,
+        impactos:(cc.impactos||[]).map(k=>{ const m=this.casoImpactoMeta(k); return {l:m.l,color:m.color,applied:applied,pending:!applied,chipBg:applied?'rgba(98,123,96,0.12)':'var(--surface-card)',chipBorder:applied?'rgba(98,123,96,0.35)':'var(--border-subtle)',chipFg:applied?'#4C6149':'var(--text-body)'}; }),
+        costeoShow:(cc.impactos||[]).includes('inventario'), costeoTitulo:((cc.destino==='bodega')?'Reingreso a inventario':((cc.destino==='baja')?'Baja de inventario':((cc.destino==='cliente')?'Sin reingreso':((cc.tipo==='devolucion')?'Reingreso a inventario':'Salida de inventario')))), costeoNota:((cc.destino==='bodega')?'el producto regresó a bodega: se reingresa al inventario al costo con que salió, no al costo actual.':((cc.destino==='baja')?'el producto se dio de baja (dañado): sale del inventario como pérdida, no se reingresa.':((cc.destino==='cliente')?'el cliente conservó el producto original: no se reingresa a bodega.':((cc.tipo==='devolucion')?'el producto regresa al inventario valorado al costo con que salió, no al costo actual.':'sale una unidad nueva, descontada del inventario al costo actual de producción.')))),
+        destinoShow:(this.casoNeedsDestino(cc.tipo) && !!cc.destino), destinoLabel:this.casoDestinoLabel(cc.destino),
+        timeline:tl.map((e,i)=>{ const m=this.casoEstadoMeta(e.estado); return {label:m.l, fecha:this.fmtFecha(e.fecha), who:e.who||'', hasWho:!!e.who, nota:e.nota||'', hasNota:!!(e.nota&&e.nota.trim()), dot:m.dot, line:i<tl.length-1}; }),
+        canAdvance:cc.estado!=='cerrado', advanceLabel:(cc.estado==='abierto'?'Pasar a en gestión':(cc.estado==='gestion'?'Marcar resuelto':'Cerrar caso')), canClose:cc.estado==='resuelto' };
+      const wt=this.casoWaTemplates(cc); const defKey=(cc.estado==='cerrado')?'cierre':((cc.estado==='resuelto')?'solucion':'gestion'); const activeKey=st.casoWaTpl||defKey;
+      out.casoWaChips=[{k:'gestion',l:'En gestión'},{k:'solucion',l:'Solución'},{k:'cierre',l:'Cierre'}].map(x=>{ const a=x.k===activeKey; return {l:x.l, onClick:()=>this.setState({casoWaMsg:wt[x.k],casoWaTpl:x.k}), border:a?'#4C6149':'var(--border-subtle)', bg:a?'rgba(98,123,96,0.14)':'var(--surface-card)', fg:a?'#3A4A38':'var(--text-body)'}; });
+      out.casoWaMsg=(st.casoWaMsg!=null)?st.casoWaMsg:wt[defKey]; out.onCasoWaInput=(e)=>this.setState({casoWaMsg:e.target.value}); out.casoWaSendBtn=()=>this.casoWaSend(cc);
+    } else { out.cd={folio:'',tipoL:'',tipoBg:'',tipoFg:'',estL:'',estBg:'',estFg:'',estDot:'',cliente:'',ciudad:'',canal:'',pedidoTxt:'',ov:'',producto:'',motivoLargo:'',resolL:'',costoFmt:'',costoColor:'',responsable:'',venceFmt:'',telFmt:'',hasAdjuntos:false,adjuntosCount:0,adjuntos:[],impactosTitle:'',sinImpactos:false,impactos:[],costeoShow:false,costeoTitulo:'',costeoNota:'',destinoShow:false,destinoLabel:'',timeline:[],canAdvance:false,advanceLabel:'',canClose:false}; out.casoWaChips=[]; out.casoWaMsg=''; out.onCasoWaInput=()=>{}; out.casoWaSendBtn=()=>{}; }
+    // modal nuevo caso
+    out.casoModalOpen=st.casoModal; out.closeCasoModalBtn=()=>this.cerrarCasoModal();
+    const cdft=st.casoDraft||{};
+    out.casoDraft={pedido:cdft.pedido||'',cliente:cdft.cliente||'',ciudad:cdft.ciudad||'',telefono:cdft.telefono||'',canal:cdft.canal||'WhatsApp',producto:cdft.producto||'',motivo:cdft.motivo||'',resolucion:cdft.resolucion||'pendiente',destino:cdft.destino||'',costo:cdft.costo||'',responsable:cdft.responsable||'',vence:cdft.vence||''};
+    out.casoShowDestino=this.casoNeedsDestino(cdft.tipo);
+    out.onCasoDraft=(e)=>this.casoDraftInput(e.target.name, e.target.value);
+    out.casoConPedido=!cdft.sinPedido; out.casoToggleSinPedido=()=>this.setState({casoDraft:{...cdft, sinPedido:!cdft.sinPedido}});
+    out.casoPedToggle={aBg:!cdft.sinPedido?'var(--brand-primary)':'var(--surface-card)',aFg:!cdft.sinPedido?'var(--text-on-brand)':'var(--text-muted)',bBg:cdft.sinPedido?'var(--brand-primary)':'var(--surface-card)',bFg:cdft.sinPedido?'var(--text-on-brand)':'var(--text-muted)'};
+    out.casoAplicarPedidoBtn=()=>this.casoAplicarPedido();
+    out.casoTipoPicker=this.casoTipoOrder().map(k=>{ const a=cdft.tipo===k; const m=this.casoTipoMeta(k); return {l:m.l, onClick:()=>this.casoDraftInput('tipo',k), border:a?m.fg:'var(--border-subtle)', bg:a?m.bg:'var(--surface-card)', fg:a?m.fg:'var(--text-body)'}; });
+    const impSel=cdft.impactos||[];
+    out.casoImpactoPicker=['finanzas','inventario','cxp'].map(k=>{ const a=impSel.includes(k); const m=this.casoImpactoMeta(k); return {l:m.l, dot:m.color, onClick:()=>this.casoToggleImpacto(k), border:a?m.color:'var(--border-subtle)', bg:a?'var(--surface-raised)':'var(--surface-card)', fg:a?'var(--text-strong)':'var(--text-muted)'}; });
+    const cadj=cdft.adjuntos||[];
+    out.casoDraftHasAdjuntos=cadj.length>0; out.casoDraftAdjuntos=cadj.map((a,i)=>({name:a.name, onRemove:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.casoQuitarAdjunto(i); }})); out.onCasoFiles=(e)=>this.casoFilesInput(e); out.saveCasoBtn=()=>this.saveCaso();
+
     if(st.modal==='venta'||st.modal==='cotizacion'||st.modal==='msvc'){ const d=st.draft;
       out.ventasProdOptions=this.ventasProductoOptions().map(o=>({codigo:o.codigo,label:o.codigo+' · '+o.nombre+' ('+this.fmt(o.precio)+')'}));
       out.onVentaItemsFile=(e)=>this.onVentaItemsFile(e); out.descargarPlantillaItems=()=>this.descargarPlantillaItems();
