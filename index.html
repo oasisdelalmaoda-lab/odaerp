@@ -591,7 +591,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#0b70702b7b256e666a62672b7676" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#92e9e9b2e2bcf7fff3fbfeb2efef" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -711,12 +711,12 @@ img { max-width: 100%; display: block; }
                   <tbody>
                     <sc-for list="{{ serviciosView }}" as="s" hint-placeholder-count="5">
                       <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
-                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ s.codigo }}</td>
+                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ s.codigo }}<span style="display:block;font-size:11px;color:var(--text-muted);font-weight:400;">{{ s.fechaFmt }}</span></td>
                         <td style="padding:13px 16px;font-weight:600;">{{ s.nombre }}<sc-if value="{{ s.nota }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:11.5px;color:var(--text-muted);font-weight:400;">{{ s.nota }}</span></sc-if></td>
                         <td style="padding:13px 16px;"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;background:{{ s.categoriaBg }};color:{{ s.categoriaFg }};">{{ s.categoria }}</span></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ s.proveedorNombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;">{{ s.frecuencia }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ s.costoFmt }}<span style="display:block;font-size:11px;color:var(--text-muted);font-weight:400;">IVA {{ s.iva }}%</span></td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ s.costoFmt }}<span style="display:block;font-size:11px;color:var(--text-muted);font-weight:400;">IVA {{ s.iva }}%</span><sc-if value="{{ s.tienePorPagar }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;margin-top:4px;font-size:10px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(181,80,60,0.12);color:var(--oda-sale,#B5503C);">Por pagar {{ s.saldoFmt }}</span></sc-if></td>
                         <td style="padding:13px 16px;text-align:right;">
                           <sc-if value="{{ canWrite }}" hint-placeholder-val="{{ true }}">
                             <button onClick="{{ s.onEdit }}" title="Editar" style="background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;display:inline-flex;padding:6px;border-radius:8px;" style-hover="color:var(--brand-primary);border-color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -3017,7 +3017,9 @@ img { max-width: 100%; display: block; }
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Costo sin IVA (COP)<input name="costo" type="number" value="{{ draft.costo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">IVA (%)<input name="iva" type="number" min="0" max="100" value="{{ draft.iva }}" onInput="{{ onDraftInput }}" placeholder="19" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Frecuencia<select name="frecuencia" value="{{ draft.frecuencia }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="Puntual">Puntual</option><option value="Por unidad">Por unidad</option><option value="Mensual">Mensual</option><option value="Bimestral">Bimestral</option><option value="Trimestral">Trimestral</option><option value="Semestral">Semestral</option><option value="Anual">Anual</option></select></label>
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Nota (opcional)<input name="nota" value="{{ draft.nota }}" onInput="{{ onDraftInput }}" placeholder="Detalle del servicio" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Fecha<input name="fecha" type="date" value="{{ draft.fecha }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Ya pagado (COP)<input name="pagado" type="number" value="{{ draft.pagado }}" onInput="{{ onDraftInput }}" placeholder="0" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Nota (opcional)<input name="nota" value="{{ draft.nota }}" onInput="{{ onDraftInput }}" placeholder="Detalle del servicio" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
             </sc-if>
 
@@ -4900,11 +4902,11 @@ class Component extends DCLogic {
 
   // ---- servicios ----
   categoriaServStyle(c){ const m={ 'Maquila':{bg:'rgba(167,134,89,0.2)',fg:'#7A5E36'}, 'Logística':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Marketing':{bg:'rgba(156,151,162,0.24)',fg:'#615C6B'}, 'Servicios profesionales':{bg:'rgba(122,147,121,0.18)',fg:'#4C6149'}, 'Mantenimiento':{bg:'rgba(193,170,129,0.28)',fg:'#7A6035'}, 'Arriendo':{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
-  nuevoServicio(){ this.open('servicio',{ codigo:this.nextCode('SVC-',this.state.servicios||[]), nombre:'', categoria:'Servicios profesionales', proveedorCodigo:'', costo:'', iva:19, frecuencia:'Mensual', nota:'', _new:true }); }
+  nuevoServicio(){ this.open('servicio',{ codigo:this.nextCode('SVC-',this.state.servicios||[]), nombre:'', categoria:'Servicios profesionales', proveedorCodigo:'', costo:'', iva:19, frecuencia:'Mensual', fecha:new Date().toISOString().slice(0,10), pagado:'', nota:'', _new:true }); }
   editServicio(s){ this.open('servicio',{...s}); }
   saveServicio(){ const d=this.state.draft; if(!d.nombre){ this.toast('Escribe el nombre del servicio'); return; }
     let list=(this.state.servicios||[]).slice(); const i=list.findIndex(x=>x.codigo===d.codigo);
-    const row={codigo:d.codigo,nombre:d.nombre,categoria:d.categoria||'Servicios profesionales',proveedorCodigo:d.proveedorCodigo||'',costo:Number(d.costo)||0,iva:(d.iva===''||d.iva===undefined?19:Number(d.iva)),frecuencia:d.frecuencia||'Puntual',nota:d.nota||''};
+    const row={codigo:d.codigo,nombre:d.nombre,categoria:d.categoria||'Servicios profesionales',proveedorCodigo:d.proveedorCodigo||'',costo:Number(d.costo)||0,iva:(d.iva===''||d.iva===undefined?19:Number(d.iva)),frecuencia:d.frecuencia||'Puntual',fecha:(d.fecha||new Date().toISOString().slice(0,10)),pagado:Number(String(d.pagado||'').toString().replace(/[^\d.-]/g,''))||0,nota:d.nota||''};
     if(i>=0 && !d._new) list[i]=row; else list.push(row);
     this.setState({servicios:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveServicio(row); this.toast('Servicio guardado'); }
 
@@ -5907,6 +5909,10 @@ Instrucciones de respuesta:
 
   // --- cuentas por pagar / cobrar ---
   finPorPagar(){ return (this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenSaldo(o)>0.5); }
+  servicioTotal(s){ const c=Number(s.costo)||0; const iva=Number(s.iva)||0; return Math.round(c*(1+iva/100)); }
+  servicioSaldo(s){ return this.servicioTotal(s) - (Number(s.pagado)||0); }
+  finServiciosPorPagar(){ return (this.state.servicios||[]).filter(s=> (Number(s.costo)||0)>0 && this.servicioSaldo(s)>0.5 ); }
+  pagarServicio(s){ const saldo=this.servicioSaldo(s); if(saldo<=0){ this.toast('Este servicio ya está pagado'); return; } if(!window.confirm('¿Registrar el pago de '+this.fmt(Math.round(saldo))+' del servicio '+(s.nombre||s.codigo)+'? Se creará un egreso en Caja.')) return; const mv={id:'mv'+Date.now(), tipo:'egreso', fecha:new Date().toISOString().slice(0,10), cuenta:this.primeraCuenta(), monto:Math.round(saldo), categoria:'Servicios', concepto:'Servicio '+(s.codigo||'')+' · '+(s.nombre||'')+(s.proveedorCodigo?(' · '+this.provNombre(s.proveedorCodigo)):''), servicioCodigo:s.codigo}; const mlist=[mv].concat(this.state.movimientos||[]); const slist=(this.state.servicios||[]).map(x=> x.codigo===s.codigo? {...x, pagado:this.servicioTotal(s)} : x); this.setState({movimientos:mlist, servicios:slist},()=>this.persist()); if(this.cloudOn()){ this.cloudSaveMovimiento(mv); const sv=slist.find(x=>x.codigo===s.codigo); if(sv) this.cloudSaveServicio(sv); } this.toast('Servicio pagado · egreso registrado en Finanzas'); }
   finPorCobrar(){ return (this.state.ventas||[]).filter(v=>v.origen!=='historico' && !v.cancelada && this.ventaSaldo(v)>0.5 && this.metodoTipo(v.metodoPago)!=='diferido'); }
   // --- métodos de pago diferidos y recaudos por cruzar ---
   seedMetodosFin(){ return [
@@ -6553,7 +6559,7 @@ Instrucciones de respuesta:
       const activas=st.ordenes.filter(o=>o.estado!=='recibida'&&o.estado!=='rechazada');
       out.kpiActivas=activas.length;
       out.kpiPorAprobar=porAprobar;
-      const saldo=st.ordenes.filter(o=>o.estado!=='rechazada').reduce((a,o)=>{ const s=this.ordenSaldo(o); return a+(s>0?s:0); },0);
+      const saldo=st.ordenes.filter(o=>o.estado!=='rechazada').reduce((a,o)=>{ const s=this.ordenSaldo(o); return a+(s>0?s:0); },0) + this.finServiciosPorPagar().reduce((a,s)=>a+this.servicioSaldo(s),0);
       out.kpiPorPagar=this.fmt(saldo);
       const bajos=st.materias.filter(m=>Math.round(this.materiaStockActual(m))<(Number(m.stockMinimo)||0));
       out.kpiStockBajo=bajos.length;
@@ -6582,7 +6588,7 @@ Instrucciones de respuesta:
     if(out.showServicios){
       out.qSvc=st.qSvc; out.onQSvc=(e)=>this.setState({qSvc:e.target.value});
       const q=(st.qSvc||'').toLowerCase();
-      out.serviciosView=(st.servicios||[]).filter(s=> !q || (s.nombre+s.codigo+(s.categoria||'')).toLowerCase().includes(q)).map(s=>{ const cs=this.categoriaServStyle(s.categoria); return {...s, categoriaBg:cs.bg, categoriaFg:cs.fg, categoria:(s.categoria||'—'), costoFmt:this.fmt(s.costo), proveedorNombre:this.provNombre(s.proveedorCodigo), frecuencia:(s.frecuencia||'—'), onEdit:()=>this.editServicio(s)}; });
+      out.serviciosView=(st.servicios||[]).filter(s=> !q || (s.nombre+s.codigo+(s.categoria||'')).toLowerCase().includes(q)).map(s=>{ const cs=this.categoriaServStyle(s.categoria); const saldo=this.servicioSaldo(s); return {...s, categoriaBg:cs.bg, categoriaFg:cs.fg, categoria:(s.categoria||'—'), costoFmt:this.fmt(s.costo), proveedorNombre:this.provNombre(s.proveedorCodigo), frecuencia:(s.frecuencia||'—'), fechaFmt:(s.fecha?this.fmtFecha(s.fecha):'—'), tienePorPagar:((Number(s.costo)||0)>0 && saldo>0.5), saldoFmt:this.fmt(Math.round(saldo)), onEdit:()=>this.editServicio(s)}; });
       out.serviciosVacio=(st.servicios||[]).length===0;
       out.nuevoServicio=()=>this.nuevoServicio();
     }
@@ -6810,7 +6816,7 @@ Instrucciones de respuesta:
         out.invIniFmt=this.fmt(Math.round(vIni)); out.invFinFmt=this.fmt(Math.round(vFin)); out.invEntFmt=this.fmt(Math.round(ent)); out.invSalFmt=this.fmt(Math.round(sal));
         out.invVarFmt=(vFin-vIni>=0?'+':'−')+this.fmt(Math.abs(Math.round(vFin-vIni))); out.invMesLabel=this.mesLabel(ym); }
       out.frCaja=this.fmt(Math.round(this.cajaSaldoTotal()));
-      const pp=this.finPorPagar().reduce((a,o)=>a+this.ordenSaldo(o),0); out.frPorPagar=this.fmt(Math.round(pp)); out.frPorPagarN=this.finPorPagar().length;
+      const pp=this.finPorPagar().reduce((a,o)=>a+this.ordenSaldo(o),0) + this.finServiciosPorPagar().reduce((a,s)=>a+this.servicioSaldo(s),0); out.frPorPagar=this.fmt(Math.round(pp)); out.frPorPagarN=this.finPorPagar().length + this.finServiciosPorPagar().length;
       const pc=this.finPorCobrar().reduce((a,v)=>a+this.ventaSaldo(v),0); out.frPorCobrar=this.fmt(Math.round(pc)); out.frPorCobrarN=this.finPorCobrar().length;
       out.frIngresos=this.fmt(Math.round(pyg.ingresos));
       out.frUtilidad=this.fmt(Math.round(pyg.operacional)); out.frUtilidadColor=pyg.operacional>=0?'#4C6149':'var(--oda-sale)';
@@ -6826,12 +6832,15 @@ Instrucciones de respuesta:
     }
     if(out.showFinPagar){
       const ords=this.finPorPagar();
-      const list=ords.map(o=>{ const saldo=this.ordenSaldo(o); const fechaRef=(o.factura&&o.factura.fecha)||o.fecha; const dias=this.diasDesde(fechaRef); const bucket=this.agingBucket(dias); return {id:o.id, numero:o.numero, proveedor:this.provNombre(o.proveedorCodigo), factura:(o.factura&&o.factura.numero)||'\u2014', fechaFmt:this.fmtFecha(fechaRef), totalFmt:this.fmt(Math.round(this.ordenTotal(o))), pagadoFmt:this.fmt(Math.round(this.ordenPagado(o))), saldo, saldoFmt:this.fmt(Math.round(saldo)), dias, diasTxt:(dias>0?dias+' d\u00edas vencido':(dias===0?'Vence hoy':'Al d\u00eda')), vencido:dias>0, vencidoColor:(dias>0?'var(--oda-sale)':(dias===0?'#9A7320':'#4C6149')), onPagar:()=>this.openPago(o), onVer:()=>this.verOrden(o)}; }).sort((a,b)=>b.dias-a.dias);
-      out.fpList=list; out.fpVacio=list.length===0;
-      const tot=ords.reduce((a,o)=>a+this.ordenSaldo(o),0); out.fpTotal=this.fmt(Math.round(tot));
-      const ag={corriente:0,d30:0,d60:0,d60p:0}; list.forEach(x=>{ ag[x.bucket]+=x.saldo; });
+      const list=ords.map(o=>{ const saldo=this.ordenSaldo(o); const fechaRef=(o.factura&&o.factura.fecha)||o.fecha; const dias=this.diasDesde(fechaRef); const bucket=this.agingBucket(dias); return {id:o.id, numero:o.numero, proveedor:this.provNombre(o.proveedorCodigo), factura:(o.factura&&o.factura.numero)||'\u2014', fechaFmt:this.fmtFecha(fechaRef), totalFmt:this.fmt(Math.round(this.ordenTotal(o))), pagadoFmt:this.fmt(Math.round(this.ordenPagado(o))), saldo, saldoFmt:this.fmt(Math.round(saldo)), dias, diasTxt:(dias>0?dias+' d\u00edas vencido':(dias===0?'Vence hoy':'Al d\u00eda')), vencido:dias>0, vencidoColor:(dias>0?'var(--oda-sale)':(dias===0?'#9A7320':'#4C6149')), onPagar:()=>this.openPago(o), onVer:()=>this.verOrden(o)}; });
+      const svcs=this.finServiciosPorPagar();
+      const svcRows=svcs.map(s=>{ const saldo=this.servicioSaldo(s); const fechaRef=s.fecha||''; const dias=this.diasDesde(fechaRef); const bucket=this.agingBucket(dias); return {id:'svc-'+s.codigo, numero:s.codigo, proveedor:(this.provNombre(s.proveedorCodigo)||s.nombre), factura:'Servicio · '+(s.nombre||''), fechaFmt:this.fmtFecha(fechaRef), totalFmt:this.fmt(this.servicioTotal(s)), pagadoFmt:this.fmt(Math.round(Number(s.pagado)||0)), saldo, saldoFmt:this.fmt(Math.round(saldo)), dias, diasTxt:(dias>0?dias+' d\u00edas vencido':(dias===0?'Vence hoy':'Al d\u00eda')), vencido:dias>0, vencidoColor:(dias>0?'var(--oda-sale)':(dias===0?'#9A7320':'#4C6149')), bucket, esServicio:true, onPagar:()=>this.pagarServicio(s), onVer:()=>this.editServicio(s)}; });
+      const allList=list.concat(svcRows).sort((a,b)=>b.dias-a.dias);
+      out.fpList=allList; out.fpVacio=allList.length===0;
+      const tot=ords.reduce((a,o)=>a+this.ordenSaldo(o),0) + svcs.reduce((a,s)=>a+this.servicioSaldo(s),0); out.fpTotal=this.fmt(Math.round(tot));
+      const ag={corriente:0,d30:0,d60:0,d60p:0}; allList.forEach(x=>{ ag[x.bucket]+=x.saldo; });
       out.fpCorriente=this.fmt(Math.round(ag.corriente)); out.fpD30=this.fmt(Math.round(ag.d30)); out.fpD60=this.fmt(Math.round(ag.d60)); out.fpD60p=this.fmt(Math.round(ag.d60p));
-      out.fpVencidoN=list.filter(x=>x.vencido).length; out.fpCanWrite=out.canWriteFin;
+      out.fpVencidoN=allList.filter(x=>x.vencido).length; out.fpCanWrite=out.canWriteFin;
     }
     if(out.showFinCobrar){
       const vsAll=this.finPorCobrar();
