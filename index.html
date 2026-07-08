@@ -453,6 +453,22 @@ img { max-width: 100%; display: block; }
             </div>
           </sc-if>
           </sc-if>
+          <sc-if value="{{ canMarketing }}" hint-placeholder-val="{{ false }}">
+          <div class="oda-navitem" onClick="{{ nav.marketing }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ mktNavColor }};background:{{ mktNavBg }};">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+            <span style="flex:1;">Marketing</span>
+          </div>
+          <sc-if value="{{ showMarketingSub }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:2px 0 6px 0;padding-left:8px;">
+              <sc-if value="{{ vM_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktResumen.c }};background:{{ subMktResumen.bg }};border-left:2px solid {{ subMktResumen.b }};">Resumen</div></sc-if>
+              <sc-if value="{{ vM_camp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.campanas }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktCamp.c }};background:{{ subMktCamp.bg }};border-left:2px solid {{ subMktCamp.b }};">Campañas</div></sc-if>
+              <sc-if value="{{ vM_recom }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.recom }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktRecom.c }};background:{{ subMktRecom.bg }};border-left:2px solid {{ subMktRecom.b }};">Recomendaciones IA</div></sc-if>
+              <sc-if value="{{ vM_creativos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.creativos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktCreativos.c }};background:{{ subMktCreativos.bg }};border-left:2px solid {{ subMktCreativos.b }};">Creativos</div></sc-if>
+              <sc-if value="{{ vM_publicos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.publicos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktPublicos.c }};background:{{ subMktPublicos.bg }};border-left:2px solid {{ subMktPublicos.b }};">Públicos</div></sc-if>
+              <sc-if value="{{ vM_conexion }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.conexion }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktConexion.c }};background:{{ subMktConexion.bg }};border-left:2px solid {{ subMktConexion.b }};">Conexión Meta</div></sc-if>
+            </div>
+          </sc-if>
+          </sc-if>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
             <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:18px 10px 8px;">Administración</div>
             <div class="oda-navitem" onClick="{{ nav.adminTablero }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ adminTabNavColor }};background:{{ adminTabNavBg }};">
@@ -600,7 +616,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#8bf0f0abfba5eee6eae2e7abf6f6" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#52292972227c373f333b3e722f2f" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1049,6 +1065,7 @@ img { max-width: 100%; display: block; }
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Inventario</th>
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Ventas</th>
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Finanzas</th>
+                    <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Marketing</th>
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Admin</th>
                   </tr></thead>
                   <tbody>
@@ -1066,6 +1083,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.c3click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c3bg }};color:{{ r.c3fg }};">{{ r.c3 }}</button></td>
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.c4click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c4bg }};color:{{ r.c4fg }};">{{ r.c4 }}</button></td>
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.c5click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c5bg }};color:{{ r.c5fg }};">{{ r.c5 }}</button></td>
+                        <td style="padding:8px;text-align:center;"><button onClick="{{ r.c6click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c6bg }};color:{{ r.c6fg }};">{{ r.c6 }}</button></td>
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.onToggleAdmin }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.adminBg }};color:{{ r.adminFg }};">{{ r.adminLabel }}</button></td>
                       </tr>
                     </sc-for>
@@ -3042,6 +3060,299 @@ img { max-width: 100%; display: block; }
             </div>
           </sc-if>
 
+          <!-- ===== MARKETING · RESUMEN ===== -->
+          <sc-if value="{{ showMktResumen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;padding:11px 16px;border-radius:var(--radius-md);background:{{ mktEstadoBg }};color:{{ mktEstadoFg }};font-size:12.5px;font-weight:700;">
+                <span style="width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0;"></span>
+                <span style="flex:1;min-width:180px;">{{ mktEstadoConexionLabel }} · {{ mktPeriodo }}</span>
+                <span style="font-weight:600;opacity:0.85;">{{ mktBannerNota }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Inversión</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:31px;font-weight:600;line-height:1;margin-top:10px;">{{ mktKpiSpend }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">gasto en pauta · 28 días</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">ROAS</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ mktKpiRoas }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">retorno sobre la inversión</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">CPA</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:31px;font-weight:600;line-height:1;margin-top:10px;">{{ mktKpiCpa }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">costo por venta</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Ingresos atribuidos</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:31px;font-weight:600;line-height:1;margin-top:10px;color:var(--brand-primary);">{{ mktKpiIngresos }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">ventas desde anuncios</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+                <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:15px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Ventas</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-top:7px;">{{ mktKpiVentas }}</div>
+                </div>
+                <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:15px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">CTR</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-top:7px;">{{ mktKpiCtr }}</div>
+                </div>
+                <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:15px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Alcance</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-top:7px;">{{ mktKpiAlcance }}</div>
+                </div>
+                <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:15px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">CPM</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-top:7px;">{{ mktKpiCpm }}</div>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:20px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Resultados por día</h3>
+                  <span style="font-size:12px;color:var(--text-muted);">Últimos 28 días</span>
+                </div>
+                <svg viewBox="0 0 {{ mktSparkW }} {{ mktSparkH }}" preserveAspectRatio="none" style="width:100%;height:150px;display:block;">
+                  <path d="{{ mktSparkFill }}" fill="rgba(167,134,89,0.14)"></path>
+                  <path d="{{ mktSparkPath }}" fill="none" stroke="var(--brand-primary)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
+              </div>
+              <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                  <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Campañas destacadas</h3>
+                    <button onClick="{{ subnavMkt.campanas }}" style="font-size:12.5px;font-weight:700;color:var(--brand-primary);background:none;border:none;cursor:pointer;font-family:inherit;">Ver todas →</button>
+                  </div>
+                  <div>
+                    <sc-for list="{{ mktTop }}" as="c" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border-subtle);">
+                        <span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ c.moodColor }};"></span>
+                        <span style="flex:1;min-width:0;">
+                          <span style="display:block;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.nombre }}</span>
+                          <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:1px;">{{ c.objetivo }} · {{ c.spendFmt }}</span>
+                        </span>
+                        <span style="text-align:right;flex-shrink:0;">
+                          <span style="display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;line-height:1;color:{{ c.roasColor }};">{{ c.roasFmt }}</span>
+                          <span style="display:block;font-size:11px;color:var(--text-muted);margin-top:2px;">{{ c.ingresosFmt }}</span>
+                        </span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                  <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:9px;">
+                    <span style="color:var(--oda-sale);display:flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-9-15.5a1 1 0 0 0-1.7 0L2.3 18a1 1 0 0 0 .9 1.5h17.6a1 1 0 0 0 .9-1.5Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Alertas</h3>
+                  </div>
+                  <div>
+                    <sc-for list="{{ mktAlertas }}" as="a" hint-placeholder-count="3">
+                      <div style="padding:13px 20px;border-bottom:1px solid var(--border-subtle);">
+                        <div style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:{{ a.color }};margin-bottom:4px;">{{ a.tipo }}</div>
+                        <div style="font-size:12.5px;color:var(--text-body);line-height:1.5;text-wrap:pretty;">{{ a.txt }}</div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ mktAlertasVacio }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:24px 20px;font-size:13px;color:var(--text-muted);text-align:center;">Sin alertas por ahora.</div>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== MARKETING · CAMPAÑAS ===== -->
+          <sc-if value="{{ showMktCampanas }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+                <button onClick="{{ mktFiltroTodas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);cursor:pointer;background:{{ mktFA.bg }};color:{{ mktFA.fg }};">Todas</button>
+                <button onClick="{{ mktFiltroActivas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);cursor:pointer;background:{{ mktFB.bg }};color:{{ mktFB.fg }};">Activas</button>
+                <button onClick="{{ mktFiltroPausadas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);cursor:pointer;background:{{ mktFC.bg }};color:{{ mktFC.fg }};">Pausadas</button>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                <div style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:940px;">
+                    <thead>
+                      <tr style="background:var(--surface-linen);text-align:left;">
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Campaña</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Inversión</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Ingresos</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">ROAS</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">CPA</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">CTR</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Frec.</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Result.</th>
+                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <sc-for list="{{ mktCampanas }}" as="c" hint-placeholder-count="6">
+                        <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
+                          <td style="padding:13px 16px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                              <span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ c.moodColor }};"></span>
+                              <span style="min-width:0;">
+                                <span style="display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.nombre }}</span>
+                                <span style="display:block;font-size:11px;font-weight:700;margin-top:2px;color:{{ c.objColor }};">{{ c.objetivo }} · {{ c.moodLabel }}</span>
+                              </span>
+                            </div>
+                          </td>
+                          <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ c.spendFmt }}</td>
+                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.ingresosFmt }}</td>
+                          <td style="padding:13px 16px;text-align:right;font-weight:800;white-space:nowrap;color:{{ c.roasColor }};">{{ c.roasFmt }}</td>
+                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.cpaFmt }}</td>
+                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.ctrFmt }}</td>
+                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.frecuencia }}</td>
+                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;"><span style="font-weight:700;">{{ c.resultados }}</span> <span style="color:var(--text-muted);font-size:11px;">{{ c.resLabel }}</span></td>
+                          <td style="padding:13px 16px;text-align:center;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;white-space:nowrap;background:{{ c.estBg }};color:{{ c.estFg }};">{{ c.estLabel }}</span></td>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== MARKETING · RECOMENDACIONES IA ===== -->
+          <sc-if value="{{ showMktRecom }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="background:#2A2419;color:var(--text-inverse);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:22px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:-40px;bottom:-50px;color:var(--brand-primary);opacity:0.12;"><svg width="220" height="220" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"/><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"/></svg></div>
+                <div style="position:relative;max-width:640px;">
+                  <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:10px;">Experto en Meta Ads · IA</div>
+                  <h2 style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;margin:0 0 10px;line-height:1.1;text-wrap:balance;color:var(--text-inverse);">Análisis experto de tus campañas</h2>
+                  <p style="font-size:14px;line-height:1.6;color:rgba(251,248,242,0.72);margin:0 0 18px;text-wrap:pretty;">La IA revisa el rendimiento de tu pauta, lo cruza con tus ventas del ERP y te dice qué cambiar: presupuesto, públicos, tipo de campaña y creativos.</p>
+                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <button onClick="{{ mktGenAI }}" disabled="{{ mktAiLoading }}" style="display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:14px;font-weight:700;padding:12px 22px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;">{{ mktGenBtnLabel }}</button>
+                    <span style="font-size:12px;color:rgba(251,248,242,0.5);">{{ mktAiTsFmt }}</span>
+                  </div>
+                </div>
+              </div>
+              <sc-if value="{{ mktAiHasError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:13px;color:#B5503C;background:rgba(181,80,60,0.09);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:20px;font-weight:600;">{{ mktAiError }}</div>
+              </sc-if>
+              <sc-if value="{{ mktAiHasAnswer }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px 26px;margin-bottom:22px;">
+                  <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:12px;">Análisis generado</div>
+                  <div style="font-size:14px;line-height:1.7;color:var(--text-body);white-space:pre-wrap;text-wrap:pretty;">{{ mktAiAnswerClean }}</div>
+                </div>
+              </sc-if>
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:14px;">Recomendaciones rápidas</div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+                <sc-for list="{{ mktInsights }}" as="i" hint-placeholder-count="4">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;border-left:3px solid {{ i.tagColor }};">
+                    <div style="font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:{{ i.tagColor }};margin-bottom:7px;">{{ i.tag }}</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:6px;line-height:1.2;">{{ i.titulo }}</div>
+                    <div style="font-size:13px;line-height:1.6;color:var(--text-body);text-wrap:pretty;">{{ i.texto }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== MARKETING · CREATIVOS ===== -->
+          <sc-if value="{{ showMktCreativos }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+                <sc-for list="{{ mktCreativos }}" as="cr" hint-placeholder-count="6">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                    <div style="height:130px;background:{{ cr.moodColor }};position:relative;display:flex;align-items:flex-end;padding:14px;">
+                      <span style="position:absolute;top:12px;left:12px;font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,0.22);padding:4px 10px;border-radius:99px;">{{ cr.formato }}</span>
+                      <span style="position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:{{ cr.estBg }};color:{{ cr.estFg }};">{{ cr.estLabel }}</span>
+                      <span style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,0.25);">{{ cr.moodLabel }}</span>
+                    </div>
+                    <div style="padding:16px 18px;">
+                      <div style="font-size:13.5px;font-weight:700;margin-bottom:6px;">{{ cr.nombre }}</div>
+                      <div style="font-size:12.5px;color:var(--text-muted);line-height:1.5;font-style:italic;margin-bottom:14px;text-wrap:pretty;">“{{ cr.copy }}”</div>
+                      <div style="display:flex;gap:14px;padding-top:12px;border-top:1px solid var(--border-subtle);">
+                        <span style="flex:1;"><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CTR</span><span style="display:block;font-weight:700;font-size:14px;margin-top:2px;">{{ cr.ctrFmt }}</span></span>
+                        <span style="flex:1;"><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Gasto</span><span style="display:block;font-weight:700;font-size:14px;margin-top:2px;">{{ cr.spendFmt }}</span></span>
+                        <span style="flex:1;"><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Ventas</span><span style="display:block;font-weight:700;font-size:14px;margin-top:2px;">{{ cr.resultados }}</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== MARKETING · PÚBLICOS ===== -->
+          <sc-if value="{{ showMktPublicos }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <sc-for list="{{ mktPublicos }}" as="a" hint-placeholder-count="5">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                  <div style="flex:1;min-width:220px;">
+                    <div style="display:flex;align-items:center;gap:9px;margin-bottom:5px;">
+                      <span style="font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px;color:#fff;background:{{ a.tipoColor }};">{{ a.tipo }}</span>
+                      <span style="font-size:14.5px;font-weight:700;">{{ a.nombre }}</span>
+                    </div>
+                    <div style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">{{ a.detalle }} · {{ a.ubicacion }} · {{ a.edad }} años</div>
+                  </div>
+                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Inversión</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.spendFmt }}</div></div>
+                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Alcance</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.alcanceFmt }}</div></div>
+                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CTR</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.ctrFmt }}</div></div>
+                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Ventas</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.resultados }}</div></div>
+                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CPA</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.cpaFmt }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ===== MARKETING · CONEXIÓN ===== -->
+          <sc-if value="{{ showMktConexion }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:720px;">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:28px 30px;margin-bottom:20px;">
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                  <div style="width:54px;height:54px;border-radius:var(--radius-md);background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 5.99 4.388 10.954 10.125 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.469h-2.796v8.385C19.612 22.954 24 17.99 24 12z"/></svg>
+                  </div>
+                  <div style="flex:1;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0;">Meta Business · Anuncios</h3>
+                    <div style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;margin-top:5px;padding:4px 11px;border-radius:99px;background:{{ mktEstadoBg }};color:{{ mktEstadoFg }};"><span style="width:7px;height:7px;border-radius:50%;background:currentColor;"></span>{{ mktEstadoConexionLabel }}</div>
+                  </div>
+                </div>
+                <p style="font-size:13.5px;color:var(--text-body);line-height:1.6;margin:0 0 20px;text-wrap:pretty;">Conecta la cuenta publicitaria de Oasis del Alma para traer campañas, métricas y creativos en tiempo real. Por ahora el módulo funciona con datos de demostración.</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;">
+                  <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 16px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Cuenta</div><div style="font-weight:700;font-size:13.5px;margin-top:3px;">{{ mktCuentaNombre }}</div></div>
+                  <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 16px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Ad Account ID</div><div style="font-weight:700;font-size:13.5px;margin-top:3px;">{{ mktCuentaId }}</div></div>
+                  <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 16px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Página</div><div style="font-weight:700;font-size:13.5px;margin-top:3px;">{{ mktCuentaPagina }}</div></div>
+                  <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 16px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Píxel</div><div style="font-weight:700;font-size:13.5px;margin-top:3px;">{{ mktCuentaPixel }}</div></div>
+                </div>
+                <div style="border-top:1px solid var(--border-subtle);padding-top:20px;">
+                  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:6px;">Tu Ad Account ID
+                    <input value="{{ mktAdAccountId }}" onInput="{{ mktSetAcct }}" placeholder="act_1234567890" style="display:block;width:100%;box-sizing:border-box;margin-top:6px;font-family:inherit;font-size:14px;padding:11px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-card);color:var(--text-strong);">
+                  </label>
+                  <p style="font-size:11.5px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">Lo encuentras en el Administrador de anuncios de Meta, arriba a la izquierda (empieza por <strong>act_</strong>).</p>
+                  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                    <button onClick="{{ mktSyncFn }}" disabled="{{ mktLiveLoading }}" style="display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px 22px;border-radius:var(--radius-pill);background:#1877F2;color:#fff;border:none;cursor:pointer;">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                      {{ mktSyncBtnLabel }}
+                    </button>
+                    <sc-if value="{{ mktUsingLive }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ mktUsarDemoFn }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);cursor:pointer;">Ver datos de demostración</button>
+                    </sc-if>
+                    <span style="font-size:12px;color:var(--text-muted);">{{ mktLiveTsFmt }}</span>
+                  </div>
+                  <sc-if value="{{ mktLiveHasError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12.5px;color:#B5503C;background:rgba(181,80,60,0.09);border-radius:var(--radius-sm);padding:10px 14px;margin-top:14px;font-weight:600;line-height:1.5;">{{ mktLiveError }}</div>
+                  </sc-if>
+                </div>
+              </div>
+              <div style="background:rgba(167,134,89,0.08);border:1px solid var(--border-brand);border-radius:var(--radius-md);padding:18px 22px;font-size:12.5px;color:var(--text-body);line-height:1.65;text-wrap:pretty;">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:var(--brand-ink);">Cómo activar los datos reales (una sola vez)</div>
+                <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;">
+                  <li>En <strong>business.facebook.com</strong> → Configuración del negocio → <strong>Usuarios del sistema</strong>, crea uno con rol Administrador.</li>
+                  <li>Asígnale tu <strong>cuenta publicitaria</strong> con acceso total y <strong>genera un token</strong> con el permiso <strong>ads_read</strong> (dura mucho tiempo).</li>
+                  <li>En <strong>Supabase</strong> → Edge Functions → Secrets, guarda ese token como <strong>META_ACCESS_TOKEN</strong>.</li>
+                  <li>Despliega la función del servidor (<strong>supabase functions deploy meta</strong>) que ya dejé lista en el proyecto.</li>
+                  <li>Vuelve aquí, escribe tu <strong>Ad Account ID</strong> y pulsa <strong>Traer datos reales</strong>.</li>
+                </ol>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-brand);color:var(--text-muted);">El token vive solo en el servidor — nunca se expone en el navegador. Los creativos, públicos y la gráfica por día seguirán mostrándose de ejemplo hasta ampliar la sincronización.</div>
+              </div>
+            </div>
+          </sc-if>
+
           <!-- ===== PRONTO ===== -->
           <sc-if value="{{ showPronto }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 20px;background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);">
@@ -4773,10 +5084,10 @@ class Component extends DCLogic {
   ];
   // access per role: none | read | write  (admin = write everything + aprueba)
   roles = {
-    'Administrador':            { compras:'write', desarrollo:'write', ventas:'write', finanzas:'write', produccion:'write', inventario:'write', admin:true  },
-    'Administración y Finanzas': { compras:'read',  desarrollo:'none',  ventas:'read',  finanzas:'write', produccion:'none',  inventario:'read',  admin:false },
-    'Mercadeo y Publicidad':    { compras:'none',  desarrollo:'read',  ventas:'read',  finanzas:'none',  produccion:'none',  inventario:'none',  admin:false },
-    'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  admin:false },
+    'Administrador':            { compras:'write', desarrollo:'write', ventas:'write', finanzas:'write', produccion:'write', inventario:'write', marketing:'write', admin:true  },
+    'Administración y Finanzas': { compras:'read',  desarrollo:'none',  ventas:'read',  finanzas:'write', produccion:'none',  inventario:'read',  marketing:'read',  admin:false },
+    'Mercadeo y Publicidad':    { compras:'none',  desarrollo:'read',  ventas:'read',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'write', admin:false },
+    'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  admin:false },
   };
   subModDef = {
     compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'ordenes',label:'Órdenes de compra'}],
@@ -4784,8 +5095,106 @@ class Component extends DCLogic {
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
     inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'servicio',label:'Servicio al cliente'}],
-    finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}]
+    finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
+    marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
   };
+
+  // ======================================================================
+  //  MÓDULO MARKETING · Meta Ads  ·  datos de DEMOSTRACIÓN
+  //  (se reemplazan por datos reales al conectar la cuenta de Meta vía API)
+  //  Periodo simulado: últimos 28 días · moneda COP
+  // ======================================================================
+  metaMoodColor = { calma:'#6596A6', respira:'#7E9B7A', despierta:'#C9A15A', descansa:'#6B7A9C', alivio:'#B08A6B', pasion:'#B5503C', marca:'#A78659' };
+  metaSeed = {
+    cuenta: { nombre:'Oasis del Alma', adAccountId:'act_000000000000', pagina:'@oasisdelalma', pixel:'ODA_PIXEL_2026', moneda:'COP', periodo:'Últimos 28 días' },
+    campanas: [
+      { id:'cmp1', nombre:'Calma · Ansiedad', objetivo:'Ventas',          mood:'calma',    estado:'activa',   spend:1180000, impresiones:412000, alcance:186000, clicks:6180, resultados:41, ingresos:4560000, frecuencia:2.2, producto:'PT-001' },
+      { id:'cmp2', nombre:'Kit Inhala · Respira', objetivo:'Ventas',      mood:'respira',  estado:'activa',   spend:960000,  impresiones:338000, alcance:151000, clicks:5420, resultados:38, ingresos:4410000, frecuencia:2.0, producto:'KIT-001' },
+      { id:'cmp3', nombre:'Retargeting · Visitantes web', objetivo:'Ventas', mood:'marca', estado:'activa',   spend:520000,  impresiones:96000,  alcance:38000,  clicks:3110, resultados:33, ingresos:3230000, frecuencia:3.4, producto:'' },
+      { id:'cmp4', nombre:'Descanso · Velas de masaje', objetivo:'Ventas', mood:'descansa', estado:'activa',   spend:640000,  impresiones:224000, alcance:118000, clicks:2260, resultados:12, ingresos:1360000, frecuencia:1.9, producto:'PT-003' },
+      { id:'cmp5', nombre:'Reconocimiento de marca', objetivo:'Reconocimiento', mood:'marca', estado:'activa', spend:420000,  impresiones:686000, alcance:512000, clicks:1980, resultados:0,  ingresos:0,       frecuencia:1.3, producto:'' },
+      { id:'cmp6', nombre:'Mensajes · Asesoría WhatsApp', objetivo:'Mensajes', mood:'alivio', estado:'activa', spend:310000,  impresiones:142000, alcance:97000,  clicks:1740, resultados:88, ingresos:0,       frecuencia:1.5, producto:'' },
+      { id:'cmp7', nombre:'Despierta · Energía AM', objetivo:'Ventas',     mood:'despierta', estado:'pausada', spend:280000,  impresiones:118000, alcance:74000,  clicks:1120, resultados:6,  ingresos:590000,  frecuencia:1.7, producto:'PT-002' },
+    ],
+    creativos: [
+      { id:'cr1', nombre:'Reel · "Respira hondo"', campana:'cmp1', formato:'Reel', mood:'calma',   estado:'ganador', impresiones:196000, clicks:3480, spend:560000, resultados:22, copy:'¿La ansiedad no te deja respirar? Calma en 3 respiraciones.' },
+      { id:'cr2', nombre:'Carrusel · Kit Inhala', campana:'cmp2', formato:'Carrusel', mood:'respira', estado:'activo', impresiones:171000, clicks:2960, spend:480000, resultados:19, copy:'Tu kit para respirar libre esté donde estés.' },
+      { id:'cr3', nombre:'Imagen · Ritual noche', campana:'cmp4', formato:'Imagen', mood:'descansa', estado:'fatiga', impresiones:158000, clicks:1180, spend:410000, resultados:6, copy:'El ritual que tu descanso estaba esperando.' },
+      { id:'cr4', nombre:'Reel · Testimonio real', campana:'cmp3', formato:'Reel', mood:'marca',   estado:'ganador', impresiones:62000,  clicks:2020, spend:300000, resultados:21, copy:'"Volví a dormir bien". Historias reales de bienestar.' },
+      { id:'cr5', nombre:'Imagen · Oferta -15%', campana:'cmp2', formato:'Imagen', mood:'respira', estado:'activo', impresiones:98000,  clicks:1740, spend:290000, resultados:12, copy:'Bienestar en cada respiro · -15% esta semana.' },
+      { id:'cr6', nombre:'Reel · Energía mañana', campana:'cmp7', formato:'Reel', mood:'despierta', estado:'fatiga', impresiones:74000,  clicks:640,  spend:210000, resultados:5, copy:'Despierta tus sentidos cada mañana.' },
+    ],
+    publicos: [
+      { id:'a1', nombre:'Ansiedad y estrés · Mujeres', detalle:'Interés: mindfulness, yoga · 25–40 · Mujeres', ubicacion:'Bogotá, Medellín', edad:'25-40', spend:980000, resultados:39, alcance:142000, ctr:1.6, tipo:'Interés' },
+      { id:'a2', nombre:'Retargeting · Visitantes 30 días', detalle:'Visitó web o Instagram, sin compra', ubicacion:'Nacional', edad:'25-45', spend:520000, resultados:33, alcance:38000,  ctr:3.2, tipo:'Retargeting' },
+      { id:'a3', nombre:'Lookalike 1% · Compradores', detalle:'Similar a clientes que ya compraron', ubicacion:'Nacional', edad:'25-45', spend:610000, resultados:26, alcance:168000, ctr:1.4, tipo:'Lookalike' },
+      { id:'a4', nombre:'Descanso y sueño', detalle:'Interés: bienestar, aromaterapia · 30–50', ubicacion:'Bogotá, Cali', edad:'30-50', spend:430000, resultados:11, alcance:96000,  ctr:1.0, tipo:'Interés' },
+      { id:'a5', nombre:'Regalos y bienestar corporativo', detalle:'Interés: regalos, wellness · B2B', ubicacion:'Bogotá', edad:'28-50', spend:220000, resultados:8,  alcance:54000,  ctr:1.1, tipo:'Interés' },
+    ],
+    tendencia: [ 78,86,72,94,101,88,112,96,124,132,118,141,128,152,146,138,164,158,172,167,181,176,168,189,183,196,204,212 ],
+  };
+
+  mktMoodLabel(m){ return ({calma:'Calma',respira:'Respira',despierta:'Despierta',descansa:'Descansa',alivio:'Alivio',pasion:'Pasión',marca:'Marca'})[m]||'Marca'; }
+  mktRoas(c){ return c.spend>0 ? (c.ingresos/c.spend) : 0; }
+  mktCpa(c){ return c.resultados>0 ? (c.spend/c.resultados) : 0; }
+  mktCtr(c){ return c.impresiones>0 ? (c.clicks/c.impresiones*100) : 0; }
+  mktCpc(c){ return c.clicks>0 ? (c.spend/c.clicks) : 0; }
+  mktCpm(c){ return c.impresiones>0 ? (c.spend/c.impresiones*1000) : 0; }
+  mktCampSource(){ const l=this.state.mktLiveCampanas; return (this.state.mktUsingLive && Array.isArray(l) && l.length) ? l : this.metaSeed.campanas; }
+  mktMoodFromName(name){ const n=(name||'').toLowerCase(); if(/calma|ansied|estr[eé]s/.test(n))return'calma'; if(/respira|inhala|nasal/.test(n))return'respira'; if(/despierta|energ/.test(n))return'despierta'; if(/descans|dormir|sue[nñ]o|noche/.test(n))return'descansa'; if(/alivio|dolor|tensi/.test(n))return'alivio'; if(/pasi[oó]n/.test(n))return'pasion'; return'marca'; }
+  mktObjFromRaw(raw){ const o=(raw||'').toUpperCase(); if(/SALES|CONVERSION/.test(o))return'Ventas'; if(/AWARENESS|REACH|BRAND/.test(o))return'Reconocimiento'; if(/ENGAGEMENT|MESSAGES|TRAFFIC|LEADS/.test(o))return'Mensajes'; return'Ventas'; }
+  mktSetAdAccount(v){ this.setState({ mktAdAccountId:v }); }
+  async mktSyncReal(){
+    const acct=String(this.state.mktAdAccountId||'').trim();
+    if(!acct){ this.setState({ mktLiveError:'Escribe tu Ad Account ID (ej. act_1234567890).' }); return; }
+    if(this.state.mktLiveLoading) return;
+    this.setState({ mktLiveLoading:true, mktLiveError:'' });
+    try{
+      const sb=this._sbClient();
+      if(!sb) throw new Error('La conexión con el servidor no está lista. Intenta de nuevo en unos segundos.');
+      const { data, error } = await sb.functions.invoke('meta', { body:{ adAccountId:acct, datePreset:'last_28d' } });
+      if(error) throw new Error('El servidor de Meta no respondió. Verifica que ya desplegaste la función «meta» y el secreto META_ACCESS_TOKEN en Supabase.');
+      if(data && data.error) throw new Error(data.error);
+      const arr=(data && data.campanas)||[];
+      if(!arr.length) throw new Error('Meta respondió sin campañas para esta cuenta o periodo. Revisa el Ad Account ID.');
+      const norm=arr.map(c=>({ id:c.id, nombre:c.nombre||'(sin nombre)', objetivo:this.mktObjFromRaw(c.objetivoRaw), mood:this.mktMoodFromName(c.nombre), estado:c.estado||'activa', spend:Number(c.spend)||0, impresiones:Number(c.impresiones)||0, alcance:Number(c.alcance)||0, clicks:Number(c.clicks)||0, resultados:Number(c.resultados)||0, ingresos:Number(c.ingresos)||0, frecuencia:Number(c.frecuencia)||0, producto:'' }));
+      this.setState({ mktLiveCampanas:norm, mktUsingLive:true, mktConectado:true, mktLiveLoading:false, mktLiveTs:Date.now() });
+      try{ localStorage.setItem('oda_hub_meta_acct_v1', acct); }catch(e){}
+      this.toast('Datos reales de Meta cargados · '+norm.length+' campañas');
+    }catch(e){ this.setState({ mktLiveLoading:false, mktLiveError:(e&&e.message)||'No se pudo traer los datos de Meta.' }); }
+  }
+  mktUsarDemo(){ this.setState({ mktUsingLive:false }); this.toast('Mostrando datos de demostración'); }
+  mktKpis(){
+    const cs=this.mktCampSource();
+    const spend=cs.reduce((s,c)=>s+c.spend,0);
+    const ingresos=cs.reduce((s,c)=>s+c.ingresos,0);
+    const resultados=cs.reduce((s,c)=>s+(c.objetivo==='Ventas'?c.resultados:0),0);
+    const impresiones=cs.reduce((s,c)=>s+c.impresiones,0);
+    const clicks=cs.reduce((s,c)=>s+c.clicks,0);
+    const alcance=cs.reduce((s,c)=>s+c.alcance,0);
+    const roas=spend>0?ingresos/spend:0;
+    const cpa=resultados>0?spend/resultados:0;
+    const ctr=impresiones>0?clicks/impresiones*100:0;
+    const cpm=impresiones>0?spend/impresiones*1000:0;
+    return { spend, ingresos, resultados, impresiones, clicks, alcance, roas, cpa, ctr, cpm };
+  }
+  // margen de un producto/kit terminado (aprox.) para cruzar rentabilidad real
+  mktMargenProducto(cod){ try{ const p=(this.state.productos||[]).find(x=>x.codigo===cod); const k=(this.state.kits||[]).find(x=>x.codigo===cod); const precio=(p&&p.precio)||(k&&k.precio)||0; return precio; }catch(e){ return 0; } }
+  async mktGenerarRecom(){
+    if(this.state.mktAiLoading) return;
+    this.setState({ mktAiLoading:true, mktAiError:'' });
+    try{
+      const k=this.mktKpis();
+      const cs=this.mktCampSource().map(c=>({ nombre:c.nombre, objetivo:c.objetivo, animo:this.mktMoodLabel(c.mood), inversion:Math.round(c.spend), ingresos:Math.round(c.ingresos), roas:+this.mktRoas(c).toFixed(2), cpa:Math.round(this.mktCpa(c)), ctr:+this.mktCtr(c).toFixed(2), frecuencia:c.frecuencia, resultados:c.resultados, estado:c.estado }));
+      // cruce con ventas internas del ERP
+      let ventasResumen='sin datos'; try{ const vs=(this.state.ventas||[]); const total=vs.reduce((s,v)=>s+this.ventaTotal(v),0); ventasResumen='Ventas totales ERP (histórico): '+this.fmt(Math.round(total))+' · '+vs.length+' pedidos'; }catch(e){}
+      const prompt='Eres un experto senior en Meta Ads (Facebook e Instagram) y en analítica de marketing para una marca colombiana de aromaterapia y bienestar llamada Oasis del Alma. Los productos se organizan por estado de ánimo: Calma, Respira, Despierta, Descansa, Alivio, Pasión. Moneda: pesos colombianos (COP). Umbral de envío gratis $150.000.\n\nDatos agregados de la cuenta (últimos 28 días):\n- Inversión total: '+this.fmt(k.spend)+'\n- Ingresos atribuidos: '+this.fmt(k.ingresos)+'\n- ROAS global: '+k.roas.toFixed(2)+'\n- CPA (ventas): '+this.fmt(Math.round(k.cpa))+'\n- CTR global: '+k.ctr.toFixed(2)+'%\n- Alcance: '+k.alcance.toLocaleString('es-CO')+'\n\nCampañas:\n'+JSON.stringify(cs,null,1)+'\n\nContexto interno del ERP: '+ventasResumen+'\n\nAnaliza como experto y entrega, en español claro y accionable para el dueño del negocio (no técnico), lo siguiente en formato con encabezados y viñetas cortas:\n1) DIAGNÓSTICO: qué está funcionando y qué no (menciona campañas por nombre y sus números).\n2) PRESUPUESTO: cómo redistribuir la inversión entre campañas (subir/bajar/pausar, con cifras aproximadas en COP).\n3) PAUTA Y OBJETIVOS: qué tipo de campaña/objetivo priorizar.\n4) PÚBLICOS: qué segmentaciones probar.\n5) CREATIVOS: 3 ideas concretas de anuncios por estado de ánimo, con un ejemplo de copy corto cada una.\n6) ALERTAS: campañas con fatiga (frecuencia alta) o bajo rendimiento.\n7) PROYECCIÓN: si mantiene la inversión, cuántas ventas/ingresos aproximados puede esperar el próximo mes.\nSé conciso pero específico. Usa cifras. No inventes integraciones; básate en los datos dados.';
+      const txt=await this.aiComplete(prompt);
+      this.setState({ mktAiAnswer:(txt||'').trim(), mktAiLoading:false, mktAiTs:Date.now() });
+    }catch(e){ this.setState({ mktAiLoading:false, mktAiError:(e&&e.message)||'No se pudo generar el análisis. Verifica la conexión de IA.' }); }
+  }
+  mktConectar(){ this.setState({ mktConectando:true }); setTimeout(()=>{ this.setState({ mktConectando:false, mktConectado:true }); this.toast('Cuenta de Meta conectada (demostración)'); }, 1400); }
+  mktDesconectar(){ this.setState({ mktConectado:false }); this.toast('Cuenta de Meta desconectada'); }
 
   seed = {
     proveedores: [
@@ -4870,6 +5279,8 @@ class Component extends DCLogic {
     toast:null, confirmDel:null, fechaCorte:'2026-06-18', loginStep:'select', loginPendingId:null, loginPwd:'', loginError:'', userPerms:null, expandedPermUser:null, reglasNeg:null, reglasEmpaque:null, clienteWaUrl:'', waCampTpl:'', waCampLoading:false, invCatSel:null,
     cotTab:'leads', propuesta:null, propuestaDocCache:'', consignSel:null, segLeadId:null,
     casoOpenId:null, casoModal:false, casoDraft:null, casoWaMsg:null, casoWaTpl:null, qCaso:'', fCasoTipo:'todos', fCasoEstado:'todos', casoItemSel:'', casoItemQty:'1', casoAfectSel:'', casoSegText:'',
+    mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
+    mktAdAccountId:'', mktLiveCampanas:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false,
   };
 
   componentDidMount(){
@@ -4907,6 +5318,7 @@ class Component extends DCLogic {
     const patch={ proveedores:data.proveedores, materias:data.materias, ordenes:data.ordenes, productos:data.productos, kits:data.kits, mezclas:data.mezclas, producciones:data.producciones, produccionesMezcla:data.produccionesMezcla, servicios:data.servicios, ventas:data.ventas, cotizaciones:data.cotizaciones, cuentasFin:data.cuentasFin, movimientos:data.movimientos, gastosFijos:data.gastosFijos, retenConfig:data.retenConfig, metodosFin:data.metodosFin, liquidaciones:data.liquidaciones, creditos:(data.creditos||[]), userPerms:savedPerms, reglasNeg:savedReglas, reglasEmpaque:savedEmpaque, tiendas:(data.tiendas||[]), remisiones:(data.remisiones||[]), leads:(data.leads||[]), casos:(data.casos||[]) };
     let savedProp=null; try{savedProp=JSON.parse(localStorage.getItem('oda_hub_propuesta_v1'));}catch(e){} patch.propuesta=savedProp||this.propuestaDefault();
     // El ingreso a la app ahora lo controla la sesión de nube (cloudInit). No auto-entramos con sesión local.
+    try{ const _acct=localStorage.getItem('oda_hub_meta_acct_v1'); if(_acct) patch.mktAdAccountId=_acct; }catch(e){}
     this.setState(patch);
     this.cloudInit();
     try{ setTimeout(()=>{ try{ this.autoRegistrarRendimientos(); }catch(e){} }, 7000); }catch(e){}
@@ -5052,10 +5464,10 @@ class Component extends DCLogic {
   toggleSubPerm(uid,mod,subkey){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const subKey=mod+'__'+subkey; const modLevel=base[mod]||'none'; const curr=subKey in base?base[subKey]:modLevel; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[subKey]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
 
   // ---- nav ----
-  goModule(m){ if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else { this.setState({module:m}); } }
+  goModule(m){ if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
-  _firstModuleFor(lu){ const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _firstModuleFor(lu){ const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
   open(type,draft){ this.setState({modal:type,draft:draft||{}}); }
@@ -6703,7 +7115,8 @@ Instrucciones de respuesta:
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
-    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp;
+    out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
+    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
     const PX='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
     out.propPortadaImg=PX; out.propQuienesImg=PX; out.propBenImg=PX;
     out.propPortadaHas=false; out.propQuienesHas=false; out.propBenHas=false;
@@ -6715,7 +7128,7 @@ Instrucciones de respuesta:
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.shellNavClass=st.sidebarOpen?'oda-nav-open':''; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
-    out.nav={ compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
+    out.nav={ compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
 
@@ -6783,6 +7196,16 @@ Instrucciones de respuesta:
     const finAcc = acc? (acc.admin?'write':(acc.finanzas||'none')) : 'none';
     out.canWriteFin = finAcc==='write';
 
+    const onMkt = st.module==='marketing';
+    out.showMarketingSub = onMkt;
+    out.mktNavBg = onMkt? 'rgba(167,134,89,0.18)':'transparent';
+    out.mktNavColor = onMkt? '#D9BE92':'rgba(251,248,242,0.85)';
+    const subStyM=(k)=>{ const a=onMkt&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
+    out.subMktResumen=subStyM('mktresumen'); out.subMktCamp=subStyM('mktcampanas'); out.subMktRecom=subStyM('mktrecom'); out.subMktCreativos=subStyM('mktcreativos'); out.subMktPublicos=subStyM('mktpublicos'); out.subMktConexion=subStyM('mktconexion');
+    out.subnavMkt={ resumen:()=>this.setState({module:'marketing',sub:'mktresumen'}), campanas:()=>this.setState({module:'marketing',sub:'mktcampanas'}), recom:()=>this.setState({module:'marketing',sub:'mktrecom'}), creativos:()=>this.setState({module:'marketing',sub:'mktcreativos'}), publicos:()=>this.setState({module:'marketing',sub:'mktpublicos'}), conexion:()=>this.setState({module:'marketing',sub:'mktconexion'}) };
+    const mktAcc = acc? (acc.admin?'write':(acc.marketing||'none')) : 'none';
+    out.canWriteMkt = mktAcc==='write';
+
     const porAprobar = st.ordenes.filter(o=>o.estado==='pendiente').length;
     out.aprobarCount=porAprobar; out.aprobarBadgeShow = isAdmin && porAprobar>0;
 
@@ -6832,7 +7255,13 @@ Instrucciones de respuesta:
     out.showFinGastos = onFin && st.sub==='fingastos';
     out.showFinPyg = onFin && st.sub==='finpyg';
     out.showFinImp = onFin && st.sub==='finimpuestos';
-    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && st.module!=='admin';
+    out.showMktResumen = onMkt && st.sub==='mktresumen';
+    out.showMktCampanas = onMkt && st.sub==='mktcampanas';
+    out.showMktRecom = onMkt && st.sub==='mktrecom';
+    out.showMktCreativos = onMkt && st.sub==='mktcreativos';
+    out.showMktPublicos = onMkt && st.sub==='mktpublicos';
+    out.showMktConexion = onMkt && st.sub==='mktconexion';
+    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && st.module!=='admin';
     if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
@@ -6840,10 +7269,95 @@ Instrucciones de respuesta:
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
+    else if(onMkt){ out.crumb='Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
     else { out.crumb='Hub Intelligence'; out.pageTitle=modNames[st.module]||'Módulo'; }
     out.prontoNombre=modNames[st.module]||'Módulo';
     const prontoDescs={desarrollo:'Fichas de producto, fórmulas y costeo.',ventas:'Pedidos, canales y sincronización con Shopify.',finanzas:'Flujo de caja, cuentas por pagar y por cobrar.',produccion:'Órdenes de producción y consumo de materias.',inventario:'Existencias, movimientos y kardex por bodega.'};
     out.prontoDesc=prontoDescs[st.module]||'';
+
+    // ================= MARKETING · Meta Ads =================
+    {
+      const K=this.mktKpis();
+      const fmtK=(n)=>{ n=Number(n)||0; if(n>=1000000) return (n/1000000).toFixed(n>=10000000?0:1)+'M'; if(n>=1000) return Math.round(n/1000)+'K'; return String(Math.round(n)); };
+      const live=!!st.mktUsingLive;
+      out.mktConectado=!!st.mktConectado; out.mktNoConectado=!st.mktConectado; out.mktConectando=!!st.mktConectando;
+      out.mktUsingLive=live; out.mktUsingDemo=!live;
+      out.mktEstadoConexionLabel = live ? 'Conectada · datos reales de Meta' : (st.mktConectado? 'Conectada (demostración)' : 'Sin conectar · datos de demostración');
+      out.mktEstadoBg = live? 'rgba(98,123,96,0.16)' : (st.mktConectado? 'rgba(98,123,96,0.16)' : 'rgba(181,80,60,0.12)');
+      out.mktEstadoFg = live? '#4C6149' : (st.mktConectado? '#4C6149' : '#B5503C');
+      out.mktSourceLabel = live? 'Datos reales' : 'Datos de demostración';
+      // sincronización real con Meta
+      out.mktAdAccountId=st.mktAdAccountId||'';
+      out.mktSetAcct=(e)=>this.mktSetAdAccount(e.target.value);
+      out.mktSyncFn=()=>this.mktSyncReal(); out.mktUsarDemoFn=()=>this.mktUsarDemo();
+      out.mktLiveLoading=!!st.mktLiveLoading; out.mktLiveError=st.mktLiveError||''; out.mktLiveHasError=!!st.mktLiveError;
+      out.mktSyncBtnLabel=st.mktLiveLoading?'Consultando a Meta…':'Traer datos reales';
+      out.mktLiveTsFmt = st.mktLiveTs? ('Última sincronización: '+new Date(st.mktLiveTs).toLocaleString('es-CO')) : '';
+      out.mktBannerNota = live? 'Campañas y métricas en vivo desde tu cuenta de Meta.' : 'Los números son de ejemplo hasta conectar tu cuenta de Meta.';
+      out.mktCuentaNombre=this.metaSeed.cuenta.nombre; out.mktCuentaId=(st.mktAdAccountId||'').trim()||this.metaSeed.cuenta.adAccountId; out.mktCuentaPagina=this.metaSeed.cuenta.pagina; out.mktCuentaPixel=this.metaSeed.cuenta.pixel; out.mktPeriodo=this.metaSeed.cuenta.periodo;
+      out.mktConectarFn=()=>this.mktConectar(); out.mktDesconectarFn=()=>this.mktDesconectar();
+      out.mktConectarLabel=st.mktConectando?'Conectando…':'Conectar con Meta';
+      // KPIs
+      out.mktKpiSpend=this.fmt(Math.round(K.spend));
+      out.mktKpiIngresos=this.fmt(Math.round(K.ingresos));
+      out.mktKpiRoas=K.roas.toFixed(1)+'x';
+      out.mktKpiCpa=this.fmt(Math.round(K.cpa));
+      out.mktKpiVentas=K.resultados;
+      out.mktKpiCtr=K.ctr.toFixed(2)+'%';
+      out.mktKpiAlcance=fmtK(K.alcance);
+      out.mktKpiImpresiones=fmtK(K.impresiones);
+      out.mktKpiClicks=fmtK(K.clicks);
+      out.mktKpiCpm=this.fmt(Math.round(K.cpm));
+      // sparkline (tendencia de resultados por día)
+      const tr=this.metaSeed.tendencia; const mn=Math.min.apply(null,tr), mx=Math.max.apply(null,tr); const W=600,H=140,pad=8;
+      const pts=tr.map((v,i)=>{ const x=pad+(i/(tr.length-1))*(W-2*pad); const y=H-pad-((v-mn)/((mx-mn)||1))*(H-2*pad); return [x,y]; });
+      out.mktSparkPath='M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L ');
+      out.mktSparkFill='M'+pts[0][0].toFixed(1)+' '+H+' L '+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L ')+' L '+pts[pts.length-1][0].toFixed(1)+' '+H+' Z';
+      out.mktSparkW=W; out.mktSparkH=H;
+      // mapper de campaña
+      const estPill=(e)=>({activa:{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',t:'Activa'},pausada:{bg:'#EFE9DD',fg:'#A89F8E',t:'Pausada'}}[e]||{bg:'#EFE9DD',fg:'#A89F8E',t:e});
+      const objColor=(o)=>({Ventas:'#4C6149',Reconocimiento:'#3F6A7A',Mensajes:'#7A5E36'}[o]||'#7A5E36');
+      const mapCamp=(c)=>{ const roas=this.mktRoas(c); const ep=estPill(c.estado); return { nombre:c.nombre, objetivo:c.objetivo, objColor:objColor(c.objetivo), moodLabel:this.mktMoodLabel(c.mood), moodColor:this.metaMoodColor[c.mood]||'#A78659',
+        spendFmt:this.fmt(c.spend), ingresosFmt:c.ingresos>0?this.fmt(c.ingresos):'—', roasFmt:c.objetivo==='Ventas'?roas.toFixed(1)+'x':'—', roasColor: c.objetivo!=='Ventas'?'var(--text-muted)':(roas>=3?'#4C6149':(roas>=2?'#7A5E36':'#B5503C')),
+        cpaFmt:(c.resultados>0&&c.objetivo==='Ventas')?this.fmt(Math.round(this.mktCpa(c))):'—', ctrFmt:this.mktCtr(c).toFixed(2)+'%', cpmFmt:this.fmt(Math.round(this.mktCpm(c))), resultados:c.resultados,
+        resLabel:c.objetivo==='Mensajes'?'conversaciones':(c.objetivo==='Reconocimiento'?'reconocimiento':'compras'),
+        frecuencia:c.frecuencia.toFixed(1), fatiga:c.frecuencia>=3, estBg:ep.bg, estFg:ep.fg, estLabel:ep.t, alcanceFmt:fmtK(c.alcance) }; };
+      const filtroC=st.mktCampFiltro||'todas'; out.mktCampFiltro=filtroC;
+      out.mktFiltroTodas=()=>this.setState({mktCampFiltro:'todas'}); out.mktFiltroActivas=()=>this.setState({mktCampFiltro:'activas'}); out.mktFiltroPausadas=()=>this.setState({mktCampFiltro:'pausadas'});
+      const fBtn=(k)=>({ bg:filtroC===k?'var(--brand-primary)':'var(--surface-card)', fg:filtroC===k?'var(--text-on-brand)':'var(--text-body)' });
+      out.mktFA=fBtn('todas'); out.mktFB=fBtn('activas'); out.mktFC=fBtn('pausadas');
+      const _src=this.mktCampSource();
+      out.mktCampanas=_src.filter(c=> filtroC==='todas'?true:(filtroC==='activas'?c.estado==='activa':c.estado==='pausada')).map(mapCamp);
+      out.mktTop=_src.slice().sort((a,b)=>b.ingresos-a.ingresos).slice(0,5).map(mapCamp);
+      // alertas
+      const alerts=[];
+      _src.forEach(c=>{ if(c.frecuencia>=3) alerts.push({tipo:'Fatiga de anuncio', txt:c.nombre+' · frecuencia '+c.frecuencia.toFixed(1)+'. Renueva el creativo o amplía el público.', color:'#B5503C'}); const r=this.mktRoas(c); if(c.objetivo==='Ventas'&&r>0&&r<2.5) alerts.push({tipo:'ROAS bajo', txt:c.nombre+' · ROAS '+r.toFixed(1)+'x. Revisa segmentación, oferta o página de destino.', color:'#B08A6B'}); });
+      out.mktAlertas=alerts; out.mktAlertasVacio=alerts.length===0;
+      // creativos
+      const crEst=(e)=>({ganador:{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',t:'Ganador'},activo:{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Activo'},fatiga:{bg:'rgba(181,80,60,0.14)',fg:'#B5503C',t:'Fatiga'}}[e]||{bg:'#EFE9DD',fg:'#A89F8E',t:e});
+      out.mktCreativos=this.metaSeed.creativos.map(cr=>{ const ep=crEst(cr.estado); const ctr=cr.impresiones>0?cr.clicks/cr.impresiones*100:0; return { nombre:cr.nombre, formato:cr.formato, copy:cr.copy, moodColor:this.metaMoodColor[cr.mood]||'#A78659', moodLabel:this.mktMoodLabel(cr.mood), ctrFmt:ctr.toFixed(2)+'%', spendFmt:this.fmt(cr.spend), impresionesFmt:fmtK(cr.impresiones), resultados:cr.resultados, estBg:ep.bg, estFg:ep.fg, estLabel:ep.t }; });
+      // públicos
+      const tipoColor=(t)=>({Retargeting:'#3F6A7A',Lookalike:'#7A5E36',Interés:'#4C6149'}[t]||'#A78659');
+      out.mktPublicos=this.metaSeed.publicos.map(a=>{ const cpa=a.resultados>0?a.spend/a.resultados:0; return { nombre:a.nombre, detalle:a.detalle, ubicacion:a.ubicacion, edad:a.edad, tipo:a.tipo, tipoColor:tipoColor(a.tipo), spendFmt:this.fmt(a.spend), alcanceFmt:fmtK(a.alcance), ctrFmt:a.ctr.toFixed(2)+'%', resultados:a.resultados, cpaFmt:a.resultados>0?this.fmt(Math.round(cpa)):'—' }; });
+      // IA
+      out.mktAiLoading=!!st.mktAiLoading; out.mktAiError=st.mktAiError||''; out.mktAiHasError=!!st.mktAiError;
+      out.mktAiHasAnswer=!!(st.mktAiAnswer&&st.mktAiAnswer.trim());
+      out.mktAiAnswerClean=(st.mktAiAnswer||'').replace(/\*\*/g,'').replace(/^#+\s*/gm,'').replace(/^\s*[-*]\s+/gm,'•  ');
+      out.mktGenAI=()=>this.mktGenerarRecom();
+      out.mktGenBtnLabel=st.mktAiLoading?'Analizando datos…':(out.mktAiHasAnswer?'Volver a analizar':'Generar análisis con IA');
+      out.mktAiTsFmt = st.mktAiTs? ('Generado '+new Date(st.mktAiTs).toLocaleString('es-CO')) : '';
+      // insights basados en reglas (siempre disponibles, sin IA)
+      const vC=_src.filter(c=>c.objetivo==='Ventas'&&c.resultados>0);
+      const best=vC.slice().sort((a,b)=>this.mktRoas(b)-this.mktRoas(a))[0];
+      const worst=vC.slice().sort((a,b)=>this.mktRoas(a)-this.mktRoas(b))[0];
+      const ins=[];
+      if(best&&worst&&best!==worst){ const mover=Math.round(worst.spend*0.4/10000)*10000; ins.push({ tag:'Presupuesto', tagColor:'#7A5E36', titulo:'Redistribuye hacia lo que rinde', texto:'«'+best.nombre+'» rinde '+this.mktRoas(best).toFixed(1)+'x mientras «'+worst.nombre+'» va en '+this.mktRoas(worst).toFixed(1)+'x. Mueve ~'+this.fmt(mover)+' de la segunda a la primera y observa 5 días.' }); }
+      if(best){ ins.push({ tag:'Escalar', tagColor:'#4C6149', titulo:'Escala la campaña ganadora', texto:'Sube el presupuesto de «'+best.nombre+'» un 20% cada 3 días mientras el ROAS se mantenga sobre 3x. No dupliques de golpe para no reiniciar el aprendizaje.' }); }
+      const fat=_src.filter(c=>c.frecuencia>=3);
+      if(fat.length){ ins.push({ tag:'Fatiga', tagColor:'#B5503C', titulo:'Renueva creativos con frecuencia alta', texto:fat.map(c=>'«'+c.nombre+'» ('+c.frecuencia.toFixed(1)+')').join(', ')+' ya se muestran demasiado al mismo público. Sube 2–3 creativos nuevos esta semana.' }); }
+      ins.push({ tag:'Creativo', tagColor:'#6596A6', titulo:'Idea por estado de ánimo', texto:'Calma: Reel de 15s con respiración guiada y copy «Calma la ansiedad en 3 respiraciones». Descansa: testimonio en video de mejor sueño. Despierta: rutina de mañana con roll-on energizante.' });
+      out.mktInsights=ins;
+    }
 
     // ---- RESUMEN ----
     if(out.showResumen){
@@ -7346,9 +7860,9 @@ Instrucciones de respuesta:
       const mapeo=re.mapeoCajas||{};
       out.reMapeoCajas=Object.keys(mapeo).map(pCod=>{ const p=(st.productos||[]).find(x=>x.codigo===pCod); const cajaVal=mapeo[pCod]; const cajaCods=Array.isArray(cajaVal)?cajaVal:(cajaVal?[cajaVal]:[]); const cajaDisplay=cajaCods.join(' + '); const cajaNombres=cajaCods.map(c=>{ const m=(st.materias||[]).find(x=>x.codigo===c); return m?m.nombre:c; }).join(' + '); return {productoCodigo:pCod,productoNombre:p?p.nombre:pCod,cajaCodigo:cajaDisplay,cajaNombre:cajaNombres,onChangeCaja:((pc)=>(e)=>{ const raw=e.target.value.trim(); const arr=raw.split(/[,+]/).map(s=>s.trim()).filter(Boolean); const val=arr.length===1?arr[0]:arr; const m2={...mapeo,[pc]:val}; saveEmpaq('mapeoCajas',m2); })(pCod)}; });
       const up=this.state.userPerms||{};
-      const pmods=['compras','desarrollo','produccion','inventario','ventas','finanzas'];
+      const pmods=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing'];
       const pillP=(v)=>{ if(v==='write') return {bg:'rgba(98,123,96,0.18)',fg:'#4C6149',t:'Escritura'}; if(v==='read') return {bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Lectura'}; return {bg:'#EFE9DD',fg:'#A9998B',t:'Sin acceso'}; };
-      const pmodL={compras:'Compras',desarrollo:'Desarrollo',produccion:'Producción',inventario:'Inventario',ventas:'Ventas',finanzas:'Finanzas'};
+      const pmodL={compras:'Compras',desarrollo:'Desarrollo',produccion:'Producción',inventario:'Inventario',ventas:'Ventas',finanzas:'Finanzas',marketing:'Marketing'};
       out.usuariosView=this.users.map(x=>{ const uP=up[x.id]||this.roles[x.role]||{}; const resumen=uP.admin?'Acceso total · aprueba órdenes':pmods.filter(m=>uP[m]&&uP[m]!=='none').map(m=>pmodL[m]+' ('+(uP[m]==='write'?'esc.':'lec.')+')'  ).join(' · ')||'Sin acceso'; return {...x, resumenAcceso:resumen, email:x.email, password:x.password, onChangePwd:(e)=>{ const v=e.target.value; const list=this.users.map(u=>u.id===x.id?{...u,password:v}:u); this.users=list; this.forceUpdate(); } }; });
       out.permsMatriz=this.users.map(u=>{ const uP=up[u.id]||this.roles[u.role]||{}; const row={name:u.name,email:u.email,role:u.role,initials:u.initials,color:u.color}; pmods.forEach((mod,i)=>{ const v=uP[mod]||'none'; const p=pillP(v); row['c'+i]=p.t; row['c'+i+'bg']=p.bg; row['c'+i+'fg']=p.fg; row['c'+i+'click']=()=>this.togglePerm(u.id,mod); }); const isAdmin=!!uP.admin; row.adminBg=isAdmin?'rgba(167,134,89,0.2)':'#EFE9DD'; row.adminFg=isAdmin?'#7A5E36':'#A9998B'; row.adminLabel=isAdmin?'Admin ✓':'No admin'; row.onToggleAdmin=()=>this.toggleAdmin(u.id); const isExp=st.expandedPermUser===u.id; row.expandBg=isExp?'rgba(167,134,89,0.07)':'transparent'; row.onExpand=()=>this.setState({expandedPermUser:isExp?null:u.id}); return row; });
       out.permDetailOpen=!!st.expandedPermUser;
