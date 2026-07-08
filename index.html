@@ -616,7 +616,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#3d46461d4d1358505c54511d4040" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#b4cfcf94c49ad1d9d5ddd894c9c9" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -921,6 +921,10 @@ img { max-width: 100%; display: block; }
                     <span style="font-size:14px;font-weight:700;color:var(--text-muted);">$</span>
                     <input type="number" value="{{ rnEnvio }}" onInput="{{ onRnEnvio }}" min="0" style="font-family:inherit;font-size:15px;font-weight:700;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:150px;text-align:right;">
                   </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+                  <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Grupo de alistamiento (WhatsApp)</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Adónde se envían los pedidos de reenvío desde Servicio al Cliente. Pega el <strong>enlace del grupo</strong> (chat.whatsapp.com/…) o un <strong>número</strong> de la persona de bodega (ej. 3134063259).</div></div>
+                  <input type="text" value="{{ rnWaAlist }}" onInput="{{ onRnWaAlist }}" placeholder="chat.whatsapp.com/… o 3134063259" style="flex-shrink:0;font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:280px;max-width:100%;">
                 </div>
               </div>
               </sc-if>
@@ -4937,7 +4941,7 @@ img { max-width: 100%; display: block; }
             </div>
             <sc-if value="{{ casoAlistShow }}" hint-placeholder-val="{{ false }}">
             <div style="border:1px solid var(--border-brand);background:rgba(167,134,89,0.08);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--brand-primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--brand-ink);">Pedido de alistamiento</div><div style="font-size:11.5px;color:var(--text-muted);">Enviar al grupo de bodega con los productos y la guía.</div></div></div>
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--brand-primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--brand-ink);">Pedido de alistamiento</div><div style="font-size:11.5px;color:var(--text-muted);">{{ casoAlistDestTxt }}</div></div></div>
               <pre style="margin:0 0 10px;white-space:pre-wrap;font-family:inherit;font-size:12px;line-height:1.5;color:var(--text-body);background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:11px 13px;">{{ casoAlistPreview }}</pre>
               <button onClick="{{ casoAlistSendBtn }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>Enviar a grupo de alistamiento</button>
             </div>
@@ -4952,6 +4956,11 @@ img { max-width: 100%; display: block; }
               <sc-if value="{{ cd.canAdvance }}" hint-placeholder-val="{{ true }}"><button onClick="{{ casoAdvanceBtn }}" style="flex:1;min-width:150px;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);">{{ cd.advanceLabel }}</button></sc-if>
               <sc-if value="{{ cd.canClose }}" hint-placeholder-val="{{ false }}"><button onClick="{{ casoCerrarBtn }}" style="flex:1;min-width:120px;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Cerrar caso</button></sc-if>
             </div>
+            <sc-if value="{{ casoPuedeBorrar }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);display:flex;justify-content:flex-end;">
+                <button onClick="{{ casoEliminarBtn }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 15px;border-radius:var(--radius-pill);border:1px solid rgba(181,80,60,0.4);background:var(--surface-card);color:#B5503C;cursor:pointer;" style-hover="background:rgba(181,80,60,0.08);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>Borrar caso</button>
+              </div>
+            </sc-if>
           </div>
         </div>
       </div>
@@ -7144,7 +7153,13 @@ Instrucciones de respuesta:
     m+='\n\nGracias 🙌';
     return m;
   }
-  casoAlistSend(c){ const msg=this.casoAlistMsg(c); try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg); }catch(e){} try{ window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }catch(e){} this.toast('Pedido de alistamiento listo · elige el grupo en WhatsApp'); }
+  casoAlistSend(c){ const msg=this.casoAlistMsg(c); try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg); }catch(e){}
+    const cfg=String(((this.state.reglasNeg||{}).waAlist)||'').trim();
+    let url;
+    if(/chat\.whatsapp\.com/i.test(cfg)){ url=cfg; this.toast('Mensaje copiado · pégalo en el grupo de alistamiento'); }
+    else { const digits=cfg.replace(/\D/g,''); if(digits.length>=10){ const full=(digits.length===10?('57'+digits):digits); url='https://wa.me/'+full+'?text='+encodeURIComponent(msg); this.toast('Abriendo el chat de alistamiento…'); }
+      else { url='https://wa.me/?text='+encodeURIComponent(msg); this.toast('Pedido copiado · elige el grupo en WhatsApp'); } }
+    try{ window.open(url,'_blank'); }catch(e){} }
   casoAddSeguimiento(){ const txt=String(this.state.casoSegText||'').trim(); if(!txt){ this.toast('Escribe el seguimiento'); return; } const id=this.state.casoOpenId; let saved=null; const who=this.casoUserName(); const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; const nc={...c, timeline:(c.timeline||[]).concat([{evento:true, titulo:'Seguimiento', fecha:new Date().toISOString().slice(0,10), who:who, nota:txt}])}; saved=nc; return nc; }); this.setState({casos:list, casoSegText:''},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); this.toast('Seguimiento agregado'); }
 
   renderVals(){
@@ -7928,6 +7943,8 @@ Instrucciones de respuesta:
       out.rnMargenMin=rn.margenMinPct; out.rnDescuentoMax=rn.descuentoMaxPct; out.rnUmbral=rn.umbralAprobacion; out.rnEnvio=rn.envioGratisDesde;
       out.onRnMargen=saveRegla('margenMinPct'); out.onRnDescuento=saveRegla('descuentoMaxPct'); out.onRnUmbral=saveRegla('umbralAprobacion'); out.onRnEnvio=saveRegla('envioGratisDesde');
       out.rnUmbralFmt=this.fmt(rn.umbralAprobacion); out.rnEnvioFmt=this.fmt(rn.envioGratisDesde);
+      const saveReglaTxt=(key)=>(e)=>{ const v=e.target.value; const updated={...rn,[key]:v}; this.setState({reglasNeg:updated}); try{localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(updated));}catch(ex){} };
+      out.rnWaAlist=rn.waAlist||''; out.onRnWaAlist=saveReglaTxt('waAlist');
       const re=st.reglasEmpaque||{bolsaDefault:'MP-0087',mapeoCajas:{'006003':'MP-0095','006004':'MP-0096','006005':'MP-0097','006006':'MP-0098'}};
       const saveEmpaq=(key,val)=>{ const updated={...re,[key]:val}; this.setState({reglasEmpaque:updated}); try{localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(updated));}catch(ex){} };
       out.onRecalcularStock=()=>this.recalcularStockOrdenes();
@@ -8211,6 +8228,9 @@ Instrucciones de respuesta:
       out.casoAlistShow=_ship.length>0 && (cc.resolucion==='reenvio'||cc.resolucion==='cambio_prod'||this.casoTipoTransportadora(cc.tipo));
       out.casoAlistPreview=this.casoAlistMsg(cc);
       out.casoAlistSendBtn=()=>this.casoAlistSend(cc);
+      out.casoPuedeBorrar=isAdmin;
+      out.casoEliminarBtn=()=>{ if(window.confirm('¿Borrar el caso '+(cc.folio||'')+' de '+(cc.cliente||'')+'? Esta acción no se puede deshacer.')) this.eliminarCaso(cc.id); };
+      { const cfg=String(((st.reglasNeg||{}).waAlist)||'').trim(); out.casoAlistDestTxt = cfg? (/chat\.whatsapp\.com/i.test(cfg)?'Se abre el grupo configurado y el mensaje queda copiado para pegar.':'Se envía directo al chat configurado ('+cfg+').') : 'Configura el grupo fijo en Administración → Tablero. Por ahora eliges el grupo en WhatsApp.'; }
     } else { out.cd={folio:'',tipoL:'',tipoBg:'',tipoFg:'',estL:'',estBg:'',estFg:'',estDot:'',cliente:'',ciudad:'',canal:'',pedidoTxt:'',ov:'',producto:'',motivoLargo:'',resolL:'',costoFmt:'',costoColor:'',responsable:'',venceFmt:'',telFmt:'',hasAdjuntos:false,adjuntosCount:0,adjuntos:[],impactosTitle:'',sinImpactos:false,impactos:[],costeoShow:false,costeoTitulo:'',costeoNota:'',destinoShow:false,destinoLabel:'',envioItems:[],hasEnvioItems:false,guia:'',transportadora:'',envioShow:false,timeline:[],canAdvance:false,advanceLabel:'',canClose:false}; out.casoWaChips=[]; out.casoWaMsg=''; out.onCasoWaInput=()=>{}; out.casoWaSendBtn=()=>{}; out.casoAsigneeName='Sin asignar'; out.casoAsigneeId=''; out.casoReasignarOpts=[]; out.onCasoReasignar=()=>{}; }
     // modal nuevo caso
     out.casoModalOpen=st.casoModal; out.closeCasoModalBtn=()=>this.cerrarCasoModal();
