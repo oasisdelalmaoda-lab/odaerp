@@ -617,7 +617,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#d1aaaaf1a1ffb4bcb0b8bdf1acac" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#ccb7b7ecbce2a9a1ada5a0ecb1b1" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1737,7 +1737,7 @@ img { max-width: 100%; display: block; }
 
               <sc-if value="{{ consigSelOpen }}" hint-placeholder-val="{{ false }}">
                 <div onClick="{{ consigSelCierra }}" style="position:fixed;inset:0;background:rgba(58,51,38,0.42);backdrop-filter:blur(2px);z-index:40;display:flex;align-items:center;justify-content:center;padding:24px;">
-                  <div onClick="{{ stop }}" style="background:var(--surface-card);border-radius:var(--radius-lg);overflow:hidden;border-top:3px solid var(--brand-primary);box-shadow:var(--shadow-lg);width:100%;max-width:760px;max-height:88vh;display:flex;flex-direction:column;animation:odaPop 180ms var(--ease-out);">
+                  <div onClick="{{ stop }}" style="background:var(--surface-card);border-radius:var(--radius-lg);overflow:hidden;border-top:3px solid var(--brand-primary);box-shadow:var(--shadow-lg);width:100%;max-width:1040px;max-height:88vh;display:flex;flex-direction:column;animation:odaPop 180ms var(--ease-out);">
                     <div style="padding:16px 22px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;">
                       <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;">Stock en {{ consigSelNombre }}</h3>
                       <span style="font-size:12px;color:var(--text-muted);">{{ consigSelUnid }} unidades · {{ consigSelValor }}</span>
@@ -1746,6 +1746,29 @@ img { max-width: 100%; display: block; }
                       <button onClick="{{ consigSelRemision }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;">Generar remisión</button>
                       <button onClick="{{ consigSelCierra }}" title="Cerrar" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:22px;line-height:1;">×</button>
                     </div>
+                    <div style="padding:11px 22px;border-bottom:1px solid var(--border-subtle);display:flex;gap:8px;flex-shrink:0;background:var(--surface-raised);">
+                      <button onClick="{{ consigSelVerStock }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:99px;border:1px solid var(--border-subtle);cursor:pointer;background:{{ consigSelTabStockBg }};color:{{ consigSelTabStockFg }};">Stock</button>
+                      <button onClick="{{ consigSelVerMov }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:99px;border:1px solid var(--border-subtle);cursor:pointer;background:{{ consigSelTabMovBg }};color:{{ consigSelTabMovFg }};">Movimientos</button>
+                    </div>
+                    <sc-if value="{{ consigSelTabMov }}" hint-placeholder-val="{{ false }}">
+                      <div style="overflow-y:auto;flex:1;min-height:80px;" class="oda-scroll">
+                        <sc-if value="{{ consigSelMovVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:28px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Esta tienda aún no tiene movimientos. Las remisiones cargan stock y las ventas marcadas a la tienda lo descuentan.</div></sc-if>
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                          <tbody>
+                            <sc-for list="{{ consigSelMovs }}" as="mv" hint-placeholder-count="4">
+                              <tr style="border-top:1px solid var(--border-subtle);">
+                                <td style="padding:11px 22px;white-space:nowrap;color:var(--text-muted);">{{ mv.fechaFmt }}</td>
+                                <td style="padding:11px 14px;white-space:nowrap;"><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ mv.tagBg }};color:{{ mv.tagFg }};">{{ mv.tipo }}</span></td>
+                                <td style="padding:11px 14px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ mv.ref }}</td>
+                                <td style="padding:11px 14px;color:var(--text-body);">{{ mv.detalle }}</td>
+                                <td style="padding:11px 22px;text-align:right;font-weight:800;white-space:nowrap;color:{{ mv.cantColor }};">{{ mv.cantTxt }}</td>
+                              </tr>
+                            </sc-for>
+                          </tbody>
+                        </table>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ consigSelTabStock }}" hint-placeholder-val="{{ true }}">
                     <div style="overflow-y:auto;flex:1;min-height:80px;" class="oda-scroll">
                       <sc-if value="{{ consigSelVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:28px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Esta tienda no tiene stock cargado. Usa el ajuste manual de abajo para incluir productos, materias o empaques.</div></sc-if>
                       <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -1771,6 +1794,7 @@ img { max-width: 100%; display: block; }
                       </div>
                       <p style="font-size:10.5px;color:var(--text-muted);margin:8px 0 0;line-height:1.45;">Cantidad positiva agrega stock; negativa lo descuenta. Las materias y empaques se costean aparte y no suman al valor de consignación.</p>
                     </div>
+                    </sc-if>
                   </div>
                 </div>
               </sc-if>
@@ -8160,7 +8184,7 @@ Instrucciones de respuesta:
       if(out.showInvPT){ out.invPTRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, formatoLabel:this.formatoLabel(p.formato), stock, stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), precioFmt:this.fmt(p.precio)}; }); out.invPTVacio=st.productos.length===0; out.invPTTotal=this.fmt(Math.round(valPT)); }
       if(out.showInvConsig){
         const resumen=this.tiendaResumen();
-        out.consigTiendas=resumen.map(t=>({ id:t.id, nombre:t.nombre, ciudad:t.ciudad||'—', margenPct:t.margenPct, nSkus:t.nSkus, unidades:t.unidades, valorFmt:this.fmt(Math.round(t.valor)), hayEmpaque:(t.empUnid>0), empaqueTxt:(this.fmtCant(t.empUnid)+' en materiales ('+this.fmt(Math.round(t.empCosto))+')'), onVer:((id)=>()=>this.setState({consignSel:id}))(t.id), onEditar:((id)=>()=>this.editarTienda(this.consignTiendas().find(x=>x.id===id)))(t.id), onRemision:((id)=>()=>this.nuevaRemision(id))(t.id) }));
+        out.consigTiendas=resumen.map(t=>({ id:t.id, nombre:t.nombre, ciudad:t.ciudad||'—', margenPct:t.margenPct, nSkus:t.nSkus, unidades:t.unidades, valorFmt:this.fmt(Math.round(t.valor)), hayEmpaque:(t.empUnid>0), empaqueTxt:(this.fmtCant(t.empUnid)+' en materiales ('+this.fmt(Math.round(t.empCosto))+')'), onVer:((id)=>()=>this.setState({consignSel:id, consigSelTab:'stock'}))(t.id), onEditar:((id)=>()=>this.editarTienda(this.consignTiendas().find(x=>x.id===id)))(t.id), onRemision:((id)=>()=>this.nuevaRemision(id))(t.id) }));
         out.consigTiendasVacio=resumen.length===0;
         out.consigTotalValor=this.fmt(Math.round(resumen.reduce((a,t)=>a+t.valor,0)));
         out.consigTotalUnid=resumen.reduce((a,t)=>a+t.unidades,0);
@@ -8181,6 +8205,16 @@ Instrucciones de respuesta:
           out.onConsigQAPick=(e)=>{ const val=String(e.target.value||''); const opt=this.consignProdOptions().find(o=>o.label===val); this.setState({consigQAItem:val, consigQACode:(opt?opt.codigo:'')}); };
           out.onConsigQACant=(e)=>this.setState({consigQACant:(e.target.value===''?'':Number(e.target.value))});
           out.consigQAApply=()=>this.consignAjuste(selT);
+          const _tab=st.consigSelTab||'stock';
+          out.consigSelTabStock=_tab==='stock'; out.consigSelTabMov=_tab==='mov';
+          out.consigSelTabStockBg=_tab==='stock'?'var(--brand-ink)':'transparent'; out.consigSelTabStockFg=_tab==='stock'?'#fff':'var(--text-muted)';
+          out.consigSelTabMovBg=_tab==='mov'?'var(--brand-ink)':'transparent'; out.consigSelTabMovFg=_tab==='mov'?'#fff':'var(--text-muted)';
+          out.consigSelVerStock=()=>this.setState({consigSelTab:'stock'}); out.consigSelVerMov=()=>this.setState({consigSelTab:'mov'});
+          const _movs=[];
+          (st.remisiones||[]).forEach(r=>{ if(r.tiendaId!==selT) return; const u=(r.items||[]).reduce((a,it)=>a+(Number(it.cantidad)||0),0); const nl=(r.items||[]).length; _movs.push({fecha:r.fecha||'', fechaFmt:this.fmtFecha(r.fecha), tipo:(r.tipo==='inicial'?'Inicial':'Remisión'), tagBg:'rgba(31,138,91,0.14)', tagFg:'#1F8A5B', ref:(r.numero||'—'), detalle:nl+' referencia'+(nl===1?'':'s'), cantTxt:'+'+this.fmtCant(u), cantColor:'#1F8A5B'}); });
+          (st.ventas||[]).forEach(v=>{ if(v.cancelada||v.consignTienda!==selT) return; const u=(v.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0),0); _movs.push({fecha:v.fecha||'', fechaFmt:this.fmtFecha(v.fecha), tipo:'Venta', tagBg:'rgba(181,80,60,0.14)', tagFg:'var(--oda-sale)', ref:(v.ov||v.pedido||'—'), detalle:(v.cliente||'—'), cantTxt:'−'+this.fmtCant(u), cantColor:'var(--oda-sale)'}); });
+          _movs.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+          out.consigSelMovs=_movs; out.consigSelMovVacio=_movs.length===0;
         }
       }
       if(out.showInvKardex){
