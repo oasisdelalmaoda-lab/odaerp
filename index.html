@@ -431,6 +431,7 @@ img { max-width: 100%; display: block; }
               <sc-if value="{{ vV_reg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div></sc-if>
               <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
               <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
+              <sc-if value="{{ vV_carritos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.carritos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCarritos.c }};background:{{ subVenCarritos.bg }};border-left:2px solid {{ subVenCarritos.b }};">Carritos abandonados</div></sc-if>
               <sc-if value="{{ vV_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.servicio }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenSvc.c }};background:{{ subVenSvc.bg }};border-left:2px solid {{ subVenSvc.b }};"><span>Servicio al cliente</span><sc-if value="{{ casoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ casoBadge }}</span></sc-if></div></sc-if>
             </div>
           </sc-if>
@@ -616,7 +617,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#d9a2a2f9a9f7bcb4b8b0b5f9a4a4" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#8af1f1aafaa4efe7ebe3e6aaf7f7" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -925,6 +926,12 @@ img { max-width: 100%; display: block; }
                 <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
                   <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Grupo de alistamiento (WhatsApp)</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Adónde se envían los pedidos de reenvío desde Servicio al Cliente. Pega el <strong>enlace del grupo</strong> (chat.whatsapp.com/…) o un <strong>número</strong> de la persona de bodega (ej. 3134063259). Se comparte con <strong>todo el equipo</strong> (nube).</div></div>
                   <input type="text" value="{{ rnWaAlist }}" onInput="{{ onRnWaAlist }}" placeholder="chat.whatsapp.com/… o 3134063259" style="flex-shrink:0;font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:280px;max-width:100%;">
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+                  <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">WhatsApp automático (Cloud API)</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Envía confirmación, guía de despacho, recordatorio de pago y postventa por WhatsApp. Requiere las credenciales configuradas en el servidor (número dedicado de la Cloud API).</div></div>
+                  <button onClick="{{ onToggleWaCloud }}" role="switch" aria-checked="{{ waCloudOn }}" style="flex-shrink:0;position:relative;width:54px;height:30px;border-radius:99px;border:none;cursor:pointer;transition:background 160ms;background:{{ waToggleBg }};">
+                    <span style="position:absolute;top:3px;left:{{ waToggleX }};width:24px;height:24px;border-radius:50%;background:#fff;transition:left 160ms;box-shadow:0 1px 3px rgba(0,0,0,0.25);"></span>
+                  </button>
                 </div>
               </div>
               </sc-if>
@@ -1840,6 +1847,33 @@ img { max-width: 100%; display: block; }
             </div>
           </sc-if>
 
+          <!-- ===== VENTAS · CARRITOS ABANDONADOS ===== -->
+          <sc-if value="{{ showVentasCarritos }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+                <div style="font-size:13px;color:var(--text-muted);max-width:520px;line-height:1.5;">Checkouts que quedaron sin completar en Shopify. Escríbeles por WhatsApp para ayudarlos a terminar la compra.</div>
+                <button onClick="{{ carritosRefrescar }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>Actualizar</button>
+              </div>
+              <sc-if value="{{ carritosLoading }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;">Consultando Shopify…</div></sc-if>
+              <sc-if value="{{ carritosVacio }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);">No hay carritos abandonados recientes.</div></sc-if>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <sc-for list="{{ carritosList }}" as="c" hint-placeholder-count="0">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-weight:700;font-size:14.5px;">{{ c.nombreTxt }}</div>
+                      <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
+                      <div style="font-size:12.5px;color:var(--text-body);margin-top:7px;">{{ c.productosTxt }}</div>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;">{{ c.totalFmt }}</div>
+                      <button onClick="{{ c.onWa }}" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);border:none;background:#1FA855;color:#fff;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>WhatsApp</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
           <!-- ===== VENTAS · REGISTRO ===== -->
           <sc-if value="{{ showVentasReg }}" hint-placeholder-val="{{ false }}">
             <div>
@@ -1875,30 +1909,31 @@ img { max-width: 100%; display: block; }
                 </div>
               </div>
 
-              <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
-                <div style="position:relative;flex:1;max-width:300px;">
-                  <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-                  <input value="{{ qVenta }}" onInput="{{ onQVenta }}" placeholder="Buscar cliente, pedido, producto…" style="width:100%;font-family:inherit;font-size:13px;padding:10px 13px 10px 36px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;">
+                <div style="position:relative;flex:1 1 160px;min-width:150px;max-width:240px;">
+                  <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                  <input value="{{ qVenta }}" onInput="{{ onQVenta }}" placeholder="Buscar…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:12px;padding:8px 10px 8px 31px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);">
                 </div>
-                <select value="{{ filtroCanal }}" onChange="{{ onFiltroCanal }}" style="font-family:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
-                  <option value="todos">Todos los canales</option>
+                <select value="{{ filtroCanal }}" onChange="{{ onFiltroCanal }}" style="flex-shrink:0;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;max-width:130px;">
+                  <option value="todos">Canal</option>
                   <sc-for list="{{ canalesOptions }}" as="c" hint-placeholder-count="5"><option value="{{ c }}">{{ c }}</option></sc-for>
                 </select>
-                <select value="{{ filtroPago }}" onChange="{{ onFiltroPago }}" style="font-family:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
-                  <option value="todos">Todo pago</option>
+                <select value="{{ filtroPago }}" onChange="{{ onFiltroPago }}" style="flex-shrink:0;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
+                  <option value="todos">Pago</option>
                   <sc-for list="{{ pagoOptions }}" as="p" hint-placeholder-count="3"><option value="{{ p.k }}">{{ p.l }}</option></sc-for>
                 </select>
-                <select value="{{ filtroMetodoVenta }}" onChange="{{ onFiltroMetodoVenta }}" style="font-family:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
-                  <option value="todos">Todo método</option>
+                <select value="{{ filtroMetodoVenta }}" onChange="{{ onFiltroMetodoVenta }}" style="flex-shrink:0;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;max-width:120px;">
+                  <option value="todos">Método</option>
                   <sc-for list="{{ metodosVentaOptions }}" as="m" hint-placeholder-count="3"><option value="{{ m }}">{{ m }}</option></sc-for>
                 </select>
-                <div style="display:flex;align-items:center;gap:6px;"><input type="date" value="{{ venDesde }}" onInput="{{ onVenDesde }}" style="font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);"><span style="font-size:12px;color:var(--text-muted);">→</span><input type="date" value="{{ venHasta }}" onInput="{{ onVenHasta }}" style="font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);"><sc-if value="{{ venHayFiltros }}" hint-placeholder-val="{{ false }}"><button onClick="{{ venLimpiarTodo }}" style="display:flex;align-items:center;gap:5px;font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 13px;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Limpiar filtros</button></sc-if></div>
-                <div style="flex:1;"></div>
+                <input type="date" value="{{ venDesde }}" onInput="{{ onVenDesde }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
+                <input type="date" value="{{ venHasta }}" onInput="{{ onVenHasta }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
+                <sc-if value="{{ venHayFiltros }}" hint-placeholder-val="{{ false }}"><button onClick="{{ venLimpiarTodo }}" title="Limpiar filtros" style="flex-shrink:0;display:flex;align-items:center;font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:7px 9px;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></sc-if>
                 <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}">
-                  <button onClick="{{ shopifySyncBtn }}" disabled="{{ shopifySyncing }}" title="Traer pedidos en vivo desde Shopify" style="display:flex;align-items:center;gap:7px;background:#5E8E3E;color:#fff;border:none;border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>{{ shopifySyncLabel }}</button>
-                  <button onClick="{{ nuevaVentaImport }}" title="Importar el export de Shopify" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:10px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>Importar Shopify</button>
-                  <button onClick="{{ nuevaMsvc }}" title="Registrar muestras sin valor comercial (descuenta inventario)" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:10px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V2"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg>Registrar MSVC</button>
-                  <button onClick="{{ nuevaVenta }}" style="display:flex;align-items:center;gap:7px;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="background:var(--brand-hover);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Registrar venta</button>
+                  <button onClick="{{ shopifySyncBtn }}" disabled="{{ shopifySyncing }}" title="Traer pedidos en vivo desde Shopify" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:#5E8E3E;color:#fff;border:none;border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>{{ shopifySyncLabel }}</button>
+                  <button onClick="{{ nuevaVentaImport }}" title="Importar el export de Shopify" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>Importar</button>
+                  <button onClick="{{ nuevaMsvc }}" title="Registrar muestras sin valor comercial (descuenta inventario)" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V2"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg>MSVC</button>
+                  <button onClick="{{ nuevaVenta }}" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="background:var(--brand-hover);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Venta</button>
                 </sc-if>
               </div>
 
@@ -4449,6 +4484,21 @@ img { max-width: 100%; display: block; }
                   <p style="font-size:10.5px;color:var(--text-muted);margin:7px 0 0;line-height:1.45;">Si marcas una tienda, las unidades salen del stock en consignación de esa tienda y NO del inventario propio.</p>
                 </div>
               </sc-if>
+              <div style="margin-top:16px;background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.28);border-radius:var(--radius-md);padding:12px 14px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">
+                  <span style="color:#1FA855;display:flex;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg></span>
+                  <span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Mensajes por WhatsApp</span>
+                </div>
+                <sc-if value="{{ waSinCel }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">Este pedido no tiene celular registrado.</div></sc-if>
+                <sc-if value="{{ waConCel }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:7px;">
+                    <sc-for list="{{ waBotones }}" as="b" hint-placeholder-count="5">
+                      <button onClick="{{ b.onClick }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:#1FA855;color:#1FA855;">{{ b.label }}<sc-if value="{{ b.enviado }}" hint-placeholder-val="{{ false }}"><span style="color:#1FA855;font-weight:800;">✓</span></sc-if></button>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px;line-height:1.4;">Abre WhatsApp con el mensaje escrito para enviarlo tú. El texto también queda copiado.</div>
+                </sc-if>
+              </div>
               <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}"><button onClick="{{ detVenta.onEditar }}" style="margin-top:16px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:12px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="background:var(--brand-hover);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Editar pedido</button>
               </sc-if>
               <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ detVentaOnEliminar }}" style="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-card);color:#B5503C;border:1px solid rgba(181,80,60,0.45);border-radius:var(--radius-pill);padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="background:rgba(181,80,60,0.08);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Eliminar venta</button></sc-if>
@@ -5072,6 +5122,42 @@ img { max-width: 100%; display: block; }
       </div>
     </sc-if>
 
+    <!-- CARRITOS ABANDONADOS -->
+    <sc-if value="{{ carritosOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeCarritos }}" style="position:fixed;inset:0;background:rgba(58,51,38,0.4);backdrop-filter:blur(2px);z-index:70;display:flex;align-items:center;justify-content:center;padding:24px;">
+        <div onClick="{{ stop }}" class="oda-scroll" style="background:var(--surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:640px;max-height:86vh;overflow-y:auto;">
+          <div style="padding:20px 24px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface-card);z-index:2;">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;">Carritos abandonados</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Checkouts sin completar en Shopify · escríbeles para recuperarlos</div>
+            </div>
+            <button onClick="{{ closeCarritos }}" style="background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;padding:4px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+          </div>
+          <div style="padding:18px 24px;">
+            <sc-if value="{{ carritosLoading }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:32px;">Consultando Shopify…</div></sc-if>
+            <sc-if value="{{ carritosVacio }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:32px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);">No hay carritos abandonados recientes.</div></sc-if>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <sc-for list="{{ carritosList }}" as="c" hint-placeholder-count="0">
+                <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 16px;">
+                  <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-weight:700;font-size:14px;">{{ c.nombreTxt }}</div>
+                      <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
+                      <div style="font-size:12.5px;color:var(--text-body);margin-top:6px;">{{ c.productosTxt }}</div>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;">{{ c.totalFmt }}</div>
+                      <button onClick="{{ c.onWa }}" style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:var(--radius-pill);border:none;background:#1FA855;color:#fff;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>WhatsApp</button>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
     <!-- CAMBIAR CONTRASEÑA -->
     <sc-if value="{{ pwdModalOpen }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ closeChangePwd }}" style="position:fixed;inset:0;z-index:90;background:rgba(58,51,38,0.4);display:flex;align-items:center;justify-content:center;padding:24px;">
@@ -5124,7 +5210,7 @@ class Component extends DCLogic {
     desarrollo: [{key:'mezclas',label:'Mezclas'},{key:'productos',label:'Productos'},{key:'kits',label:'Kits'}],
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
     inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
-    ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'servicio',label:'Servicio al cliente'}],
+    ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
   };
@@ -5343,7 +5429,7 @@ class Component extends DCLogic {
     casoOpenId:null, casoModal:false, casoDraft:null, casoWaMsg:null, casoWaTpl:null, qCaso:'', fCasoTipo:'todos', fCasoEstado:'todos', casoItemSel:'', casoItemQty:'1', casoAfectSel:'', casoSegText:'',
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
-    shopifySyncing:false, shopifyLastTs:0,
+    shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false,
   };
 
   componentDidMount(){
@@ -5532,7 +5618,7 @@ class Component extends DCLogic {
   // ---- nav ----
   goModule(m){ if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
   _firstModuleFor(lu){ const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -5918,7 +6004,7 @@ Instrucciones de respuesta:
       const idxByShop=new Map(); const idxByPed=new Map();
       list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const pn=this.pedidoNum(v); if(pn) idxByPed.set(pn,i); });
       const reindex=()=>{ idxByShop.clear(); idxByPed.clear(); list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const p=this.pedidoNum(v); if(p) idxByPed.set(p,i); }); };
-      let added=0, updated=0, cancelados=0, saltadosFecha=0;
+      let added=0, updated=0, cancelados=0, saltadosFecha=0; const despachados=[];
       incoming.forEach(o=>{
         if(!o.fecha || o.fecha < CUTOFF){ saltadosFecha++; return; } // piso de fecha
         const pn=this.pedidoNum(o);
@@ -5928,13 +6014,14 @@ Instrucciones de respuesta:
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
           const ex=list[exI];
+          const guiaNueva=(!ex.guia && !!o.guia); // pasó de sin guía → con guía (despacho)
           const merged={ ...ex, ...bruto0, ov:(ex.ov||''), guia:(ex.guia||o.guia||''), pagado:(o.cancelado?0:(Number(ex.pagado)>0?ex.pagado:(Number(o.pagado)||0))), liquidada:ex.liquidada, consignTienda:ex.consignTienda, id:ex.id };
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
-          if(o.cancelado) cancelados++; else updated++;
+          if(o.cancelado) cancelados++; else { updated++; if(guiaNueva && !o.cancelado) despachados.push(list[exI].id); }
         } else {
           const row0={ ...bruto0, id:'v'+Date.now()+'_'+Math.floor(Math.random()*100000), ov:'', guia:o.guia||'', pagado:(o.cancelado?0:(Number(o.pagado)||0)) };
           const row=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(row0):row0;
-          list.unshift(row); if(o.cancelado) cancelados++; else added++; reindex();
+          list.unshift(row); if(o.cancelado) cancelados++; else { added++; if(row.guia) despachados.push(row.id); } reindex();
         }
       });
       // asignar consecutivo OV a los pedidos nuevos (sin desplazar los existentes)
@@ -5945,9 +6032,88 @@ Instrucciones de respuesta:
       if(this.cloudOn()) this.cloudBulkVentas(list);
       const partes=[]; if(added) partes.push(added+' nuevo(s)'); if(updated) partes.push(updated+' actualizado(s)'); if(cancelados) partes.push(cancelados+' cancelado(s)');
       this.toast(partes.length? ('Shopify: '+partes.join(' · ')) : 'Shopify: todo al día');
+      // Auto-WhatsApp "despachado" para pedidos que estrenaron guía (solo si WhatsApp está activado).
+      if(this.waConfigurado() && despachados.length){ setTimeout(()=>{ despachados.forEach(id=>{ const v=(this.state.ventas||[]).find(x=>x.id===id); if(v && !v.cancelada && v.celular && !this.waYaEnviado(v,'pedido_despachado')) this.waSendTemplate(v,'pedido_despachado',true); }); }, 500); }
     }catch(e){ this.setState({shopifySyncing:false}); this.toast((e&&e.message)||'No se pudo sincronizar Shopify'); }
   }
   padSku(s){ s=String(s==null?'':s).trim(); return /^\d+$/.test(s)? s.padStart(6,'0') : s; }
+
+  // ====================== WHATSAPP CLOUD API (Fase 1) ======================
+  // Catálogo de plantillas (deben registrarse y aprobarse en Meta con estos nombres).
+  waTemplates(){ return {
+    pedido_recibido:  { label:'Confirmación de pedido', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaTotal(v)))] },
+    pedido_despachado:{ label:'Despachado + guía',      lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), (v.transportadora||'Coordinadora'), (v.guia||'')] },
+    recordatorio_pago:{ label:'Recordatorio de pago',   lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaSaldo(v)))] },
+    postventa:        { label:'Encuesta postventa',     lang:'es', vars:(v)=>[this.waNombre(v)] },
+    carrito_abierto:  { label:'Carrito / cotización',   lang:'es', vars:(v)=>[this.waNombre(v)] },
+  }; }
+  waNombre(v){ const n=this.titleCase(String((v&&v.cliente)||'').trim()); return (n.split(' ')[0]||'Hola'); }
+  waCfg(){ return (this.state.reglasNeg||{}); }
+  waConfigurado(){ const c=this.waCfg(); return !!(c.waCloudOn); }
+  async waSendTemplate(v, key, silent){
+    const t=this.waTemplates()[key]; if(!t){ if(!silent) this.toast('Plantilla no encontrada'); return false; }
+    const to=String((v&&v.celular)||'').replace(/\D/g,''); if(!to){ if(!silent) this.toast('El pedido no tiene celular'); return false; }
+    try{
+      const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
+      const variables=t.vars(v)||[];
+      const { data, error } = await sb.functions.invoke('whatsapp', { body:{ to, template:key, lang:t.lang, variables } });
+      if(error){ let d=''; try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) d=' · '+j.error; } }catch(_e){} throw new Error('WhatsApp no respondió'+d+'. Revisa la función «whatsapp» y las credenciales.'); }
+      if(data && data.error) throw new Error('WhatsApp: '+data.error);
+      // registro en el pedido (log de envíos)
+      const list=(this.state.ventas||[]).map(x=>{ if(x.id!==v.id) return x; const waLog=(x.waLog||[]).slice(); waLog.push({key, ts:Date.now()}); return {...x, waLog}; });
+      this.setState({ventas:list},()=>this.persist()); const _v=list.find(x=>x.id===v.id); if(this.cloudOn()&&_v) this.cloudSaveVenta(_v);
+      if(!silent) this.toast('WhatsApp enviado · '+t.label);
+      return true;
+    }catch(e){ if(!silent) this.toast((e&&e.message)||'No se pudo enviar el WhatsApp'); return false; }
+  }
+  waYaEnviado(v, key){ return (v&&v.waLog||[]).some(x=>x.key===key); }
+  // --- Carritos abandonados (Shopify) ---
+  async cargarCarritos(){
+    if(this.state.carritosLoading) return;
+    this.setState({carritosLoading:true});
+    try{
+      const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
+      const { data, error } = await sb.functions.invoke('shopify', { body:{ mode:'checkouts', limit:100 } });
+      if(error){ let d=''; try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) d=' · '+j.error; } }catch(_e){} throw new Error('No respondió Shopify'+d); }
+      if(data && data.error) throw new Error(data.error);
+      this.setState({carritos:(data&&data.carritos)||[], carritosLoading:false});
+    }catch(e){ this.setState({carritosLoading:false, carritos:[]}); this.toast((e&&e.message)||'No se pudieron traer los carritos'); }
+  }
+  carritoWaSend(c){
+    const nombre=(this.titleCase(String(c.nombre||'').trim()).split(' ')[0])||'Hola';
+    const prod=(c.items&&c.items[0]&&c.items[0].producto)?(' («'+c.items[0].producto+'»)'):'';
+    let msg='Hola '+nombre+' 🌿 notamos que dejaste algo en tu carrito'+prod+'. ¿Te ayudamos a completar tu momento de bienestar?';
+    if(c.url) msg+=' Puedes retomarlo aquí: '+c.url;
+    msg+=' — Oasis del Alma';
+    const to=String(c.celular||'').replace(/\D/g,''); const full=to?(to.length===10?('57'+to):to):'';
+    try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg); }catch(e){}
+    const url=full?('https://wa.me/'+full+'?text='+encodeURIComponent(msg)):('https://wa.me/?text='+encodeURIComponent(msg));
+    try{ window.open(url,'_blank'); }catch(e){}
+    this.toast('WhatsApp abierto para el carrito');
+  }
+  // --- Envío MANUAL (wa.me) — no requiere Cloud API ni número dedicado ---
+  waMensajeManual(v, key){
+    const n=this.waNombre(v); const ref=this.ventaRef(v); const t=this.fmt(Math.round(this.ventaTotal(v)));
+    const saldo=this.fmt(Math.round(this.ventaSaldo(v))); const transp=(v.transportadora||'Coordinadora'); const guia=(v.guia||'');
+    const M={
+      pedido_recibido:'Hola '+n+' 🌿 recibimos tu pedido '+ref+' por '+t+'. Ya lo estamos preparando con cariño y te avisamos cuando salga. — Oasis del Alma',
+      pedido_despachado:n+', tu pedido '+ref+' ya va en camino 🚚 Enviado por '+transp+(guia?(', guía '+guia):'')+'. Gracias por confiar en tu bienestar. — Oasis del Alma',
+      recordatorio_pago:'Hola '+n+' 🌿 tu pedido '+ref+' tiene un saldo pendiente de '+saldo+'. Cuando quieras te ayudamos a completarlo. — Oasis del Alma',
+      postventa:n+', ¿cómo te sentiste con tu experiencia Oasis del Alma? 💛 Tu opinión nos ayuda a cuidar mejor de ti. ¿Nos cuentas?',
+      carrito_abierto:'Hola '+n+' 🌿 notamos que dejaste algo en tu carrito. ¿Te ayudamos a completar tu momento de bienestar? — Oasis del Alma',
+    };
+    return M[key]||'';
+  }
+  waSendManual(v, key){
+    const msg=this.waMensajeManual(v, key); if(!msg){ this.toast('Plantilla no encontrada'); return; }
+    const to=String((v&&v.celular)||'').replace(/\D/g,''); const full=to?(to.length===10?('57'+to):to):'';
+    try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg); }catch(e){}
+    const url=full?('https://wa.me/'+full+'?text='+encodeURIComponent(msg)):('https://wa.me/?text='+encodeURIComponent(msg));
+    try{ window.open(url,'_blank'); }catch(e){}
+    const list=(this.state.ventas||[]).map(x=>{ if(x.id!==v.id) return x; const waLog=(x.waLog||[]).slice(); waLog.push({key, ts:Date.now(), manual:true}); return {...x, waLog}; });
+    this.setState({ventas:list},()=>this.persist()); const _v=list.find(x=>x.id===v.id); if(this.cloudOn()&&_v) this.cloudSaveVenta(_v);
+    this.toast('WhatsApp abierto · '+((this.waTemplates()[key]||{}).label||''));
+  }
   // Resuelve el SKU de un producto/kit a partir de su nombre (cuando la venta llegó sin código).
   resolveSkuByName(name, prods, kits){ const k=this.normKey(name); if(!k) return ''; prods=prods||this.state.productos||[]; kits=kits||this.state.kits||[]; const kit=kits.find(x=>this.normKey(x.nombre)===k); if(kit) return kit.codigo; const prod=prods.find(x=>this.normKey(x.nombre)===k); if(prod) return prod.codigo; return ''; }
   skuExiste(code, prods, kits){ const c=this.padSku(code); prods=prods||this.state.productos||[]; kits=kits||this.state.kits||[]; return prods.some(p=>this.padSku(p.codigo)===c) || kits.some(k=>this.padSku(k.codigo)===c); }
@@ -6248,9 +6414,9 @@ Instrucciones de respuesta:
   }
   _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); this.cloudLoadCasos(); this.cloudSubscribeCasos(); this.cloudLoadCreditos(); this.cloudSubscribeCreditos(); }
   // ---- permisos compartidos (nube) ----
-  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && cfg.waAlist!==undefined){ const rn={...(this.state.reglasNeg||{}), waAlist:cfg.waAlist}; patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
+  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
-  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:'__config__', perms:obj, actualizado:new Date().toISOString()}); }catch(e){} }
+  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
   cloudSubscribePermisos(){ const sb=this._sbClient(); if(!sb||this._permSub) return; try{ this._permSub=sb.channel('oda-permisos').on('postgres_changes',{event:'*',schema:'public',table:'permisos'},()=>{ this.cloudLoadPermisos(); }).subscribe(); }catch(e){} }
   // ---- proveedores compartidos (nube) ----
   _provToDb(p){ return { codigo:p.codigo, nombre:p.nombre||'', nit:p.nit||'', contacto_nombre:p.contactoNombre||'', telefonos:(Array.isArray(p.telefonos)?p.telefonos:[]), email:p.email||'', ciudad:p.ciudad||'', condiciones_pago:p.condicionesPago||'', calificacion:Number(p.calificacion)||0, autorretenedor:/s[ií]/i.test(String(p.autorretenedor||'')), actualizado:new Date().toISOString() }; }
@@ -7253,11 +7419,11 @@ Instrucciones de respuesta:
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
     out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex');
-    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_svc=subVis('ventas','servicio');
+    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
-    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
+    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
     const PX='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
     out.propPortadaImg=PX; out.propQuienesImg=PX; out.propBenImg=PX;
     out.propPortadaHas=false; out.propQuienesHas=false; out.propBenHas=false;
@@ -7322,8 +7488,8 @@ Instrucciones de respuesta:
     out.ventasNavBg = onVen? 'rgba(167,134,89,0.18)':'transparent';
     out.ventasNavColor = onVen? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyV=(k)=>{ const a=onVen&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador'); out.subVenSvc=subStyV('servicio');
-    out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}), servicio:()=>this.setState({module:'ventas',sub:'servicio'}) };
+    out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador'); out.subVenCarritos=subStyV('carritos'); out.subVenSvc=subStyV('servicio');
+    out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), carritos:()=>this.setState({module:'ventas',sub:'carritos'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}), servicio:()=>this.setState({module:'ventas',sub:'servicio'}) };
     const venAcc = acc? (acc.admin?'write':(acc.ventas||'none')) : 'none';
     out.canWriteVentas = venAcc==='write';
 
@@ -7387,6 +7553,7 @@ Instrucciones de respuesta:
     out.showVentasListado = onVen && st.sub==='listado';
     out.showVentasPedidos = onVen && st.sub==='pedidos';
     out.showVentasCotizador = onVen && st.sub==='cotizador';
+    out.showVentasCarritos = onVen && st.sub==='carritos';
     out.showVentasServicio = onVen && st.sub==='servicio';
     out.showFinResumen = onFin && st.sub==='finresumen';
     out.showFinPagar = onFin && st.sub==='finpagar';
@@ -7993,6 +8160,9 @@ Instrucciones de respuesta:
       const saveReglaTxt=(key)=>(e)=>{ const v=e.target.value; const updated={...rn,[key]:v}; this.setState({reglasNeg:updated}); try{localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(updated));}catch(ex){} };
       out.rnWaAlist=rn.waAlist||''; out.onRnWaAlist=(e)=>{ const v=e.target.value; const updated={...rn, waAlist:v}; this.setState({reglasNeg:updated}); try{localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(updated));}catch(ex){} if(this.cloudOn()) this.cloudSaveConfig({waAlist:v}); };
       out.rnWaAlistShared=this.cloudOn();
+      out.waCloudOn=!!rn.waCloudOn;
+      out.waToggleBg=rn.waCloudOn?'#1FA855':'var(--border-strong)'; out.waToggleX=rn.waCloudOn?'27px':'3px';
+      out.onToggleWaCloud=()=>{ const nv=!rn.waCloudOn; const updated={...rn, waCloudOn:nv}; this.setState({reglasNeg:updated}); try{localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(updated));}catch(ex){} if(this.cloudOn()) this.cloudSaveConfig({waCloudOn:nv}); this.toast(nv?'WhatsApp automático activado':'WhatsApp automático desactivado'); };
       const re=st.reglasEmpaque||{bolsaDefault:'MP-0087',mapeoCajas:{'006003':'MP-0095','006004':'MP-0096','006005':'MP-0097','006006':'MP-0098'}};
       const saveEmpaq=(key,val)=>{ const updated={...re,[key]:val}; this.setState({reglasEmpaque:updated}); try{localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(updated));}catch(ex){} };
       out.onRecalcularStock=()=>this.recalcularStockOrdenes();
@@ -8078,7 +8248,8 @@ Instrucciones de respuesta:
       list=list.slice().sort((a,b)=>{ const oa=this.ovNum(a), ob=this.ovNum(b); if(ob!==oa) return ob-oa; const na=this.pedidoNum(a), nb=this.pedidoNum(b); if(nb!==na) return nb-na; return (b.fecha||'').localeCompare(a.fecha||''); });
       out.ventasView=list.map(mapV); out.ventasVacio=list.length===0;
       out.nuevaVenta=()=>this.nuevaVenta(); out.nuevaVentaImport=()=>this.openImport('ventas'); out.nuevaMsvc=()=>this.nuevaMsvc();
-      out.shopifySyncBtn=()=>this.shopifySyncReal(); out.shopifySyncing=!!st.shopifySyncing; out.shopifySyncLabel=st.shopifySyncing?'Sincronizando…':'Sincronizar Shopify';
+      out.shopifySyncBtn=()=>this.shopifySyncReal(); out.shopifySyncing=!!st.shopifySyncing; out.shopifySyncLabel=st.shopifySyncing?'Sincronizando…':'Shopify';
+      out.carritosBtn=()=>this.cargarCarritos();
     }
     if(out.showVentasPedidos){
       out.qPedido=st.qPedido; out.onQPedido=(e)=>this.setState({qPedido:e.target.value});
@@ -8374,6 +8545,9 @@ Instrucciones de respuesta:
     if(st.modal==='detalleventa'&&st.detalleId){ const v=(st.ventas||[]).find(x=>x.id===st.detalleId); if(v){ const ep=this.ventaEstadoPago(v); const cs=this.canalStyle(v.canal);
       out.detVenta={ ov:v.ov||'—', pedido:v.pedido||'—', fechaFmt:this.fmtFecha(v.fecha), canal:v.canal, canalBg:cs.bg, canalFg:cs.fg, cliente:v.cliente, ciudad:v.ciudad||'—', celular:v.celular||'—', correo:v.correo||'—', bodega:v.bodega||'—', metodoPago:v.metodoPago||'—', guia:v.guia||'—', origenLabel:this.origenLabel(v.origen), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), items:(v.items||[]).map((it,idx)=>{ const c=it.productoCodigo||it.referencia; const pp=(this.state.productos||[]).find(x=>x.codigo===c); const kk=(this.state.kits||[]).find(x=>x.codigo===c); const em=(v.origen==='manual'); return {nombre:(pp?pp.nombre:(kk?kk.nombre:(this.fixTxt(it.producto)||it.referencia))), referencia:it.referencia||'—', unidades:it.unidades, valorUnit:(Number(it.valorUnit)||0), valorFmt:this.fmt(it.valorUnit), subtotalFmt:this.fmt((Number(it.unidades)||0)*(Number(it.valorUnit)||0)), editable:em, readonly:!em, onSetCant:((i)=>(e)=>this.setVentaItemCant(v.id,i,e.target.value))(idx), onSetValor:((i)=>(e)=>this.setVentaItemValor(v.id,i,e.target.value))(idx)}; }), subtotalFmt:this.fmt(Math.round(this.ventaSubtotal(v))), envioFmt:this.fmt(v.envio||0), envioIvaFmt:this.fmt(this.ventaIvaEnvio(v)), envioConIva:this.ventaIvaEnvio(v)>0, fleteEntregaFmt:this.fmt(v.fleteEntrega||0), tieneFleteEntrega:(Number(v.fleteEntrega)||0)>0, fleteCuentaTxt:(v.fleteCuenta||'—'), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), hayAbono:(this.ventaAbono(v)>0), abonoFmt:this.fmt(Math.round(this.ventaAbono(v))), abonoMetodoTxt:(v.abonoMetodo||'—'), abonoCuentaTxt:(v.abonoCuenta||'—'), abonoFechaFmt:(v.abonoFecha?this.fmtFecha(v.abonoFecha):'—'), saldoRecaudoFmt:this.fmt(Math.round(this.ventaRecaudoBruto(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.round(this.ventaSaldo(v))), costoFmt:this.fmt(Math.round(this.ventaCosto(v))), margenFmt:this.fmt(Math.round(this.ventaSubtotal(v)-this.ventaCosto(v))), onEditar:()=>this.editVenta(v) };
       out.detVentaEsManual=(v.origen==='manual');
+      out.waHabilitado=this.waConfigurado(); out.waNoHabilitado=!this.waConfigurado();
+      out.waSinCel=!String(v.celular||'').replace(/\D/g,''); out.waConCel=!!String(v.celular||'').replace(/\D/g,'');
+      out.waBotones=Object.entries(this.waTemplates()).map(([key,t])=>({ key, label:t.label, enviado:this.waYaEnviado(v,key), onClick:()=>this.waSendManual(v,key) }));
       out.detVentaOnEliminar=()=>this.askDeleteVenta(v); out.detEmpaqueOptions=(this.state.materias||[]).filter(m=>['insumo','empaque','envase'].includes(m.tipo)).map(m=>({codigo:m.codigo, label:m.codigo+' · '+m.nombre})); out.empSel=st.empSel||''; out.empCant=st.empCant||''; out.onEmpSel=(e)=>this.setState({empSel:e.target.value}); out.onEmpCant=(e)=>this.setState({empCant:e.target.value}); out.onAddEmpaque=()=>this.addEmpaqueVenta(); out.detEmpaques=(v.empaques||[]).map((e,i)=>{ const m=(this.state.materias||[]).find(x=>x.codigo===e.materiaCodigo); const cu=m?Number(m.costo)||0:0; return {nombre:(m?m.nombre:e.materiaCodigo), cantidad:e.cantidad, unidad:(m?m.unidad:''), costoFmt:this.fmt(Math.round(cu*(Number(e.cantidad)||0))), auto:!!e.auto, onRemove:((idx)=>()=>this.removeEmpaqueVenta(idx))(i), onSetCant:((idx)=>(ev)=>this.setEmpaqueVentaCant(idx, ev.target.value))(i)}; }); out.detEmpVacio=(v.empaques||[]).length===0; out.detPuedeEmp=out.canWriteVentas; out.detNoPuedeEmp=!out.canWriteVentas;
       out.detConsignOptions=this.consignTiendas().map(t=>({id:t.id, nombre:t.nombre})); out.detConsignSel=v.consignTienda||''; out.detHayTiendas=this.consignTiendas().length>0; out.onDetConsign=(e)=>this.setVentaConsign(v.id, e.target.value); } }
 
@@ -8414,6 +8588,11 @@ Instrucciones de respuesta:
       out.segAlertas=(l.alertas||[]).slice().sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).map(a=>{ const venc=!a.hecho && a.fecha<=todaySeg; return { id:a.id, fechaFmt:this.fmtFecha(a.fecha), nota:a.nota||'', hasNota:!!(a.nota&&a.nota.trim()), hecho:!!a.hecho, vencida:venc, estadoTxt:(a.hecho?'Hecho':(venc?'Pendiente · hoy o vencida':'Programada')), estadoBg:(a.hecho?'rgba(76,97,73,0.16)':(venc?'rgba(181,80,60,0.14)':'rgba(167,134,89,0.16)')), estadoColor:(a.hecho?'#4C6149':(venc?'#B5503C':'#7A5E36')), toggleTxt:(a.hecho?'Reabrir':'Marcar hecho'), onToggle:()=>this.toggleLeadAlerta(a.id), onDelete:()=>this.deleteLeadAlerta(a.id) }; });
       out.segAlertasVacio=(l.alertas||[]).length===0;
     }
+    out.carritosOpen=st.modal==='carritos'; out.carritosLoading=!!st.carritosLoading;
+    if(out.showVentasCarritos && st.carritos===null && !st.carritosLoading){ setTimeout(()=>{ if(this.state.sub==='carritos' && this.state.carritos===null && !this.state.carritosLoading) this.cargarCarritos(); }, 60); }
+    out.carritosRefrescar=()=>this.cargarCarritos();
+    { const cs=(st.carritos||[]); out.carritosVacio=(!st.carritosLoading && cs.length===0); out.carritosList=cs.map(c=>({ nombreTxt:(this.titleCase(c.nombre||'')||'Cliente sin nombre'), contactoTxt:(c.celular||c.correo||'sin contacto'), fechaFmt:this.fmtFecha(c.fecha), productosTxt:((c.items||[]).map(i=>i.unidades+'× '+i.producto).join(', ')||'—'), totalFmt:this.fmt(Math.round(Number(c.total)||0)), onWa:()=>this.carritoWaSend(c) })); }
+    out.closeCarritos=()=>this.setState({modal:null});
     out.isModalCliente=st.modal==='cliente'; out.isModalWaCampaign=st.modal==='wacampaign'; out.isModalProveedor=st.modal==='proveedor'; out.isModalMateria=st.modal==='materia'; out.isModalOrden=st.modal==='orden'; out.isModalFactura=st.modal==='factura'; out.isModalPago=st.modal==='pago'; out.isModalImport=st.modal==='import'; out.isModalDetalle=st.modal==='detalle'; out.isModalProducto=st.modal==='producto'; out.isModalKit=st.modal==='kit'; out.isModalMezcla=st.modal==='mezcla'; out.isModalBulk=st.modal==='bulkproducto'; out.isModalProduccion=st.modal==='produccion'; out.isModalAjuste=st.modal==='ajusteinv'; out.isModalServicio=st.modal==='servicio'; out.isModalEntrega=st.modal==='entrega'; out.isModalRecibir=st.modal==='recibirorden'; out.recibirSinPendientes=(st.modal==='recibirorden' && !((st.draft._pendientes||[]).length)); out.isModalProduccionMez=st.modal==='produccionmez'; out.isModalVenta=st.modal==='venta'; out.isModalCotizacion=st.modal==='cotizacion'; out.isModalDetalleVenta=st.modal==='detalleventa'; out.isModalMovimiento=st.modal==='movimiento'; out.isModalCuentaFin=st.modal==='cuentafin'; out.isModalCobro=st.modal==='cobro'; out.isModalGastoFijo=st.modal==='gastofijo'; out.isModalPagarGasto=st.modal==='pagargasto'; if(st.modal==='pagargasto'){ out.pagarGastoMontoEstim=this.fmt(Math.round(Number(st.draft.montoEstim)||0)); out.pagarGastoFechaEstimFmt=this.fmtFecha(st.draft.fechaEstim); } out.isModalPagarSvc=st.modal==='pagarsvc'; if(st.modal==='pagarsvc'){ out.pagarSvcSaldoFmt=this.fmt(Math.round(Number(st.draft.saldoEstim)||0)); out.pagarSvcSub='saldo '+out.pagarSvcSaldoFmt+((st.draft.proveedor)?(' \u00b7 '+st.draft.proveedor):''); } out.isModalRetenConfig=st.modal==='retenconfig'; out.isModalLiquidacion=st.modal==='liquidacion'; out.isModalMetodoFin=st.modal==='metodofin'; out.isModalMovDetalle=st.modal==='movdetalle'; out.isModalTienda=st.modal==='tienda'; out.isModalRemision=st.modal==='remision'; out.isModalMsvc=st.modal==='msvc'; out.isModalTraslado=st.modal==='traslado'; out.isModalCredito=st.modal==='credito'; out.isModalAbonoCred=st.modal==='abonocred';
     out.draft=st.draft;
     out.draftConArchivo=!!(st.draft&&st.draft._archivo); out.draftSinArchivo=!(st.draft&&st.draft._archivo); out.onDraftArchivo=(e)=>this.onDraftArchivo(e); out.quitarDraftArchivo=()=>this.quitarDraftArchivo();
