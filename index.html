@@ -617,7 +617,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#8af1f1aafaa4efe7ebe3e6aaf7f7" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#dba0a0fbabf5beb6bab2b7fba6a6" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1850,18 +1850,32 @@ img { max-width: 100%; display: block; }
           <!-- ===== VENTAS · CARRITOS ABANDONADOS ===== -->
           <sc-if value="{{ showVentasCarritos }}" hint-placeholder-val="{{ false }}">
             <div>
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-                <div style="font-size:13px;color:var(--text-muted);max-width:520px;line-height:1.5;">Checkouts que quedaron sin completar en Shopify. Escríbeles por WhatsApp para ayudarlos a terminar la compra.</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+                <div style="font-size:13px;color:var(--text-muted);max-width:420px;line-height:1.5;">Checkouts sin completar en Shopify. Escríbeles por WhatsApp para ayudarlos a terminar la compra.</div>
                 <button onClick="{{ carritosRefrescar }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>Actualizar</button>
               </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;">
+                <div style="position:relative;flex:1 1 160px;min-width:150px;max-width:260px;">
+                  <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                  <input value="{{ qCarrito }}" onInput="{{ onQCarrito }}" placeholder="Buscar cliente, producto…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:12px;padding:8px 10px 8px 31px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);">
+                </div>
+                <span style="flex-shrink:0;font-size:11px;color:var(--text-muted);">Del</span>
+                <input type="date" value="{{ carDesde }}" onInput="{{ onCarDesde }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
+                <span style="flex-shrink:0;font-size:11px;color:var(--text-muted);">al</span>
+                <input type="date" value="{{ carHasta }}" onInput="{{ onCarHasta }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
+                <sc-if value="{{ carHayFiltros }}" hint-placeholder-val="{{ false }}"><button onClick="{{ carLimpiar }}" title="Limpiar" style="flex-shrink:0;display:flex;align-items:center;font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:7px 9px;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></sc-if>
+                <div style="flex:1;"></div>
+                <span style="flex-shrink:0;font-size:12px;color:var(--text-muted);">{{ carCount }} carritos</span>
+                <button onClick="{{ exportCarritos }}" title="Descargar base de datos" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Descargar</button>
+              </div>
               <sc-if value="{{ carritosLoading }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;">Consultando Shopify…</div></sc-if>
-              <sc-if value="{{ carritosVacio }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);">No hay carritos abandonados recientes.</div></sc-if>
+              <sc-if value="{{ carritosVacio }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);">No hay carritos abandonados en el rango.</div></sc-if>
               <div style="display:flex;flex-direction:column;gap:12px;">
                 <sc-for list="{{ carritosList }}" as="c" hint-placeholder-count="0">
                   <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
                     <div style="flex:1;min-width:0;">
-                      <div style="font-weight:700;font-size:14.5px;">{{ c.nombreTxt }}</div>
-                      <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
+                      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><span style="font-weight:700;font-size:14.5px;">{{ c.nombreTxt }}</span><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ c.clienteBg }};color:{{ c.clienteFg }};">{{ c.clienteTxt }}</span></div>
+                      <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
                       <div style="font-size:12.5px;color:var(--text-body);margin-top:7px;">{{ c.productosTxt }}</div>
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
@@ -6067,6 +6081,21 @@ Instrucciones de respuesta:
     }catch(e){ if(!silent) this.toast((e&&e.message)||'No se pudo enviar el WhatsApp'); return false; }
   }
   waYaEnviado(v, key){ return (v&&v.waLog||[]).some(x=>x.key===key); }
+  // ¿El contacto del carrito ya es cliente? (cruza celular/correo contra todas las ventas)
+  clienteExistente(celular, correo){
+    const tel=String(celular||'').replace(/\D/g,'').slice(-10); const mail=String(correo||'').trim().toLowerCase();
+    if(!tel && !mail) return {esCliente:false, label:'', bg:'', fg:''};
+    let compras=0;
+    (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const vt=String(v.celular||'').replace(/\D/g,'').slice(-10); const vm=String(v.correo||'').trim().toLowerCase(); if((tel&&vt&&vt===tel)||(mail&&vm&&vm===mail)) compras++; });
+    if(compras>0) return {esCliente:true, label:'Ya es cliente · '+compras+' compra'+(compras>1?'s':''), bg:'rgba(98,123,96,0.16)', fg:'#4C6149'};
+    return {esCliente:false, label:'Nuevo', bg:'var(--surface-raised)', fg:'var(--text-muted)'};
+  }
+  exportCarritos(list){
+    if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando, intenta de nuevo'); return; }
+    const rows=(list||[]).map(c=>({ Fecha:c.fecha||'', Cliente:this.titleCase(c.nombre||''), Celular:c.celular||'', Correo:c.correo||'', Ciudad:this.titleCase(c.ciudad||''), Productos:(c.items||[]).map(i=>i.unidades+'x '+i.producto).join(' · '), Total:Math.round(Number(c.total)||0), 'Ya es cliente':(this.clienteExistente(c.celular,c.correo).esCliente?'Sí':'No'), Enlace:c.url||'' }));
+    if(!rows.length){ this.toast('No hay carritos para exportar'); return; }
+    const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Carritos'); XLSX.writeFile(wb,'carritos_abandonados.xlsx'); this.toast('Base de carritos descargada');
+  }
   // --- Carritos abandonados (Shopify) ---
   async cargarCarritos(){
     if(this.state.carritosLoading) return;
@@ -7574,7 +7603,7 @@ Instrucciones de respuesta:
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
     else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
-    else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads'}[st.sub]||'Ventas'; }
+    else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
     else if(onMkt){ out.crumb='Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
@@ -8591,7 +8620,19 @@ Instrucciones de respuesta:
     out.carritosOpen=st.modal==='carritos'; out.carritosLoading=!!st.carritosLoading;
     if(out.showVentasCarritos && st.carritos===null && !st.carritosLoading){ setTimeout(()=>{ if(this.state.sub==='carritos' && this.state.carritos===null && !this.state.carritosLoading) this.cargarCarritos(); }, 60); }
     out.carritosRefrescar=()=>this.cargarCarritos();
-    { const cs=(st.carritos||[]); out.carritosVacio=(!st.carritosLoading && cs.length===0); out.carritosList=cs.map(c=>({ nombreTxt:(this.titleCase(c.nombre||'')||'Cliente sin nombre'), contactoTxt:(c.celular||c.correo||'sin contacto'), fechaFmt:this.fmtFecha(c.fecha), productosTxt:((c.items||[]).map(i=>i.unidades+'× '+i.producto).join(', ')||'—'), totalFmt:this.fmt(Math.round(Number(c.total)||0)), onWa:()=>this.carritoWaSend(c) })); }
+    { const csAll=(st.carritos||[]);
+      const cd=st.carDesde||'', ch=st.carHasta||'', cq=(st.qCarrito||'').toLowerCase();
+      const cs=csAll.filter(c=>{ const f=c.fecha||''; if(cd&&f<cd) return false; if(ch&&f>ch) return false; if(cq){ const hay=((c.nombre||'')+(c.celular||'')+(c.correo||'')+(c.items||[]).map(i=>i.producto).join(' ')).toLowerCase(); if(!hay.includes(cq)) return false; } return true; });
+      out.carritosVacio=(!st.carritosLoading && cs.length===0);
+      out.carDesde=cd; out.carHasta=ch; out.qCarrito=st.qCarrito||'';
+      out.onCarDesde=(e)=>this.setState({carDesde:e.target.value}); out.onCarHasta=(e)=>this.setState({carHasta:e.target.value}); out.onQCarrito=(e)=>this.setState({qCarrito:e.target.value});
+      out.carHayFiltros=!!(cd||ch||st.qCarrito); out.carLimpiar=()=>this.setState({carDesde:'',carHasta:'',qCarrito:''});
+      out.carCount=cs.length;
+      out.exportCarritos=()=>this.exportCarritos(cs);
+      out.carritosList=cs.map(c=>{ const cl=this.clienteExistente(c.celular, c.correo);
+        return { nombreTxt:(this.titleCase(c.nombre||'')||'Cliente sin nombre'), contactoTxt:(c.celular||c.correo||'sin contacto'), fechaFmt:this.fmtFecha(c.fecha), productosTxt:((c.items||[]).map(i=>i.unidades+'× '+i.producto).join(', ')||'—'), totalFmt:this.fmt(Math.round(Number(c.total)||0)),
+          esCliente:cl.esCliente, clienteTxt:cl.label, clienteBg:cl.bg, clienteFg:cl.fg,
+          onWa:()=>this.carritoWaSend(c) }; }); }
     out.closeCarritos=()=>this.setState({modal:null});
     out.isModalCliente=st.modal==='cliente'; out.isModalWaCampaign=st.modal==='wacampaign'; out.isModalProveedor=st.modal==='proveedor'; out.isModalMateria=st.modal==='materia'; out.isModalOrden=st.modal==='orden'; out.isModalFactura=st.modal==='factura'; out.isModalPago=st.modal==='pago'; out.isModalImport=st.modal==='import'; out.isModalDetalle=st.modal==='detalle'; out.isModalProducto=st.modal==='producto'; out.isModalKit=st.modal==='kit'; out.isModalMezcla=st.modal==='mezcla'; out.isModalBulk=st.modal==='bulkproducto'; out.isModalProduccion=st.modal==='produccion'; out.isModalAjuste=st.modal==='ajusteinv'; out.isModalServicio=st.modal==='servicio'; out.isModalEntrega=st.modal==='entrega'; out.isModalRecibir=st.modal==='recibirorden'; out.recibirSinPendientes=(st.modal==='recibirorden' && !((st.draft._pendientes||[]).length)); out.isModalProduccionMez=st.modal==='produccionmez'; out.isModalVenta=st.modal==='venta'; out.isModalCotizacion=st.modal==='cotizacion'; out.isModalDetalleVenta=st.modal==='detalleventa'; out.isModalMovimiento=st.modal==='movimiento'; out.isModalCuentaFin=st.modal==='cuentafin'; out.isModalCobro=st.modal==='cobro'; out.isModalGastoFijo=st.modal==='gastofijo'; out.isModalPagarGasto=st.modal==='pagargasto'; if(st.modal==='pagargasto'){ out.pagarGastoMontoEstim=this.fmt(Math.round(Number(st.draft.montoEstim)||0)); out.pagarGastoFechaEstimFmt=this.fmtFecha(st.draft.fechaEstim); } out.isModalPagarSvc=st.modal==='pagarsvc'; if(st.modal==='pagarsvc'){ out.pagarSvcSaldoFmt=this.fmt(Math.round(Number(st.draft.saldoEstim)||0)); out.pagarSvcSub='saldo '+out.pagarSvcSaldoFmt+((st.draft.proveedor)?(' \u00b7 '+st.draft.proveedor):''); } out.isModalRetenConfig=st.modal==='retenconfig'; out.isModalLiquidacion=st.modal==='liquidacion'; out.isModalMetodoFin=st.modal==='metodofin'; out.isModalMovDetalle=st.modal==='movdetalle'; out.isModalTienda=st.modal==='tienda'; out.isModalRemision=st.modal==='remision'; out.isModalMsvc=st.modal==='msvc'; out.isModalTraslado=st.modal==='traslado'; out.isModalCredito=st.modal==='credito'; out.isModalAbonoCred=st.modal==='abonocred';
     out.draft=st.draft;
