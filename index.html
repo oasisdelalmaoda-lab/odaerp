@@ -617,7 +617,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#176c6c376739727a767e7b376a6a" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#e59e9ec595cb8088848c89c59898" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -2683,6 +2683,24 @@ img { max-width: 100%; display: block; }
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">31–60 días</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-top:6px;color:#9A7320;">{{ fpD60 }}</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">+60 días</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-top:6px;color:var(--oda-sale);">{{ fpD60p }}</div></div>
               </div>
+              <sc-if value="{{ fpHayTarjAlertas }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid rgba(181,80,60,0.35);background:rgba(181,80,60,0.06);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <span style="color:#B5503C;display:flex;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin:0;">Tarjetas próximas a vencer</h3>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <sc-for list="{{ fpTarjAlertas }}" as="t" hint-placeholder-count="1">
+                      <div style="display:flex;align-items:center;gap:12px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 14px;flex-wrap:wrap;">
+                        <span style="flex:1;min-width:160px;"><span style="font-weight:700;font-size:13.5px;">{{ t.nombre }}</span><span style="display:block;font-size:11.5px;color:var(--text-muted);">Pago oportuno: {{ t.dueFmt }}</span></span>
+                        <span style="font-size:11px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;padding:4px 10px;border-radius:99px;white-space:nowrap;background:{{ t.bg }};color:{{ t.fg }};">{{ t.diasTxt }}</span>
+                        <span style="text-align:right;min-width:120px;"><span style="font-size:10.5px;color:var(--text-muted);display:block;">Sin intereses</span><span style="font-weight:800;">{{ t.sinInteresFmt }}</span></span>
+                        <sc-if value="{{ fpCanWrite }}" hint-placeholder-val="{{ true }}"><button onClick="{{ t.onPagar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;">Pagar</button></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;">
                   <div style="flex:1;min-width:180px;"><h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Créditos y financiación recibida</h3><span style="font-size:11.5px;color:var(--text-muted);">Préstamos que recibió la empresa · el desembolso entró a caja</span></div>
@@ -7216,7 +7234,8 @@ Instrucciones de respuesta:
     let lastCut=clamp(today.getFullYear(), today.getMonth(), corte);
     if(lastCut>today) lastCut=clamp(today.getFullYear(), today.getMonth()-1, corte);
     const lastCutISO=iso(lastCut);
-    let dueISO=''; if(pago){ const due=clamp(lastCut.getFullYear(), lastCut.getMonth()+1, pago); dueISO=iso(due); }
+    // La fecha límite de pago es el próximo "día de pago" DESPUÉS del corte: mismo mes si el día de pago es mayor al de corte, o el mes siguiente si es menor/igual.
+    let dueISO=''; if(pago){ let due=clamp(lastCut.getFullYear(), lastCut.getMonth(), pago); if(due<=lastCut) due=clamp(lastCut.getFullYear(), lastCut.getMonth()+1, pago); dueISO=iso(due); }
     const stmt=Math.max(0, -this.cuentaSaldoAFecha(c.nombre, lastCutISO));
     const todayISO=iso(today); let pagosPost=0; this.cajaMovs().forEach(m=>{ if(m.cuenta===c.nombre && !m.noBanco && m.tipo==='ingreso'){ const f=m.fecha||''; if(f>lastCutISO && f<=todayISO) pagosPost+=Number(m.monto)||0; } });
     const sinInteres=Math.max(0, Math.min(deuda, stmt-pagosPost));
@@ -8456,6 +8475,9 @@ Instrucciones de respuesta:
       const ag={corriente:0,d30:0,d60:0,d60p:0}; allList.forEach(x=>{ ag[x.bucket]+=x.saldo; });
       out.fpCorriente=this.fmt(Math.round(ag.corriente)); out.fpD30=this.fmt(Math.round(ag.d30)); out.fpD60=this.fmt(Math.round(ag.d60)); out.fpD60p=this.fmt(Math.round(ag.d60p));
       out.fpVencidoN=allList.filter(x=>x.vencido).length; out.fpCanWrite=out.canWriteFin;
+      // Alertas de tarjetas próximas a vencer o vencidas (usa el ciclo corte/pago)
+      const tarjAlertas=[]; tarjetas.forEach(c=>{ const cic=this.tarjetaCiclo(c); if(!cic.hasFechas || !cic.dueISO || cic.diasParaPago==null) return; const dd=cic.diasParaPago; if(dd>7) return; const venc=dd<0; tarjAlertas.push({ nombre:c.nombre, banco:(c.banco||''), dueFmt:this.fmtFecha(cic.dueISO), sinInteresFmt:this.fmt(Math.round(cic.sinInteres)), totalFmt:this.fmt(Math.round(cic.deuda)), venc, urgente:(dd>=0&&dd<=3), diasTxt:(dd>0?('vence en '+dd+' día'+(dd===1?'':'s')):(dd===0?'vence hoy':('vencida hace '+Math.abs(dd)+' día'+(Math.abs(dd)===1?'':'s')))), bg:(venc?'rgba(181,80,60,0.12)':(dd<=3?'rgba(154,115,32,0.13)':'var(--surface-raised)')), fg:(venc?'#B5503C':'#9A7320'), onPagar:()=>this.pagarTarjeta(c) }); });
+      tarjAlertas.sort((a,b)=> (a.venc===b.venc)?0:(a.venc?-1:1)); out.fpTarjAlertas=tarjAlertas; out.fpHayTarjAlertas=tarjAlertas.length>0;
       const credR=this.credRecibidos(); out.credPagarRows=credR.map(c=>this._credView(c)); const credRAb=credR.filter(c=>!this.credCerrado(c)); out.credPagarSaldoFmt=this.fmt(Math.round(credRAb.reduce((a,c)=>a+this.credSaldo(c),0))); out.credPagarN=credRAb.length; out.credPagarVacio=credR.length===0; out.credPagarCanWrite=out.canWriteFin; out.credPagarNuevo=()=>this.nuevoCredito('recibido');
     }
     if(out.showFinCobrar){
