@@ -9,7 +9,7 @@
 <x-dc>
 <helmet>
 <style>
-/* ---- fonts.css ---- */
+/* ---- tokens/fonts.css ---- */
 /* ============================================================
    Oda — Webfonts
    ------------------------------------------------------------
@@ -24,7 +24,7 @@
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
-/* ---- colors.css ---- */
+/* ---- tokens/colors.css ---- */
 /* ============================================================
    Oda — Color tokens
    Warm, earthy aromatherapy palette. Sand + golden-brown brand
@@ -99,7 +99,7 @@
   --price-regular: var(--text-muted);
 }
 
-/* ---- typography.css ---- */
+/* ---- tokens/typography.css ---- */
 /* ============================================================
    Oda — Typography tokens
    Display: Cormorant Garamond (elegant high-contrast serif)
@@ -144,7 +144,7 @@
   --tracking-eyebrow:0.22em;  /* spaced caps eyebrows / scent labels */
 }
 
-/* ---- spacing.css ---- */
+/* ---- tokens/spacing.css ---- */
 /* ============================================================
    Oda — Spacing, radii, shadows, layout
    4px base grid. Soft rounding + gentle, warm shadows.
@@ -196,7 +196,7 @@
   --dur-slow:  420ms; /* @kind other */
 }
 
-/* ---- base.css ---- */
+/* ---- tokens/base.css ---- */
 /* ============================================================
    Oda — Base element styles & helpers
    Light-touch resets that establish the warm, airy baseline.
@@ -617,7 +617,7 @@ img { max-width: 100%; display: block; }
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#95eeeeb5e5bbf0f8f4fcf9b5e8e8" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#5c27277c2c7239313d35307c2121" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1911,6 +1911,7 @@ img { max-width: 100%; display: block; }
                 <input type="date" value="{{ carDesde }}" onInput="{{ onCarDesde }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
                 <span style="flex-shrink:0;font-size:11px;color:var(--text-muted);">al</span>
                 <input type="date" value="{{ carHasta }}" onInput="{{ onCarHasta }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
+                <button onClick="{{ onCarSoloRechazo }}" style="flex-shrink:0;display:flex;align-items:center;gap:5px;font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 11px;border-radius:var(--radius-pill);cursor:pointer;border:1px solid {{ carSoloRechazoBorder }};background:{{ carSoloRechazoBg }};color:{{ carSoloRechazoFg }};">Con motivo de rechazo</button>
                 <sc-if value="{{ carHayFiltros }}" hint-placeholder-val="{{ false }}"><button onClick="{{ carLimpiar }}" title="Limpiar" style="flex-shrink:0;display:flex;align-items:center;font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:7px 9px;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></sc-if>
                 <div style="flex:1;"></div>
                 <span style="flex-shrink:0;font-size:12px;color:var(--text-muted);">{{ carCount }} carritos</span>
@@ -1926,10 +1927,15 @@ img { max-width: 100%; display: block; }
                       <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
                       <sc-if value="{{ c.esCliente }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:5px;"><span style="font-size:11.5px;color:#4C6149;font-weight:600;">{{ c.ultimaTxt }}</span><button onClick="{{ c.onHist }}" style="font-family:inherit;font-size:11px;font-weight:700;color:var(--brand-primary);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;">Ver historial</button></div></sc-if>
                       <div style="font-size:12.5px;color:var(--text-body);margin-top:7px;">{{ c.productosTxt }}</div>
+                      <input value="{{ c.notaMotivo }}" onInput="{{ c.onNotaMotivo }}" placeholder="Motivo de rechazo (opcional, ej. Addi bloqueó por riesgo)" style="width:100%;box-sizing:border-box;margin-top:8px;font-family:inherit;font-size:11.5px;padding:6px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-page);color:var(--text-body);"/>
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
                       <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;">{{ c.totalFmt }}</div>
                       <button onClick="{{ c.onWa }}" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);border:none;background:#1FA855;color:#fff;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>WhatsApp</button>
+                      <div style="display:flex;gap:5px;margin-top:6px;justify-content:flex-end;">
+                        <button onClick="{{ c.onToggleWa }}" title="Marcar contacto confirmado por WhatsApp" style="display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:800;padding:4px 8px;border-radius:var(--radius-pill);border:1px solid {{ c.waBorder }};background:{{ c.waBg }};color:{{ c.waFg }};cursor:pointer;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>WhatsApp</button>
+                        <button onClick="{{ c.onToggleLlamada }}" title="Marcar que se le llamó" style="display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:800;padding:4px 8px;border-radius:var(--radius-pill);border:1px solid {{ c.llBorder }};background:{{ c.llBg }};color:{{ c.llFg }};cursor:pointer;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Llamé</button>
+                      </div>
                     </div>
                   </div>
                 </sc-for>
@@ -5363,10 +5369,15 @@ img { max-width: 100%; display: block; }
                       <div style="font-weight:700;font-size:14px;">{{ c.nombreTxt }}</div>
                       <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
                       <div style="font-size:12.5px;color:var(--text-body);margin-top:6px;">{{ c.productosTxt }}</div>
+                      <input value="{{ c.notaMotivo }}" onInput="{{ c.onNotaMotivo }}" placeholder="Motivo de rechazo (opcional)" style="width:100%;box-sizing:border-box;margin-top:7px;font-family:inherit;font-size:11px;padding:5px 9px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-page);color:var(--text-body);"/>
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
                       <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;">{{ c.totalFmt }}</div>
                       <button onClick="{{ c.onWa }}" style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:var(--radius-pill);border:none;background:#1FA855;color:#fff;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>WhatsApp</button>
+                      <div style="display:flex;gap:5px;margin-top:6px;justify-content:flex-end;">
+                        <button onClick="{{ c.onToggleWa }}" title="Marcar contacto confirmado por WhatsApp" style="display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:800;padding:4px 8px;border-radius:var(--radius-pill);border:1px solid {{ c.waBorder }};background:{{ c.waBg }};color:{{ c.waFg }};cursor:pointer;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>WhatsApp</button>
+                        <button onClick="{{ c.onToggleLlamada }}" title="Marcar que se le llamó" style="display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:800;padding:4px 8px;border-radius:var(--radius-pill);border:1px solid {{ c.llBorder }};background:{{ c.llBg }};color:{{ c.llFg }};cursor:pointer;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Llamé</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -5758,7 +5769,7 @@ class Component extends DCLogic {
     casoOpenId:null, casoModal:false, casoDraft:null, casoWaMsg:null, casoWaTpl:null, qCaso:'', fCasoTipo:'todos', fCasoEstado:'todos', casoItemSel:'', casoItemQty:'1', casoAfectSel:'', casoSegText:'',
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
-    shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'',
+    shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
   };
 
   componentDidMount(){
@@ -5799,6 +5810,7 @@ class Component extends DCLogic {
     try{ const _acct=localStorage.getItem('oda_hub_meta_acct_v1'); if(_acct) patch.mktAdAccountId=_acct; }catch(e){}
     try{ const _live=JSON.parse(localStorage.getItem('oda_hub_meta_live_v1')||'null'); if(_live && Array.isArray(_live.campanas) && _live.campanas.length){ patch.mktLiveCampanas=_live.campanas; patch.mktLiveCreativos=(Array.isArray(_live.creativos)&&_live.creativos.length)?_live.creativos:null; patch.mktLivePublicos=(Array.isArray(_live.publicos)&&_live.publicos.length)?_live.publicos:null; patch.mktLiveTendencia=(Array.isArray(_live.tendencia)&&_live.tendencia.length>1)?_live.tendencia:null; patch.mktUsingLive=true; patch.mktConectado=true; patch.mktLiveTs=_live.ts||0; if(_live.rango) patch.mktRango=_live.rango; } }catch(e){}
     try{ const _c=JSON.parse(localStorage.getItem('oda_hub_car_contact_v1')||'null'); if(_c) patch.carritosContactados=_c; }catch(e){}
+    try{ const _n=JSON.parse(localStorage.getItem('oda_hub_car_nota_v1')||'null'); if(_n) patch.carritosNotas=_n; }catch(e){}
     this.setState(patch);
     this.cloudInit();
     // Si hay cuenta guardada, refresca datos reales de Meta al abrir (sin tener que pulsar el botón).
@@ -6462,14 +6474,25 @@ Instrucciones de respuesta:
     const primer=(this.titleCase(String(c.nombre||'').trim()).split(' ')[0])||'';
     const saludo=primer?('Hola '+primer):'Hola';
     const prod=(c.items&&c.items[0]&&c.items[0].producto)?(' («'+c.items[0].producto+'»)'):'';
-    let msg=saludo+' 🌿 notamos que dejaste algo en tu carrito'+prod+'. ¿Te ayudamos a completar tu momento de bienestar?';
+    const motivo=String(this.carritoNota(c)||'').trim();
+    let msg;
+    if(motivo){
+      msg=saludo+' 🌿 vimos que intentaste completar tu pedido'+prod+' pero el pago no pudo procesarse ('+motivo+'). ¿Quieres que te ayudemos a intentarlo con otro método de pago?';
+    } else {
+      msg=saludo+' 🌿 notamos que dejaste algo en tu carrito'+prod+'. ¿Te ayudamos a completar tu momento de bienestar?';
+    }
     if(c.url) msg+=' Puedes retomarlo aquí: '+c.url;
     msg+=' — Oasis del Alma';
     const to=String(c.celular||'').replace(/\D/g,''); const full=to?(to.length===10?('57'+to):to):'';
     this.setState({ modal:'wacompose', waCompose:{ titulo:'Recuperar carrito', msg, full, cartId:(c.id||c.token||(c.celular||c.correo)) } });
   }
-  carritoContactado(c){ const k=(c&&(c.id||c.token||c.celular||c.correo))||''; return !!(this.state.carritosContactados||{})[k]; }
-  _marcarCarritoContactado(k){ if(!k) return; const m={...(this.state.carritosContactados||{})}; m[k]=Date.now(); this.setState({carritosContactados:m}); try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carContact:m}); }
+  _carritoKey(c){ return (c&&(c.id||c.token||c.celular||c.correo))||''; }
+  carritoContactado(c){ const k=this._carritoKey(c); const canal=(this.state.carritosContactados||{})[k]||{}; return !!(canal.wa||canal.llamada); }
+  carritoCanalOn(c, canal){ const k=this._carritoKey(c); const m=(this.state.carritosContactados||{})[k]||{}; return !!m[canal]; }
+  toggleCarritoCanal(c, canal){ const k=this._carritoKey(c); if(!k) return; const m={...(this.state.carritosContactados||{})}; const cur={...(m[k]||{})}; if(cur[canal]) delete cur[canal]; else cur[canal]=Date.now(); if(Object.keys(cur).length) m[k]=cur; else delete m[k]; this.setState({carritosContactados:m}); try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carContact:m}); this.toast(canal==='wa' ? (cur.wa?'Marcado: contactado por WhatsApp':'Desmarcado') : (cur.llamada?'Marcado: se llamó':'Desmarcado')); }
+  carritoNota(c){ const k=this._carritoKey(c); return (this.state.carritosNotas||{})[k]||''; }
+  setCarritoNota(c, txt){ const k=this._carritoKey(c); if(!k) return; const m={...(this.state.carritosNotas||{})}; if(txt) m[k]=txt; else delete m[k]; this.setState({carritosNotas:m}); try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carNotas:m}); }
+  _marcarCarritoContactado(k){ if(!k) return; const m={...(this.state.carritosContactados||{})}; m[k]={...(m[k]||{}), wa:Date.now()}; this.setState({carritosContactados:m}); try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carContact:m}); }
   // --- Envío MANUAL (wa.me) — no requiere Cloud API ni número dedicado ---
   waMensajeManual(v, key){
     const n=this.waNombre(v); const s=this.waSaludo(v); const ref=this.ventaRef(v); const t=this.fmt(Math.round(this.ventaTotal(v)));
@@ -6803,9 +6826,9 @@ Instrucciones de respuesta:
   }
   _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); this.cloudLoadCasos(); this.cloudSubscribeCasos(); this.cloudLoadCreditos(); this.cloudSubscribeCreditos(); }
   // ---- permisos compartidos (nube) ----
-  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
+  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
-  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
+  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
   cloudSubscribePermisos(){ const sb=this._sbClient(); if(!sb||this._permSub) return; try{ this._permSub=sb.channel('oda-permisos').on('postgres_changes',{event:'*',schema:'public',table:'permisos'},()=>{ this.cloudLoadPermisos(); }).subscribe(); }catch(e){} }
   // ---- proveedores compartidos (nube) ----
   _provToDb(p){ return { codigo:p.codigo, nombre:p.nombre||'', nit:p.nit||'', contacto_nombre:p.contactoNombre||'', telefonos:(Array.isArray(p.telefonos)?p.telefonos:[]), email:p.email||'', ciudad:p.ciudad||'', condiciones_pago:p.condicionesPago||'', calificacion:Number(p.calificacion)||0, autorretenedor:/s[ií]/i.test(String(p.autorretenedor||'')), actualizado:new Date().toISOString() }; }
@@ -9126,16 +9149,26 @@ Instrucciones de respuesta:
     if(out.showVentasCarritos && st.carritos===null && !st.carritosLoading){ setTimeout(()=>{ if(this.state.sub==='carritos' && this.state.carritos===null && !this.state.carritosLoading) this.cargarCarritos(); }, 60); }
     out.carritosRefrescar=()=>this.cargarCarritos();
     { const csAll=(st.carritos||[]);
-      const cd=st.carDesde||'', ch=st.carHasta||'', cq=(st.qCarrito||'').toLowerCase();
-      const cs=csAll.filter(c=>{ const f=c.fecha||''; if(cd&&f<cd) return false; if(ch&&f>ch) return false; if(cq){ const hay=((c.nombre||'')+(c.celular||'')+(c.correo||'')+(c.items||[]).map(i=>i.producto).join(' ')).toLowerCase(); if(!hay.includes(cq)) return false; } return true; });
+      const cd=st.carDesde||'', ch=st.carHasta||'', cq=(st.qCarrito||'').toLowerCase(), soloRech=!!st.carSoloRechazo;
+      const cs=csAll.filter(c=>{ const f=c.fecha||''; if(cd&&f<cd) return false; if(ch&&f>ch) return false; if(soloRech && !this.carritoNota(c)) return false; if(cq){ const hay=((c.nombre||'')+(c.celular||'')+(c.correo||'')+(c.items||[]).map(i=>i.producto).join(' ')+' '+this.carritoNota(c)).toLowerCase(); if(!hay.includes(cq)) return false; } return true; });
       out.carritosVacio=(!st.carritosLoading && cs.length===0);
       out.carDesde=cd; out.carHasta=ch; out.qCarrito=st.qCarrito||'';
       out.onCarDesde=(e)=>this.setState({carDesde:e.target.value}); out.onCarHasta=(e)=>this.setState({carHasta:e.target.value}); out.onQCarrito=(e)=>this.setState({qCarrito:e.target.value});
-      out.carHayFiltros=!!(cd||ch||st.qCarrito); out.carLimpiar=()=>this.setState({carDesde:'',carHasta:'',qCarrito:''});
+      out.carSoloRechazo=soloRech; out.onCarSoloRechazo=()=>this.setState({carSoloRechazo:!soloRech});
+      out.carSoloRechazoBg=(soloRech?'rgba(181,80,60,0.14)':'var(--surface-card)'); out.carSoloRechazoFg=(soloRech?'#B5503C':'var(--text-muted)'); out.carSoloRechazoBorder=(soloRech?'transparent':'var(--border-strong)');
+      out.carHayFiltros=!!(cd||ch||st.qCarrito||soloRech); out.carLimpiar=()=>this.setState({carDesde:'',carHasta:'',qCarrito:'',carSoloRechazo:false});
       out.carCount=cs.length;
       out.exportCarritos=()=>this.exportCarritos(cs);
       out.carritosList=cs.map(c=>{ const cl=this.clienteExistente(c.celular, c.correo); const cont=this.carritoContactado(c);
-        return { nombreTxt:(this.titleCase(c.nombre||'')||'Cliente sin nombre'), contactoTxt:(c.celular||c.correo||'sin contacto'), fechaFmt:this.fmtFecha(c.fecha), productosTxt:((c.items||[]).map(i=>i.unidades+'× '+i.producto).join(', ')||'—'), totalFmt:this.fmt(Math.round(Number(c.total)||0)),
+        const waOn=this.carritoCanalOn(c,'wa'), llOn=this.carritoCanalOn(c,'llamada');
+        const onStyle={bg:'rgba(31,168,85,0.14)',fg:'#1FA855',border:'transparent'}, offStyle={bg:'var(--surface-card)',fg:'var(--text-muted)',border:'var(--border-strong)'};
+        const llOnStyle={bg:'rgba(167,134,89,0.18)',fg:'#7A5E36',border:'transparent'};
+        return { nombreTxt:(this.titleCase(c.nombre||'')||'Cliente sin nombre'), contactoTxt:(c.celular||c.correo||'sin contacto'), fechaFmt:this.fmtFecha(c.fecha),
+          waBg:(waOn?onStyle.bg:offStyle.bg), waFg:(waOn?onStyle.fg:offStyle.fg), waBorder:(waOn?onStyle.border:offStyle.border),
+          llBg:(llOn?llOnStyle.bg:offStyle.bg), llFg:(llOn?llOnStyle.fg:offStyle.fg), llBorder:(llOn?llOnStyle.border:offStyle.border),
+          onToggleWa:()=>this.toggleCarritoCanal(c,'wa'), onToggleLlamada:()=>this.toggleCarritoCanal(c,'llamada'),
+          notaMotivo:this.carritoNota(c), onNotaMotivo:(e)=>this.setCarritoNota(c, e.target.value),
+          productosTxt:((c.items||[]).map(i=>i.unidades+'× '+i.producto).join(', ')||'—'), totalFmt:this.fmt(Math.round(Number(c.total)||0)),
           esCliente:cl.esCliente, clienteTxt:cl.label, clienteBg:cl.bg, clienteFg:cl.fg, ultimaTxt:(cl.ultimaFecha?('Último pedido: '+this.fmtFecha(cl.ultimaFecha)):''), contactado:cont,
           onWa:()=>this.carritoWaSend(c), onHist:()=>this.verHistorialContacto(c.nombre, c.celular, c.correo) }; }); }
     out.closeCarritos=()=>this.setState({modal:null});
