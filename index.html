@@ -414,7 +414,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#710a0a51015f141c10181d510c0c" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#1e65653e6e307b737f77723e6363" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1618,6 +1618,25 @@
                               </span>
                             </div>
                           </sc-for>
+                        </div>
+                        <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin:24px 0 10px;">Vincular ventas antiguas a esta tienda</div>
+                        <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:14px 16px;">
+                          <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.4;">Busca por cliente o ciudad entre las ventas sin tienda asignada (incluye histórico) y márcalas como de <strong>{{ consigSelNombre }}</strong> para que cuenten en el seguimiento y el reorden.</div>
+                          <div style="display:flex;gap:8px;margin-bottom:10px;">
+                            <input value="{{ consigLinkQ }}" onInput="{{ onConsigLinkQ }}" placeholder="Nombre de cliente o ciudad…" style="flex:1;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-page);">
+                            <sc-if value="{{ consigLinkHayResultados }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onConsigLinkSelTodas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:99px;background:var(--surface-page);color:var(--brand-ink);border:1px solid var(--border-strong);cursor:pointer;white-space:nowrap;">{{ consigLinkSelTodasLabel }}</button></sc-if>
+                            <button onClick="{{ onConsigLinkAplicar }}" disabled="{{ consigLinkSinSel }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:99px;background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;white-space:nowrap;">Vincular seleccionadas</button>
+                          </div>
+                          <sc-if value="{{ consigLinkVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:14px;text-align:center;color:var(--text-muted);font-size:12.5px;">Escribe para buscar ventas sin tienda asignada.</div></sc-if>
+                          <div style="max-height:220px;overflow-y:auto;" class="oda-scroll">
+                            <sc-for list="{{ consigLinkResults }}" as="lr" hint-placeholder-count="0">
+                              <label style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;cursor:pointer;">
+                                <input type="checkbox" checked="{{ lr.checked }}" onChange="{{ lr.onToggle }}">
+                                <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><strong>{{ lr.cliente }}</strong> · {{ lr.ciudad }} · {{ lr.fechaFmt }} · {{ lr.origenLabel }}</span>
+                                <span style="font-weight:700;white-space:nowrap;">{{ lr.totalFmt }}</span>
+                              </label>
+                            </sc-for>
+                          </div>
                         </div>
                       </div>
                     </sc-if>
@@ -8440,6 +8459,20 @@ Instrucciones de respuesta:
             return { nombre:r.nombre, stock:this.fmtCant(r.cantidad), velMes:this.fmtCant(Math.round(velMes)), coberturaTxt:(velMes>0?(cobertura>=1?(cobertura.toFixed(1)+' meses de cobertura'):'Menos de 1 mes'):'Sin ventas'), coberturaColor:(velMes>0&&cobertura<1?'#B5503C':(velMes>0&&cobertura<1.5?'#9A7320':'var(--text-body)')), sugiereReorden:sugiere, sinSugerido:!sugiere, sugerido:sugiere?(sugeridoN+' und'):'' }; })
             .sort((a,b)=>(b.sugiereReorden?1:0)-(a.sugiereReorden?1:0));
           out.consigSegRows=segRows; out.consigSegVacio=segVentas.length===0;
+          // ---- vincular ventas antiguas/histórico sin tienda a esta tienda ----
+          const linkQ=(st.consigLinkQ||'').toLowerCase().trim();
+          const linkSel=st.consigLinkSel||{};
+          out.consigLinkQ=st.consigLinkQ||''; out.onConsigLinkQ=(e)=>this.setState({consigLinkQ:e.target.value});
+          let linkResults=[];
+          if(linkQ){ linkResults=(st.ventas||[]).filter(v=>!v.consignTienda && (this.fixTxt(v.cliente||'').toLowerCase().includes(linkQ) || this.fixTxt(v.ciudad||'').toLowerCase().includes(linkQ))).slice(0,40); }
+          out.consigLinkResults=linkResults.map(v=>({ id:v.id, cliente:v.cliente||'—', ciudad:v.ciudad||'—', fechaFmt:this.fmtFecha(v.fecha), origenLabel:this.origenLabel(v.origen), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), checked:!!linkSel[v.id], onToggle:()=>{ const sel={...(this.state.consigLinkSel||{})}; if(sel[v.id]) delete sel[v.id]; else sel[v.id]=true; this.setState({consigLinkSel:sel}); } }));
+          out.consigLinkVacio=!linkQ;
+          out.consigLinkSinSel=Object.keys(linkSel).length===0;
+          out.consigLinkHayResultados=linkResults.length>0;
+          const todasMarcadas=linkResults.length>0 && linkResults.every(v=>linkSel[v.id]);
+          out.consigLinkSelTodasLabel=todasMarcadas?'Quitar selección':('Seleccionar todas ('+linkResults.length+')');
+          out.onConsigLinkSelTodas=()=>{ const sel={...(this.state.consigLinkSel||{})}; if(todasMarcadas){ linkResults.forEach(v=>delete sel[v.id]); } else { linkResults.forEach(v=>sel[v.id]=true); } this.setState({consigLinkSel:sel}); };
+          out.onConsigLinkAplicar=()=>{ const ids=Object.keys(this.state.consigLinkSel||{}); if(!ids.length) return; const list=(this.state.ventas||[]).map(v=>ids.includes(v.id)?{...v,consignTienda:selT}:v); this.setState({ventas:list, consigLinkSel:{}, consigLinkQ:''},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(list.filter(v=>ids.includes(v.id))); this.toast(ids.length+' venta(s) vinculada(s) a '+(t?t.nombre:'la tienda')); };
           const _movs=[];
           (st.remisiones||[]).forEach(r=>{ if(r.tiendaId!==selT) return; const u=(r.items||[]).reduce((a,it)=>a+(Number(it.cantidad)||0),0); const nl=(r.items||[]).length; _movs.push({fecha:r.fecha||'', fechaFmt:this.fmtFecha(r.fecha), tipo:(r.tipo==='inicial'?'Inicial':'Remisión'), tagBg:'rgba(31,138,91,0.14)', tagFg:'#1F8A5B', ref:(r.numero||'—'), detalle:nl+' referencia'+(nl===1?'':'s'), cantTxt:'+'+this.fmtCant(u), cantColor:'#1F8A5B', hasVer:true, onVer:()=>this.verRemisionDoc(r,'view')}); });
           (st.ventas||[]).forEach(v=>{ if(v.cancelada||v.consignTienda!==selT) return; const u=(v.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0),0); _movs.push({fecha:v.fecha||'', fechaFmt:this.fmtFecha(v.fecha), tipo:'Venta', tagBg:'rgba(181,80,60,0.14)', tagFg:'var(--oda-sale)', ref:(v.ov||v.pedido||'—'), detalle:(v.cliente||'—'), cantTxt:'−'+this.fmtCant(u), cantColor:'var(--oda-sale)', hasVer:true, onVer:()=>this.previewPedido(v)}); });
