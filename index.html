@@ -414,7 +414,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#9fe4e4bfefb1faf2fef6f3bfe2e2" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#6912124919470c04080005491414" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -5875,7 +5875,7 @@ class Component extends DCLogic {
 
   // ---- modal ----
   open(type,draft){ this.setState({modal:type,draft:draft||{}}); }
-  onDraftArchivo(e){ const f=e.target.files && e.target.files[0]; if(!f) return; if(f.size>2600000){ this.toast('El archivo supera 2.5 MB · usa uno más liviano'); try{e.target.value='';}catch(x){} return; } const r=new FileReader(); r.onload=(ev)=>{ this.setState(s=>({draft:{...s.draft, _archivo:ev.target.result, _archivoNombre:f.name}})); this.toast('Factura adjuntada'); }; r.readAsDataURL(f); }
+  onDraftArchivo(e){ const f=e.target.files && e.target.files[0]; if(!f) return; if(f.size>8*1024*1024){ this.toast('El archivo supera 8 MB · usa uno más liviano'); try{e.target.value='';}catch(x){} return; } this.cloudUploadArchivo(f,'facturas',(url,name)=>{ this.setState(s=>({draft:{...s.draft, _archivo:url, _archivoNombre:name}})); this.toast('Factura adjuntada'); }); }
   quitarDraftArchivo(){ this.setState(s=>({draft:{...s.draft, _archivo:'', _archivoNombre:''}})); }
   close(){ this.setState({modal:null,draft:{},detalleId:null}); }
   updateDraft(name,value){
@@ -5966,7 +5966,7 @@ class Component extends DCLogic {
   editProducto(p){ this.open('producto',{...p, cobraIva:(p.cobraIva!==false), stockInicial:(p.stockInicial||0), esReventa:(p.esReventa===true), costoCompra:(p.costoCompra||''), formula:(p.formula||[]).slice(), _selMateria:'', _selCantidad:''}); }
   addFormulaItem(){ const d=this.state.draft; if(!d._selMateria||!d._selCantidad){ this.toast('Elige un componente y la cantidad'); return; } const f=(d.formula||[]).slice(); f.push({materiaCodigo:d._selMateria, cantidad:Number(d._selCantidad)||0}); this.setState({draft:{...d,formula:f,_selMateria:'',_selCantidad:''}}); }
   removeFormulaItem(i){ const d=this.state.draft; const f=(d.formula||[]).slice(); f.splice(i,1); this.setState({draft:{...d,formula:f}}); }
-  onFotoFile(e){ const file=e.target.files&&e.target.files[0]; if(!file) return; const r=new FileReader(); r.onload=(ev)=>{ this.setState(s=>({draft:{...s.draft,foto:ev.target.result}})); }; r.readAsDataURL(file); }
+  onFotoFile(e){ const file=e.target.files&&e.target.files[0]; if(!file) return; this.cloudUploadArchivo(file,'fotos-producto',(url)=>{ this.setState(s=>({draft:{...s.draft,foto:url}})); }); }
   quitarFoto(){ this.setState(s=>({draft:{...s.draft,foto:''}})); }
   saveProducto(){ const d=this.state.draft; if(!d.nombre){ this.toast('Escribe el nombre del producto'); return; } let list=this.state.productos.slice(); const i=list.findIndex(x=>x.codigo===d.codigo); const esRev=(d.esReventa===true); const row={codigo:d.codigo,nombre:d.nombre,formato:d.formato||'',tamano:d.tamano||'',precio:Number(d.precio)||0,cobraIva:(d.cobraIva!==false),iva:19,stockInicial:Number(d.stockInicial)||0,esReventa:esRev,costoCompra:(esRev?(Number(d.costoCompra)||0):0),foto:d.foto||'',formula:(esRev?[]:(d.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo,cantidad:Number(f.cantidad)||0})))}; if(i>=0&&!d._new) list[i]=row; else list.push(row); this.setState({productos:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProducto(row); this.toast('Producto guardado'); }
   nuevoBulk(){ this.open('bulkproducto',{ nombrePlantilla:'Aceite esencial de {aceite} 10ml', formato:'aceite', tamano:'10ml', precio:'', cobraIva:true, stockInicial:0, cantidadAceite:10, formula:[], oils:[], _selMateria:'', _selCantidad:'' }); }
@@ -6725,6 +6725,7 @@ Instrucciones de respuesta:
     if(!r.ok) throw new Error((data && data.error && data.error.message) || 'Error al llamar a la IA (Anthropic)');
     return (data.content||[]).map(b=>(b&&b.text)||'').join('').trim();
   }
+  cloudUploadArchivo(file, folder, cb){ const sb=this._sbClient(); if(!this.cloudOn()||!sb){ const r=new FileReader(); r.onload=(ev)=>cb(ev.target.result,file.name); r.readAsDataURL(file); return; } const path=folder+'/'+Date.now()+'_'+Math.floor(Math.random()*99999)+'_'+String(file.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_'); sb.storage.from('adjuntos').upload(path,file,{cacheControl:'3600',upsert:false}).then(({error})=>{ if(error){ const r=new FileReader(); r.onload=(ev)=>cb(ev.target.result,file.name); r.readAsDataURL(file); return; } const {data}=sb.storage.from('adjuntos').getPublicUrl(path); cb(data.publicUrl, file.name); }).catch(()=>{ const r=new FileReader(); r.onload=(ev)=>cb(ev.target.result,file.name); r.readAsDataURL(file); }); }
   _sbClient(){ if(this._sb) return this._sb; try{ if(window.supabase&&window.supabase.createClient){ this._sb=window.supabase.createClient(this.CLOUD_URL,this.CLOUD_KEY,{auth:{persistSession:true,storageKey:'oda_cloud_auth_v1'}}); } }catch(e){} return this._sb; }
   cloudInit(){ const sb=this._sbClient(); if(!sb){ // librería aún no cargó: reintenta
       if((this._cloudTries=(this._cloudTries||0)+1)<40){ setTimeout(()=>this.cloudInit(),250); } return; }
@@ -6856,7 +6857,7 @@ Instrucciones de respuesta:
     const idMap={}; ordered.forEach((v,i)=>{ idMap[v.id]='ODA-'+String(i+1).padStart(5,'0'); });
     const out=list.map(v=>idMap[v.id]?{...v,ov:idMap[v.id]}:v); this.setState({ventas:out},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(out.filter(v=>idMap[v.id])); this.toast(ordered.length+' consecutivos renumerados en orden'); }
   async limpiarHistorico(){ const hist=(this.state.ventas||[]).filter(v=>v.origen==='historico'); if(!hist.length){ this.toast('No hay ventas de histórico para limpiar'); return; } if(!window.confirm('Se eliminarán '+hist.length+' ventas de histórico (de la nube y este equipo). Esta acción no se puede deshacer. ¿Continuar?')) return; const resto=(this.state.ventas||[]).filter(v=>v.origen!=='historico'); this.setState({ventas:resto},()=>this.persist()); const sb=this._sbClient(); if(sb){ try{ for(let att=0; att<3; att++){ const {error}=await sb.from('ventas').delete().eq('data->>origen','historico'); if(!error) break; await new Promise(r=>setTimeout(r,600)); } }catch(e){} } this.toast(hist.length+' ventas de histórico eliminadas · ya puedes reimportar'); }
-  cloudSubscribeVentas(){ const sb=this._sbClient(); if(!sb||this._venSub) return; try{ this._venSub=sb.channel('oda-ventas').on('postgres_changes',{event:'*',schema:'public',table:'ventas'},()=>{ clearTimeout(this._venReload); this._venReload=setTimeout(()=>this.cloudLoadVentas(),2500); }).subscribe(); }catch(e){} }
+  cloudSubscribeVentas(){ const sb=this._sbClient(); if(!sb||this._venSub) return; try{ this._venSub=sb.channel('oda-ventas').on('postgres_changes',{event:'*',schema:'public',table:'ventas'},(payload)=>{ if(payload.eventType==='DELETE'){ const rid=payload.old&&payload.old.id; if(rid==null) return; const list=(this.state.ventas||[]).filter(v=>v.id!==rid); this.setState({ventas:list},()=>this.persist()); return; } const row=payload.new; if(!row||!row.data) return; const d=row.data; const obj={...d, canal:this.canonCanal(d.canal), id:row.id}; const list=(this.state.ventas||[]).slice(); const idx=list.findIndex(v=>v.id===obj.id); if(idx>=0) list[idx]=obj; else list.unshift(obj); this.setState({ventas:list},()=>this.persist()); }).subscribe(); }catch(e){} }
   // ---- cotizaciones compartidas (nube) ----
   _cotToDb(c){ return { id:c.id, data:c, actualizado:new Date().toISOString() }; }
   async cloudLoadCotizaciones(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('cotizaciones').select('id,data'); if(error) throw error; if(data && data.length){ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){} }
@@ -6869,59 +6870,60 @@ Instrucciones de respuesta:
   async _cloudBulk(table, list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from(table).upsert(list.slice(i,i+200).map(o=>this._finToDb(o))); } }catch(e){} }
   async _cloudSaveOne(table, o){ const sb=this._sbClient(); if(!sb||!o) return; try{ await sb.from(table).upsert(this._finToDb(o)); }catch(e){} }
   async _cloudDelOne(table, id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from(table).delete().eq('id',id); }catch(e){} }
-  _cloudSubTable(table, prop, reload){ const sb=this._sbClient(); if(!sb||this[prop]) return; try{ this[prop]=sb.channel('oda-'+table).on('postgres_changes',{event:'*',schema:'public',table},()=>{ reload(); }).subscribe(); }catch(e){} }
+  _cloudSubTable(table, prop, key, idField){ const sb=this._sbClient(); if(!sb||this[prop]) return; idField=idField||'id'; try{ this[prop]=sb.channel('oda-'+table).on('postgres_changes',{event:'*',schema:'public',table},(payload)=>{ this._applyRealtimePatch(key, payload, idField); }).subscribe(); }catch(e){} }
+  _applyRealtimePatch(key, payload, idField){ idField=idField||'id'; const list=(this.state[key]||[]).slice(); if(payload.eventType==='DELETE'){ const rid=payload.old&&payload.old.id; if(rid==null) return; const idx=list.findIndex(x=>x[idField]===rid); if(idx<0) return; list.splice(idx,1); this.setState({[key]:list},()=>this.persist()); return; } const row=payload.new; if(!row||!row.data) return; const obj=row.data; const idx=list.findIndex(x=>x[idField]===obj[idField]); if(idx>=0) list[idx]=obj; else list.unshift(obj); this.setState({[key]:list},()=>this.persist()); }
   cloudLoadCuentas(){ this._cloudLoadList('cuentas_fin','cuentasFin', this.cuentasList()); }
   cloudBulkCuentas(l){ this._cloudBulk('cuentas_fin', l); }
   cloudDeleteCuenta(id){ this._cloudDelOne('cuentas_fin', id); }
-  cloudSubscribeCuentas(){ this._cloudSubTable('cuentas_fin','_ctaSub', ()=>this.cloudLoadCuentas()); }
+  cloudSubscribeCuentas(){ this._cloudSubTable('cuentas_fin','_ctaSub','cuentasFin'); }
   cloudLoadCreditos(){ this._cloudLoadList('creditos','creditos', this.state.creditos); }
   cloudSaveCredito(o){ this._cloudSaveOne('creditos', o); }
   cloudDeleteCredito(id){ this._cloudDelOne('creditos', id); }
-  cloudSubscribeCreditos(){ this._cloudSubTable('creditos','_credSub', ()=>this.cloudLoadCreditos()); }
+  cloudSubscribeCreditos(){ this._cloudSubTable('creditos','_credSub','creditos'); }
   cloudLoadMovimientos(){ this._cloudLoadList('movimientos','movimientos', this.state.movimientos); }
   cloudSaveMovimiento(o){ this._cloudSaveOne('movimientos', o); }
   cloudDeleteMovimiento(id){ this._cloudDelOne('movimientos', id); }
-  cloudSubscribeMovimientos(){ this._cloudSubTable('movimientos','_movSub', ()=>this.cloudLoadMovimientos()); }
+  cloudSubscribeMovimientos(){ this._cloudSubTable('movimientos','_movSub','movimientos'); }
   cloudLoadGastos(){ this._cloudLoadList('gastos_fijos','gastosFijos', this.state.gastosFijos); }
   cloudBulkGastos(l){ this._cloudBulk('gastos_fijos', l); }
   cloudDeleteGasto(id){ this._cloudDelOne('gastos_fijos', id); }
-  cloudSubscribeGastos(){ this._cloudSubTable('gastos_fijos','_gasSub', ()=>this.cloudLoadGastos()); }
+  cloudSubscribeGastos(){ this._cloudSubTable('gastos_fijos','_gasSub','gastosFijos'); }
   cloudLoadMetodos(){ this._cloudLoadList('metodos_fin','metodosFin', this.metodosFinList()); }
   cloudBulkMetodos(l){ this._cloudBulk('metodos_fin', l); }
   cloudDeleteMetodo(id){ this._cloudDelOne('metodos_fin', id); }
-  cloudSubscribeMetodos(){ this._cloudSubTable('metodos_fin','_metSub', ()=>this.cloudLoadMetodos()); }
+  cloudSubscribeMetodos(){ this._cloudSubTable('metodos_fin','_metSub','metodosFin'); }
   cloudLoadLiquidaciones(){ this._cloudLoadList('liquidaciones','liquidaciones', this.state.liquidaciones); }
   cloudSaveLiquidacion(o){ this._cloudSaveOne('liquidaciones', o); }
-  cloudSubscribeLiquidaciones(){ this._cloudSubTable('liquidaciones','_liqSub', ()=>this.cloudLoadLiquidaciones()); }
+  cloudSubscribeLiquidaciones(){ this._cloudSubTable('liquidaciones','_liqSub','liquidaciones'); }
   cloudLoadMsvc(){ this._cloudLoadList('msvc','msvc', this.state.msvc); }
   cloudSaveMsvc(o){ this._cloudSaveOne('msvc', o); }
-  cloudSubscribeMsvc(){ this._cloudSubTable('msvc','_msvcSub', ()=>this.cloudLoadMsvc()); }
+  cloudSubscribeMsvc(){ this._cloudSubTable('msvc','_msvcSub','msvc'); }
   // ---- casos de servicio al cliente (nube) ----
   cloudLoadCasos(){ this._cloudLoadList('casos','casos', this.state.casos); }
   cloudSaveCaso(o){ this._cloudSaveOne('casos', o); }
   cloudDeleteCaso(id){ this._cloudDelOne('casos', id); }
-  cloudSubscribeCasos(){ this._cloudSubTable('casos','_casSub', ()=>this.cloudLoadCasos()); }
+  cloudSubscribeCasos(){ this._cloudSubTable('casos','_casSub','casos'); }
   // ---- servicios / ordenes / tiendas / remisiones (nube) ----
   async cloudLoadServicios(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('servicios').select('id,data'); if(error) return; if(data && data.length){ this.setState({servicios:data.map(r=>r.data||{}).filter(s=>s&&s.codigo)},()=>this.persist()); } else { const cur=(this.state.servicios||[]).filter(s=>s&&s.codigo); if(cur.length){ try{ await sb.from('servicios').upsert(cur.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} } } }catch(e){} }
   async cloudSaveServicio(s){ const sb=this._sbClient(); if(!sb||!s) return; try{ await sb.from('servicios').upsert({id:s.codigo, data:s, actualizado:new Date().toISOString()}); }catch(e){} }
   async cloudDeleteServicio(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('servicios').delete().eq('id',id); }catch(e){} }
   async cloudBulkServicios(l){ const sb=this._sbClient(); if(!sb||!l||!l.length) return; try{ await sb.from('servicios').upsert(l.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} }
-  cloudSubscribeServicios(){ this._cloudSubTable('servicios','_svcSub', ()=>this.cloudLoadServicios()); }
+  cloudSubscribeServicios(){ this._cloudSubTable('servicios','_svcSub','servicios','codigo'); }
   cloudLoadOrdenes(){ this._cloudLoadList('ordenes','ordenes', this.state.ordenes); }
   cloudSaveOrden(o){ this._cloudSaveOne('ordenes', o); }
   cloudBulkOrdenes(l){ this._cloudBulk('ordenes', l); }
   cloudDeleteOrden(id){ this._cloudDelOne('ordenes', id); }
   async cloudClearOrdenes(){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('ordenes').delete().neq('id',''); }catch(e){} }
-  cloudSubscribeOrdenes(){ this._cloudSubTable('ordenes','_ordSub', ()=>this.cloudLoadOrdenes()); }
+  cloudSubscribeOrdenes(){ this._cloudSubTable('ordenes','_ordSub','ordenes'); }
   cloudLoadTiendas(){ this._cloudLoadList('tiendas','tiendas', this.consignTiendas()); }
   cloudBulkTiendas(l){ this._cloudBulk('tiendas', l); }
   cloudDeleteTienda(id){ this._cloudDelOne('tiendas', id); }
-  cloudSubscribeTiendas(){ this._cloudSubTable('tiendas','_tieSub', ()=>this.cloudLoadTiendas()); }
+  cloudSubscribeTiendas(){ this._cloudSubTable('tiendas','_tieSub','tiendas'); }
   cloudLoadRemisiones(){ this._cloudLoadList('remisiones','remisiones', this.state.remisiones); }
   cloudSaveRemision(o){ this._cloudSaveOne('remisiones', o); }
   cloudBulkRemisiones(l){ this._cloudBulk('remisiones', l); }
   cloudDeleteRemision(id){ this._cloudDelOne('remisiones', id); }
-  cloudSubscribeRemisiones(){ this._cloudSubTable('remisiones','_remSub', ()=>this.cloudLoadRemisiones()); }
+  cloudSubscribeRemisiones(){ this._cloudSubTable('remisiones','_remSub','remisiones'); }
   cloudStartAutoRefresh(){ if(this._cloudAutoSet) return; this._cloudAutoSet=true;
     this._cloudFocus=()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles(); } };
     try{ document.addEventListener('visibilitychange',this._cloudFocus); window.addEventListener('focus',this._cloudFocus); }catch(e){}
@@ -6991,7 +6993,7 @@ Instrucciones de respuesta:
   setPropInv(i,field,value){ this.setState(s=>{ const p=s.propuesta||{}; const inv=(p.inversion||[]).slice(); inv[i]={...(inv[i]||{}),[field]:value}; return {propuesta:{...p,inversion:inv}}; },()=>this.persistPropuesta()); }
   addPropInv(){ this.setState(s=>{ const p=s.propuesta||{}; return {propuesta:{...p,inversion:[...(p.inversion||[]),{concepto:'',detalle:'',valor:''}]}}; },()=>this.persistPropuesta()); }
   removePropInv(i){ this.setState(s=>{ const p=s.propuesta||{}; const inv=(p.inversion||[]).slice(); inv.splice(i,1); return {propuesta:{...p,inversion:inv}}; },()=>this.persistPropuesta()); }
-  readImgFile(file, cb){ if(!file) return; if(file.size>6*1024*1024){ this.toast('Imagen muy grande (máx 6 MB)'); return; } const r=new FileReader(); r.onload=()=>cb(r.result); r.readAsDataURL(file); }
+  readImgFile(file, cb){ if(!file) return; if(file.size>6*1024*1024){ this.toast('Imagen muy grande (máx 6 MB)'); return; } this.cloudUploadArchivo(file,'propuesta',(url)=>cb(url)); }
   onPropImg(field,e){ const f=e.target.files&&e.target.files[0]; this.readImgFile(f,(d)=>this.setProp(field,d)); e.target.value=''; }
   onPropKitImg(i,e){ const f=e.target.files&&e.target.files[0]; this.readImgFile(f,(d)=>this.setPropKit(i,'img',d)); e.target.value=''; }
   propuestaDoc(p,mode){ if(!this._buildPropDoc){ return '<!DOCTYPE html><html><body style="font-family:sans-serif;padding:40px;color:#5A4A33;">Cargando generador… vuelve a intentar en un momento.</body></html>'; } return this._buildPropDoc(p,mode,{brown:this.LOGO_WORDMARK_BROWN, white:this.LOGO_WORDMARK_WHITE}); }
@@ -7493,7 +7495,7 @@ Instrucciones de respuesta:
     this.setState({ordenes, materias, productos, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); const _o=ordenes.find(x=>x.id===id); if(_o) this.cloudSaveOrden(_o); } this.toast('Orden recibida el '+this.fmtFecha(fecha)+' \u00b7 inventario y costo actualizados'); }
 
   openFactura(o){ this.open('factura',{ _id:o.id, _numero:o.numero, _proveedor:this.provNombre(o.proveedorCodigo), _totalFmt:this.fmt(this.ordenTotal(o)), facturaNumero:(o.factura&&o.factura.numero)||'', facturaFecha:(o.factura&&o.factura.fecha)||new Date().toISOString().slice(0,10), _archivo:(o.factura&&o.factura.archivo)||'', _archivoNombre:(o.factura&&o.factura.archivoNombre)||'' }); }
-  adjuntarFacturaPick(o){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*,application/pdf'; inp.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; if(f.size>4*1024*1024){ this.toast('El archivo es muy grande (máx 4MB)'); return; } const r=new FileReader(); r.onload=(ev)=>{ const list=this.state.ordenes.map(x=> x.id===o.id? {...x, factura:{...(x.factura||{}), archivo:ev.target.result, archivoNombre:f.name}} : x); this.setState({ordenes:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Factura adjuntada'); }; r.readAsDataURL(f); }; inp.click(); }
+  adjuntarFacturaPick(o){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*,application/pdf'; inp.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; if(f.size>8*1024*1024){ this.toast('El archivo es muy grande (máx 8MB)'); return; } this.cloudUploadArchivo(f,'facturas-orden',(url,name)=>{ const list=this.state.ordenes.map(x=> x.id===o.id? {...x, factura:{...(x.factura||{}), archivo:url, archivoNombre:name}} : x); this.setState({ordenes:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Factura adjuntada'); }); }; inp.click(); }
   saveFactura(){ const d=this.state.draft; if(!d.facturaNumero){ this.toast('Escribe el N° de factura'); return; }
     const list=this.state.ordenes.map(o=> o._id===d._id||o.id===d._id? {...o,factura:{numero:d.facturaNumero,fecha:d.facturaFecha, archivo:(d._archivo||''), archivoNombre:(d._archivoNombre||'')}} : o);
     this.setState({ordenes:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Factura registrada'); }
