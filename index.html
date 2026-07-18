@@ -164,6 +164,7 @@
               <sc-if value="{{ vI_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvResumen.c }};background:{{ subInvResumen.bg }};border-left:2px solid {{ subInvResumen.b }};">Resumen</div></sc-if>
               <sc-if value="{{ vI_mp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.mp }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvMP.c }};background:{{ subInvMP.bg }};border-left:2px solid {{ subInvMP.b }};">Materia prima</div></sc-if>
               <sc-if value="{{ vI_ins }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.insumos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvIns.c }};background:{{ subInvIns.bg }};border-left:2px solid {{ subInvIns.b }};">Insumos y empaques</div></sc-if>
+              <sc-if value="{{ vI_reorden }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.reorden }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvReorden.c }};background:{{ subInvReorden.bg }};border-left:2px solid {{ subInvReorden.b }};">Reposición</div></sc-if>
               <sc-if value="{{ vI_pt }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvPT.c }};background:{{ subInvPT.bg }};border-left:2px solid {{ subInvPT.b }};">Producto terminado</div></sc-if>
               <sc-if value="{{ vI_consig }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.consig }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConsig.c }};background:{{ subInvConsig.bg }};border-left:2px solid {{ subInvConsig.b }};">Consignación</div></sc-if>
               <sc-if value="{{ vI_kardex }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.kardex }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvKardex.c }};background:{{ subInvKardex.bg }};border-left:2px solid {{ subInvKardex.b }};">Kardex</div></sc-if>
@@ -414,7 +415,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#0c77772c7c2269616d65602c7171" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#1962623969377c74787075396464" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1425,6 +1426,78 @@
                   </tbody>
                 </table>
               </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== INVENTARIO · REPOSICIÓN (punto de reorden) ===== -->
+          <sc-if value="{{ showInvReorden }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:760px;line-height:1.55;text-wrap:pretty;">Calculado automáticamente desde el historial de ventas y las fórmulas de productos, kits y mezclas (los blends se explotan a sus aceites). El punto de reorden cubre el tiempo de entrega del proveedor más los días de anticipación, para que la alerta de compra aparezca una semana antes.</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px;">
+                <div style="background:var(--surface-card);border:1px solid rgba(181,80,60,0.35);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#B5503C;font-weight:700;">Comprar ya</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#B5503C;">{{ reoNumYa }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:5px;">no alcanzan a cubrir la entrega</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid rgba(193,170,129,0.6);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#7A6035;font-weight:700;">Pedir esta semana</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#7A6035;">{{ reoNumSemana }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:5px;">llegan al punto de reorden</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Con cobertura</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ reoNumOk }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:5px;">materias con consumo activo</div>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Ventana de análisis (días)<input type="number" min="7" value="{{ reoVentana }}" onInput="{{ onReoVentana }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Entrega del proveedor (días)<input type="number" min="0" value="{{ reoLead }}" onInput="{{ onReoLead }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Anticipación de la alerta (días)<input type="number" min="0" value="{{ reoAnticip }}" onInput="{{ onReoAnticip }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cobertura objetivo (días)<input type="number" min="1" value="{{ reoCobertura }}" onInput="{{ onReoCobertura }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                <div style="flex:1;"></div>
+                <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ aplicarReorden }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Aplicar mínimos sugeridos</button>
+                </sc-if>
+              </div>
+              <sc-if value="{{ reoVacio }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:48px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Sin consumo de materias en la ventana de análisis. Registra ventas o amplía la ventana para calcular la reposición.</div>
+              </sc-if>
+              <sc-if value="{{ reoHayRows }}" hint-placeholder-val="{{ true }}">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1080px;">
+                  <thead><tr style="background:var(--surface-raised);text-align:left;">
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Código</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Materia</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Proveedor</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Consumo</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Stock</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Cobertura</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Punto de reorden</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Compra sugerida</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Pedir antes de</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Estado</th>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{ reoRows }}" as="m" hint-placeholder-count="6">
+                      <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
+                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ m.codigo }}</td>
+                        <td style="padding:13px 16px;font-weight:600;">{{ m.nombre }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body);">{{ m.proveedorNombre }}</td>
+                        <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.consumoTxt }}</td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.stockTxt }}</td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:800;white-space:nowrap;color:{{ m.cobColor }};">{{ m.cobTxt }}</td>
+                        <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ m.ropTxt }}<span style="display:block;font-size:11px;color:var(--text-muted);">mín. sug. {{ m.minTxt }}</span></td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.compraTxt }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;">{{ m.fPedirTxt }}</td>
+                        <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ m.esBg }};color:{{ m.esFg }};">{{ m.esLabel }}</span></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+              <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;max-width:760px;line-height:1.5;">«Aplicar mínimos sugeridos» escribe el punto de reorden como stock mínimo de cada materia: las alertas de <strong>Compras · Resumen</strong>, <strong>Inventario · Resumen</strong> e <strong>Inicio</strong> se activan solas con la anticipación configurada.</p>
+              </sc-if>
             </div>
           </sc-if>
 
@@ -5453,7 +5526,7 @@ class Component extends DCLogic {
     compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'ordenes',label:'Órdenes de compra'}],
     desarrollo: [{key:'mezclas',label:'Mezclas'},{key:'productos',label:'Productos'},{key:'kits',label:'Kits'}],
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
-    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
+    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'},{key:'reorden',label:'Reposición'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
@@ -5714,6 +5787,7 @@ class Component extends DCLogic {
     // El ingreso a la app ahora lo controla la sesión de nube (cloudInit). No auto-entramos con sesión local.
     try{ const _acct=localStorage.getItem('oda_hub_meta_acct_v1'); if(_acct) patch.mktAdAccountId=_acct; }catch(e){}
     try{ const _live=JSON.parse(localStorage.getItem('oda_hub_meta_live_v1')||'null'); if(_live && Array.isArray(_live.campanas) && _live.campanas.length){ patch.mktLiveCampanas=_live.campanas; patch.mktLiveCreativos=(Array.isArray(_live.creativos)&&_live.creativos.length)?_live.creativos:null; patch.mktLivePublicos=(Array.isArray(_live.publicos)&&_live.publicos.length)?_live.publicos:null; patch.mktLiveTendencia=(Array.isArray(_live.tendencia)&&_live.tendencia.length>1)?_live.tendencia:null; patch.mktUsingLive=true; patch.mktConectado=true; patch.mktLiveTs=_live.ts||0; if(_live.rango) patch.mktRango=_live.rango; } }catch(e){}
+    try{ const _rc=JSON.parse(localStorage.getItem('oda_hub_reorden_v1')||'null'); if(_rc) patch.reordenCfg=_rc; }catch(e){}
     try{ const _c=JSON.parse(localStorage.getItem('oda_hub_car_contact_v1')||'null'); if(_c) patch.carritosContactados=_c; }catch(e){}
     try{ const _n=JSON.parse(localStorage.getItem('oda_hub_car_nota_v1')||'null'); if(_n) patch.carritosNotas=_n; }catch(e){}
     this.setState(patch);
@@ -5727,7 +5801,7 @@ class Component extends DCLogic {
   save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
   persist(extra){ const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
-  respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
+  respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
   writeAutoBackup(){ try{ const dump={_fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); localStorage.setItem('oda_hub_backup_v1', JSON.stringify(dump));
     // Historial: una instantánea por día (se reemplaza la del mismo día), conservando las últimas 10.
     try{ let hist=[]; try{ hist=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); }catch(_e){ hist=[]; }
@@ -5874,7 +5948,7 @@ class Component extends DCLogic {
   // ---- nav ----
   goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex','reorden'],ventas:['registro','base','cotizador','carritos','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -6063,6 +6137,40 @@ class Component extends DCLogic {
     return n; }
   materiaStockActual(m){ if(!m) return 0; return (Number(m.stockActual)||0) - this.materiaConsumoTotal(m.codigo); }
   productoStockActual(p){ if(p&&p.esReventa){ const m=this.state.materias.find(x=>x.codigo===p.codigo); const base = m? (Number(m.stockActual)||0) : ((Number(p.stockInicial)||0)+this.productoComprado(p.codigo)); return base - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); } return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); }
+  // ---- reposición automática: stock mínimo y punto de reorden desde el histórico de ventas ----
+  reordenCfg(){ return { ventana:90, lead:7, anticip:7, cobertura:30, ...(this.state.reordenCfg||{}) }; }
+  setReordenCfg(k,v){ const cfg={...this.reordenCfg(), [k]:(v===''?'':Number(v))}; this.setState({reordenCfg:cfg}); try{ localStorage.setItem('oda_hub_reorden_v1', JSON.stringify(cfg)); }catch(e){} }
+  reordenConsumoDiario(){ const cfg=this.reordenCfg(); const dias=Math.max(7,Number(cfg.ventana)||90);
+    const desde=new Date(Date.now()-dias*86400000).toISOString().slice(0,10);
+    const dem={}; const add=(c,q)=>{ if(!c||!(q>0)) return; dem[c]=(dem[c]||0)+q; };
+    const prodMap={}; (this.state.productos||[]).forEach(p=>{ prodMap[p.codigo]=p; });
+    const kitMap={}; (this.state.kits||[]).forEach(k=>{ kitMap[k.codigo]=k; });
+    const addProducto=(code,u)=>{ const p=prodMap[code]; if(!p||p.esReventa) return; (p.formula||[]).forEach(f=>add(f.materiaCodigo,(Number(f.cantidad)||0)*u)); };
+    (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||!v.fecha||v.fecha<desde) return;
+      (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const code=it.productoCodigo||it.referencia; const k=kitMap[code];
+        if(k){ (k.items||[]).forEach(ki=>{ const q=u*(Number(ki.cantidad)||1); if(ki.tipo==='producto') addProducto(ki.codigo,q); else add(ki.codigo,q); }); }
+        else addProducto(code,u); });
+      (v.empaques||[]).forEach(e=>add(e.materiaCodigo,Number(e.cantidad)||0)); });
+    const mezMap={}; (this.state.mezclas||[]).forEach(mz=>{ mezMap[mz.codigo]=mz; });
+    for(let pass=0;pass<2;pass++){ Object.keys(dem).forEach(code=>{ const mz=mezMap[code]; if(!mz) return; const D=dem[code]; delete dem[code]; if(!(D>0)) return; const R=this.mezclaRendimiento(mz)||1; (mz.formula||[]).forEach(f=>add(f.materiaCodigo,(Number(f.cantidad)||0)*D/R)); }); }
+    const out={}; Object.keys(dem).forEach(c=>{ out[c]=dem[c]/dias; }); return out; }
+  reordenRows(){ const cfg=this.reordenCfg(); const rate=this.reordenConsumoDiario();
+    const lead=Math.max(0,Number(cfg.lead)||0), ant=Math.max(0,Number(cfg.anticip)||0), cob=Math.max(1,Number(cfg.cobertura)||30);
+    const hoy=Date.now();
+    return (this.state.materias||[]).filter(m=>(rate[m.codigo]||0)>0).map(m=>{
+      const r=rate[m.codigo]; const stock=Math.max(0,this.materiaStockActual(m));
+      const diasCob=stock/r; const rop=Math.ceil(r*(lead+ant)); const minSug=Math.ceil(r*lead)||1;
+      const compra=Math.max(0,Math.ceil(r*(lead+cob)-stock));
+      const fPedir=new Date(hoy+Math.max(0,diasCob-lead-ant)*86400000).toISOString().slice(0,10);
+      let nivel='ok'; if(diasCob<=lead) nivel='ya'; else if(diasCob<=lead+ant) nivel='semana';
+      return {m, r, stock, diasCob, rop, minSug, compra, fPedir, nivel};
+    }).sort((a,b)=>a.diasCob-b.diasCob); }
+  aplicarReorden(){ const rows=this.reordenRows(); if(!rows.length){ this.toast('No hay consumo registrado en la ventana de análisis'); return; }
+    const map={}; rows.forEach(x=>{ map[x.m.codigo]=x.rop; });
+    const list=(this.state.materias||[]).map(m=> map[m.codigo]!=null? {...m, stockMinimo:map[m.codigo]} : m);
+    this.setState({materias:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkMaterias(list.filter(m=>map[m.codigo]!=null));
+    const ant=Math.round(Number(this.reordenCfg().anticip)||7);
+    this.toast('Stock mínimo actualizado en '+rows.length+' materia(s) · alertas con '+ant+' día(s) de anticipación'); }
   nextCodeProduccion(){ let max=0; (this.state.producciones||[]).forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OP-2026-'+String(max+1).padStart(3,'0'); }
   nuevaProduccion(){ this.open('produccion',{ _numero:this.nextCodeProduccion(), items:[], _selProd:'', _selProdText:'', _selCantidad:'', fecha:new Date().toISOString().slice(0,10) }); }
   editProduccion(op){ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); this.open('produccion',{ _id:op.id, _numero:op.numero, items:[{productoCodigo:op.productoCodigo, cantidad:op.cantidad, nombre:p?p.nombre:op.productoCodigo}], _selProd:'', _selProdText:'', _selCantidad:'', fecha:op.fecha||new Date().toISOString().slice(0,10) }); }
@@ -7935,12 +8043,12 @@ Instrucciones de respuesta:
     out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
-    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex');
+    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vI_reorden=subVis('inventario','reorden');
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
-    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
+    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex||out.vI_reorden; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
 
     // ===== INICIO (resumen personal de pendientes) =====
     out.showInicio = st.module==='inicio';
@@ -7981,9 +8089,19 @@ Instrucciones de respuesta:
         cards.push({key:'ventas', title:'Ventas', desc: n? (isAdmin?'Leads y casos de servicio abiertos':'Asignados a ti') : 'Sin pendientes asignados', n, hasCount:n>0, items:items.slice(0,6), empty:n===0, onVer:goto('ventas','cotizador')});
       }
       if(out.canInventario){
-        const bajos=(st.materias||[]).filter(m=>Math.round(this.materiaStockActual(m))<(Number(m.stockMinimo)||0));
-        const items=bajos.slice(0,5).map(m=>({title:m.nombre, sub:m.codigo, right:Math.round(this.materiaStockActual(m))+' '+(m.unidad||''), rightColor:'#B5503C', onClick:goto('inventario','mp')}));
-        cards.push({key:'inventario', title:'Inventario', desc: bajos.length? (bajos.length+' materia'+(bajos.length===1?'':'s')+' bajo el mínimo') : 'Sin materias bajo el mínimo', n:bajos.length, hasCount:bajos.length>0, items, empty:bajos.length===0, onVer:goto('inventario','mp')});
+        let items=[], n=0, desc='', verSub='mp';
+        if(out.vI_reorden){
+          const crit=this.reordenRows().filter(x=>x.nivel!=='ok');
+          n=crit.length; verSub='reorden';
+          items=crit.slice(0,5).map(x=>{ const u=x.m.unidad||''; const ya=x.nivel==='ya'; return {title:x.m.nombre, sub:(ya?'Comprar ya':'Pedir esta semana')+' · antes del '+this.fmtFecha(x.fPedir)+(x.compra>0?' · comprar '+this.fmtCant(x.compra)+' '+u:''), right:Math.round(x.diasCob)+' días', rightColor: ya?'#B5503C':'#9A7320', onClick:goto('inventario','reorden')}; });
+          desc = n? (n+' materia'+(n===1?'':'s')+' crítica'+(n===1?'':'s')+' por reponer') : 'Reposición al día · sin compras urgentes';
+        } else {
+          const bajos=(st.materias||[]).filter(m=>Math.round(this.materiaStockActual(m))<(Number(m.stockMinimo)||0));
+          n=bajos.length;
+          items=bajos.slice(0,5).map(m=>({title:m.nombre, sub:m.codigo, right:Math.round(this.materiaStockActual(m))+' '+(m.unidad||''), rightColor:'#B5503C', onClick:goto('inventario','mp')}));
+          desc = n? (n+' materia'+(n===1?'':'s')+' bajo el mínimo') : 'Sin materias bajo el mínimo';
+        }
+        cards.push({key:'inventario', title:'Inventario', desc, n, hasCount:n>0, items, empty:n===0, onVer:goto('inventario',verSub)});
       }
       if(out.canMarketing){
         const _srcM=this.mktCampSource();
@@ -8049,8 +8167,8 @@ Instrucciones de respuesta:
     out.invNavBg = onInv? 'rgba(167,134,89,0.18)':'transparent';
     out.invNavColor = onInv? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyI=(k)=>{ const a=onInv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvKardex=subStyI('kardex');
-    out.subnavInv={ resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
+    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvKardex=subStyI('kardex'); out.subInvReorden=subStyI('reorden');
+    out.subnavInv={ resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}), reorden:()=>this.setState({module:'inventario',sub:'reorden'}) };
     const invAcc = acc? (acc.admin?'write':(acc.inventario||'none')) : 'none';
     out.canWriteInv = invAcc==='write';
 
@@ -8119,6 +8237,7 @@ Instrucciones de respuesta:
     out.showInvPT = onInv && st.sub==='pt';
     out.showInvConsig = onInv && st.sub==='consig';
     out.showInvKardex = onInv && st.sub==='kardex';
+    out.showInvReorden = onInv && st.sub==='reorden';
     out.showVentasReg = onVen && st.sub==='registro';
     out.showVentasBase = onVen && st.sub==='base';
     out.showVentasListado = onVen && st.sub==='listado';
@@ -8145,7 +8264,7 @@ Instrucciones de respuesta:
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
-    else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
+    else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos',reorden:'Reposición · punto de reorden'}[st.sub]||'Inventario'; }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
@@ -8451,6 +8570,16 @@ Instrucciones de respuesta:
       if(out.showInvMP){ out.invMPRows=mkRows(m=>mpTipos.includes(m.tipo)); out.invMPVacio=out.invMPRows.length===0; out.invMPTotal=this.fmt(Math.round(valMP)); }
       if(out.showInvInsumos){ out.invInsRows=mkRows(m=>esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)); out.invInsVacio=out.invInsRows.length===0; out.invInsTotal=this.fmt(Math.round(valIns+valEmp+valEnv)); }
       if(out.showInvPT){ out.invPTRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, formatoLabel:this.formatoLabel(p.formato), stock, stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), precioFmt:this.fmt(p.precio)}; }); out.invPTVacio=st.productos.length===0; out.invPTTotal=this.fmt(Math.round(valPT)); }
+      if(out.showInvReorden){ const cfg=this.reordenCfg();
+        out.reoVentana=cfg.ventana; out.reoLead=cfg.lead; out.reoAnticip=cfg.anticip; out.reoCobertura=cfg.cobertura;
+        out.onReoVentana=(e)=>this.setReordenCfg('ventana',e.target.value); out.onReoLead=(e)=>this.setReordenCfg('lead',e.target.value); out.onReoAnticip=(e)=>this.setReordenCfg('anticip',e.target.value); out.onReoCobertura=(e)=>this.setReordenCfg('cobertura',e.target.value);
+        const rows=this.reordenRows();
+        const estilo={ya:{label:'Comprar ya',bg:'rgba(181,80,60,0.12)',fg:'#B5503C'},semana:{label:'Pedir esta semana',bg:'rgba(193,170,129,0.3)',fg:'#7A6035'},ok:{label:'Con cobertura',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}};
+        out.reoRows=rows.map(x=>{ const es=estilo[x.nivel]; const u=x.m.unidad||''; return { codigo:x.m.codigo, nombre:x.m.nombre, proveedorNombre:this.provNombre(x.m.proveedorCodigo)||'—', consumoTxt:((x.r>=10?String(Math.round(x.r)):x.r.toFixed(2))+' '+u+'/día'), stockTxt:(this.fmtCant(Math.round(x.stock))+' '+u), cobTxt:((x.diasCob>365?'+365':String(Math.round(x.diasCob)))+' días'), cobColor:(x.nivel==='ya'?'#B5503C':(x.nivel==='semana'?'#7A6035':'var(--text-strong)')), ropTxt:(this.fmtCant(x.rop)+' '+u), minTxt:this.fmtCant(x.minSug), compraTxt:(x.compra>0?(this.fmtCant(x.compra)+' '+u):'—'), fPedirTxt:this.fmtFecha(x.fPedir), esLabel:es.label, esBg:es.bg, esFg:es.fg }; });
+        out.reoVacio=rows.length===0; out.reoHayRows=rows.length>0;
+        out.reoNumYa=rows.filter(x=>x.nivel==='ya').length; out.reoNumSemana=rows.filter(x=>x.nivel==='semana').length; out.reoNumOk=rows.filter(x=>x.nivel==='ok').length;
+        out.aplicarReorden=()=>this.aplicarReorden();
+      }
       if(out.showInvConsig){
         const resumen=this.tiendaResumen();
         out.consigTiendas=resumen.map(t=>({ id:t.id, nombre:t.nombre, ciudad:t.ciudad||'—', margenPct:t.margenPct, nSkus:t.nSkus, unidades:t.unidades, valorFmt:this.fmt(Math.round(t.valor)), hayEmpaque:(t.empUnid>0), empaqueTxt:(this.fmtCant(t.empUnid)+' en materiales ('+this.fmt(Math.round(t.empCosto))+')'), onVer:((id)=>()=>this.setState({consignSel:id, consigSelTab:'stock'}))(t.id), onEditar:((id)=>()=>this.editarTienda(this.consignTiendas().find(x=>x.id===id)))(t.id), onRemision:((id)=>()=>this.nuevaRemision(id))(t.id) }));
