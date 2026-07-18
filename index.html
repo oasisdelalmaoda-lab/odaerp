@@ -122,6 +122,7 @@
               <sc-if value="{{ vC_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subResumen.c }};background:{{ subResumen.bg }};border-left:2px solid {{ subResumen.b }};">{{ subResumen.dot }}Resumen</div></sc-if>
               <sc-if value="{{ vC_prov }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.proveedores }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProv.c }};background:{{ subProv.bg }};border-left:2px solid {{ subProv.b }};">Proveedores</div></sc-if>
               <sc-if value="{{ vC_mat }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.materias }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMat.c }};background:{{ subMat.bg }};border-left:2px solid {{ subMat.b }};">Materias e insumos</div></sc-if>
+              <sc-if value="{{ vC_reorden }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.reorden }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subReorden.c }};background:{{ subReorden.bg }};border-left:2px solid {{ subReorden.b }};"><span>Reposición</span><sc-if value="{{ reoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ reoBadgeCount }}</span></sc-if></div></sc-if>
               <sc-if value="{{ vC_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.servicios }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subSvc.c }};background:{{ subSvc.bg }};border-left:2px solid {{ subSvc.b }};">Servicios</div></sc-if>
               <sc-if value="{{ vC_ord }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.ordenes }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subOrd.c }};background:{{ subOrd.bg }};border-left:2px solid {{ subOrd.b }};"><span>Órdenes y pagos</span><sc-if value="{{ aprobarBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ aprobarCount }}</span></sc-if></div></sc-if>
             </div>
@@ -164,7 +165,6 @@
               <sc-if value="{{ vI_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvResumen.c }};background:{{ subInvResumen.bg }};border-left:2px solid {{ subInvResumen.b }};">Resumen</div></sc-if>
               <sc-if value="{{ vI_mp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.mp }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvMP.c }};background:{{ subInvMP.bg }};border-left:2px solid {{ subInvMP.b }};">Materia prima</div></sc-if>
               <sc-if value="{{ vI_ins }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.insumos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvIns.c }};background:{{ subInvIns.bg }};border-left:2px solid {{ subInvIns.b }};">Insumos y empaques</div></sc-if>
-              <sc-if value="{{ vI_reorden }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.reorden }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvReorden.c }};background:{{ subInvReorden.bg }};border-left:2px solid {{ subInvReorden.b }};">Reposición</div></sc-if>
               <sc-if value="{{ vI_pt }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvPT.c }};background:{{ subInvPT.bg }};border-left:2px solid {{ subInvPT.b }};">Producto terminado</div></sc-if>
               <sc-if value="{{ vI_consig }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.consig }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConsig.c }};background:{{ subInvConsig.bg }};border-left:2px solid {{ subInvConsig.b }};">Consignación</div></sc-if>
               <sc-if value="{{ vI_kardex }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.kardex }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvKardex.c }};background:{{ subInvKardex.bg }};border-left:2px solid {{ subInvKardex.b }};">Kardex</div></sc-if>
@@ -415,7 +415,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#1962623969377c74787075396464" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#e99292c999c78c84888085c99494" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1432,7 +1432,7 @@
           <!-- ===== INVENTARIO · REPOSICIÓN (punto de reorden) ===== -->
           <sc-if value="{{ showInvReorden }}" hint-placeholder-val="{{ false }}">
             <div>
-              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:760px;line-height:1.55;text-wrap:pretty;">Calculado automáticamente desde el historial de ventas y las fórmulas de productos, kits y mezclas (los blends se explotan a sus aceites). El punto de reorden cubre el tiempo de entrega del proveedor más los días de anticipación, para que la alerta de compra aparezca una semana antes.</p>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:760px;line-height:1.55;text-wrap:pretty;">Calculado automáticamente desde el historial de ventas y las fórmulas de productos, kits y mezclas (los blends se explotan a sus aceites). El punto de reorden cubre el tiempo de entrega del proveedor más los días de anticipación, para que la alerta de compra aparezca una semana antes. Las cantidades pendientes por recibir de órdenes ya creadas cuentan como «en tránsito»: suman a la cobertura y descuentan de la compra sugerida.</p>
               <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px;">
                 <div style="background:var(--surface-card);border:1px solid rgba(181,80,60,0.35);border-radius:var(--radius-lg);padding:16px 18px;">
                   <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#B5503C;font-weight:700;">Comprar ya</div>
@@ -1456,8 +1456,11 @@
                 <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Anticipación de la alerta (días)<input type="number" min="0" value="{{ reoAnticip }}" onInput="{{ onReoAnticip }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
                 <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cobertura objetivo (días)<input type="number" min="1" value="{{ reoCobertura }}" onInput="{{ onReoCobertura }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
                 <div style="flex:1;"></div>
-                <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}">
-                  <button onClick="{{ aplicarReorden }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Aplicar mínimos sugeridos</button>
+                <sc-if value="{{ canWriteReorden }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button onClick="{{ aplicarReorden }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 20px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">Aplicar mínimos sugeridos</button>
+                    <button onClick="{{ generarOrdenesReorden }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Generar órdenes de compra</button>
+                  </div>
                 </sc-if>
               </div>
               <sc-if value="{{ reoVacio }}" hint-placeholder-val="{{ false }}">
@@ -1465,13 +1468,14 @@
               </sc-if>
               <sc-if value="{{ reoHayRows }}" hint-placeholder-val="{{ true }}">
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1080px;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1180px;">
                   <thead><tr style="background:var(--surface-raised);text-align:left;">
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Código</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Materia</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Proveedor</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Consumo</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Stock</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">En tránsito</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Cobertura</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Punto de reorden</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Compra sugerida</th>
@@ -1486,6 +1490,7 @@
                         <td style="padding:13px 16px;color:var(--text-body);">{{ m.proveedorNombre }}</td>
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.consumoTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.stockTxt }}</td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;color:{{ m.transitoColor }};">{{ m.transitoTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:800;white-space:nowrap;color:{{ m.cobColor }};">{{ m.cobTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ m.ropTxt }}<span style="display:block;font-size:11px;color:var(--text-muted);">mín. sug. {{ m.minTxt }}</span></td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.compraTxt }}</td>
@@ -1496,7 +1501,7 @@
                   </tbody>
                 </table>
               </div>
-              <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;max-width:760px;line-height:1.5;">«Aplicar mínimos sugeridos» escribe el punto de reorden como stock mínimo de cada materia: las alertas de <strong>Compras · Resumen</strong>, <strong>Inventario · Resumen</strong> e <strong>Inicio</strong> se activan solas con la anticipación configurada.</p>
+              <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;max-width:760px;line-height:1.5;">«Aplicar mínimos sugeridos» escribe el punto de reorden como stock mínimo de cada materia: las alertas de <strong>Inicio</strong> e inventario se activan solas con la anticipación configurada. «Generar órdenes de compra» crea una orden pendiente de aprobación por proveedor con las compras sugeridas de las materias críticas — el encargado la ve en <strong>Órdenes y pagos</strong> y en su Inicio.</p>
               </sc-if>
             </div>
           </sc-if>
@@ -5523,10 +5528,10 @@ class Component extends DCLogic {
     'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  admin:false },
   };
   subModDef = {
-    compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'ordenes',label:'Órdenes de compra'}],
+    compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'reorden',label:'Reposición'},{key:'ordenes',label:'Órdenes de compra'}],
     desarrollo: [{key:'mezclas',label:'Mezclas'},{key:'productos',label:'Productos'},{key:'kits',label:'Kits'}],
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
-    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'},{key:'reorden',label:'Reposición'}],
+    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
@@ -5948,7 +5953,7 @@ class Component extends DCLogic {
   // ---- nav ----
   goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex','reorden'],ventas:['registro','base','cotizador','carritos','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -6154,16 +6159,21 @@ class Component extends DCLogic {
     const mezMap={}; (this.state.mezclas||[]).forEach(mz=>{ mezMap[mz.codigo]=mz; });
     for(let pass=0;pass<2;pass++){ Object.keys(dem).forEach(code=>{ const mz=mezMap[code]; if(!mz) return; const D=dem[code]; delete dem[code]; if(!(D>0)) return; const R=this.mezclaRendimiento(mz)||1; (mz.formula||[]).forEach(f=>add(f.materiaCodigo,(Number(f.cantidad)||0)*D/R)); }); }
     const out={}; Object.keys(dem).forEach(c=>{ out[c]=dem[c]/dias; }); return out; }
-  reordenRows(){ const cfg=this.reordenCfg(); const rate=this.reordenConsumoDiario();
+  reordenRows(){ const key=JSON.stringify(this.reordenCfg())+':'+((this.state.ventas||[]).length)+':'+((this.state.materias||[]).length)+':'+((this.state.ordenes||[]).length)+':'+((this.state.producciones||[]).length);
+    if(this._reoCache && this._reoCache.key===key && (Date.now()-this._reoCache.t)<4000) return this._reoCache.rows;
+    const rows=this._reordenRowsCalc(); this._reoCache={key, t:Date.now(), rows}; return rows; }
+  _reordenRowsCalc(){ const cfg=this.reordenCfg(); const rate=this.reordenConsumoDiario();
     const lead=Math.max(0,Number(cfg.lead)||0), ant=Math.max(0,Number(cfg.anticip)||0), cob=Math.max(1,Number(cfg.cobertura)||30);
     const hoy=Date.now();
+    const transito={}; (this.state.ordenes||[]).forEach(o=>{ if(!this.ordenAbierta(o)) return; (o.items||[]).forEach(it=>{ const c=it.materiaCodigo; if(!c) return; const pend=Math.max(0,(Number(it.cantidad)||0)-this.ordenRecibido(o,c)); if(pend>0) transito[c]=(transito[c]||0)+pend; }); });
     return (this.state.materias||[]).filter(m=>(rate[m.codigo]||0)>0).map(m=>{
       const r=rate[m.codigo]; const stock=Math.max(0,this.materiaStockActual(m));
-      const diasCob=stock/r; const rop=Math.ceil(r*(lead+ant)); const minSug=Math.ceil(r*lead)||1;
-      const compra=Math.max(0,Math.ceil(r*(lead+cob)-stock));
+      const tr=transito[m.codigo]||0; const proy=stock+tr;
+      const diasCob=proy/r; const rop=Math.ceil(r*(lead+ant)); const minSug=Math.ceil(r*lead)||1;
+      const compra=Math.max(0,Math.ceil(r*(lead+cob)-proy));
       const fPedir=new Date(hoy+Math.max(0,diasCob-lead-ant)*86400000).toISOString().slice(0,10);
       let nivel='ok'; if(diasCob<=lead) nivel='ya'; else if(diasCob<=lead+ant) nivel='semana';
-      return {m, r, stock, diasCob, rop, minSug, compra, fPedir, nivel};
+      return {m, r, stock, tr, diasCob, rop, minSug, compra, fPedir, nivel};
     }).sort((a,b)=>a.diasCob-b.diasCob); }
   aplicarReorden(){ const rows=this.reordenRows(); if(!rows.length){ this.toast('No hay consumo registrado en la ventana de análisis'); return; }
     const map={}; rows.forEach(x=>{ map[x.m.codigo]=x.rop; });
@@ -7832,6 +7842,18 @@ Instrucciones de respuesta:
       Object.keys(groups).forEach(key=>{ const g=groups[key]; if(!g.items.length && !(g.flete>0)) return; const numero=g.numero||this.nextCodeOrdenFrom(list); list.unshift({id:'o'+Date.now()+Math.floor(Math.random()*999), numero, proveedorCodigo:g.proveedor, fecha:g.fecha, items:g.items, flete:g.flete||0, fleteIva:!!g.fleteIva, estado:'pendiente', factura:(g.factura?{numero:g.factura, fecha:g.fecha}:null), pagos:[]}); n++; });
       this.setState({ordenes:list,modal:null,importRows:[]},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); }
     this.toast(n+' registro'+(n===1?'':'s')+' importado'+(n===1?'':'s')); }
+  generarOrdenesReorden(){ const crit=this.reordenRows().filter(x=>x.nivel!=='ok' && x.compra>0);
+    if(!crit.length){ this.toast('No hay materias críticas con compra sugerida'); return; }
+    const conProv=crit.filter(x=>x.m.proveedorCodigo), sinProv=crit.filter(x=>!x.m.proveedorCodigo);
+    if(!conProv.length){ this.toast('Las materias críticas no tienen proveedor asignado · asígnalo en Materias e insumos'); return; }
+    const grupos={}; conProv.forEach(x=>{ (grupos[x.m.proveedorCodigo]=grupos[x.m.proveedorCodigo]||[]).push(x); });
+    const list=this.state.ordenes.slice(); const hoy=new Date().toISOString().slice(0,10); let n=0;
+    Object.keys(grupos).forEach(pc=>{ const numero=this.nextCodeOrdenFrom(list);
+      const items=grupos[pc].map(x=>({materiaCodigo:x.m.codigo, nombre:x.m.nombre, cantidad:x.compra, costo:Number(x.m.costo)||0, iva:0, costoFijo:false}));
+      list.unshift({ id:'o'+Date.now()+Math.floor(Math.random()*1000), numero, proveedorCodigo:pc, fecha:hoy, items, flete:0, fleteIva:false, aplicaRetencion:false, retencionManual:null, sinIva:false, estado:'pendiente', factura:null, pagos:[], entregas:[], notaReorden:true }); n++; });
+    this.setState({ordenes:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list);
+    this.setState({module:'compras',sub:'ordenes'});
+    this.toast(n+' orden'+(n===1?'':'es')+' de compra creada'+(n===1?'':'s')+' · pendiente'+(n===1?'':'s')+' de aprobación'+(sinProv.length?(' · '+sinProv.length+' materia(s) sin proveedor quedaron fuera'):'')); }
   nextCodeOrdenFrom(list){ let max=0; list.forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OC-2026-'+String(max+1).padStart(3,'0'); }
 
   verOrden(o){ this.setState({modal:'detalle',detalleId:o.id}); }
@@ -8043,12 +8065,12 @@ Instrucciones de respuesta:
     out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
-    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vI_reorden=subVis('inventario','reorden');
+    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden');
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
-    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex||out.vI_reorden; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
+    out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
 
     // ===== INICIO (resumen personal de pendientes) =====
     out.showInicio = st.module==='inicio';
@@ -8062,7 +8084,12 @@ Instrucciones de respuesta:
       if(out.canCompras){
         const pend=(st.ordenes||[]).filter(o=>o.estado==='pendiente');
         const items=pend.slice(0,5).map(o=>({title:o.numero, sub:this.provNombre(o.proveedorCodigo)+' · '+this.fmtFecha(o.fecha), right:this.fmt(Math.round(this.ordenTotal(o))), rightColor:'var(--text-body)', onClick:goto('compras','ordenes')}));
-        cards.push({key:'compras', title:'Compras', desc: pend.length? (pend.length+' orden'+(pend.length===1?'':'es')+' pendiente'+(pend.length===1?'':'s')+' de aprobación') : 'Sin órdenes pendientes', n:pend.length, hasCount:pend.length>0, items, empty:pend.length===0, onVer:goto('compras','ordenes')});
+        let critN=0;
+        if(out.vC_reorden){ const crit=this.reordenRows().filter(x=>x.nivel!=='ok'); critN=crit.length;
+          crit.slice(0,4).forEach(x=>{ const u=x.m.unidad||''; const ya=x.nivel==='ya'; items.unshift({title:x.m.nombre, sub:(ya?'Comprar ya':'Pedir esta semana')+' · antes del '+this.fmtFecha(x.fPedir)+(x.compra>0?' · comprar '+this.fmtCant(x.compra)+' '+u:''), right:Math.round(x.diasCob)+' días', rightColor: ya?'#B5503C':'#9A7320', onClick:goto('compras','reorden')}); }); }
+        const nTot=pend.length+critN;
+        const descC = nTot? [critN?(critN+' materia'+(critN===1?'':'s')+' crítica'+(critN===1?'':'s')+' por reponer'):'', pend.length?(pend.length+' orden'+(pend.length===1?'':'es')+' por aprobar'):''].filter(Boolean).join(' · ') : 'Sin órdenes pendientes ni compras urgentes';
+        cards.push({key:'compras', title:'Compras', desc:descC, n:nTot, hasCount:nTot>0, items:items.slice(0,6), empty:nTot===0, onVer:goto('compras', critN?'reorden':'ordenes')});
       }
       if(out.canFinanzas){
         const cxp=this.finPorPagar(); const cxpVenc=cxp.filter(o=>this.diasDesde((o.factura&&o.factura.fecha)||o.fecha)>0);
@@ -8089,19 +8116,9 @@ Instrucciones de respuesta:
         cards.push({key:'ventas', title:'Ventas', desc: n? (isAdmin?'Leads y casos de servicio abiertos':'Asignados a ti') : 'Sin pendientes asignados', n, hasCount:n>0, items:items.slice(0,6), empty:n===0, onVer:goto('ventas','cotizador')});
       }
       if(out.canInventario){
-        let items=[], n=0, desc='', verSub='mp';
-        if(out.vI_reorden){
-          const crit=this.reordenRows().filter(x=>x.nivel!=='ok');
-          n=crit.length; verSub='reorden';
-          items=crit.slice(0,5).map(x=>{ const u=x.m.unidad||''; const ya=x.nivel==='ya'; return {title:x.m.nombre, sub:(ya?'Comprar ya':'Pedir esta semana')+' · antes del '+this.fmtFecha(x.fPedir)+(x.compra>0?' · comprar '+this.fmtCant(x.compra)+' '+u:''), right:Math.round(x.diasCob)+' días', rightColor: ya?'#B5503C':'#9A7320', onClick:goto('inventario','reorden')}; });
-          desc = n? (n+' materia'+(n===1?'':'s')+' crítica'+(n===1?'':'s')+' por reponer') : 'Reposición al día · sin compras urgentes';
-        } else {
-          const bajos=(st.materias||[]).filter(m=>Math.round(this.materiaStockActual(m))<(Number(m.stockMinimo)||0));
-          n=bajos.length;
-          items=bajos.slice(0,5).map(m=>({title:m.nombre, sub:m.codigo, right:Math.round(this.materiaStockActual(m))+' '+(m.unidad||''), rightColor:'#B5503C', onClick:goto('inventario','mp')}));
-          desc = n? (n+' materia'+(n===1?'':'s')+' bajo el mínimo') : 'Sin materias bajo el mínimo';
-        }
-        cards.push({key:'inventario', title:'Inventario', desc, n, hasCount:n>0, items, empty:n===0, onVer:goto('inventario',verSub)});
+        const bajos=(st.materias||[]).filter(m=>Math.round(this.materiaStockActual(m))<(Number(m.stockMinimo)||0));
+        const items=bajos.slice(0,5).map(m=>({title:m.nombre, sub:m.codigo, right:Math.round(this.materiaStockActual(m))+' '+(m.unidad||''), rightColor:'#B5503C', onClick:goto('inventario','mp')}));
+        cards.push({key:'inventario', title:'Inventario', desc: bajos.length? (bajos.length+' materia'+(bajos.length===1?'':'s')+' bajo el mínimo') : 'Sin materias bajo el mínimo', n:bajos.length, hasCount:bajos.length>0, items, empty:bajos.length===0, onVer:goto('inventario','mp')});
       }
       if(out.canMarketing){
         const _srcM=this.mktCampSource();
@@ -8125,7 +8142,7 @@ Instrucciones de respuesta:
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.shellNavClass=st.sidebarOpen?'oda-nav-open':''; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
     out.nav={ inicio:()=>this.goModule('inicio'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
-    out.subnav={ resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
+    out.subnav={ reorden:()=>this.goSub('reorden'), resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
 
     const onComp = st.module==='compras';
@@ -8133,7 +8150,8 @@ Instrucciones de respuesta:
     out.comprasNavBg = onComp? 'rgba(167,134,89,0.18)':'transparent';
     out.comprasNavColor = onComp? '#D9BE92':'rgba(251,248,242,0.85)';
     const subSty=(k)=>{ const a=onComp&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent', dot:'' }; };
-    out.subResumen=subSty('resumen'); out.subProv=subSty('proveedores'); out.subMat=subSty('materias'); out.subSvc=subSty('servicios'); out.subOrd=subSty('ordenes');
+    out.subResumen=subSty('resumen'); out.subProv=subSty('proveedores'); out.subMat=subSty('materias'); out.subSvc=subSty('servicios'); out.subOrd=subSty('ordenes'); out.subReorden=subSty('reorden');
+    if(out.vC_reorden){ const _rc=this.reordenRows().filter(x=>x.nivel!=='ok').length; out.reoBadgeShow=_rc>0; out.reoBadgeCount=_rc; } else { out.reoBadgeShow=false; }
     const onAdminNav = st.module==='admin';
     const adminTabActive = onAdminNav && st.sub==='tablero';
     const adminUsrActive = onAdminNav && st.sub!=='tablero';
@@ -8167,8 +8185,8 @@ Instrucciones de respuesta:
     out.invNavBg = onInv? 'rgba(167,134,89,0.18)':'transparent';
     out.invNavColor = onInv? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyI=(k)=>{ const a=onInv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvKardex=subStyI('kardex'); out.subInvReorden=subStyI('reorden');
-    out.subnavInv={ resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}), reorden:()=>this.setState({module:'inventario',sub:'reorden'}) };
+    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvKardex=subStyI('kardex');
+    out.subnavInv={ resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
     const invAcc = acc? (acc.admin?'write':(acc.inventario||'none')) : 'none';
     out.canWriteInv = invAcc==='write';
 
@@ -8216,7 +8234,7 @@ Instrucciones de respuesta:
     out.accessLabel=al; out.accessBg=abg; out.accessColor=afg;
 
     // page title / crumb
-    const subLabels={resumen:'Resumen',proveedores:'Proveedores',materias:'Materias primas e insumos',servicios:'Servicios',ordenes:'Órdenes, facturas y pagos'};
+    const subLabels={resumen:'Resumen',proveedores:'Proveedores',materias:'Materias primas e insumos',servicios:'Servicios',ordenes:'Órdenes, facturas y pagos',reorden:'Reposición · punto de reorden'};
     const modNames={desarrollo:'Desarrollo de Producto',ventas:'Ventas',finanzas:'Finanzas',produccion:'Producción',inventario:'Inventario'};
     out.showResumen = onComp && st.sub==='resumen';
     out.showProveedores = onComp && st.sub==='proveedores';
@@ -8237,7 +8255,19 @@ Instrucciones de respuesta:
     out.showInvPT = onInv && st.sub==='pt';
     out.showInvConsig = onInv && st.sub==='consig';
     out.showInvKardex = onInv && st.sub==='kardex';
-    out.showInvReorden = onInv && st.sub==='reorden';
+    out.showInvReorden = st.module==='compras' && st.sub==='reorden';
+    if(out.showInvReorden){ const cfg=this.reordenCfg();
+      out.reoVentana=cfg.ventana; out.reoLead=cfg.lead; out.reoAnticip=cfg.anticip; out.reoCobertura=cfg.cobertura;
+      out.onReoVentana=(e)=>this.setReordenCfg('ventana',e.target.value); out.onReoLead=(e)=>this.setReordenCfg('lead',e.target.value); out.onReoAnticip=(e)=>this.setReordenCfg('anticip',e.target.value); out.onReoCobertura=(e)=>this.setReordenCfg('cobertura',e.target.value);
+      const rows=this.reordenRows();
+      const estilo={ya:{label:'Comprar ya',bg:'rgba(181,80,60,0.12)',fg:'#B5503C'},semana:{label:'Pedir esta semana',bg:'rgba(193,170,129,0.3)',fg:'#7A6035'},ok:{label:'Con cobertura',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}};
+      out.reoRows=rows.map(x=>{ const es=estilo[x.nivel]; const u=x.m.unidad||''; return { codigo:x.m.codigo, nombre:x.m.nombre, proveedorNombre:this.provNombre(x.m.proveedorCodigo)||'—', consumoTxt:((x.r>=10?String(Math.round(x.r)):x.r.toFixed(2))+' '+u+'/día'), stockTxt:(this.fmtCant(Math.round(x.stock))+' '+u), transitoTxt:(x.tr>0?('+'+this.fmtCant(Math.round(x.tr))+' '+u):'—'), transitoColor:(x.tr>0?'#4C6149':'var(--text-muted)'), cobTxt:((x.diasCob>365?'+365':String(Math.round(x.diasCob)))+' días'), cobColor:(x.nivel==='ya'?'#B5503C':(x.nivel==='semana'?'#7A6035':'var(--text-strong)')), ropTxt:(this.fmtCant(x.rop)+' '+u), minTxt:this.fmtCant(x.minSug), compraTxt:(x.compra>0?(this.fmtCant(x.compra)+' '+u):'—'), fPedirTxt:this.fmtFecha(x.fPedir), esLabel:es.label, esBg:es.bg, esFg:es.fg }; });
+      out.reoVacio=rows.length===0; out.reoHayRows=rows.length>0;
+      out.reoNumYa=rows.filter(x=>x.nivel==='ya').length; out.reoNumSemana=rows.filter(x=>x.nivel==='semana').length; out.reoNumOk=rows.filter(x=>x.nivel==='ok').length;
+      out.aplicarReorden=()=>this.aplicarReorden();
+      out.generarOrdenesReorden=()=>this.generarOrdenesReorden();
+      out.canWriteReorden = acc? (acc.admin || acc.compras==='write' || acc['compras__reorden']==='write') : false;
+    }
     out.showVentasReg = onVen && st.sub==='registro';
     out.showVentasBase = onVen && st.sub==='base';
     out.showVentasListado = onVen && st.sub==='listado';
@@ -8264,7 +8294,7 @@ Instrucciones de respuesta:
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
-    else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos',reorden:'Reposición · punto de reorden'}[st.sub]||'Inventario'; }
+    else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
@@ -8570,16 +8600,6 @@ Instrucciones de respuesta:
       if(out.showInvMP){ out.invMPRows=mkRows(m=>mpTipos.includes(m.tipo)); out.invMPVacio=out.invMPRows.length===0; out.invMPTotal=this.fmt(Math.round(valMP)); }
       if(out.showInvInsumos){ out.invInsRows=mkRows(m=>esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)); out.invInsVacio=out.invInsRows.length===0; out.invInsTotal=this.fmt(Math.round(valIns+valEmp+valEnv)); }
       if(out.showInvPT){ out.invPTRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, formatoLabel:this.formatoLabel(p.formato), stock, stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), precioFmt:this.fmt(p.precio)}; }); out.invPTVacio=st.productos.length===0; out.invPTTotal=this.fmt(Math.round(valPT)); }
-      if(out.showInvReorden){ const cfg=this.reordenCfg();
-        out.reoVentana=cfg.ventana; out.reoLead=cfg.lead; out.reoAnticip=cfg.anticip; out.reoCobertura=cfg.cobertura;
-        out.onReoVentana=(e)=>this.setReordenCfg('ventana',e.target.value); out.onReoLead=(e)=>this.setReordenCfg('lead',e.target.value); out.onReoAnticip=(e)=>this.setReordenCfg('anticip',e.target.value); out.onReoCobertura=(e)=>this.setReordenCfg('cobertura',e.target.value);
-        const rows=this.reordenRows();
-        const estilo={ya:{label:'Comprar ya',bg:'rgba(181,80,60,0.12)',fg:'#B5503C'},semana:{label:'Pedir esta semana',bg:'rgba(193,170,129,0.3)',fg:'#7A6035'},ok:{label:'Con cobertura',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}};
-        out.reoRows=rows.map(x=>{ const es=estilo[x.nivel]; const u=x.m.unidad||''; return { codigo:x.m.codigo, nombre:x.m.nombre, proveedorNombre:this.provNombre(x.m.proveedorCodigo)||'—', consumoTxt:((x.r>=10?String(Math.round(x.r)):x.r.toFixed(2))+' '+u+'/día'), stockTxt:(this.fmtCant(Math.round(x.stock))+' '+u), cobTxt:((x.diasCob>365?'+365':String(Math.round(x.diasCob)))+' días'), cobColor:(x.nivel==='ya'?'#B5503C':(x.nivel==='semana'?'#7A6035':'var(--text-strong)')), ropTxt:(this.fmtCant(x.rop)+' '+u), minTxt:this.fmtCant(x.minSug), compraTxt:(x.compra>0?(this.fmtCant(x.compra)+' '+u):'—'), fPedirTxt:this.fmtFecha(x.fPedir), esLabel:es.label, esBg:es.bg, esFg:es.fg }; });
-        out.reoVacio=rows.length===0; out.reoHayRows=rows.length>0;
-        out.reoNumYa=rows.filter(x=>x.nivel==='ya').length; out.reoNumSemana=rows.filter(x=>x.nivel==='semana').length; out.reoNumOk=rows.filter(x=>x.nivel==='ok').length;
-        out.aplicarReorden=()=>this.aplicarReorden();
-      }
       if(out.showInvConsig){
         const resumen=this.tiendaResumen();
         out.consigTiendas=resumen.map(t=>({ id:t.id, nombre:t.nombre, ciudad:t.ciudad||'—', margenPct:t.margenPct, nSkus:t.nSkus, unidades:t.unidades, valorFmt:this.fmt(Math.round(t.valor)), hayEmpaque:(t.empUnid>0), empaqueTxt:(this.fmtCant(t.empUnid)+' en materiales ('+this.fmt(Math.round(t.empCosto))+')'), onVer:((id)=>()=>this.setState({consignSel:id, consigSelTab:'stock'}))(t.id), onEditar:((id)=>()=>this.editarTienda(this.consignTiendas().find(x=>x.id===id)))(t.id), onRemision:((id)=>()=>this.nuevaRemision(id))(t.id) }));
