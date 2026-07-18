@@ -186,6 +186,19 @@
             </div>
           </sc-if>
           </sc-if>
+          <sc-if value="{{ canConversaciones }}" hint-placeholder-val="{{ false }}">
+          <div class="oda-navitem" onClick="{{ nav.conversaciones }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ convNavColor }};background:{{ convNavBg }};">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+            <span style="flex:1;">Conversaciones</span>
+            <sc-if value="{{ convBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ convBadgeCount }}</span></sc-if>
+          </div>
+          <sc-if value="{{ showConversacionesSub }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:2px 0 6px 0;padding-left:8px;">
+              <sc-if value="{{ vX_bandeja }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.bandeja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvBandeja.c }};background:{{ subConvBandeja.bg }};border-left:2px solid {{ subConvBandeja.b }};">Bandeja</div></sc-if>
+              <sc-if value="{{ vX_agente }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.agente }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvAgente.c }};background:{{ subConvAgente.bg }};border-left:2px solid {{ subConvAgente.b }};">Agente IA</div></sc-if>
+            </div>
+          </sc-if>
+          </sc-if>
           <sc-if value="{{ canFinanzas }}" hint-placeholder-val="{{ false }}">
           <div class="oda-navitem" onClick="{{ nav.finanzas }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ finNavColor }};background:{{ finNavBg }};">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a1 1 0 0 0-1-1H4a2 2 0 0 0 0 4h16a1 1 0 0 1 1 1v3h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/></svg>
@@ -415,7 +428,7 @@
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
                         <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
                         <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.nit }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#e99292c999c78c84888085c99494" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
+                        <td style="padding:13px 16px;color:var(--text-body);"><span style="display:block;font-weight:600;color:var(--text-strong);">{{ p.contactoNombre }}</span><sc-if value="{{ p.email }}" hint-placeholder-val="{{ false }}"><a href="/cdn-cgi/l/email-protection#562d2d762678333b373f3a762b2b" style="display:block;font-size:11.5px;color:var(--text-muted);text-decoration:none;margin-top:2px;" style-hover="color:var(--brand-primary);">{{ p.email }}</a></sc-if></td>
                         <td style="padding:13px 16px;"><div style="display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ p.telefonosView }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-body);white-space:nowrap;">{{ t.display }}<a href="{{ t.wa }}" target="_blank" rel="noopener" title="Escribir por WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(98,123,96,0.14);color:#3F7A53;text-decoration:none;" style-hover="background:#25D366;color:#fff;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.911zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a></span></sc-for><sc-if value="{{ p.tieneTel }}" hint-placeholder-val="{{ true }}"></sc-if></div></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.ciudad }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ p.condicionesPago }}</td>
@@ -1426,6 +1439,116 @@
                   </tbody>
                 </table>
               </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== CONVERSACIONES · BANDEJA ===== -->
+          <sc-if value="{{ showConvBandeja }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+                <span style="font-size:12px;color:var(--text-muted);">{{ convNumActivas }} activas · {{ convNumBot }} con el bot · <span style="color:#B5503C;font-weight:700;">{{ convNumNecesita }} necesitan humano</span></span>
+                <div style="flex:1;"></div>
+                <select value="{{ fConvCanal }}" onChange="{{ onFConvCanal }}" style="font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ convCanalOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+                <select value="{{ fConvEstado }}" onChange="{{ onFConvEstado }}" style="font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ convEstadoOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:16px;align-items:start;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                  <sc-if value="{{ convRowsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:40px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Sin conversaciones con este filtro</div></sc-if>
+                  <sc-for list="{{ convRows }}" as="c" hint-placeholder-count="4">
+                    <div class="oda-row" onClick="{{ c.onSel }}" style="padding:13px 16px;border-bottom:1px solid var(--border-subtle);cursor:pointer;background:{{ c.selBg }};border-left:3px solid {{ c.selBorder }};">
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="width:8px;height:8px;border-radius:99px;background:{{ c.dot }};flex-shrink:0;"></span>
+                        <span style="font-weight:700;font-size:13.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.cliente }}</span>
+                        <span style="font-size:11px;color:var(--text-muted);">{{ c.hora }}</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
+                        <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:{{ c.canalBg }};color:{{ c.canalFg }};">{{ c.canalL }}</span>
+                        <span style="font-size:12px;color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.ultimo }}</span>
+                        <sc-if value="{{ c.hayNoLeidos }}" hint-placeholder-val="{{ false }}"><span style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;">{{ c.noLeidos }}</span></sc-if>
+                        <sc-if value="{{ c.hayAsig }}" hint-placeholder-val="{{ false }}"><span style="width:20px;height:20px;border-radius:99px;background:{{ c.asigColor }};color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ c.asigIni }}</span></sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ convSelOpen }}" hint-placeholder-val="{{ true }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-height:560px;">
+                  <div style="padding:14px 18px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div style="min-width:0;">
+                      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;">{{ cv.cliente }}</div>
+                      <div style="font-size:11.5px;color:var(--text-muted);">{{ cv.intencionL }}<sc-if value="{{ cv.hayTel }}" hint-placeholder-val="{{ false }}"> · {{ cv.telefono }}</sc-if></div>
+                    </div>
+                    <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ cv.canalBg }};color:{{ cv.canalFg }};">{{ cv.canalL }}</span>
+                    <span style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ cv.estadoBg }};color:{{ cv.estadoFg }};"><span style="width:6px;height:6px;border-radius:99px;background:{{ cv.estadoDot }};"></span>{{ cv.estadoL }}</span>
+                    <div style="flex:1;"></div>
+                    <select value="{{ convAsigVal }}" onChange="{{ onConvAsignar }}" style="font-family:inherit;font-size:12px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ convAsigOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+                  </div>
+                  <div style="padding:10px 18px;border-bottom:1px solid var(--border-subtle);display:flex;gap:8px;flex-wrap:wrap;">
+                    <sc-if value="{{ cv.esBot }}" hint-placeholder-val="{{ false }}"><button onClick="{{ convTomarBtn }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Tomar conversación</button></sc-if>
+                    <sc-if value="{{ cv.esHumano }}" hint-placeholder-val="{{ false }}"><button onClick="{{ convDevolverBtn }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">Devolver al bot</button></sc-if>
+                    <button onClick="{{ convCasoBtn }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">Crear caso de servicio</button>
+                    <button onClick="{{ convLeadBtn }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">Crear lead</button>
+                    <div style="flex:1;"></div>
+                    <sc-if value="{{ cv.noResuelta }}" hint-placeholder-val="{{ true }}"><button onClick="{{ convResolverBtn }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border:none;border-radius:var(--radius-pill);background:rgba(98,123,96,0.16);color:#4C6149;cursor:pointer;">Marcar resuelta</button></sc-if>
+                  </div>
+                  <div style="flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background:var(--surface-page);">
+                    <sc-for list="{{ cv.mensajes }}" as="m" hint-placeholder-count="3">
+                      <div style="display:flex;flex-direction:column;align-items:{{ m.align }};">
+                        <div style="max-width:72%;padding:10px 14px;border-radius:14px;background:{{ m.bg }};color:{{ m.fg }};border:{{ m.bd }};font-size:13px;line-height:1.5;">{{ m.texto }}</div>
+                        <span style="font-size:10.5px;color:var(--text-muted);margin-top:3px;">{{ m.quien }} · {{ m.hora }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="padding:12px 18px;border-top:1px solid var(--border-subtle);display:flex;gap:10px;">
+                    <input value="{{ convMsgDraft }}" onInput="{{ onConvMsgDraft }}" onKeyDown="{{ onConvMsgKey }}" placeholder="Escribe tu respuesta como asesor…" style="flex:1;font-family:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);">
+                    <button onClick="{{ convEnviarBtn }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Enviar</button>
+                  </div>
+                </div>
+                </sc-if>
+              </div>
+              <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;max-width:820px;line-height:1.5;">Al tomar una conversación el bot queda en pausa y respondes tú desde acá. «Crear caso» y «Crear lead» abren los formularios de siempre con los datos del cliente ya cargados. Estos son datos de demostración — al conectar los canales, las conversaciones reales llegarán aquí en tiempo real.</p>
+            </div>
+          </sc-if>
+
+          <!-- ===== CONVERSACIONES · AGENTE IA ===== -->
+          <sc-if value="{{ showConvAgente }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:880px;">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:18px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:#C4923F;"></span><span style="font-weight:800;font-size:13px;">Web · oasisdelalma.co</span></div>
+                  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;">Widget listo (<code style="font-size:11px;">widget-chat.js</code>). Falta pegar el snippet en el tema de Shopify.</p>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:#C4923F;"></span><span style="font-weight:800;font-size:13px;">WhatsApp</span></div>
+                  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;">Envío activo. Falta registrar el webhook de entrada (<code style="font-size:11px;">whatsapp-inbound</code>) en Meta.</p>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:#B5503C;"></span><span style="font-weight:800;font-size:13px;">Instagram · Messenger</span></div>
+                  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;">Requiere activar Messaging API y App Review de Meta (permisos de mensajes).</p>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 14px;">Personalidad del agente</h3>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Nombre del bot<input value="{{ agNombre }}" onInput="{{ onAgNombre }}" style="display:block;width:180px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Tono<select value="{{ agTono }}" onChange="{{ onAgTono }}" style="display:block;width:240px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agTonoOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+                </div>
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);display:block;margin-bottom:14px;">Instrucciones (cómo se comporta)<textarea value="{{ agInstr }}" onInput="{{ onAgInstr }}" rows="4" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.5;"></textarea></label>
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);display:block;">Base de conocimiento (políticas, envíos, FAQs)<textarea value="{{ agConoc }}" onInput="{{ onAgConoc }}" rows="5" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.5;"></textarea></label>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 6px;">Automatizaciones</h3>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">El agente clasifica cada conversación y crea el registro que corresponda, asignado al responsable.</p>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                  <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agLead.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agLead.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agLead.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Crear lead cuando detecta intención de compra</div><div style="font-size:11.5px;color:var(--text-muted);">Va a Ventas · Leads con la conversación enlazada</div></div></div>
+                  <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agCaso.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agCaso.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agCaso.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Crear caso de servicio ante quejas o garantías</div><div style="font-size:11.5px;color:var(--text-muted);">Va a Ventas · Servicio al cliente con folio y timeline</div></div></div>
+                  <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agEscalar.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agEscalar.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agEscalar.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Escalar a un humano si duda o el cliente lo pide</div><div style="font-size:11.5px;color:var(--text-muted);">La conversación queda «Necesita humano» y avisa en Inicio</div></div></div>
+                </div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--border-subtle);">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de ventas<select value="{{ agAsigVentas }}" onChange="{{ onAgAsigVentas }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de servicio<select value="{{ agAsigServicio }}" onChange="{{ onAgAsigServicio }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--text-muted);margin:14px 0 0;line-height:1.5;">Esta configuración se guarda localmente y alimentará la función <code style="font-size:11px;">agente</code> de Supabase al conectarla — el bot usará estas instrucciones, conocimiento y reglas en todos los canales.</p>
             </div>
           </sc-if>
 
@@ -5522,10 +5645,10 @@ class Component extends DCLogic {
   ];
   // access per role: none | read | write  (admin = write everything + aprueba)
   roles = {
-    'Administrador':            { compras:'write', desarrollo:'write', ventas:'write', finanzas:'write', produccion:'write', inventario:'write', marketing:'write', admin:true  },
-    'Administración y Finanzas': { compras:'read',  desarrollo:'none',  ventas:'read',  finanzas:'write', produccion:'none',  inventario:'read',  marketing:'read',  admin:false },
-    'Mercadeo y Publicidad':    { compras:'none',  desarrollo:'read',  ventas:'read',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'write', admin:false },
-    'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  admin:false },
+    'Administrador':            { compras:'write', desarrollo:'write', ventas:'write', finanzas:'write', produccion:'write', inventario:'write', marketing:'write', conversaciones:'write', admin:true  },
+    'Administración y Finanzas': { compras:'read',  desarrollo:'none',  ventas:'read',  finanzas:'write', produccion:'none',  inventario:'read',  marketing:'read',  conversaciones:'none',  admin:false },
+    'Mercadeo y Publicidad':    { compras:'none',  desarrollo:'read',  ventas:'read',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'write', conversaciones:'write', admin:false },
+    'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  conversaciones:'write', admin:false },
   };
   subModDef = {
     compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'reorden',label:'Reposición'},{key:'ordenes',label:'Órdenes de compra'}],
@@ -5533,6 +5656,7 @@ class Component extends DCLogic {
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
     inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
+    conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
   };
@@ -5793,6 +5917,8 @@ class Component extends DCLogic {
     try{ const _acct=localStorage.getItem('oda_hub_meta_acct_v1'); if(_acct) patch.mktAdAccountId=_acct; }catch(e){}
     try{ const _live=JSON.parse(localStorage.getItem('oda_hub_meta_live_v1')||'null'); if(_live && Array.isArray(_live.campanas) && _live.campanas.length){ patch.mktLiveCampanas=_live.campanas; patch.mktLiveCreativos=(Array.isArray(_live.creativos)&&_live.creativos.length)?_live.creativos:null; patch.mktLivePublicos=(Array.isArray(_live.publicos)&&_live.publicos.length)?_live.publicos:null; patch.mktLiveTendencia=(Array.isArray(_live.tendencia)&&_live.tendencia.length>1)?_live.tendencia:null; patch.mktUsingLive=true; patch.mktConectado=true; patch.mktLiveTs=_live.ts||0; if(_live.rango) patch.mktRango=_live.rango; } }catch(e){}
     try{ const _rc=JSON.parse(localStorage.getItem('oda_hub_reorden_v1')||'null'); if(_rc) patch.reordenCfg=_rc; }catch(e){}
+    try{ const _cv=JSON.parse(localStorage.getItem('oda_hub_conv_v1')||'null'); if(_cv) patch.conversaciones=_cv; }catch(e){}
+    try{ const _ag=JSON.parse(localStorage.getItem('oda_hub_agente_v1')||'null'); if(_ag) patch.agenteCfg=_ag; }catch(e){}
     try{ const _c=JSON.parse(localStorage.getItem('oda_hub_car_contact_v1')||'null'); if(_c) patch.carritosContactados=_c; }catch(e){}
     try{ const _n=JSON.parse(localStorage.getItem('oda_hub_car_nota_v1')||'null'); if(_n) patch.carritosNotas=_n; }catch(e){}
     this.setState(patch);
@@ -5806,7 +5932,7 @@ class Component extends DCLogic {
   save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
   persist(extra){ const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
-  respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
+  respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_conv_v1','oda_hub_agente_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
   writeAutoBackup(){ try{ const dump={_fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); localStorage.setItem('oda_hub_backup_v1', JSON.stringify(dump));
     // Historial: una instantánea por día (se reemplaza la del mismo día), conservando las últimas 10.
     try{ let hist=[]; try{ hist=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); }catch(_e){ hist=[]; }
@@ -5951,9 +6077,9 @@ class Component extends DCLogic {
   toggleSubPerm(uid,mod,subkey){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const subKey=mod+'__'+subkey; const modLevel=base[mod]||'none'; const curr=subKey in base?base[subKey]:modLevel; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[subKey]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
 
   // ---- nav ----
-  goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
+  goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],conversaciones:['bandeja','agente'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -6855,7 +6981,7 @@ Instrucciones de respuesta:
     sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else this._afterCloudLogin(s.user); } });
     try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
   }
-  _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudSyncMyProfile(user.id,nombre); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); this.cloudLoadCasos(); this.cloudSubscribeCasos(); this.cloudLoadCreditos(); this.cloudSubscribeCreditos(); }
+  _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudSyncMyProfile(user.id,nombre); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); this.cloudLoadCasos(); this.cloudSubscribeCasos(); this.cloudLoadCreditos(); this.cloudSubscribeCreditos(); this.cloudLoadConvs(); this.cloudSubscribeConvs(); this.cloudLoadAgenteCfg(); }
   // ---- permisos compartidos (nube) ----
   async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
@@ -7882,6 +8008,68 @@ Instrucciones de respuesta:
   permPill(v){ const m={ write:{t:'Escritura',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}, read:{t:'Lectura',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, none:{t:'—',bg:'#EFE9DD',fg:'#A89F8E'} }; return m[v]||m.none; }
   stars(n){ n=Math.round(Number(n)||0); return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n); }
 
+  // ===== CONVERSACIONES (bandeja omnicanal + agente IA) =====
+  convCanalMeta(k){ return ({whatsapp:{l:'WhatsApp',bg:'rgba(98,123,96,0.16)',fg:'#4C6149',dot:'#627B60'}, instagram:{l:'Instagram',bg:'rgba(156,151,162,0.2)',fg:'#5F5A66',dot:'#9C97A2'}, messenger:{l:'Messenger',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',dot:'#6596A6'}, web:{l:'Web',bg:'rgba(167,134,89,0.18)',fg:'#7A5E36',dot:'#A78659'}})[k]||{l:k,bg:'#EFE9DC',fg:'#6B6152',dot:'#9b8e78'}; }
+  convEstadoMeta(k){ return ({bot:{l:'Bot activo',bg:'rgba(167,134,89,0.16)',fg:'#7A5E36',dot:'#A78659'}, humano:{l:'Con asesor',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',dot:'#6596A6'}, necesita:{l:'Necesita humano',bg:'rgba(181,80,60,0.14)',fg:'#B5503C',dot:'#B5503C'}, resuelta:{l:'Resuelta',bg:'rgba(98,123,96,0.14)',fg:'#4C6149',dot:'#627B60'}})[k]||{l:k,bg:'#EFE9DC',fg:'#6B6152',dot:'#9b8e78'}; }
+  DEMO_CONVS = [
+    { id:'cv1', canal:'whatsapp', cliente:'Laura Martínez', telefono:'573001234567', estado:'necesita', intencion:'ventas', noLeidos:2, asignadoA:'', inicio:'2026-07-17', mensajes:[
+      {de:'cliente', texto:'Hola! Quiero un kit para dormir mejor, ¿cuál me recomiendas?', hora:'09:12'},
+      {de:'bot', texto:'¡Hola Laura! 🌿 Para descansar mejor te recomiendo el Kit Descansa: aceite esencial, bruma de almohada y roll-on. Está en $100.000 con envío gratis. ¿Te comparto el link de compra?', hora:'09:12'},
+      {de:'cliente', texto:'¿Me pueden dar precio especial si llevo 3 para regalar? Quiero hablar con una persona', hora:'09:15'}]},
+    { id:'cv2', canal:'web', cliente:'Visitante · oasisdelalma.co', telefono:'', estado:'bot', intencion:'consulta', noLeidos:0, asignadoA:'', inicio:'2026-07-17', mensajes:[
+      {de:'cliente', texto:'¿Hacen envíos a Medellín? ¿Cuánto demora?', hora:'10:40'},
+      {de:'bot', texto:'¡Sí! Enviamos a todo Colombia. A Medellín tarda 2 a 4 días hábiles y el envío es gratis desde $150.000. ¿Te ayudo a elegir algo para tu ritual de bienestar?', hora:'10:40'}]},
+    { id:'cv3', canal:'instagram', cliente:'@carito.wellness', telefono:'', estado:'humano', intencion:'servicio', noLeidos:0, asignadoA:'u4', inicio:'2026-07-16', mensajes:[
+      {de:'cliente', texto:'Mi pedido llegó con el difusor golpeado 😞', hora:'16:02'},
+      {de:'bot', texto:'Lamento mucho eso 💛 Ya escalé tu caso con nuestro equipo para gestionarte el cambio. Te escribirán en breve.', hora:'16:02'},
+      {de:'asesor', texto:'Hola! Soy Pedro de Oasis del Alma. Ya abrí tu caso de garantía, te enviamos difusor nuevo esta semana. ¿Me confirmas tu dirección?', hora:'16:20'}]},
+    { id:'cv4', canal:'whatsapp', cliente:'Julián Restrepo', telefono:'573109876543', estado:'resuelta', intencion:'ventas', noLeidos:0, asignadoA:'u4', inicio:'2026-07-15', mensajes:[
+      {de:'cliente', texto:'¿Tienen el Kit Inhala disponible?', hora:'11:30'},
+      {de:'bot', texto:'¡Claro! El Kit Inhala está disponible en $100.000. Aquí tienes el link para comprarlo: oasisdelalma.co/products/kit-inhala 🌬️', hora:'11:30'},
+      {de:'cliente', texto:'Listo, ya lo compré. Gracias!', hora:'11:48'},
+      {de:'bot', texto:'¡Gracias por tu compra, Julián! Te llegará en 2-4 días hábiles. Bienestar en cada respiro 🤍', hora:'11:49'}]},
+  ];
+  convList(){ if(this.state.convsCloud) return this.state.convsCloud; return this.state.conversaciones || this.DEMO_CONVS; }
+  persistConvs(list){ if(this.state.convsCloud){ this.setState({convsCloud:list}); return; } this.setState({conversaciones:list}); try{ localStorage.setItem('oda_hub_conv_v1', JSON.stringify(list)); }catch(e){} }
+  _convHoraDe(ts){ try{ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }catch(e){ return ''; } }
+  async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb) return; try{
+      const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(200); if(error) throw error;
+      const {data:msgs}=await sb.from('mensajes').select('conversacion_id,de,texto,creado_at').order('creado_at',{ascending:true}).limit(2000);
+      const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, hora:this._convHoraDe(m.creado_at)}); });
+      const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), mensajes:byConv[r.id]||[] }));
+      this.setState({convsCloud:list});
+    }catch(e){} }
+  cloudSubscribeConvs(){ const sb=this._sbClient(); if(!sb||this._convSub) return; try{
+      const reload=()=>{ clearTimeout(this._convRT); this._convRT=setTimeout(()=>this.cloudLoadConvs(), 400); };
+      this._convSub=sb.channel('oda-convs').on('postgres_changes',{event:'*',schema:'public',table:'conversaciones'},reload).on('postgres_changes',{event:'*',schema:'public',table:'mensajes'},reload).subscribe();
+    }catch(e){} }
+  async cloudSaveConv(id, patch){ const sb=this._sbClient(); if(!sb||!this.state.convsCloud) return; try{ await sb.from('conversaciones').update(patch).eq('id',id); }catch(e){} }
+  async cloudLoadAgenteCfg(){ const sb=this._sbClient(); if(!sb) return; try{ const {data}=await sb.from('agente_config').select('config').eq('id',1).single(); if(data&&data.config&&Object.keys(data.config).length){ this.setState({agenteCfg:{...(this.state.agenteCfg||{}), ...data.config}}); } }catch(e){} }
+  async cloudSaveAgenteCfg(cfg){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('agente_config').upsert({id:1, config:cfg, actualizado:new Date().toISOString()}); }catch(e){} }
+  agenteCfgGet(){ return { nombre:'Oda', tono:'Cálido y cercano (tú)', instrucciones:'Eres el asistente de bienestar de Oasis del Alma. Responde en español, tono cálido y cercano (tú), frases cortas. Vende por beneficio: calma, descanso, energía. Si el cliente pide hablar con una persona, detecta una queja o pide precios especiales, escala a un asesor.', conocimiento:'Envíos: todo Colombia, 2-4 días hábiles, gratis desde $150.000. Pagos: PSE, tarjetas, contraentrega en ciudades principales. Cambios: 30 días con empaque original. Productos estrella: Kit Inhala $100.000, Kit Descansa $100.000, aceites esenciales desde $29.900.', crearLeadAuto:true, crearCasoAuto:true, escalarSiDuda:true, asignadoVentas:'u4', asignadoServicio:'u4', ...(this.state.agenteCfg||{}) }; }
+  setAgenteCfg(k,v){ const cfg={...this.agenteCfgGet(), [k]:v}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); }catch(e){} clearTimeout(this._agCfgT); this._agCfgT=setTimeout(()=>this.cloudSaveAgenteCfg(this.agenteCfgGet()), 800); }
+  convHoraTxt(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+  convUpdate(id, fn){ const list=this.convList().map(c=> c.id===id? fn({...c, mensajes:(c.mensajes||[]).slice()}) : c); this.persistConvs(list); }
+  convAsignar(id, uid){ this.convUpdate(id, c=>({...c, asignadoA:uid, estado:(uid? (c.estado==='resuelta'?'resuelta':'humano') : c.estado)})); this.cloudSaveConv(id,{asignado_a:uid, ...(uid?{estado:'humano'}:{})}); if(uid) this.toast('Conversación asignada a '+((this.users.find(u=>u.id===uid)||{}).name||this.leadUName(uid)||'asesor')); }
+  convTomar(id){ const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; this.convUpdate(id, c=>({...c, asignadoA:me, estado:'humano', noLeidos:0})); this.cloudSaveConv(id,{asignado_a:me, estado:'humano', no_leidos:0}); this.toast('Tomaste la conversación · el bot queda en pausa'); }
+  convDevolverBot(id){ this.convUpdate(id, c=>({...c, estado:'bot'})); this.cloudSaveConv(id,{estado:'bot'}); this.toast('El agente IA retoma la conversación'); }
+  convResolver(id){ this.convUpdate(id, c=>({...c, estado:'resuelta', noLeidos:0})); this.cloudSaveConv(id,{estado:'resuelta', no_leidos:0}); this.toast('Conversación marcada como resuelta'); }
+  convResponder(id){ const txt=String(this.state.convMsgDraft||'').trim(); if(!txt) return; const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId;
+    this.convUpdate(id, c=>{ c.mensajes.push({de:'asesor', texto:txt, hora:this.convHoraTxt()}); return {...c, estado:'humano', asignadoA:c.asignadoA||me, noLeidos:0}; });
+    this.setState({convMsgDraft:''});
+    const c=this.convList().find(x=>x.id===id);
+    const sb=this._sbClient();
+    if(sb && this.state.convsCloud){
+      sb.from('mensajes').insert({conversacion_id:id, de:'asesor', texto:txt, meta:{asesor:me}}).then(()=>{});
+      sb.from('conversaciones').update({estado:'humano', asignado_a:(c&&c.asignadoA)||me, no_leidos:0, ultimo_mensaje:txt, ultimo_at:new Date().toISOString()}).eq('id',id).then(()=>{});
+      if(c && c.canal==='whatsapp' && c.telefono){
+        fetch(this.CLOUD_URL+'/functions/v1/whatsapp',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({to:c.telefono, text:txt})}).then(r=>r.json()).then(d=>{ if(d&&d.error) this.toast('WhatsApp: '+d.error); }).catch(()=>{});
+      }
+    } }
+  convCrearCaso(c){ this.nuevoCaso(); const canalL=this.convCanalMeta(c.canal).l; setTimeout(()=>{ this.setState(s=>({casoDraft:{...(s.casoDraft||{}), canal:(canalL==='Web'?'Página web':canalL), cliente:(c.cliente||'').replace('Visitante · ',''), celular:c.telefono||'', descripcion:'Creado desde la conversación '+c.id+' ('+canalL+').'}})); },0); }
+  convCrearLead(c){ const canalL=this.convCanalMeta(c.canal).l; this.open('lead',{ _new:true, fecha:new Date().toISOString().slice(0,10), nombre:(c.cliente||'').replace('Visitante · ',''), celular:c.telefono||'', correo:'', ciudad:'', origen:canalL, interes:'', estado:'Nuevo', valor:'', nota:'Creado desde la conversación '+c.id+' del canal '+canalL+'.' }); }
+  convPendientes(){ return this.convList().filter(c=>c.estado==='necesita' || (c.estado!=='resuelta' && !c.asignadoA && c.noLeidos>0)).length; }
+
   // ===== SERVICIO AL CLIENTE (postventa) =====
   casoEstados(){ return ['abierto','gestion','resuelto','cerrado']; }
   casoEstadoMeta(k){ return ({abierto:{l:'Abierto',bg:'rgba(196,146,63,0.18)',fg:'#8A6321',dot:'#C4923F'}, gestion:{l:'En gestión',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',dot:'#6596A6'}, resuelto:{l:'Resuelto',bg:'rgba(98,123,96,0.16)',fg:'#4C6149',dot:'#627B60'}, cerrado:{l:'Cerrado',bg:'#EFE9DD',fg:'#8A8069',dot:'#B4A98F'}})[k]||{l:k,bg:'#EFE9DD',fg:'#8A8069',dot:'#B4A98F'}; }
@@ -8065,7 +8253,7 @@ Instrucciones de respuesta:
     out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
-    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden');
+    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
@@ -8120,6 +8308,15 @@ Instrucciones de respuesta:
         const items=bajos.slice(0,5).map(m=>({title:m.nombre, sub:m.codigo, right:Math.round(this.materiaStockActual(m))+' '+(m.unidad||''), rightColor:'#B5503C', onClick:goto('inventario','mp')}));
         cards.push({key:'inventario', title:'Inventario', desc: bajos.length? (bajos.length+' materia'+(bajos.length===1?'':'s')+' bajo el mínimo') : 'Sin materias bajo el mínimo', n:bajos.length, hasCount:bajos.length>0, items, empty:bajos.length===0, onVer:goto('inventario','mp')});
       }
+      if(out.canConversaciones){
+        const convs=this.convList().filter(c=>c.estado!=='resuelta');
+        const _cuid=(st.cloudUser&&st.cloudUser.id)||uid;
+        const mias = isAdmin? convs : convs.filter(c=>c.asignadoA===_cuid || c.asignadoA===uid || !c.asignadoA);
+        const urg=mias.filter(c=>c.estado==='necesita');
+        const items=mias.slice(0,5).map(c=>{ const cm=this.convCanalMeta(c.canal), em=this.convEstadoMeta(c.estado); const last=(c.mensajes||[])[(c.mensajes||[]).length-1]||{};
+          return {title:c.cliente+' · '+cm.l, sub:(last.texto||'').slice(0,52)+'…', right:em.l, rightColor:(c.estado==='necesita'?'#B5503C':'var(--text-body)'), onClick:goto('conversaciones','bandeja')}; });
+        cards.push({key:'conversaciones', title:'Conversaciones', desc: urg.length? (urg.length+' conversación'+(urg.length===1?'':'es')+' necesita'+(urg.length===1?'':'n')+' un humano') : (mias.length? mias.length+' conversación'+(mias.length===1?'':'es')+' activa'+(mias.length===1?'':'s') : 'Sin conversaciones activas'), n:urg.length||mias.length, hasCount:(urg.length||mias.length)>0, items, empty:mias.length===0, onVer:goto('conversaciones','bandeja')});
+      }
       if(out.canMarketing){
         const _srcM=this.mktCampSource();
         const alerts=[];
@@ -8141,7 +8338,7 @@ Instrucciones de respuesta:
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.shellNavClass=st.sidebarOpen?'oda-nav-open':''; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
-    out.nav={ inicio:()=>this.goModule('inicio'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
+    out.nav={ inicio:()=>this.goModule('inicio'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), conversaciones:()=>this.goModule('conversaciones'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ reorden:()=>this.goSub('reorden'), resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
 
@@ -8268,6 +8465,59 @@ Instrucciones de respuesta:
       out.generarOrdenesReorden=()=>this.generarOrdenesReorden();
       out.canWriteReorden = acc? (acc.admin || acc.compras==='write' || acc['compras__reorden']==='write') : false;
     }
+    // ===== CONVERSACIONES =====
+    const onConv = st.module==='conversaciones';
+    out.convNavBg = onConv? 'rgba(167,134,89,0.18)':'transparent';
+    out.convNavColor = onConv? '#D9BE92':'rgba(251,248,242,0.85)';
+    out.showConversacionesSub = onConv;
+    const subStyX=(k)=>{ const a=onConv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
+    out.subConvBandeja=subStyX('bandeja'); out.subConvAgente=subStyX('agente');
+    out.subnavConv={ bandeja:()=>this.setState({module:'conversaciones',sub:'bandeja'}), agente:()=>this.setState({module:'conversaciones',sub:'agente'}) };
+    const _convPend = out.canConversaciones? this.convPendientes() : 0;
+    out.convBadgeShow=_convPend>0; out.convBadgeCount=_convPend;
+    out.showConvBandeja = onConv && st.sub==='bandeja';
+    out.showConvAgente = onConv && st.sub==='agente';
+    if(out.showConvBandeja){
+      const convs=this.convList();
+      const fC=st.fConvCanal||'todos', fE=st.fConvEstado||'activas';
+      out.fConvCanal=fC; out.onFConvCanal=(e)=>this.setState({fConvCanal:e.target.value});
+      out.fConvEstado=fE; out.onFConvEstado=(e)=>this.setState({fConvEstado:e.target.value});
+      out.convCanalOpts=['todos','whatsapp','instagram','messenger','web']; out.convEstadoOpts=['activas','bot','humano','necesita','resuelta','todas'];
+      let rows=convs.filter(c=>{ if(fC!=='todos'&&c.canal!==fC) return false; if(fE==='activas') return c.estado!=='resuelta'; if(fE!=='todas'&&c.estado!==fE) return false; return true; });
+      const selId=st.convSelId || (rows[0]&&rows[0].id);
+      out.convRows=rows.map(c=>{ const cm=this.convCanalMeta(c.canal), em=this.convEstadoMeta(c.estado); const last=(c.mensajes||[])[ (c.mensajes||[]).length-1 ]||{}; const asigN=c.asignadoA? this.leadUName(c.asignadoA):'';
+        return { id:c.id, cliente:c.cliente, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, dot:em.dot, estadoL:em.l, ultimo:(last.texto||'').slice(0,64)+((last.texto||'').length>64?'…':''), hora:last.hora||'', asigIni:asigN?this._initialsFrom(asigN):'', asigColor:c.asignadoA?this.leadUColor(c.asignadoA):'#9b8e78', hayAsig:!!asigN, noLeidos:c.noLeidos||0, hayNoLeidos:(c.noLeidos||0)>0, selBg:(c.id===selId?'rgba(167,134,89,0.1)':'transparent'), selBorder:(c.id===selId?'var(--brand-primary)':'transparent'), onSel:((id)=>()=>this.setState({convSelId:id}))(c.id) }; });
+      out.convRowsVacio=rows.length===0;
+      out.convNumActivas=convs.filter(c=>c.estado!=='resuelta').length;
+      out.convNumNecesita=convs.filter(c=>c.estado==='necesita').length;
+      out.convNumBot=convs.filter(c=>c.estado==='bot').length;
+      const cc=convs.find(c=>c.id===selId);
+      out.convSelOpen=!!cc;
+      if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
+        out.cv={ id:cc.id, cliente:cc.cliente, telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
+          esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
+          mensajes:(cc.mensajes||[]).map((m,i)=>{ const esCliente=m.de==='cliente'; return { texto:m.texto, hora:m.hora||'', quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?'Asesor':cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
+        out.convAsigVal=cc.asignadoA||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
+        const _asigSrc=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}));
+        out.convAsigOpts=[{v:'',l:'Sin asignar'}].concat(_asigSrc);
+        out.convTomarBtn=()=>this.convTomar(cc.id); out.convDevolverBtn=()=>this.convDevolverBot(cc.id); out.convResolverBtn=()=>this.convResolver(cc.id);
+        out.convCasoBtn=()=>this.convCrearCaso(cc); out.convLeadBtn=()=>this.convCrearLead(cc);
+        out.convMsgDraft=st.convMsgDraft||''; out.onConvMsgDraft=(e)=>this.setState({convMsgDraft:e.target.value});
+        out.convEnviarBtn=()=>this.convResponder(cc.id);
+        out.onConvMsgKey=(e)=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.convResponder(cc.id); } };
+      }
+    }
+    if(out.showConvAgente){ const ag=this.agenteCfgGet();
+      out.agNombre=ag.nombre; out.onAgNombre=(e)=>this.setAgenteCfg('nombre',e.target.value);
+      out.agTono=ag.tono; out.onAgTono=(e)=>this.setAgenteCfg('tono',e.target.value); out.agTonoOpts=['Cálido y cercano (tú)','Profesional y directo','Divertido y juvenil'];
+      out.agInstr=ag.instrucciones; out.onAgInstr=(e)=>this.setAgenteCfg('instrucciones',e.target.value);
+      out.agConoc=ag.conocimiento; out.onAgConoc=(e)=>this.setAgenteCfg('conocimiento',e.target.value);
+      const tog=(k)=>({v:!!ag[k], bg:ag[k]?'var(--brand-primary)':'#D9D2C3', x:ag[k]?'22px':'2px', on:()=>this.setAgenteCfg(k,!ag[k])});
+      out.agLead=tog('crearLeadAuto'); out.agCaso=tog('crearCasoAuto'); out.agEscalar=tog('escalarSiDuda');
+      out.agAsigVentas=ag.asignadoVentas; out.onAgAsigVentas=(e)=>this.setAgenteCfg('asignadoVentas',e.target.value);
+      out.agAsigServicio=ag.asignadoServicio; out.onAgAsigServicio=(e)=>this.setAgenteCfg('asignadoServicio',e.target.value);
+      out.agUserOpts=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}));
+    }
     out.showVentasReg = onVen && st.sub==='registro';
     out.showVentasBase = onVen && st.sub==='base';
     out.showVentasListado = onVen && st.sub==='listado';
@@ -8289,12 +8539,13 @@ Instrucciones de respuesta:
     out.showMktCreativos = onMkt && st.sub==='mktcreativos';
     out.showMktPublicos = onMkt && st.sub==='mktpublicos';
     out.showMktConexion = onMkt && st.sub==='mktconexion';
-    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && st.module!=='admin' && st.module!=='inicio';
+    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio';
     if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
     else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
+    else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':'Bandeja de conversaciones'; }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
@@ -8988,9 +9239,9 @@ Instrucciones de respuesta:
       const mapeo=re.mapeoCajas||{};
       out.reMapeoCajas=Object.keys(mapeo).map(pCod=>{ const p=(st.productos||[]).find(x=>x.codigo===pCod); const cajaVal=mapeo[pCod]; const cajaCods=Array.isArray(cajaVal)?cajaVal:(cajaVal?[cajaVal]:[]); const cajaDisplay=cajaCods.join(' + '); const cajaNombres=cajaCods.map(c=>{ const m=(st.materias||[]).find(x=>x.codigo===c); return m?m.nombre:c; }).join(' + '); return {productoCodigo:pCod,productoNombre:p?p.nombre:pCod,cajaCodigo:cajaDisplay,cajaNombre:cajaNombres,onChangeCaja:((pc)=>(e)=>{ const raw=e.target.value.trim(); const arr=raw.split(/[,+]/).map(s=>s.trim()).filter(Boolean); const val=arr.length===1?arr[0]:arr; const m2={...mapeo,[pc]:val}; saveEmpaq('mapeoCajas',m2); })(pCod)}; });
       const up=this.state.userPerms||{};
-      const pmods=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing'];
+      const pmods=['compras','desarrollo','produccion','inventario','ventas','conversaciones','finanzas','marketing'];
       const pillP=(v)=>{ if(v==='write') return {bg:'rgba(98,123,96,0.18)',fg:'#4C6149',t:'Escritura'}; if(v==='read') return {bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Lectura'}; return {bg:'#EFE9DD',fg:'#A9998B',t:'Sin acceso'}; };
-      const pmodL={compras:'Compras',desarrollo:'Desarrollo',produccion:'Producción',inventario:'Inventario',ventas:'Ventas',finanzas:'Finanzas',marketing:'Marketing'};
+      const pmodL={compras:'Compras',desarrollo:'Desarrollo',produccion:'Producción',inventario:'Inventario',ventas:'Ventas',conversaciones:'Conversaciones',finanzas:'Finanzas',marketing:'Marketing'};
       out.usuariosView=this.users.map(x=>{ const uP=up[x.id]||this.roles[x.role]||{}; const resumen=uP.admin?'Acceso total · aprueba órdenes':pmods.filter(m=>uP[m]&&uP[m]!=='none').map(m=>pmodL[m]+' ('+(uP[m]==='write'?'esc.':'lec.')+')'  ).join(' · ')||'Sin acceso'; return {...x, resumenAcceso:resumen, email:x.email, password:x.password, onChangePwd:(e)=>{ const v=e.target.value; const list=this.users.map(u=>u.id===x.id?{...u,password:v}:u); this.users=list; this.forceUpdate(); } }; });
       out.permsMatriz=this.users.map(u=>{ const uP=up[u.id]||this.roles[u.role]||{}; const row={name:u.name,email:u.email,role:u.role,initials:u.initials,color:u.color}; pmods.forEach((mod,i)=>{ const v=uP[mod]||'none'; const p=pillP(v); row['c'+i]=p.t; row['c'+i+'bg']=p.bg; row['c'+i+'fg']=p.fg; row['c'+i+'click']=()=>this.togglePerm(u.id,mod); }); const isAdmin=!!uP.admin; row.adminBg=isAdmin?'rgba(167,134,89,0.2)':'#EFE9DD'; row.adminFg=isAdmin?'#7A5E36':'#A9998B'; row.adminLabel=isAdmin?'Admin ✓':'No admin'; row.onToggleAdmin=()=>this.toggleAdmin(u.id); const isExp=st.expandedPermUser===u.id; row.expandBg=isExp?'rgba(167,134,89,0.07)':'transparent'; row.onExpand=()=>this.setState({expandedPermUser:isExp?null:u.id}); return row; });
       out.permDetailOpen=!!st.expandedPermUser;
