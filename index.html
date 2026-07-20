@@ -1514,19 +1514,14 @@
           <!-- ===== CONVERSACIONES · AGENTE IA ===== -->
           <sc-if value="{{ showConvAgente }}" hint-placeholder-val="{{ false }}">
             <div style="max-width:880px;">
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:18px;">
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
-                  <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:#C4923F;"></span><span style="font-weight:800;font-size:13px;">Web · oasisdelalma.co</span></div>
-                  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;">Widget listo (<code style="font-size:11px;">widget-chat.js</code>). Falta pegar el snippet en el tema de Shopify.</p>
-                </div>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
-                  <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:#C4923F;"></span><span style="font-weight:800;font-size:13px;">WhatsApp</span></div>
-                  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;">Envío activo. Falta registrar el webhook de entrada (<code style="font-size:11px;">whatsapp-inbound</code>) en Meta.</p>
-                </div>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
-                  <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:#C4923F;"></span><span style="font-weight:800;font-size:13px;">Instagram · Messenger</span></div>
-                  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.5;">Webhook listo (<code style="font-size:11px;">meta-inbound</code>). Falta registrarlo en Meta y el App Review (permisos de mensajes).</p>
-                </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px;">
+                <sc-for list="{{ agCanales }}" as="ch" hint-placeholder-count="4">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:99px;background:{{ ch.dot }};"></span><span style="font-weight:800;font-size:13px;">{{ ch.nombre }}</span></div>
+                    <p style="font-size:12px;color:{{ ch.msgColor }};margin:8px 0 0;line-height:1.5;font-weight:{{ ch.msgPeso }};">{{ ch.estado }}</p>
+                    <p style="font-size:11.5px;color:var(--text-muted);margin:4px 0 0;line-height:1.5;">{{ ch.detalle }}</p>
+                  </div>
+                </sc-for>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 14px;">Personalidad del agente</h3>
@@ -1651,13 +1646,10 @@
                     </sc-for>
                   </div>
                 </sc-if>
-                <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--border-subtle);">
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de ventas<select value="{{ agAsigVentas }}" onChange="{{ onAgAsigVentas }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de servicio<select value="{{ agAsigServicio }}" onChange="{{ onAgAsigServicio }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
-                </div>
-                <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-subtle);">
-                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                    <div style="font-size:11.5px;font-weight:700;color:var(--text-body);flex:1;">Otros responsables (manuales) <span style="font-weight:400;color:var(--text-muted);">· personas sin usuario en el Hub, disponibles en los selectores</span></div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-top:16px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Responsables</h3>
                     <button onClick="{{ agRespAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar responsable</button>
                   </div>
                   <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1679,7 +1671,6 @@
                       </sc-if>
                     </sc-for>
                   </div>
-                </div>
               </div>
               <p style="font-size:12px;color:var(--text-muted);margin:14px 0 0;line-height:1.5;">Esta configuración se guarda localmente y alimentará la función <code style="font-size:11px;">agente</code> de Supabase al conectarla — el bot usará estas instrucciones, conocimiento y reglas en todos los canales.</p>
             </div>
@@ -8314,7 +8305,7 @@ Instrucciones de respuesta:
       const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(200); if(error) throw error;
       const {data:msgs}=await sb.from('mensajes').select('conversacion_id,de,texto,creado_at').order('creado_at',{ascending:true}).limit(2000);
       const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, hora:this._convHoraDe(m.creado_at)}); });
-      const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), mensajes:byConv[r.id]||[] }));
+      const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:byConv[r.id]||[] }));
       this._convNotify(list);
       this.setState({convsCloud:list});
     }catch(e){} }
@@ -8837,6 +8828,16 @@ Instrucciones de respuesta:
       }
     }
     if(out.showConvAgente){ const ag=this.agenteCfgGet();
+      const _allConvs=this.convList();
+      out.agCanales=[['web','Web · oasisdelalma.co'],['whatsapp','WhatsApp'],['instagram','Instagram'],['messenger','Messenger']].map(([k,nombre])=>{
+        const cs=_allConvs.filter(c=>c.canal===k); const n=cs.length;
+        let lastMs=0; cs.forEach(c=>{ const t=c.ultimoAt? new Date(c.ultimoAt).getTime() : 0; if(t>lastMs) lastMs=t; });
+        const horas=lastMs? (Date.now()-lastMs)/3600000 : null;
+        const rel=(h)=>{ if(h<1) return 'hace '+Math.max(1,Math.round(h*60))+' min'; if(h<24) return 'hace '+Math.round(h)+' h'; return 'hace '+Math.round(h/24)+' día'+(Math.round(h/24)===1?'':'s'); };
+        if(n===0) return { nombre, dot:'#C4923F', estado:'Sin mensajes aún', msgColor:'#9A7320', msgPeso:'700', detalle:'Envía un mensaje de prueba por este canal para verificar la conexión.' };
+        if(horas!==null && horas<=48) return { nombre, dot:'#627B60', estado:'Funcionando ✓', msgColor:'#4C6149', msgPeso:'700', detalle:n+' conversación'+(n===1?'':'es')+' · último mensaje '+rel(horas) };
+        return { nombre, dot:'#627B60', estado:'Conectado · sin actividad reciente', msgColor:'#4C6149', msgPeso:'700', detalle:n+' conversación'+(n===1?'':'es')+(horas!==null?(' · último mensaje '+rel(horas)):'') };
+      });
       out.agNombre=ag.nombre; out.onAgNombre=(e)=>this.setAgenteCfg('nombre',e.target.value);
       out.agTono=ag.tono; out.onAgTono=(e)=>this.setAgenteCfg('tono',e.target.value); out.agTonoOpts=['Cálido y cercano (tú)','Profesional y directo','Divertido y juvenil'];
       out.agInstr=ag.instrucciones; out.onAgInstr=(e)=>this.setAgenteCfg('instrucciones',e.target.value);
@@ -8852,7 +8853,8 @@ Instrucciones de respuesta:
       out.agTransfer=ag.transferencia; out.onAgTransfer=(e)=>this.setAgenteCfg('transferencia',e.target.value);
       out.agAsigVentas=ag.asignadoVentas; out.onAgAsigVentas=(e)=>this.setAgenteCfg('asignadoVentas',e.target.value);
       out.agAsigServicio=ag.asignadoServicio; out.onAgAsigServicio=(e)=>this.setAgenteCfg('asignadoServicio',e.target.value);
-      out.agUserOpts=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}))).concat((ag.responsablesExtra||[]).map(r=>{ const n=(typeof r==='string')?r:(r&&r.nombre)||''; return {v:'manual:'+n,l:n}; }).filter(o=>o.l));
+      out.agUserOpts=(()=>{ const base=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name})); const baseL=base.map(o=>String(o.l||'').trim().toLowerCase());
+        return base.concat((ag.responsablesExtra||[]).filter(r=>typeof r!=='string').map(r=>(r&&r.nombre)||'').filter(n=>String(n).trim() && !baseL.includes(String(n).trim().toLowerCase())).map(n=>({v:'manual:'+n,l:n}))); })();
       out.agAutos=(ag.autosCustom||[]).map((a,i)=>({ titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px',
         onTog:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'on',!(cur.on!==false)); })(i),
         onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>this.agAutoSet(ix,'resp',e.target.value))(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }));
@@ -8862,7 +8864,9 @@ Instrucciones de respuesta:
         onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().pagos||[])[ix]||{}); this.agPagoSet(ix,'lock',!cur.lock); })(i) }));
       out.agPagosHay=(ag.pagos||[]).length>0; out.agPagosVacio=(ag.pagos||[]).length===0;
       out.agPagoAdd=()=>this.setAgenteCfg('pagos',[...(ag.pagos||[]),{nombre:'',detalle:'',link:'',img:''}]);
-      out.agResps=(ag.responsablesExtra||[]).map((r,i)=>{ const o=(typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{nombre:'',rol:'',lock:false});
+      const _hubNames=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>p.nombre) : this.users.map(u=>u.name)).map(n=>String(n||'').trim().toLowerCase());
+      const _respsList=(ag.responsablesExtra||[]).map((r,i)=>({r,i})).filter(x=>typeof x.r!=='string' && !(x.r&&x.r.nombre&&_hubNames.includes(String(x.r.nombre).trim().toLowerCase())));
+      out.agResps=_respsList.map(({r,i})=>{ const o=r||{nombre:'',rol:'',lock:false};
         return { nombre:o.nombre, rol:o.rol||'', hayRol:!!(o.rol&&String(o.rol).trim()), locked:!!o.lock, open:!o.lock, ini:(String(o.nombre||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('')||'?').toUpperCase(),
           onNombre:((ix)=>(e)=>this.agRespSet(ix,'nombre',e.target.value))(i), onRol:((ix)=>(e)=>this.agRespSet(ix,'rol',e.target.value))(i), onLock:((ix)=>()=>{ const cur=this._agRespObj(ix); this.agRespSet(ix,'lock',!cur.lock); })(i), onDel:((ix)=>()=>this.setAgenteCfg('responsablesExtra',(this.agenteCfgGet().responsablesExtra||[]).filter((_,x)=>x!==ix)))(i) }; });
       out.agRespAdd=()=>this.setAgenteCfg('responsablesExtra',[...(ag.responsablesExtra||[]),{nombre:'',rol:'',lock:false}]);
