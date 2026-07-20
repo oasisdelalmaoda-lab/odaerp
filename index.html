@@ -6764,6 +6764,8 @@ Instrucciones de respuesta:
       let nextOVn=1; const takeNextOV=()=>{ while(usedOV.has(nextOVn)) nextOVn++; usedOV.add(nextOVn); return nextOVn++; };
       const sinOV=list.filter(v=>v.origen!=='historico' && !this.ovNum(v)).sort((a,b)=>this.pedidoNum(a)-this.pedidoNum(b));
       sinOV.forEach((v)=>{ v.ov='ODA-'+String(takeNextOV()).padStart(5,'0'); });
+      const _dd=this._ventasAutoDedupe(list); list=_dd.list;
+      if(_dd.removed.length && this.cloudOn()) _dd.removed.forEach(id=>this._cloudDelOne('ventas', id));
       this.setState({ventas:list, shopifySyncing:false, shopifyLastTs:Date.now()},()=>this.persist());
       if(this.cloudOn()) this.cloudBulkVentas(list);
       const partes=[]; if(added) partes.push(added+' nuevo(s)'); if(updated) partes.push(updated+' actualizado(s)'); if(cancelados) partes.push(cancelados+' cancelado(s)');
@@ -7284,6 +7286,14 @@ Instrucciones de respuesta:
   // original), 2) si no hay manual, la ya conciliada (liquidada/pagada/con guía), 3) si empatan,
   // la más antigua. No se modifica ningún valor de la venta (montos, pagos, items) — solo se
   // borran filas repetidas o se corrige el número de consecutivo.
+  // Auto-fusión silenciosa de filas idénticas del mismo pedido (mismo shopifyId o mismo número):
+  // pasa cuando dos dispositivos sincronizan Shopify casi a la vez. Conserva la fila más
+  // trabajada (manual > tocada > antigua) y borra las repetidas. No toca montos ni pagos.
+  _ventasAutoDedupe(list){ const rank=(a,b)=>{ if(a.origen==='manual'&&b.origen!=='manual') return -1; if(b.origen==='manual'&&a.origen!=='manual') return 1; const t=this._ventaTocada(b)-this._ventaTocada(a); if(t!==0) return t; return String(a.fecha||'').localeCompare(String(b.fecha||'')); };
+    const byKey={}; list.forEach(v=>{ if(v.origen==='historico') return; const k=v.shopifyId? ('s'+v.shopifyId) : (this.pedidoNum(v)? ('p'+this.pedidoNum(v)) : ''); if(!k) return; (byKey[k]=byKey[k]||[]).push(v); });
+    const remove=new Set(); Object.values(byKey).forEach(rows=>{ if(rows.length<2) return; const best=rows.slice().sort(rank)[0]; rows.forEach(r=>{ if(r!==best) remove.add(r.id); }); });
+    if(!remove.size) return {list, removed:[]};
+    return {list:list.filter(v=>!remove.has(v.id)), removed:[...remove]}; }
   fusionarPedidosDuplicados(){
     let list=(this.state.ventas||[]).slice();
     const rank=(a,b)=>{ if(a.origen==='manual'&&b.origen!=='manual') return -1; if(b.origen==='manual'&&a.origen!=='manual') return 1;
@@ -7330,7 +7340,7 @@ Instrucciones de respuesta:
   cloudSubscribeCotizaciones(){ const sb=this._sbClient(); if(!sb||this._cotSub) return; try{ this._cotSub=sb.channel('oda-cotizaciones').on('postgres_changes',{event:'*',schema:'public',table:'cotizaciones'},()=>{ this.cloudLoadCotizaciones(); }).subscribe(); }catch(e){} }
   // ---- finanzas compartidas (nube) ----
   _finToDb(o){ return { id:o.id, data:o, actualizado:new Date().toISOString() }; }
-  async _cloudLoadList(table, key, seedList){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from(table).select('id,data'); if(error) throw error; if(data && data.length){ this.setState({[key]:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=seedList||[]; if(cur.length){ try{ await sb.from(table).upsert(cur.map(o=>this._finToDb(o))); }catch(e){} } } }catch(e){} }
+  async _cloudLoadList(table, key, seedList){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from(table).select('id,data'); if(error) throw error; if(data && data.length){ let rows=data.map(r=>({...(r.data||{}), id:r.id})); if(key==='ventas'){ const d=this._ventasAutoDedupe(rows); if(d.removed.length){ rows=d.list; d.removed.forEach(id=>this._cloudDelOne(table, id)); } } this.setState({[key]:rows},()=>this.persist()); } else { const cur=seedList||[]; if(cur.length){ try{ await sb.from(table).upsert(cur.map(o=>this._finToDb(o))); }catch(e){} } } }catch(e){} }
   async _cloudBulk(table, list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from(table).upsert(list.slice(i,i+200).map(o=>this._finToDb(o))); } }catch(e){} }
   async _cloudSaveOne(table, o){ const sb=this._sbClient(); if(!sb||!o) return; try{ await sb.from(table).upsert(this._finToDb(o)); }catch(e){} }
   async _cloudDelOne(table, id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from(table).delete().eq('id',id); }catch(e){} }
