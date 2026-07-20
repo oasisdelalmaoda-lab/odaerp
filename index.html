@@ -1563,10 +1563,19 @@
                 <sc-if value="{{ agLecsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Sin lecciones aún. Agrega la primera cuando detectes un error del bot.</div></sc-if>
                 <div style="display:flex;flex-direction:column;gap:10px;">
                   <sc-for list="{{ agLecs }}" as="l" hint-placeholder-count="0">
-                    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;">
-                      <textarea value="{{ l.v }}" onInput="{{ l.onV }}" rows="2" placeholder="Lección o corrección para el agente…" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.45;"></textarea>
-                      <button onClick="{{ l.onDel }}" title="Eliminar" style="font-family:inherit;font-size:14px;font-weight:700;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button>
-                    </div>
+                    <sc-if value="{{ l.locked }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:flex-start;gap:8px;">
+                        <div style="flex:1;font-size:12.5px;line-height:1.5;padding:8px 12px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-body);white-space:pre-wrap;">{{ l.v }}</div>
+                        <button onClick="{{ l.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-raised);color:var(--brand-ink);cursor:pointer;flex-shrink:0;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ l.open }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:start;">
+                        <textarea value="{{ l.v }}" onInput="{{ l.onV }}" rows="2" placeholder="Lección o corrección para el agente…" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.45;"></textarea>
+                        <button onClick="{{ l.onLock }}" title="Bloquear" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.7-1.4"></path></svg></button>
+                        <button onClick="{{ l.onDel }}" title="Eliminar" style="font-family:inherit;font-size:12px;font-weight:700;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;margin-top:4px;">×</button>
+                      </div>
+                    </sc-if>
                   </sc-for>
                 </div>
               </div>
@@ -1575,16 +1584,24 @@
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Métodos de pago</h3>
                   <button onClick="{{ agPagoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar método</button>
                 </div>
-                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">El bot entrega estos datos cuando el cliente quiere pagar un pedido por chat. Puedes agregar otros métodos con su link de pago (Nequi, Wompi, Bold…) y una imagen instructiva (URL) que el bot enviará como foto.</p>
-                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);display:block;">Transferencia bancaria<textarea value="{{ agTransfer }}" onInput="{{ onAgTransfer }}" rows="2" placeholder="Ej.: Bancolombia Ahorros 123-456789-00 · ODA LABS S.A.S. · NIT 902.063.571-6 — enviar comprobante por este chat" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.45;"></textarea></label>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">El bot entrega estos datos cuando el cliente quiere pagar un pedido por chat. Agrega cada método (transferencia, Nequi, Wompi, Bold…) con su detalle, link de pago y una imagen instructiva (URL) que el bot enviará como foto.</p>
                 <sc-if value="{{ agPagosHay }}" hint-placeholder-val="{{ false }}">
-                  <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px;">
+                  <div style="display:flex;flex-direction:column;gap:12px;">
                     <sc-for list="{{ agPagos }}" as="pg" hint-placeholder-count="0">
+                      <sc-if value="{{ pg.locked }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:10px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 14px;">
+                          <sc-if value="{{ pg.hayImg }}" hint-placeholder-val="{{ false }}"><span style="width:34px;height:34px;border-radius:8px;border:1px solid var(--border-subtle);background-image:url({{ pg.img }});background-size:cover;background-position:center;flex-shrink:0;"></span></sc-if>
+                          <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:700;">{{ pg.nombre }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ pg.detalle }}<sc-if value="{{ pg.hayLink }}" hint-placeholder-val="{{ false }}"> · {{ pg.link }}</sc-if></div></div>
+                          <button onClick="{{ pg.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ pg.open }}" hint-placeholder-val="{{ true }}">
                       <div style="background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;">
-                        <div style="display:grid;grid-template-columns:180px 1fr auto;gap:10px;align-items:start;">
+                        <div style="display:grid;grid-template-columns:180px 1fr auto auto;gap:8px;align-items:start;">
                           <input value="{{ pg.nombre }}" onInput="{{ pg.onNombre }}" placeholder="Nombre · ej. Nequi" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
                           <input value="{{ pg.detalle }}" onInput="{{ pg.onDetalle }}" placeholder="Detalle · ej. Nequi 313 406 3259 a nombre de ODA LABS" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
-                          <button onClick="{{ pg.onDel }}" title="Eliminar" style="font-family:inherit;font-size:14px;font-weight:700;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button>
+                          <button onClick="{{ pg.onLock }}" title="Bloquear" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;margin-top:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.7-1.4"></path></svg></button>
+                          <button onClick="{{ pg.onDel }}" title="Eliminar" style="font-family:inherit;font-size:12px;font-weight:700;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;margin-top:5px;">×</button>
                         </div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
                           <input value="{{ pg.link }}" onInput="{{ pg.onLink }}" placeholder="Link de pago (opcional) · https://…" style="font-family:inherit;font-size:12px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
@@ -1594,9 +1611,11 @@
                           </div>
                         </div>
                       </div>
+                      </sc-if>
                     </sc-for>
                   </div>
                 </sc-if>
+                <sc-if value="{{ agPagosVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Sin métodos aún. Agrega el primero — p. ej. «Transferencia Bancolombia».</div></sc-if>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 6px;">Catálogo e imágenes</h3>
@@ -1637,12 +1656,28 @@
                   <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de servicio<select value="{{ agAsigServicio }}" onChange="{{ onAgAsigServicio }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
                 </div>
                 <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-subtle);">
-                  <div style="font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:8px;">Otros responsables (manuales) <span style="font-weight:400;color:var(--text-muted);">· personas sin usuario en el Hub, disponibles en los selectores</span></div>
-                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                    <div style="font-size:11.5px;font-weight:700;color:var(--text-body);flex:1;">Otros responsables (manuales) <span style="font-weight:400;color:var(--text-muted);">· personas sin usuario en el Hub, disponibles en los selectores</span></div>
+                    <button onClick="{{ agRespAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar responsable</button>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
                     <sc-for list="{{ agResps }}" as="rp" hint-placeholder-count="0">
-                      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;padding:6px 8px 6px 14px;border-radius:99px;background:var(--surface-raised);border:1px solid var(--border-subtle);">{{ rp.nombre }}<button onClick="{{ rp.onDel }}" title="Quitar" style="font-family:inherit;font-size:12px;font-weight:700;width:20px;height:20px;border:none;border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button></span>
+                      <sc-if value="{{ rp.locked }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:10px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:8px 14px;">
+                          <span style="width:24px;height:24px;border-radius:99px;background:var(--brand-primary);color:#fff;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">{{ rp.ini }}</span>
+                          <div style="flex:1;min-width:0;"><span style="font-size:13px;font-weight:700;">{{ rp.nombre }}</span><sc-if value="{{ rp.hayRol }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:var(--text-muted);"> · {{ rp.rol }}</span></sc-if></div>
+                          <button onClick="{{ rp.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ rp.open }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:grid;grid-template-columns:1fr 200px auto auto;gap:8px;align-items:center;">
+                          <input value="{{ rp.nombre }}" onInput="{{ rp.onNombre }}" placeholder="Nombre completo" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                          <input value="{{ rp.rol }}" onInput="{{ rp.onRol }}" placeholder="Cargo · ej. Ventas" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                          <button onClick="{{ rp.onLock }}" title="Bloquear" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.7-1.4"></path></svg></button>
+                          <button onClick="{{ rp.onDel }}" title="Eliminar" style="font-family:inherit;font-size:12px;font-weight:700;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button>
+                        </div>
+                      </sc-if>
                     </sc-for>
-                    <input value="{{ agRespDraft }}" onInput="{{ onAgRespDraft }}" onKeyDown="{{ onAgRespKey }}" placeholder="Nombre → Enter" style="width:170px;font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px dashed var(--border-strong);border-radius:99px;background:var(--surface-page);color:var(--text-strong);">
                   </div>
                 </div>
               </div>
@@ -8294,12 +8329,19 @@ Instrucciones de respuesta:
       this._convSub=sb.channel('oda-convs').on('postgres_changes',{event:'*',schema:'public',table:'conversaciones'},reload).on('postgres_changes',{event:'*',schema:'public',table:'mensajes'},reload).subscribe();
     }catch(e){} }
   async cloudSaveConv(id, patch){ const sb=this._sbClient(); if(!sb||!this.state.convsCloud) return; try{ await sb.from('conversaciones').update(patch).eq('id',id); }catch(e){} }
-  async cloudLoadAgenteCfg(){ const sb=this._sbClient(); if(!sb) return; try{ const {data}=await sb.from('agente_config').select('config').eq('id',1).single(); if(data&&data.config&&Object.keys(data.config).length){ this.setState({agenteCfg:{...(this.state.agenteCfg||{}), ...data.config}}); } }catch(e){} }
-  async cloudSaveAgenteCfg(cfg){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('agente_config').upsert({id:1, config:cfg, actualizado:new Date().toISOString()}); }catch(e){} }
+  async cloudLoadAgenteCfg(){ const sb=this._sbClient(); if(!sb) return; try{ const {data}=await sb.from('agente_config').select('config,actualizado').eq('id',1).single();
+    let localTs=0; try{ localTs=Number(localStorage.getItem('oda_hub_agente_ts_v1')||0); }catch(e){}
+    const cloudTs=data&&data.actualizado? new Date(data.actualizado).getTime() : 0;
+    if(data&&data.config&&Object.keys(data.config).length && cloudTs>=localTs){ this.setState({agenteCfg:{...(this.state.agenteCfg||{}), ...data.config}}); }
+    else if(localTs>cloudTs && this.state.agenteCfg){ this.cloudSaveAgenteCfg(this.agenteCfgGet()); } }catch(e){} }
+  async cloudSaveAgenteCfg(cfg){ const sb=this._sbClient(); if(!sb) return; try{ const {error}=await sb.from('agente_config').upsert({id:1, config:cfg, actualizado:new Date().toISOString()}); if(error) throw error; }catch(e){ this.toast('No se pudo guardar la config del agente en la nube — revisa tu conexión'); } }
   agenteCfgGet(){ return { nombre:'Oda', tono:'Cálido y cercano (tú)', instrucciones:'Eres el asistente de bienestar de Oasis del Alma. Responde en español, tono cálido y cercano (tú), frases cortas. Vende por beneficio: calma, descanso, energía. Si el cliente pide hablar con una persona, detecta una queja o pide precios especiales, escala a un asesor.', conocimiento:'Envíos: todo Colombia, 2-4 días hábiles, gratis desde $150.000. Pagos: PSE, tarjetas, contraentrega en ciudades principales. Cambios: 30 días con empaque original. Productos estrella: Kit Inhala $100.000, Kit Descansa $100.000, aceites esenciales desde $29.900.', crearLeadAuto:true, crearCasoAuto:true, escalarSiDuda:true, asignadoVentas:'u4', asignadoServicio:'u4', faqs:[], lecciones:[], transferencia:'', ...(this.state.agenteCfg||{}) }; }
-  agLecAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', [...(cfg.lecciones||[]), '']); }
+  agLecAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', [...(cfg.lecciones||[]), {t:'',lock:false}]); }
   agLecDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).filter((_,x)=>x!==i)); }
-  agLecSet(i,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=> x===i? v : l)); }
+  agLecSet(i,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, t:v}; })); }
+  agLecLock(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, lock:!o.lock}; })); }
+  _agRespObj(i){ const r=(this.agenteCfgGet().responsablesExtra||[])[i]; return (typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{nombre:'',rol:'',lock:false}); }
+  agRespSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('responsablesExtra', (cfg.responsablesExtra||[]).map((r,x)=>{ if(x!==i) return r; const o=(typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{}); return {...o,[k]:v}; })); }
   agFaqAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', [...(cfg.faqs||[]), {p:'', r:''}]); }
   agFaqDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', (cfg.faqs||[]).filter((_,x)=>x!==i)); }
   agFaqSet(i,k,v){ const cfg=this.agenteCfgGet(); const list=(cfg.faqs||[]).map((f,x)=> x===i? {...f,[k]:v} : f); this.setAgenteCfg('faqs', list); }
@@ -8307,7 +8349,7 @@ Instrucciones de respuesta:
   agAutoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).filter((_,x)=>x!==i)); }
   agPagoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).map((p,x)=> x===i? {...p,[k]:v} : p)); }
   agPagoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).filter((_,x)=>x!==i)); }
-  setAgenteCfg(k,v){ const cfg={...this.agenteCfgGet(), [k]:v}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); }catch(e){} clearTimeout(this._agCfgT); this._agCfgT=setTimeout(()=>this.cloudSaveAgenteCfg(this.agenteCfgGet()), 800); }
+  setAgenteCfg(k,v){ const cfg={...this.agenteCfgGet(), [k]:v}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); localStorage.setItem('oda_hub_agente_ts_v1', String(Date.now())); }catch(e){} clearTimeout(this._agCfgT); this._agCfgT=setTimeout(()=>this.cloudSaveAgenteCfg(this.agenteCfgGet()), 800); }
   convHoraTxt(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
   convUpdate(id, fn){ const list=this.convList().map(c=> c.id===id? fn({...c, mensajes:(c.mensajes||[]).slice()}) : c); this.persistConvs(list); }
   convAsignar(id, uid){ this.convUpdate(id, c=>({...c, asignadoA:uid, estado:(uid? (c.estado==='resuelta'?'resuelta':'humano') : c.estado)})); this.cloudSaveConv(id,{asignado_a:uid, ...(uid?{estado:'humano'}:{})}); if(uid) this.toast('Conversación asignada a '+((this.users.find(u=>u.id===uid)||{}).name||this.leadUName(uid)||'asesor')); }
@@ -8804,25 +8846,26 @@ Instrucciones de respuesta:
       out.agFaqs=(ag.faqs||[]).map((f,i)=>({ p:f.p, r:f.r, onP:((ix)=>(e)=>this.agFaqSet(ix,'p',e.target.value))(i), onR:((ix)=>(e)=>this.agFaqSet(ix,'r',e.target.value))(i), onDel:((ix)=>()=>this.agFaqDel(ix))(i) }));
       out.agFaqsVacio=(ag.faqs||[]).length===0;
       out.agFaqAdd=()=>this.agFaqAdd();
-      out.agLecs=(ag.lecciones||[]).map((l,i)=>({ v:l, onV:((ix)=>(e)=>this.agLecSet(ix,e.target.value))(i), onDel:((ix)=>()=>this.agLecDel(ix))(i) }));
+      out.agLecs=(ag.lecciones||[]).map((l,i)=>{ const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return { v:o.t, locked:!!o.lock, open:!o.lock, onV:((ix)=>(e)=>this.agLecSet(ix,e.target.value))(i), onDel:((ix)=>()=>this.agLecDel(ix))(i), onLock:((ix)=>()=>this.agLecLock(ix))(i) }; });
       out.agLecsVacio=(ag.lecciones||[]).length===0;
       out.agLecAdd=()=>this.agLecAdd();
       out.agTransfer=ag.transferencia; out.onAgTransfer=(e)=>this.setAgenteCfg('transferencia',e.target.value);
       out.agAsigVentas=ag.asignadoVentas; out.onAgAsigVentas=(e)=>this.setAgenteCfg('asignadoVentas',e.target.value);
       out.agAsigServicio=ag.asignadoServicio; out.onAgAsigServicio=(e)=>this.setAgenteCfg('asignadoServicio',e.target.value);
-      out.agUserOpts=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}))).concat((ag.responsablesExtra||[]).map(n=>({v:'manual:'+n,l:n})));
+      out.agUserOpts=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}))).concat((ag.responsablesExtra||[]).map(r=>{ const n=(typeof r==='string')?r:(r&&r.nombre)||''; return {v:'manual:'+n,l:n}; }).filter(o=>o.l));
       out.agAutos=(ag.autosCustom||[]).map((a,i)=>({ titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px',
         onTog:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'on',!(cur.on!==false)); })(i),
         onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>this.agAutoSet(ix,'resp',e.target.value))(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }));
       out.agAutosHay=(ag.autosCustom||[]).length>0;
       out.agAutoAdd=()=>this.setAgenteCfg('autosCustom',[...(ag.autosCustom||[]),{on:true,titulo:'',accion:'',resp:''}]);
-      out.agPagos=(ag.pagos||[]).map((p,i)=>({ nombre:p.nombre||'', detalle:p.detalle||'', link:p.link||'', img:p.img||'', hayImg:!!(p.img&&String(p.img).trim()),
-        onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i) }));
-      out.agPagosHay=(ag.pagos||[]).length>0;
+      out.agPagos=(ag.pagos||[]).map((p,i)=>({ nombre:p.nombre||'', detalle:p.detalle||'', link:p.link||'', img:p.img||'', hayImg:!!(p.img&&String(p.img).trim()), hayLink:!!(p.link&&String(p.link).trim()), locked:!!p.lock, open:!p.lock,
+        onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().pagos||[])[ix]||{}); this.agPagoSet(ix,'lock',!cur.lock); })(i) }));
+      out.agPagosHay=(ag.pagos||[]).length>0; out.agPagosVacio=(ag.pagos||[]).length===0;
       out.agPagoAdd=()=>this.setAgenteCfg('pagos',[...(ag.pagos||[]),{nombre:'',detalle:'',link:'',img:''}]);
-      out.agResps=(ag.responsablesExtra||[]).map((n,i)=>({ nombre:n, onDel:((ix)=>()=>this.setAgenteCfg('responsablesExtra',(this.agenteCfgGet().responsablesExtra||[]).filter((_,x)=>x!==ix)))(i) }));
-      out.agRespDraft=st.agRespDraft||''; out.onAgRespDraft=(e)=>this.setState({agRespDraft:e.target.value});
-      out.onAgRespKey=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); const n=String(st.agRespDraft||'').trim(); if(!n) return; this.setAgenteCfg('responsablesExtra',[...(this.agenteCfgGet().responsablesExtra||[]),n]); this.setState({agRespDraft:''}); } };
+      out.agResps=(ag.responsablesExtra||[]).map((r,i)=>{ const o=(typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{nombre:'',rol:'',lock:false});
+        return { nombre:o.nombre, rol:o.rol||'', hayRol:!!(o.rol&&String(o.rol).trim()), locked:!!o.lock, open:!o.lock, ini:(String(o.nombre||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('')||'?').toUpperCase(),
+          onNombre:((ix)=>(e)=>this.agRespSet(ix,'nombre',e.target.value))(i), onRol:((ix)=>(e)=>this.agRespSet(ix,'rol',e.target.value))(i), onLock:((ix)=>()=>{ const cur=this._agRespObj(ix); this.agRespSet(ix,'lock',!cur.lock); })(i), onDel:((ix)=>()=>this.setAgenteCfg('responsablesExtra',(this.agenteCfgGet().responsablesExtra||[]).filter((_,x)=>x!==ix)))(i) }; });
+      out.agRespAdd=()=>this.setAgenteCfg('responsablesExtra',[...(ag.responsablesExtra||[]),{nombre:'',rol:'',lock:false}]);
     }
     out.showVentasReg = onVen && st.sub==='registro';
     out.showVentasBase = onVen && st.sub==='base';
@@ -8851,7 +8894,7 @@ Instrucciones de respuesta:
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
     else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
-    else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':'Bandeja de conversaciones'; }
+    else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':(st.sub==='informe'?'Informe del chatbot':'Bandeja de conversaciones'); }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
