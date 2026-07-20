@@ -196,6 +196,7 @@
             <div style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vX_bandeja }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.bandeja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvBandeja.c }};background:{{ subConvBandeja.bg }};border-left:2px solid {{ subConvBandeja.b }};">Bandeja</div></sc-if>
               <sc-if value="{{ vX_agente }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.agente }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvAgente.c }};background:{{ subConvAgente.bg }};border-left:2px solid {{ subConvAgente.b }};">Agente IA</div></sc-if>
+              <sc-if value="{{ vX_informe }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.informe }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvInforme.c }};background:{{ subConvInforme.bg }};border-left:2px solid {{ subConvInforme.b }};">Informe</div></sc-if>
             </div>
           </sc-if>
           </sc-if>
@@ -1568,7 +1569,34 @@
                     </div>
                   </sc-for>
                 </div>
-                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);display:block;margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle);">Datos de pago por transferencia (para pedidos por chat)<textarea value="{{ agTransfer }}" onInput="{{ onAgTransfer }}" rows="2" placeholder="Ej.: Bancolombia Ahorros 123-456789-00 · ODA LABS S.A.S. · NIT 902.063.571-6 — enviar comprobante por este chat" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.45;"></textarea></label>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Métodos de pago</h3>
+                  <button onClick="{{ agPagoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar método</button>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">El bot entrega estos datos cuando el cliente quiere pagar un pedido por chat. Puedes agregar otros métodos con su link de pago (Nequi, Wompi, Bold…) y una imagen instructiva (URL) que el bot enviará como foto.</p>
+                <label style="font-size:11.5px;font-weight:700;color:var(--text-body);display:block;">Transferencia bancaria<textarea value="{{ agTransfer }}" onInput="{{ onAgTransfer }}" rows="2" placeholder="Ej.: Bancolombia Ahorros 123-456789-00 · ODA LABS S.A.S. · NIT 902.063.571-6 — enviar comprobante por este chat" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.45;"></textarea></label>
+                <sc-if value="{{ agPagosHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px;">
+                    <sc-for list="{{ agPagos }}" as="pg" hint-placeholder-count="0">
+                      <div style="background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;">
+                        <div style="display:grid;grid-template-columns:180px 1fr auto;gap:10px;align-items:start;">
+                          <input value="{{ pg.nombre }}" onInput="{{ pg.onNombre }}" placeholder="Nombre · ej. Nequi" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                          <input value="{{ pg.detalle }}" onInput="{{ pg.onDetalle }}" placeholder="Detalle · ej. Nequi 313 406 3259 a nombre de ODA LABS" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                          <button onClick="{{ pg.onDel }}" title="Eliminar" style="font-family:inherit;font-size:14px;font-weight:700;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+                          <input value="{{ pg.link }}" onInput="{{ pg.onLink }}" placeholder="Link de pago (opcional) · https://…" style="font-family:inherit;font-size:12px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                          <div style="display:flex;align-items:center;gap:8px;">
+                            <input value="{{ pg.img }}" onInput="{{ pg.onImg }}" placeholder="URL de imagen instructiva (opcional)" style="flex:1;font-family:inherit;font-size:12px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                            <sc-if value="{{ pg.hayImg }}" hint-placeholder-val="{{ false }}"><span style="width:34px;height:34px;border-radius:8px;border:1px solid var(--border-subtle);background-image:url({{ pg.img }});background-size:cover;background-position:center;flex-shrink:0;"></span></sc-if>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 6px;">Catálogo e imágenes</h3>
@@ -1579,19 +1607,96 @@
                 </div>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
-                <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 6px;">Automatizaciones</h3>
-                <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">El agente clasifica cada conversación y crea el registro que corresponda, asignado al responsable.</p>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Automatizaciones</h3>
+                  <button onClick="{{ agAutoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar automatización</button>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">El agente clasifica cada conversación y crea el registro que corresponda, asignado al responsable. Agrega tus propias reglas — el bot las cumplirá como instrucciones en cada conversación.</p>
                 <div style="display:flex;flex-direction:column;gap:14px;">
                   <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agLead.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agLead.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agLead.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Crear lead cuando detecta intención de compra</div><div style="font-size:11.5px;color:var(--text-muted);">Va a Ventas · Leads con la conversación enlazada</div></div></div>
                   <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agCaso.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agCaso.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agCaso.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Crear caso de servicio ante quejas o garantías</div><div style="font-size:11.5px;color:var(--text-muted);">Va a Ventas · Servicio al cliente con folio y timeline</div></div></div>
                   <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agEscalar.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agEscalar.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agEscalar.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Escalar a un humano si duda o el cliente lo pide</div><div style="font-size:11.5px;color:var(--text-muted);">La conversación queda «Necesita humano» y avisa en Inicio</div></div></div>
                 </div>
+                <sc-if value="{{ agAutosHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-subtle);">
+                    <sc-for list="{{ agAutos }}" as="au" hint-placeholder-count="0">
+                      <div style="display:flex;align-items:flex-start;gap:12px;">
+                        <div onClick="{{ au.onTog }}" style="width:42px;height:22px;border-radius:99px;background:{{ au.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;margin-top:6px;"><span style="position:absolute;top:2px;left:{{ au.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
+                        <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+                          <input value="{{ au.titulo }}" onInput="{{ au.onTitulo }}" placeholder="Cuándo · ej. Si preguntan por ventas al por mayor" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                          <input value="{{ au.accion }}" onInput="{{ au.onAccion }}" placeholder="Qué debe hacer · ej. tomar los datos y escalar al responsable" style="font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                        </div>
+                        <select value="{{ au.resp }}" onChange="{{ au.onResp }}" title="Responsable" style="width:170px;margin-top:6px;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><option value="">Sin responsable</option><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+                        <button onClick="{{ au.onDel }}" title="Eliminar" style="font-family:inherit;font-size:14px;font-weight:700;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;flex-shrink:0;margin-top:6px;">×</button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
                 <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--border-subtle);">
                   <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de ventas<select value="{{ agAsigVentas }}" onChange="{{ onAgAsigVentas }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
                   <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Responsable de servicio<select value="{{ agAsigServicio }}" onChange="{{ onAgAsigServicio }}" style="display:block;width:220px;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
                 </div>
+                <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-subtle);">
+                  <div style="font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:8px;">Otros responsables (manuales) <span style="font-weight:400;color:var(--text-muted);">· personas sin usuario en el Hub, disponibles en los selectores</span></div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <sc-for list="{{ agResps }}" as="rp" hint-placeholder-count="0">
+                      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;padding:6px 8px 6px 14px;border-radius:99px;background:var(--surface-raised);border:1px solid var(--border-subtle);">{{ rp.nombre }}<button onClick="{{ rp.onDel }}" title="Quitar" style="font-family:inherit;font-size:12px;font-weight:700;width:20px;height:20px;border:none;border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button></span>
+                    </sc-for>
+                    <input value="{{ agRespDraft }}" onInput="{{ onAgRespDraft }}" onKeyDown="{{ onAgRespKey }}" placeholder="Nombre → Enter" style="width:170px;font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px dashed var(--border-strong);border-radius:99px;background:var(--surface-page);color:var(--text-strong);">
+                  </div>
+                </div>
               </div>
               <p style="font-size:12px;color:var(--text-muted);margin:14px 0 0;line-height:1.5;">Esta configuración se guarda localmente y alimentará la función <code style="font-size:11px;">agente</code> de Supabase al conectarla — el bot usará estas instrucciones, conocimiento y reglas en todos los canales.</p>
+            </div>
+          </sc-if>
+
+          <!-- ===== CONVERSACIONES · INFORME ===== -->
+          <sc-if value="{{ showConvInforme }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:980px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+                <span style="font-size:12.5px;color:var(--text-muted);">Métricas del chatbot y ventas atribuidas a los canales de chat.</span>
+                <div style="flex:1;"></div>
+                <select value="{{ convInfDias }}" onChange="{{ onConvInfDias }}" style="font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;"><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="90">Últimos 90 días</option><option value="0">Todo el histórico</option></select>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Conversaciones</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;">{{ ciTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciActivas }} activas ahora</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Resueltas solo por el bot</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ ciBotPct }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">sin intervención de un asesor</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#B5503C;font-weight:700;">Escaladas a humano</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#B5503C;">{{ ciEscaladas }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciNecesitaAhora }} esperando ahora</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#7A6035;font-weight:700;">Con intención de compra</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#7A6035;">{{ ciVentasInt }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">clasificadas por el agente</div></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 14px;">Conversaciones por canal</h3>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <sc-for list="{{ ciCanales }}" as="k" hint-placeholder-count="3">
+                      <div>
+                        <div style="display:flex;align-items:baseline;gap:8px;font-size:12.5px;"><span style="font-weight:700;flex:1;">{{ k.l }}</span><span style="color:var(--text-muted);">{{ k.n }} · {{ k.pct }}</span></div>
+                        <div style="height:8px;border-radius:99px;background:var(--surface-raised);margin-top:5px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:{{ k.color }};width:{{ k.w }};"></div></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle);display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--text-body);">
+                    <span><strong style="font-size:16px;">{{ ciMsgs }}</strong> mensajes</span>
+                    <span><strong style="font-size:16px;">{{ ciMsgsBot }}</strong> respondidos por el bot</span>
+                    <span><strong style="font-size:16px;">{{ ciMsgsAsesor }}</strong> por asesores</span>
+                  </div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Valor vendido por canal</h3>
+                  <p style="font-size:11.5px;color:var(--text-muted);margin:0 0 14px;">Ventas registradas en el período, según el canal del pedido.</p>
+                  <sc-if value="{{ ciVentasVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Sin ventas en el período seleccionado.</div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ ciVentas }}" as="v" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:{{ v.bg }};">
+                        <span style="font-size:12.5px;font-weight:700;flex:1;">{{ v.canal }}<sc-if value="{{ v.esChat }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(167,134,89,0.16);color:var(--brand-ink);">Chat</span></sc-if></span>
+                        <span style="font-size:11.5px;color:var(--text-muted);">{{ v.pedidos }} pedidos · ticket {{ v.ticket }}</span>
+                        <span style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ v.total }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-subtle);display:flex;align-items:baseline;gap:8px;"><span style="font-size:12.5px;font-weight:700;flex:1;">Total canales de chat</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--brand-ink);">{{ ciChatTotal }}</span></div>
+                </div>
+              </div>
             </div>
           </sc-if>
 
@@ -5741,7 +5846,7 @@ class Component extends DCLogic {
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
     inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
-    conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'}],
+    conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'informe',label:'Informe'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
   };
@@ -8198,6 +8303,10 @@ Instrucciones de respuesta:
   agFaqAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', [...(cfg.faqs||[]), {p:'', r:''}]); }
   agFaqDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', (cfg.faqs||[]).filter((_,x)=>x!==i)); }
   agFaqSet(i,k,v){ const cfg=this.agenteCfgGet(); const list=(cfg.faqs||[]).map((f,x)=> x===i? {...f,[k]:v} : f); this.setAgenteCfg('faqs', list); }
+  agAutoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).map((a,x)=> x===i? {...a,[k]:v} : a)); }
+  agAutoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).filter((_,x)=>x!==i)); }
+  agPagoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).map((p,x)=> x===i? {...p,[k]:v} : p)); }
+  agPagoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).filter((_,x)=>x!==i)); }
   setAgenteCfg(k,v){ const cfg={...this.agenteCfgGet(), [k]:v}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); }catch(e){} clearTimeout(this._agCfgT); this._agCfgT=setTimeout(()=>this.cloudSaveAgenteCfg(this.agenteCfgGet()), 800); }
   convHoraTxt(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
   convUpdate(id, fn){ const list=this.convList().map(c=> c.id===id? fn({...c, mensajes:(c.mensajes||[]).slice()}) : c); this.persistConvs(list); }
@@ -8622,12 +8731,39 @@ Instrucciones de respuesta:
     out.convNavColor = onConv? '#D9BE92':'rgba(251,248,242,0.85)';
     out.showConversacionesSub = onConv;
     const subStyX=(k)=>{ const a=onConv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subConvBandeja=subStyX('bandeja'); out.subConvAgente=subStyX('agente');
-    out.subnavConv={ bandeja:()=>this.setState({module:'conversaciones',sub:'bandeja'}), agente:()=>this.setState({module:'conversaciones',sub:'agente'}) };
+    out.subConvBandeja=subStyX('bandeja'); out.subConvAgente=subStyX('agente'); out.subConvInforme=subStyX('informe');
+    out.vX_informe=subVis('conversaciones','informe');
+    out.subnavConv={ bandeja:()=>this.setState({module:'conversaciones',sub:'bandeja'}), agente:()=>this.setState({module:'conversaciones',sub:'agente'}), informe:()=>this.setState({module:'conversaciones',sub:'informe'}) };
     const _convPend = out.canConversaciones? this.convPendientes() : 0;
     out.convBadgeShow=_convPend>0; out.convBadgeCount=_convPend;
     out.showConvBandeja = onConv && st.sub==='bandeja';
     out.showConvAgente = onConv && st.sub==='agente';
+    out.showConvInforme = onConv && st.sub==='informe';
+    if(out.showConvInforme){ const convs=this.convList(); const dias=Number(st.convInfDias??30);
+      out.convInfDias=String(dias); out.onConvInfDias=(e)=>this.setState({convInfDias:Number(e.target.value)});
+      out.ciTotal=convs.length; out.ciActivas=convs.filter(c=>c.estado!=='resuelta').length;
+      const soloBot=convs.filter(c=>c.estado==='resuelta' && !(c.mensajes||[]).some(m=>m.de==='asesor')).length;
+      const resueltas=convs.filter(c=>c.estado==='resuelta').length;
+      out.ciBotPct=resueltas? Math.round(soloBot/resueltas*100)+'%' : '—';
+      out.ciEscaladas=convs.filter(c=>c.estado==='necesita'||c.estado==='humano'||(c.mensajes||[]).some(m=>m.de==='asesor')).length;
+      out.ciNecesitaAhora=convs.filter(c=>c.estado==='necesita').length;
+      out.ciVentasInt=convs.filter(c=>c.intencion==='ventas').length;
+      let mT=0,mB=0,mA=0; convs.forEach(c=>(c.mensajes||[]).forEach(m=>{ mT++; if(m.de==='bot')mB++; if(m.de==='asesor')mA++; }));
+      out.ciMsgs=mT; out.ciMsgsBot=mB; out.ciMsgsAsesor=mA;
+      const porCanal={}; convs.forEach(c=>{ const l=this.convCanalMeta(c.canal).l; porCanal[l]=(porCanal[l]||0)+1; });
+      const maxC=Math.max(1,...Object.values(porCanal));
+      const canColor={'WhatsApp':'#627B60','Instagram':'#9C6B7E','Messenger':'#5A7A9E','Web':'#A78659'};
+      out.ciCanales=Object.entries(porCanal).sort((a,b)=>b[1]-a[1]).map(([l,n])=>({ l, n, pct:(convs.length?Math.round(n/convs.length*100):0)+'%', w:Math.round(n/maxC*100)+'%', color:canColor[l]||'var(--brand-primary)' }));
+      const desde=dias? new Date(Date.now()-dias*86400000).toISOString().slice(0,10) : '';
+      const vivas=(this.state.ventas||[]).filter(v=>!v.anulada);
+      const enPeriodo=vivas.filter(v=>{ const f=this.parseFecha(v.fecha)||''; return !desde || f>=desde; });
+      const chatCanales=['whatsapp','instagram','messenger','chat','web'];
+      const grp={}; enPeriodo.forEach(v=>{ const c=v.canal||'Sin canal'; if(!grp[c]) grp[c]={n:0,t:0}; grp[c].n++; grp[c].t+=this.ventaSubtotal(v); });
+      let chatTotal=0;
+      out.ciVentas=Object.entries(grp).sort((a,b)=>b[1].t-a[1].t).map(([c,g])=>{ const esChat=chatCanales.some(k=>String(c).toLowerCase().includes(k)); if(esChat) chatTotal+=g.t; return { canal:c, esChat, pedidos:g.n, total:this.fmt(Math.round(g.t)), ticket:this.fmt(Math.round(g.t/g.n)), bg:esChat?'rgba(167,134,89,0.06)':'var(--surface-card)' }; });
+      out.ciVentasVacio=out.ciVentas.length===0;
+      out.ciChatTotal=this.fmt(Math.round(chatTotal));
+    }
     if(out.showConvBandeja){
       const convs=this.convList();
       const fC=st.fConvCanal||'todos', fE=st.fConvEstado||'activas';
@@ -8635,7 +8771,7 @@ Instrucciones de respuesta:
       out.fConvEstado=fE; out.onFConvEstado=(e)=>this.setState({fConvEstado:e.target.value});
       out.convCanalOpts=['todos','whatsapp','instagram','messenger','web']; out.convEstadoOpts=['activas','bot','humano','necesita','resuelta','todas'];
       let rows=convs.filter(c=>{ if(fC!=='todos'&&c.canal!==fC) return false; if(fE==='activas') return c.estado!=='resuelta'; if(fE!=='todas'&&c.estado!==fE) return false; return true; });
-      const selId=st.convSelId || (rows[0]&&rows[0].id);
+      const selId=st.convSelId;
       out.convRows=rows.map(c=>{ const cm=this.convCanalMeta(c.canal), em=this.convEstadoMeta(c.estado); const last=(c.mensajes||[])[ (c.mensajes||[]).length-1 ]||{}; const asigN=c.asignadoA? this.leadUName(c.asignadoA):'';
         return { id:c.id, cliente:c.cliente, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, dot:em.dot, estadoL:em.l, ultimo:(last.texto||'').slice(0,64)+((last.texto||'').length>64?'…':''), hora:last.hora||'', asigIni:asigN?this._initialsFrom(asigN):'', asigColor:c.asignadoA?this.leadUColor(c.asignadoA):'#9b8e78', hayAsig:!!asigN, noLeidos:c.noLeidos||0, hayNoLeidos:(c.noLeidos||0)>0, selBg:(c.id===selId?'rgba(167,134,89,0.1)':'transparent'), selBorder:(c.id===selId?'var(--brand-primary)':'transparent'), onSel:((id)=>()=>this.setState({convSelId:id}))(c.id) }; });
       out.convRowsVacio=rows.length===0;
@@ -8674,7 +8810,19 @@ Instrucciones de respuesta:
       out.agTransfer=ag.transferencia; out.onAgTransfer=(e)=>this.setAgenteCfg('transferencia',e.target.value);
       out.agAsigVentas=ag.asignadoVentas; out.onAgAsigVentas=(e)=>this.setAgenteCfg('asignadoVentas',e.target.value);
       out.agAsigServicio=ag.asignadoServicio; out.onAgAsigServicio=(e)=>this.setAgenteCfg('asignadoServicio',e.target.value);
-      out.agUserOpts=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}));
+      out.agUserOpts=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}))).concat((ag.responsablesExtra||[]).map(n=>({v:'manual:'+n,l:n})));
+      out.agAutos=(ag.autosCustom||[]).map((a,i)=>({ titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px',
+        onTog:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'on',!(cur.on!==false)); })(i),
+        onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>this.agAutoSet(ix,'resp',e.target.value))(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }));
+      out.agAutosHay=(ag.autosCustom||[]).length>0;
+      out.agAutoAdd=()=>this.setAgenteCfg('autosCustom',[...(ag.autosCustom||[]),{on:true,titulo:'',accion:'',resp:''}]);
+      out.agPagos=(ag.pagos||[]).map((p,i)=>({ nombre:p.nombre||'', detalle:p.detalle||'', link:p.link||'', img:p.img||'', hayImg:!!(p.img&&String(p.img).trim()),
+        onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i) }));
+      out.agPagosHay=(ag.pagos||[]).length>0;
+      out.agPagoAdd=()=>this.setAgenteCfg('pagos',[...(ag.pagos||[]),{nombre:'',detalle:'',link:'',img:''}]);
+      out.agResps=(ag.responsablesExtra||[]).map((n,i)=>({ nombre:n, onDel:((ix)=>()=>this.setAgenteCfg('responsablesExtra',(this.agenteCfgGet().responsablesExtra||[]).filter((_,x)=>x!==ix)))(i) }));
+      out.agRespDraft=st.agRespDraft||''; out.onAgRespDraft=(e)=>this.setState({agRespDraft:e.target.value});
+      out.onAgRespKey=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); const n=String(st.agRespDraft||'').trim(); if(!n) return; this.setAgenteCfg('responsablesExtra',[...(this.agenteCfgGet().responsablesExtra||[]),n]); this.setState({agRespDraft:''}); } };
     }
     out.showVentasReg = onVen && st.sub==='registro';
     out.showVentasBase = onVen && st.sub==='base';
