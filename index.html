@@ -182,6 +182,7 @@
               <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
               <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
               <sc-if value="{{ vV_carritos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.carritos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCarritos.c }};background:{{ subVenCarritos.bg }};border-left:2px solid {{ subVenCarritos.b }};">Carritos abandonados</div></sc-if>
+              <sc-if value="{{ vV_carritos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.autowa }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenAutoWa.c }};background:{{ subVenAutoWa.bg }};border-left:2px solid {{ subVenAutoWa.b }};">Campañas WhatsApp</div></sc-if>
               <sc-if value="{{ vV_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.servicio }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenSvc.c }};background:{{ subVenSvc.bg }};border-left:2px solid {{ subVenSvc.b }};"><span>Servicio al cliente</span><sc-if value="{{ casoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ casoBadge }}</span></sc-if></div></sc-if>
             </div>
           </sc-if>
@@ -1723,6 +1724,43 @@
                   <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-subtle);display:flex;align-items:baseline;gap:8px;"><span style="font-size:12.5px;font-weight:700;flex:1;">Total canales de chat</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--brand-ink);">{{ ciChatTotal }}</span></div>
                 </div>
               </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== VENTAS · CAMPAÑAS WHATSAPP ===== -->
+          <sc-if value="{{ showVentasAutoWa }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:1040px;">
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:820px;line-height:1.55;text-wrap:pretty;">Los <strong>carritos abandonados</strong> se recuperan solos (función automática cada 30 min). Las <strong>campañas a clientes</strong> se calculan con el histórico de ventas y tú las apruebas una a una: el botón abre WhatsApp con el mensaje listo para enviar. Máx. 1 campaña por cliente cada 30 días.</p>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                  <div onClick="{{ campCarritosTog.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ campCarritosTog.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;"><span style="position:absolute;top:2px;left:{{ campCarritosTog.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
+                  <div style="flex:1;"><div style="font-weight:800;font-size:13.5px;">Recuperación automática de carritos</div><div style="font-size:11.5px;color:var(--text-muted);">Mensaje a la hora configurada del abandono + segundo intento a las 24h con cupón. Requiere la función <code style="font-size:10.5px;">carritos-auto</code> desplegada.</div></div>
+                </div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Horas tras el abandono<input type="number" min="1" step="1" value="{{ campHoras }}" onInput="{{ onCampHoras }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cupón (2º intento y campañas)<input value="{{ campCupon }}" onInput="{{ onCampCupon }}" placeholder="ej. VUELVE10" style="display:block;width:160px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Plantilla aprobada de Meta <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ campPlantilla }}" onInput="{{ onCampPlantilla }}" placeholder="nombre exacto · vacío = texto libre" style="display:block;width:230px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Link de calificación Google<input value="{{ campLinkGoogle }}" onInput="{{ onCampLinkGoogle }}" placeholder="https://g.page/r/…/review" style="display:block;width:260px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Días sin comprar (recompra)<input type="number" min="15" step="5" value="{{ campRecompraDias }}" onInput="{{ onCampRecompraDias }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                </div>
+                <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">⚠ WhatsApp solo permite iniciar conversación con una <strong>plantilla aprobada</strong> en Meta; sin plantilla, el mensaje automático solo llega a quienes te escribieron en las últimas 24h. Las campañas aprobadas a mano salen por tu WhatsApp normal (wa.me), sin esa restricción.</p>
+              </div>
+              <sc-for list="{{ campSecciones }}" as="cs" hint-placeholder-count="4">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border-subtle);">
+                    <div style="flex:1;"><span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;">{{ cs.titulo }}</span><span style="font-size:12px;color:var(--text-muted);margin-left:10px;">{{ cs.desc }}</span></div>
+                    <span style="font-size:11px;font-weight:800;padding:4px 11px;border-radius:99px;background:rgba(167,134,89,0.14);color:var(--brand-ink);">{{ cs.count }}</span>
+                  </div>
+                  <sc-if value="{{ cs.vacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12.5px;">Sin candidatos por ahora.</div></sc-if>
+                  <sc-for list="{{ cs.rows }}" as="r" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;">
+                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div></div>
+                      <button onClick="{{ r.onWa }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>Enviar</button>
+                      <button onClick="{{ r.onSkip }}" title="No contactar por 30 días" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;flex-shrink:0;">Omitir</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
             </div>
           </sc-if>
 
@@ -5874,7 +5912,7 @@ class Component extends DCLogic {
     desarrollo: [{key:'mezclas',label:'Mezclas'},{key:'productos',label:'Productos'},{key:'kits',label:'Kits'}],
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
     inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
-    ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
+    ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'autowa',label:'Campañas WhatsApp'},{key:'servicio',label:'Servicio al cliente'}],
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'informe',label:'Informe'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
@@ -6139,6 +6177,7 @@ class Component extends DCLogic {
     try{ const _cv=JSON.parse(localStorage.getItem('oda_hub_conv_v1')||'null'); if(_cv) patch.conversaciones=_cv; }catch(e){}
     try{ const _ag=JSON.parse(localStorage.getItem('oda_hub_agente_v1')||'null'); if(_ag) patch.agenteCfg=_ag; }catch(e){}
     try{ const _c=JSON.parse(localStorage.getItem('oda_hub_car_contact_v1')||'null'); if(_c) patch.carritosContactados=_c; }catch(e){}
+    try{ const _cp=JSON.parse(localStorage.getItem('oda_hub_camp_sent_v1')||'null'); if(_cp) patch.campContactados=_cp; }catch(e){}
     try{ const _n=JSON.parse(localStorage.getItem('oda_hub_car_nota_v1')||'null'); if(_n) patch.carritosNotas=_n; }catch(e){}
     this.setState(patch);
     this.cloudInit();
@@ -6866,6 +6905,58 @@ Instrucciones de respuesta:
   toggleCarritoCanal(c, canal){ const k=this._carritoKey(c); if(!k) return; const m={...(this.state.carritosContactados||{})}; const cur={...(m[k]||{})}; if(cur[canal]) delete cur[canal]; else cur[canal]=Date.now(); if(Object.keys(cur).length) m[k]=cur; else delete m[k]; this.setState({carritosContactados:m}); try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carContact:m}); this.toast(canal==='wa' ? (cur.wa?'Marcado: contactado por WhatsApp':'Desmarcado') : (cur.llamada?'Marcado: se llamó':'Desmarcado')); }
   carritoNota(c){ const k=this._carritoKey(c); return (this.state.carritosNotas||{})[k]||''; }
   setCarritoNota(c, txt){ const k=this._carritoKey(c); if(!k) return; const m={...(this.state.carritosNotas||{})}; if(txt) m[k]=txt; else delete m[k]; this.setState({carritosNotas:m}); try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carNotas:m}); }
+  _marcarCampEnviada(k){ if(!k) return; const m={...(this.state.campContactados||{})}; m[k]=Date.now(); this.setState({campContactados:m}); try{ localStorage.setItem('oda_hub_camp_sent_v1', JSON.stringify(m)); }catch(e){} }
+  _buildCampanas(out, st){ const cfg=this.agenteCfgGet(); const cc=this.state.campContactados||{}; const now=Date.now(); const DIA=86400000;
+    const tog={ v:!!cfg.campCarritosOn, bg:cfg.campCarritosOn?'var(--brand-primary)':'#D9D2C3', x:cfg.campCarritosOn?'22px':'2px', on:()=>this.setAgenteCfg('campCarritosOn',!cfg.campCarritosOn) };
+    out.campCarritosTog=tog;
+    out.campHoras=cfg.campCarritoHoras||1; out.onCampHoras=(e)=>this.setAgenteCfg('campCarritoHoras',Number(e.target.value)||1);
+    out.campCupon=cfg.campCupon||''; out.onCampCupon=(e)=>this.setAgenteCfg('campCupon',e.target.value);
+    out.campPlantilla=cfg.campPlantillaCarrito||''; out.onCampPlantilla=(e)=>this.setAgenteCfg('campPlantillaCarrito',e.target.value);
+    out.campLinkGoogle=cfg.campLinkGoogle||''; out.onCampLinkGoogle=(e)=>this.setAgenteCfg('campLinkGoogle',e.target.value);
+    const recDias=Number(cfg.campRecompraDias)||45; out.campRecompraDias=recDias; out.onCampRecompraDias=(e)=>this.setAgenteCfg('campRecompraDias',Number(e.target.value)||45);
+    // ---- clientes desde el histórico ----
+    const vivas=(st.ventas||[]).filter(v=>!v.cancelada && (v.items||[]).length);
+    const norm=(c)=>{ const d=String(c||'').replace(/\D/g,''); return d.length>=10? d.slice(-10) : ''; };
+    const cli={}; vivas.forEach(v=>{ const cel=norm(v.celular); if(!cel) return; const o=cli[cel]=cli[cel]||{cel, nombre:'', ventas:[], gasto:0, prods:{}, last:''};
+      if(v.cliente && (!o.nombre||String(v.cliente).length>o.nombre.length)) o.nombre=this.fixTxt(v.cliente);
+      o.ventas.push(v); o.gasto+=this.ventaTotal(v); const f=this.parseFecha(v.fecha)||''; if(f>o.last) o.last=f;
+      (v.items||[]).forEach(it=>{ const n=it.producto||it.referencia; if(n) o.prods[n]=(o.prods[n]||0)+(Number(it.unidades)||0); }); });
+    const clientes=Object.values(cli);
+    // co-ocurrencia de productos (para cross-sell)
+    const co={}; vivas.forEach(v=>{ const ns=[...new Set((v.items||[]).map(it=>it.producto).filter(Boolean))]; ns.forEach(a=>{ ns.forEach(b=>{ if(a!==b){ (co[a]=co[a]||{})[b]=(co[a][b]||0)+1; } }); }); });
+    const diasSin=(o)=> o.last? Math.floor((now-new Date(o.last+'T00:00:00').getTime())/DIA) : 9999;
+    const topProd=(o)=> Object.entries(o.prods).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||'';
+    const bloqueado=(cel)=> Object.entries(cc).some(([k,ts])=> k.endsWith('|'+cel) && (now-ts)<30*DIA);
+    const primer=(o)=> (o.nombre||'').split(/\s+/)[0]||'';
+    const gastos=clientes.map(c=>c.gasto).sort((a,b)=>a-b); const p80=gastos.length? gastos[Math.floor(gastos.length*0.8)] : Infinity;
+    const usados=new Set(); const cupon=(cfg.campCupon||'').trim(); const link=(cfg.campLinkGoogle||'').trim();
+    const mkRow=(tipo,o,sub,msg)=>{ usados.add(o.cel); const full='57'+o.cel; const key=tipo+'|'+o.cel;
+      return { cliente:o.nombre||o.cel, sub, onWa:()=>this.setState({modal:'wacompose', waCompose:{titulo:'Campaña · '+tipo, msg, full, campKey:key}}), onSkip:()=>this._marcarCampEnviada(key) }; };
+    const cand=(pred)=> clientes.filter(o=>!usados.has(o.cel) && !bloqueado(o.cel) && pred(o));
+    // 1) Agradecimiento + calificación (ventas de hace 4-10 días)
+    const gracias=cand(o=>{ const d=diasSin(o); return d>=4 && d<=10; }).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
+      const msg=s+' 🤍 ¡gracias por tu compra en Oasis del Alma! ¿Cómo te ha ido con tu pedido? Nos encantaría leerte.'+(link?(' Si nos regalas una calificación nos ayudas muchísimo: '+link):'')+' — Oasis del Alma';
+      return mkRow('gracias',o,'Compró hace '+diasSin(o)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
+    // 2) VIP inactivos
+    const vips=cand(o=> o.gasto>=p80 && diasSin(o)>=60).sort((a,b)=>b.gasto-a.gasto).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
+      const msg=s+' 🤍 eres de nuestros clientes más especiales y te extrañamos en Oasis del Alma. Queremos consentirte'+(cupon?(': usa el cupón '+cupon+' en tu próxima compra en oasisdelalma.co'):' — escríbenos y te damos un beneficio en tu próxima compra')+' 🌿';
+      return mkRow('vip',o,'VIP · '+this.fmt(Math.round(o.gasto))+' históricos · '+diasSin(o)+' días sin comprar',msg); });
+    // 3) Recompra
+    const rec=cand(o=>{ const d=diasSin(o); return d>=recDias && d<=180; }).sort((a,b)=>diasSin(a)-diasSin(b)).slice(0,40).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola'; const p=topProd(o);
+      const msg=s+' 🌿 hace un tiempo disfrutaste '+(p||'tus productos Oasis del Alma')+' y queremos saber cómo te fue. ¿Te lo volvemos a enviar? Envío gratis desde $150.000 en oasisdelalma.co — Oasis del Alma';
+      return mkRow('recompra',o,(p?('Compra habitual: '+p+' · '):'')+diasSin(o)+' días sin comprar',msg); });
+    // 4) Cross-sell (compradores recientes)
+    const cross=cand(o=>{ const d=diasSin(o); return d>10 && d<recDias; }).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola'; const p=topProd(o);
+      const sug=p? Object.entries(co[p]||{}).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).find(n=>!o.prods[n]) : '';
+      const msg=s+' 🌿'+(p?(' vimos que te llevaste '+p+'.'):'')+(sug?(' Combina perfecto con '+sug+' — muchos clientes los usan juntos.'):' Tenemos novedades que combinan perfecto con tu última compra.')+' ¿Te lo mostramos? oasisdelalma.co — Oasis del Alma';
+      return mkRow('crosssell',o,(p?('Última compra: '+p):'Compra reciente')+(sug?(' → sugerir '+sug):''),msg); });
+    out.campSecciones=[
+      { titulo:'Agradecimiento y calificación', desc:'compraron hace 4-10 días · pide reseña en Google', rows:gracias, count:gracias.length, vacio:gracias.length===0 },
+      { titulo:'Clientes VIP inactivos', desc:'top 20% de gasto · 60+ días sin comprar', rows:vips, count:vips.length, vacio:vips.length===0 },
+      { titulo:'Recompra', desc:recDias+'+ días sin comprar · recordar su producto habitual', rows:rec, count:rec.length, vacio:rec.length===0 },
+      { titulo:'Cross-sell', desc:'compradores recientes · sugerir el complemento', rows:cross, count:cross.length, vacio:cross.length===0 },
+    ];
+  }
   _marcarCarritoContactado(k){ if(!k) return; const m={...(this.state.carritosContactados||{})}; m[k]={...(m[k]||{}), wa:Date.now()}; this.setState({carritosContactados:m}); try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carContact:m}); }
   // --- Envío MANUAL (wa.me) — no requiere Cloud API ni número dedicado ---
   waMensajeManual(v, key){
@@ -6893,7 +6984,7 @@ Instrucciones de respuesta:
     const url=d.full?('https://wa.me/'+d.full+'?text='+encodeURIComponent(msg)):('https://wa.me/?text='+encodeURIComponent(msg));
     try{ window.open(url,'_blank'); }catch(e){}
     if(d.ventaId && d.key){ const list=(this.state.ventas||[]).map(x=>{ if(x.id!==d.ventaId) return x; const waLog=(x.waLog||[]).slice(); waLog.push({key:d.key, ts:Date.now(), manual:true}); return {...x, waLog}; }); this.setState({ventas:list, modal:null, waCompose:null},()=>this.persist()); const _v=list.find(x=>x.id===d.ventaId); if(this.cloudOn()&&_v) this.cloudSaveVenta(_v); }
-    else { if(d.cartId) this._marcarCarritoContactado(d.cartId); this.setState({modal:null, waCompose:null}); }
+    else { if(d.cartId) this._marcarCarritoContactado(d.cartId); if(d.campKey) this._marcarCampEnviada(d.campKey); this.setState({modal:null, waCompose:null}); }
     this.toast('WhatsApp abierto');
   }
   // Resuelve el SKU de un producto/kit a partir de su nombre (cuando la venta llegó sin código).
@@ -8707,8 +8798,8 @@ Instrucciones de respuesta:
     out.ventasNavBg = onVen? 'rgba(167,134,89,0.18)':'transparent';
     out.ventasNavColor = onVen? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyV=(k)=>{ const a=onVen&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador'); out.subVenCarritos=subStyV('carritos'); out.subVenSvc=subStyV('servicio');
-    out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), carritos:()=>this.setState({module:'ventas',sub:'carritos'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}), servicio:()=>this.setState({module:'ventas',sub:'servicio'}) };
+    out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador'); out.subVenCarritos=subStyV('carritos'); out.subVenAutoWa=subStyV('autowa'); out.subVenSvc=subStyV('servicio');
+    out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), carritos:()=>this.setState({module:'ventas',sub:'carritos'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}), autowa:()=>this.setState({module:'ventas',sub:'autowa'}), servicio:()=>this.setState({module:'ventas',sub:'servicio'}) };
     const venAcc = acc? (acc.admin?'write':(acc.ventas||'none')) : 'none';
     out.canWriteVentas = venAcc==='write';
 
@@ -8899,6 +8990,8 @@ Instrucciones de respuesta:
     out.showVentasPedidos = onVen && st.sub==='pedidos';
     out.showVentasCotizador = onVen && st.sub==='cotizador';
     out.showVentasCarritos = onVen && st.sub==='carritos';
+    out.showVentasAutoWa = onVen && st.sub==='autowa';
+    if(out.showVentasAutoWa){ this._buildCampanas(out, st); }
     out.showVentasServicio = onVen && st.sub==='servicio';
     out.showFinResumen = onFin && st.sub==='finresumen';
     out.showFinPagar = onFin && st.sub==='finpagar';
@@ -8921,7 +9014,7 @@ Instrucciones de respuesta:
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
     else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
     else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':(st.sub==='informe'?'Informe del chatbot':'Bandeja de conversaciones'); }
-    else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
+    else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',autowa:'Campañas WhatsApp',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
     else if(onMkt){ out.crumb='Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
