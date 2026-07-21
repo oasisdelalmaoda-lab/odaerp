@@ -1460,6 +1460,7 @@
                       <div style="display:flex;align-items:center;gap:8px;">
                         <span style="width:8px;height:8px;border-radius:99px;background:{{ c.dot }};flex-shrink:0;"></span>
                         <span style="font-weight:700;font-size:13.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.cliente }}</span>
+                        <sc-if value="{{ c.online }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;color:#2E7D46;flex-shrink:0;"><span style="width:7px;height:7px;border-radius:99px;background:#3FA45B;box-shadow:0 0 0 3px rgba(63,164,91,0.22);"></span>En línea</span></sc-if>
                         <span style="font-size:11px;color:var(--text-muted);">{{ c.hora }}</span>
                       </div>
                       <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
@@ -1479,6 +1480,7 @@
                       <div style="font-size:11.5px;color:var(--text-muted);">{{ cv.intencionL }}<sc-if value="{{ cv.hayTel }}" hint-placeholder-val="{{ false }}"> · {{ cv.telefono }}</sc-if></div>
                     </div>
                     <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ cv.canalBg }};color:{{ cv.canalFg }};">{{ cv.canalL }}</span>
+                    <sc-if value="{{ cv.online }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:rgba(63,164,91,0.16);color:#2E7D46;"><span style="width:6px;height:6px;border-radius:99px;background:#3FA45B;"></span>En vivo</span></sc-if>
                     <span style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ cv.estadoBg }};color:{{ cv.estadoFg }};"><span style="width:6px;height:6px;border-radius:99px;background:{{ cv.estadoDot }};"></span>{{ cv.estadoL }}</span>
                     <div style="flex:1;"></div>
                     <select value="{{ convAsigVal }}" onChange="{{ onConvAsignar }}" style="font-family:inherit;font-size:12px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ convAsigOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
@@ -1541,11 +1543,20 @@
                 <sc-if value="{{ agFaqsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Aún no hay preguntas. Agrega la primera — p. ej. «¿Hacen ventas al por mayor?»</div></sc-if>
                 <div style="display:flex;flex-direction:column;gap:12px;">
                   <sc-for list="{{ agFaqs }}" as="f" hint-placeholder-count="0">
-                    <div style="display:grid;grid-template-columns:1fr 1.4fr auto;gap:10px;align-items:start;">
+                    <sc-if value="{{ f.locked }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:flex-start;gap:12px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 14px;">
+                        <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:700;">{{ f.p }}</div><sc-if value="{{ f.hayR }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;line-height:1.45;">{{ f.r }}</div></sc-if></div>
+                        <button onClick="{{ f.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ f.open }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:grid;grid-template-columns:1fr 1.4fr auto auto;gap:10px;align-items:start;">
                       <input value="{{ f.p }}" onInput="{{ f.onP }}" placeholder="Pregunta del cliente…" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
                       <textarea value="{{ f.r }}" onInput="{{ f.onR }}" rows="2" placeholder="Respuesta que debe dar el agente…" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.45;"></textarea>
+                      <button onClick="{{ f.onLock }}" title="Bloquear" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.7-1.4"></path></svg></button>
                       <button onClick="{{ f.onDel }}" title="Eliminar" style="font-family:inherit;font-size:14px;font-weight:700;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button>
                     </div>
+                    </sc-if>
                   </sc-for>
                 </div>
               </div>
@@ -8479,6 +8490,9 @@ Instrucciones de respuesta:
     try{
       const reload=()=>{ clearTimeout(this._convRT); this._convRT=setTimeout(()=>this.cloudLoadConvs(), 400); };
       this._convSub=sb.channel('oda-convs').on('postgres_changes',{event:'*',schema:'public',table:'conversaciones'},reload).on('postgres_changes',{event:'*',schema:'public',table:'mensajes'},reload).subscribe();
+      if(!this._presSub){ const pres=sb.channel('oda-web-presence',{config:{presence:{key:'hub-'+Math.random().toString(36).slice(2,8)}}});
+        pres.on('presence',{event:'sync'},()=>{ try{ const stt=pres.presenceState()||{}; const ids=new Set(); Object.keys(stt).forEach(k=>{ (stt[k]||[]).forEach(m=>{ if(m&&m.id) ids.add(String(m.id)); }); }); const arr=Array.from(ids); const cur=(this.state.webOnline||[]); if(cur.length!==arr.length || arr.some(x=>cur.indexOf(x)<0)) this.setState({webOnline:arr}); }catch(e){} });
+        pres.subscribe(); this._presSub=pres; }
     }catch(e){} }
   async cloudSaveConv(id, patch){ const sb=this._sbClient(); if(!sb||!this.state.convsCloud) return; try{ await sb.from('conversaciones').update(patch).eq('id',id); }catch(e){} }
   async cloudLoadAgenteCfg(){ const sb=this._sbClient(); if(!sb) return; try{ const {data}=await sb.from('agente_config').select('config,actualizado').eq('id',1).single();
@@ -8494,7 +8508,7 @@ Instrucciones de respuesta:
   agLecLock(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, lock:!o.lock}; })); }
   _agRespObj(i){ const r=(this.agenteCfgGet().responsablesExtra||[])[i]; return (typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{nombre:'',rol:'',lock:false}); }
   agRespSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('responsablesExtra', (cfg.responsablesExtra||[]).map((r,x)=>{ if(x!==i) return r; const o=(typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{}); return {...o,[k]:v}; })); }
-  agFaqAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', [...(cfg.faqs||[]), {p:'', r:''}]); }
+  agFaqAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', [...(cfg.faqs||[]), {p:'', r:'', lock:false}]); }
   agFaqDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', (cfg.faqs||[]).filter((_,x)=>x!==i)); }
   agFaqSet(i,k,v){ const cfg=this.agenteCfgGet(); const list=(cfg.faqs||[]).map((f,x)=> x===i? {...f,[k]:v} : f); this.setAgenteCfg('faqs', list); }
   agAutoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).map((a,x)=> x===i? {...a,[k]:v} : a)); }
@@ -8966,8 +8980,9 @@ Instrucciones de respuesta:
       out.convCanalOpts=['todos','whatsapp','instagram','messenger','web']; out.convEstadoOpts=['activas','bot','humano','necesita','resuelta','todas'];
       let rows=convs.filter(c=>{ if(fC!=='todos'&&c.canal!==fC) return false; if(fE==='activas') return c.estado!=='resuelta'; if(fE!=='todas'&&c.estado!==fE) return false; return true; });
       const selId=st.convSelId;
+      const _wo=(st.webOnline||[]);
       out.convRows=rows.map(c=>{ const cm=this.convCanalMeta(c.canal), em=this.convEstadoMeta(c.estado); const last=(c.mensajes||[])[ (c.mensajes||[]).length-1 ]||{}; const asigN=c.asignadoA? this.leadUName(c.asignadoA):'';
-        return { id:c.id, cliente:c.cliente, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, dot:em.dot, estadoL:em.l, ultimo:(last.texto||'').slice(0,64)+((last.texto||'').length>64?'…':''), hora:last.hora||'', asigIni:asigN?this._initialsFrom(asigN):'', asigColor:c.asignadoA?this.leadUColor(c.asignadoA):'#9b8e78', hayAsig:!!asigN, noLeidos:c.noLeidos||0, hayNoLeidos:(c.noLeidos||0)>0, selBg:(c.id===selId?'rgba(167,134,89,0.1)':'transparent'), selBorder:(c.id===selId?'var(--brand-primary)':'transparent'), onSel:((id)=>()=>this.setState({convSelId:id}))(c.id) }; });
+        return { id:c.id, cliente:c.cliente, online:(c.canal==='web' && _wo.indexOf(String(c.id))>=0), canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, dot:em.dot, estadoL:em.l, ultimo:(last.texto||'').slice(0,64)+((last.texto||'').length>64?'…':''), hora:last.hora||'', asigIni:asigN?this._initialsFrom(asigN):'', asigColor:c.asignadoA?this.leadUColor(c.asignadoA):'#9b8e78', hayAsig:!!asigN, noLeidos:c.noLeidos||0, hayNoLeidos:(c.noLeidos||0)>0, selBg:(c.id===selId?'rgba(167,134,89,0.1)':'transparent'), selBorder:(c.id===selId?'var(--brand-primary)':'transparent'), onSel:((id)=>()=>this.setState({convSelId:id}))(c.id) }; });
       out.convRowsVacio=rows.length===0;
       out.convNumActivas=convs.filter(c=>c.estado!=='resuelta').length;
       out.convNumNecesita=convs.filter(c=>c.estado==='necesita').length;
@@ -8975,7 +8990,7 @@ Instrucciones de respuesta:
       const cc=convs.find(c=>c.id===selId);
       out.convSelOpen=!!cc;
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
-        out.cv={ id:cc.id, cliente:cc.cliente, telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
+        out.cv={ id:cc.id, cliente:cc.cliente, online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
           mensajes:(cc.mensajes||[]).map((m,i)=>{ const esCliente=m.de==='cliente'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?'Asesor':cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
         out.convAsigVal=cc.asignadoA||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
@@ -9005,7 +9020,8 @@ Instrucciones de respuesta:
       out.agConoc=ag.conocimiento; out.onAgConoc=(e)=>this.setAgenteCfg('conocimiento',e.target.value);
       const tog=(k)=>({v:!!ag[k], bg:ag[k]?'var(--brand-primary)':'#D9D2C3', x:ag[k]?'22px':'2px', on:()=>this.setAgenteCfg(k,!ag[k])});
       out.agLead=tog('crearLeadAuto'); out.agCaso=tog('crearCasoAuto'); out.agEscalar=tog('escalarSiDuda');
-      out.agFaqs=(ag.faqs||[]).map((f,i)=>({ p:f.p, r:f.r, onP:((ix)=>(e)=>this.agFaqSet(ix,'p',e.target.value))(i), onR:((ix)=>(e)=>this.agFaqSet(ix,'r',e.target.value))(i), onDel:((ix)=>()=>this.agFaqDel(ix))(i) }));
+      const _faqLocked=(f)=> f? ((f.lock===undefined)? !!(((f.p||'').trim())||((f.r||'').trim())) : !!f.lock) : false;
+      out.agFaqs=(ag.faqs||[]).map((f,i)=>{ const lk=_faqLocked(f); return { p:f.p||'', r:f.r||'', hayR:!!(f.r&&String(f.r).trim()), locked:lk, open:!lk, onP:((ix)=>(e)=>this.agFaqSet(ix,'p',e.target.value))(i), onR:((ix)=>(e)=>this.agFaqSet(ix,'r',e.target.value))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().faqs||[])[ix]||{}); this.agFaqSet(ix,'lock', !_faqLocked(cur)); })(i), onDel:((ix)=>()=>this.agFaqDel(ix))(i) }; });
       out.agFaqsVacio=(ag.faqs||[]).length===0;
       out.agFaqAdd=()=>this.agFaqAdd();
       out.agLecs=(ag.lecciones||[]).map((l,i)=>{ const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return { v:o.t, locked:!!o.lock, open:!o.lock, onV:((ix)=>(e)=>this.agLecSet(ix,e.target.value))(i), onDel:((ix)=>()=>this.agLecDel(ix))(i), onLock:((ix)=>()=>this.agLecLock(ix))(i) }; });
