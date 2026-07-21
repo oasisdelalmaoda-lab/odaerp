@@ -2176,6 +2176,18 @@
                 <div style="font-size:13px;color:var(--text-muted);max-width:420px;line-height:1.5;">Checkouts sin completar en Shopify. Escríbeles por WhatsApp para ayudarlos a terminar la compra.</div>
                 <button onClick="{{ carritosRefrescar }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>Actualizar</button>
               </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                  <div onClick="{{ campCarritosTog.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ campCarritosTog.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;"><span style="position:absolute;top:2px;left:{{ campCarritosTog.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
+                  <div style="flex:1;"><div style="font-weight:800;font-size:13.5px;">Recuperación automática de carritos</div><div style="font-size:11.5px;color:var(--text-muted);">Mensaje a la hora configurada del abandono + segundo intento a las 24h con cupón. Requiere la función <code style="font-size:10.5px;">carritos-auto</code> desplegada.</div></div>
+                </div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Horas tras el abandono<input type="number" min="1" step="1" value="{{ campHoras }}" onInput="{{ onCampHoras }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cupón (2º intento y campañas)<input value="{{ campCupon }}" onInput="{{ onCampCupon }}" placeholder="ej. VUELVE10" style="display:block;width:160px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Plantilla aprobada de Meta <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ campPlantilla }}" onInput="{{ onCampPlantilla }}" placeholder="nombre exacto · vacío = texto libre" style="display:block;width:230px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                </div>
+                <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">⚠ WhatsApp solo permite iniciar conversación con una <strong>plantilla aprobada</strong> en Meta; sin plantilla, el mensaje automático solo llega a quienes te escribieron en las últimas 24h.</p>
+              </div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;">
                 <div style="position:relative;flex:1 1 160px;min-width:150px;max-width:260px;">
                   <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
@@ -2509,26 +2521,44 @@
                 </div>
                 <div style="padding:11px 20px;font-size:11.5px;color:var(--text-muted);border-top:1px solid var(--border-subtle);">{{ clientesViewN }} clientes · RFM = Recencia · Frecuencia · Monto (1-5). Haz clic en un cliente para ver su historial y generar un mensaje con IA.</div>
               </div>
+
+              <div style="margin-top:24px;">
+                <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+                  <div style="flex:1;min-width:240px;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0;">Automatizaciones de venta</h3>
+                    <p style="font-size:12px;color:var(--text-muted);margin:3px 0 0;line-height:1.5;">Elige clientes del histórico y envía por WhatsApp: reactivación VIP, recompra y cross-sell. Apruebas cada mensaje uno a uno · máx. 1 cada 30 días.</p>
+                  </div>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Días sin comprar (recompra)<input type="number" min="15" step="5" value="{{ campRecompraDias }}" onInput="{{ onCampRecompraDias }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                </div>
+              <sc-for list="{{ campVentasSecc }}" as="cs" hint-placeholder-count="3">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border-subtle);">
+                    <div style="flex:1;"><span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;">{{ cs.titulo }}</span><span style="font-size:12px;color:var(--text-muted);margin-left:10px;">{{ cs.desc }}</span></div>
+                    <span style="font-size:11px;font-weight:800;padding:4px 11px;border-radius:99px;background:rgba(167,134,89,0.14);color:var(--brand-ink);">{{ cs.count }}</span>
+                  </div>
+                  <sc-if value="{{ cs.vacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12.5px;">Sin candidatos por ahora.</div></sc-if>
+                  <sc-for list="{{ cs.rows }}" as="r" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;">
+                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div></div>
+                      <button onClick="{{ r.onWa }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>Enviar</button>
+                      <button onClick="{{ r.onSkip }}" title="No contactar por 30 días" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;flex-shrink:0;">Omitir</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+              </div>
               </sc-if>
 
               <sc-if value="{{ baseTabCamp }}" hint-placeholder-val="{{ false }}">
             <div style="max-width:1040px;">
-              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:820px;line-height:1.55;text-wrap:pretty;">Los <strong>carritos abandonados</strong> se recuperan solos (función automática cada 30 min). Las <strong>campañas a clientes</strong> se calculan con el histórico de ventas y tú las apruebas una a una: el botón abre WhatsApp con el mensaje listo para enviar. Máx. 1 campaña por cliente cada 30 días.</p>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:820px;line-height:1.55;text-wrap:pretty;">Campañas de <strong>agradecimiento y calificación</strong>: a quienes ya recibieron su pedido (según las etiquetas de Shopify) les pides una reseña en Google. Apruebas cada mensaje uno a uno; el botón abre WhatsApp con el texto listo. Máx. 1 campaña por cliente cada 30 días.</p>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                  <div onClick="{{ campCarritosTog.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ campCarritosTog.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;"><span style="position:absolute;top:2px;left:{{ campCarritosTog.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
-                  <div style="flex:1;"><div style="font-weight:800;font-size:13.5px;">Recuperación automática de carritos</div><div style="font-size:11.5px;color:var(--text-muted);">Mensaje a la hora configurada del abandono + segundo intento a las 24h con cupón. Requiere la función <code style="font-size:10.5px;">carritos-auto</code> desplegada.</div></div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Link de calificación Google<input value="{{ campLinkGoogle }}" onInput="{{ onCampLinkGoogle }}" placeholder="https://g.page/r/…/review" style="display:block;width:320px;max-width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
                 </div>
-                <div style="display:flex;gap:14px;flex-wrap:wrap;">
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Horas tras el abandono<input type="number" min="1" step="1" value="{{ campHoras }}" onInput="{{ onCampHoras }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cupón (2º intento y campañas)<input value="{{ campCupon }}" onInput="{{ onCampCupon }}" placeholder="ej. VUELVE10" style="display:block;width:160px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Plantilla aprobada de Meta <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ campPlantilla }}" onInput="{{ onCampPlantilla }}" placeholder="nombre exacto · vacío = texto libre" style="display:block;width:230px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Link de calificación Google<input value="{{ campLinkGoogle }}" onInput="{{ onCampLinkGoogle }}" placeholder="https://g.page/r/…/review" style="display:block;width:260px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Días sin comprar (recompra)<input type="number" min="15" step="5" value="{{ campRecompraDias }}" onInput="{{ onCampRecompraDias }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                </div>
-                <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">⚠ WhatsApp solo permite iniciar conversación con una <strong>plantilla aprobada</strong> en Meta; sin plantilla, el mensaje automático solo llega a quienes te escribieron en las últimas 24h. Las campañas aprobadas a mano salen por tu WhatsApp normal (wa.me), sin esa restricción.</p>
+                <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">Las campañas aprobadas a mano salen por tu WhatsApp normal (wa.me), sin restricción de plantilla. La recuperación de carritos se configura en <strong>Carritos abandonados</strong> y las automatizaciones de venta en <strong>Base de datos → Clientes · Inteligencia</strong>.</p>
               </div>
-              <sc-for list="{{ campSecciones }}" as="cs" hint-placeholder-count="4">
+              <sc-for list="{{ campGraciasSecc }}" as="cs" hint-placeholder-count="1">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden;">
                   <div style="display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border-subtle);">
                     <div style="flex:1;"><span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;">{{ cs.titulo }}</span><span style="font-size:12px;color:var(--text-muted);margin-left:10px;">{{ cs.desc }}</span></div>
@@ -6909,12 +6939,13 @@ Instrucciones de respuesta:
   carritoNota(c){ const k=this._carritoKey(c); return (this.state.carritosNotas||{})[k]||''; }
   setCarritoNota(c, txt){ const k=this._carritoKey(c); if(!k) return; const m={...(this.state.carritosNotas||{})}; if(txt) m[k]=txt; else delete m[k]; this.setState({carritosNotas:m}); try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carNotas:m}); }
   _marcarCampEnviada(k){ if(!k) return; const m={...(this.state.campContactados||{})}; m[k]=Date.now(); this.setState({campContactados:m}); try{ localStorage.setItem('oda_hub_camp_sent_v1', JSON.stringify(m)); }catch(e){} }
-  _buildCampanas(out, st){ const cfg=this.agenteCfgGet(); const cc=this.state.campContactados||{}; const now=Date.now(); const DIA=86400000;
-    const tog={ v:!!cfg.campCarritosOn, bg:cfg.campCarritosOn?'var(--brand-primary)':'#D9D2C3', x:cfg.campCarritosOn?'22px':'2px', on:()=>this.setAgenteCfg('campCarritosOn',!cfg.campCarritosOn) };
-    out.campCarritosTog=tog;
+  _buildCartAuto(out){ const cfg=this.agenteCfgGet();
+    out.campCarritosTog={ v:!!cfg.campCarritosOn, bg:cfg.campCarritosOn?'var(--brand-primary)':'#D9D2C3', x:cfg.campCarritosOn?'22px':'2px', on:()=>this.setAgenteCfg('campCarritosOn',!cfg.campCarritosOn) };
     out.campHoras=cfg.campCarritoHoras||1; out.onCampHoras=(e)=>this.setAgenteCfg('campCarritoHoras',Number(e.target.value)||1);
     out.campCupon=cfg.campCupon||''; out.onCampCupon=(e)=>this.setAgenteCfg('campCupon',e.target.value);
     out.campPlantilla=cfg.campPlantillaCarrito||''; out.onCampPlantilla=(e)=>this.setAgenteCfg('campPlantillaCarrito',e.target.value);
+  }
+  _buildCampanas(out, st){ const cfg=this.agenteCfgGet(); const cc=this.state.campContactados||{}; const now=Date.now(); const DIA=86400000;
     out.campLinkGoogle=cfg.campLinkGoogle||''; out.onCampLinkGoogle=(e)=>this.setAgenteCfg('campLinkGoogle',e.target.value);
     const recDias=Number(cfg.campRecompraDias)||45; out.campRecompraDias=recDias; out.onCampRecompraDias=(e)=>this.setAgenteCfg('campRecompraDias',Number(e.target.value)||45);
     // ---- clientes desde el histórico ----
@@ -6922,12 +6953,13 @@ Instrucciones de respuesta:
     const norm=(c)=>{ const d=String(c||'').replace(/\D/g,''); return d.length>=10? d.slice(-10) : ''; };
     const cli={}; vivas.forEach(v=>{ const cel=norm(v.celular); if(!cel) return; const o=cli[cel]=cli[cel]||{cel, nombre:'', ventas:[], gasto:0, prods:{}, last:''};
       if(v.cliente && (!o.nombre||String(v.cliente).length>o.nombre.length)) o.nombre=this.fixTxt(v.cliente);
-      o.ventas.push(v); o.gasto+=this.ventaTotal(v); const f=this.parseFecha(v.fecha)||''; if(f>o.last) o.last=f;
+      o.ventas.push(v); o.gasto+=this.ventaTotal(v); const f=this.parseFecha(v.fecha)||''; if(f>o.last){ o.last=f; o.lastV=v; }
       (v.items||[]).forEach(it=>{ const n=it.producto||it.referencia; if(n) o.prods[n]=(o.prods[n]||0)+(Number(it.unidades)||0); }); });
     const clientes=Object.values(cli);
     // co-ocurrencia de productos (para cross-sell)
     const co={}; vivas.forEach(v=>{ const ns=[...new Set((v.items||[]).map(it=>it.producto).filter(Boolean))]; ns.forEach(a=>{ ns.forEach(b=>{ if(a!==b){ (co[a]=co[a]||{})[b]=(co[a][b]||0)+1; } }); }); });
     const diasSin=(o)=> o.last? Math.floor((now-new Date(o.last+'T00:00:00').getTime())/DIA) : 9999;
+    const entregada=(v)=>{ if(!v) return false; const tg=String(v.tags||'').toLowerCase(); if(/cm:\s*entregada|entregad[ao]|delivered|fulfilled/.test(tg)) return true; return this.normKey(v.ordFulfill||'')==='fulfilled'; };
     const topProd=(o)=> Object.entries(o.prods).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||'';
     const bloqueado=(cel)=> Object.entries(cc).some(([k,ts])=> k.endsWith('|'+cel) && (now-ts)<30*DIA);
     const primer=(o)=> (o.nombre||'').split(/\s+/)[0]||'';
@@ -6936,10 +6968,10 @@ Instrucciones de respuesta:
     const mkRow=(tipo,o,sub,msg)=>{ usados.add(o.cel); const full='57'+o.cel; const key=tipo+'|'+o.cel;
       return { cliente:o.nombre||o.cel, sub, onWa:()=>this.setState({modal:'wacompose', waCompose:{titulo:'Campaña · '+tipo, msg, full, campKey:key}}), onSkip:()=>this._marcarCampEnviada(key) }; };
     const cand=(pred)=> clientes.filter(o=>!usados.has(o.cel) && !bloqueado(o.cel) && pred(o));
-    // 1) Agradecimiento + calificación (ventas de hace 4-10 días)
-    const gracias=cand(o=>{ const d=diasSin(o); return d>=4 && d<=10; }).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
+    // 1) Agradecimiento + calificación (pedido ya ENTREGADO según las etiquetas de Shopify)
+    const gracias=cand(o=> entregada(o.lastV) && diasSin(o)>=1 && diasSin(o)<=25).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
       const msg=s+' 🤍 ¡gracias por tu compra en Oasis del Alma! ¿Cómo te ha ido con tu pedido? Nos encantaría leerte.'+(link?(' Si nos regalas una calificación nos ayudas muchísimo: '+link):'')+' — Oasis del Alma';
-      return mkRow('gracias',o,'Compró hace '+diasSin(o)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
+      return mkRow('gracias',o,'Entregado · compró hace '+diasSin(o)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
     // 2) VIP inactivos
     const vips=cand(o=> o.gasto>=p80 && diasSin(o)>=60).sort((a,b)=>b.gasto-a.gasto).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
       const msg=s+' 🤍 eres de nuestros clientes más especiales y te extrañamos en Oasis del Alma. Queremos consentirte'+(cupon?(': usa el cupón '+cupon+' en tu próxima compra en oasisdelalma.co'):' — escríbenos y te damos un beneficio en tu próxima compra')+' 🌿';
@@ -6953,8 +6985,10 @@ Instrucciones de respuesta:
       const sug=p? Object.entries(co[p]||{}).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).find(n=>!o.prods[n]) : '';
       const msg=s+' 🌿'+(p?(' vimos que te llevaste '+p+'.'):'')+(sug?(' Combina perfecto con '+sug+' — muchos clientes los usan juntos.'):' Tenemos novedades que combinan perfecto con tu última compra.')+' ¿Te lo mostramos? oasisdelalma.co — Oasis del Alma';
       return mkRow('crosssell',o,(p?('Última compra: '+p):'Compra reciente')+(sug?(' → sugerir '+sug):''),msg); });
-    out.campSecciones=[
-      { titulo:'Agradecimiento y calificación', desc:'compraron hace 4-10 días · pide reseña en Google', rows:gracias, count:gracias.length, vacio:gracias.length===0 },
+    out.campGraciasSecc=[
+      { titulo:'Agradecimiento y calificación', desc:'pedido ya entregado (según etiquetas) · pide reseña en Google', rows:gracias, count:gracias.length, vacio:gracias.length===0 },
+    ];
+    out.campVentasSecc=[
       { titulo:'Clientes VIP inactivos', desc:'top 20% de gasto · 60+ días sin comprar', rows:vips, count:vips.length, vacio:vips.length===0 },
       { titulo:'Recompra', desc:recDias+'+ días sin comprar · recordar su producto habitual', rows:rec, count:rec.length, vacio:rec.length===0 },
       { titulo:'Cross-sell', desc:'compradores recientes · sugerir el complemento', rows:cross, count:cross.length, vacio:cross.length===0 },
@@ -8255,7 +8289,7 @@ Instrucciones de respuesta:
         const ped=String(this.rowGet(row,['pedido','pedido #','order','orden','numero','número','name'])||'').trim(); const ovKey=String(this.rowGet(row,['ov','orden de venta','ordenventa'])||'').trim(); const key=ped||(ovKey?('ov:'+ovKey):('__'+order.length+'_'+Math.random()));
         if(!groups[key]){ order.push(key); let canal=(t==='ventas')? 'Página Web' : String(this.rowGet(row,['canal','channel','source'])||'Página Web').trim(); if(/^\d+$/.test(canal)||/draft/i.test(canal)||!canal) canal='Página Web'; canal=this.canonCanal(canal); let fc=String(this.rowGet(row,['fecha','date','created at','createdat'])||'').trim().split(/[ T]/)[0];
           const shipMethod=String(this.rowGet(row,['shipping method','shippingmethod','metodo_envio'])||''); const descCode=String(this.rowGet(row,['discount code','discountcode','codigo_descuento'])||'');
-          groups[key]={ pedido:ped, ov:String(this.rowGet(row,['ov','orden de venta','ordenventa'])||''), fecha:this.parseFecha(fc)||new Date().toISOString().slice(0,10), canal, bodega:String(this.rowGet(row,['bodega','warehouse'])||'Principal'), cliente:this.titleCase(this.rowGet(row,['cliente','customer','nombre','billing name','billingname','shipping name','shippingname'])||'Cliente'), celular:String(this.rowGet(row,['celular','telefono','teléfono','phone','billing phone','billingphone','shipping phone','shippingphone'])||''), correo:String(this.rowGet(row,['correo','email','correo electronico'])||''), ciudad:this.canonCiudad(this.extractCiudad(row)), cancelada:(!!String(this.rowGet(row,['cancelled at','cancelado','cancelled','fecha_cancelacion'])||'').trim() || /void|refund|cancel/i.test(String(this.rowGet(row,['financial status','estado','status','estado_financiero'])||''))), shipCharged:Number(String(this.rowGet(row,['envio','envío','shipping','flete'])||0).toString().replace(/[^\d.-]/g,''))||0, subtotalSh:Number(String(this.rowGet(row,['subtotal','sub total','subtotal price'])||'').toString().replace(/[^\d.-]/g,''))||0, totalSh:Number(String(this.rowGet(row,['total','total price','grand total','order total'])||'').toString().replace(/[^\d.-]/g,''))||0, descTotal:Number(String(this.rowGet(row,['discount amount','discountamount','descuento_total','descuento'])||0).toString().replace(/[^\d.-]/g,''))||0, freeShip:/gratis|free|env[ií]o\s*gratis/i.test(shipMethod+' '+descCode), guia:String(this.rowGet(row,['guia','guía','tracking','numero_guia','numero de guia'])||''), metodoPago:this.metodoFinal(this.rowGet(row,['metodo_pago','método de pago','metodo de pago','payment method','paymentmethod','payment','forma_pago'])||''), pagado:Number(this.rowGet(row,['pago','pagado','paid','abonado'])||0), ordFulfill:this.normKey(this.rowGet(row,['fulfillment status','fulfillment','estado_fulfillment','estado_entrega'])||''), items:[] }; }
+          groups[key]={ pedido:ped, ov:String(this.rowGet(row,['ov','orden de venta','ordenventa'])||''), fecha:this.parseFecha(fc)||new Date().toISOString().slice(0,10), canal, bodega:String(this.rowGet(row,['bodega','warehouse'])||'Principal'), cliente:this.titleCase(this.rowGet(row,['cliente','customer','nombre','billing name','billingname','shipping name','shippingname'])||'Cliente'), celular:String(this.rowGet(row,['celular','telefono','teléfono','phone','billing phone','billingphone','shipping phone','shippingphone'])||''), correo:String(this.rowGet(row,['correo','email','correo electronico'])||''), ciudad:this.canonCiudad(this.extractCiudad(row)), cancelada:(!!String(this.rowGet(row,['cancelled at','cancelado','cancelled','fecha_cancelacion'])||'').trim() || /void|refund|cancel/i.test(String(this.rowGet(row,['financial status','estado','status','estado_financiero'])||''))), shipCharged:Number(String(this.rowGet(row,['envio','envío','shipping','flete'])||0).toString().replace(/[^\d.-]/g,''))||0, subtotalSh:Number(String(this.rowGet(row,['subtotal','sub total','subtotal price'])||'').toString().replace(/[^\d.-]/g,''))||0, totalSh:Number(String(this.rowGet(row,['total','total price','grand total','order total'])||'').toString().replace(/[^\d.-]/g,''))||0, descTotal:Number(String(this.rowGet(row,['discount amount','discountamount','descuento_total','descuento'])||0).toString().replace(/[^\d.-]/g,''))||0, freeShip:/gratis|free|env[ií]o\s*gratis/i.test(shipMethod+' '+descCode), guia:String(this.rowGet(row,['guia','guía','tracking','numero_guia','numero de guia'])||''), metodoPago:this.metodoFinal(this.rowGet(row,['metodo_pago','método de pago','metodo de pago','payment method','paymentmethod','payment','forma_pago'])||''), pagado:Number(this.rowGet(row,['pago','pagado','paid','abonado'])||0), ordFulfill:this.normKey(this.rowGet(row,['fulfillment status','fulfillment','estado_fulfillment','estado_entrega'])||''), tags:String(this.rowGet(row,['tags','etiquetas','order tags','ordertags','etiquetas_pedido'])||''), items:[] }; }
         const price=Number(String(this.rowGet(row,['valor','precio','valor_unit','price','vr_unitario','lineitem price','lineitemprice'])||0).toString().replace(/[^\d.-]/g,''))||0; const lineDisc=Number(String(this.rowGet(row,['lineitem discount','lineitemdiscount','descuento_linea'])||0).toString().replace(/[^\d.-]/g,''))||0; const taxStr=String(this.rowGet(row,['lineitem taxable','lineitemtaxable','taxable','grava_iva','cobra_iva'])||'').trim();
         const _lf=this.normKey(this.rowGet(row,['lineitem fulfillment status','lineitemfulfillmentstatus','estado_linea','estado_item'])||''); if(groups[key] && groups[key].ordFulfill==='fulfilled' && _lf && _lf!=='fulfilled') return; // línea removida en Shopify (pedido cumplido, ítem sin cumplir): no se importa
         groups[key].items.push({referencia:ref||prod, producto:this.fixTxt(prod||ref), productoCodigo:ref, unidades:u, _price:price, _lineDisc:lineDisc, taxable: taxStr===''? true : !/^(false|no|0|n)$/i.test(taxStr) }); });
@@ -8281,7 +8315,7 @@ Instrucciones de respuesta:
         const mercancia=items.reduce((a,it)=>a+it.unidades*it.valorUnit,0); const esDevol=(mercancia<0); const esObsequio=(mercancia===0 && items.length>0); let canal=g.canal; if(esObsequio) canal='MSVC';
         // Contraentrega (COD) fuera de Cali -> el courier es Coordinadora por defecto.
         const ciudadNorm=this.normKey(g.ciudad||''); const esCod=/cash on delivery|contraentrega|\bcod\b/.test(this.normKey(g.metodoPago||'')); if(esCod && ciudadNorm && !/cali/.test(ciudadNorm)){ g.metodoPago='Coordinadora'; }
-        const nuevaV={ id:'v'+Date.now()+Math.floor(Math.random()*99999), pedido:g.pedido, ov:g.ov, fecha:g.fecha, canal, bodega:g.bodega, cliente:g.cliente, celular:g.celular, correo:g.correo, ciudad:g.ciudad, items, envio:flete, guia:g.guia, metodoPago:g.metodoPago, cancelada:(g.cancelada===true), cuentaRecaudo:(this.metodoNecesitaBanco(g.metodoPago)? this.mapMetodoCuenta(g.metodoPago) : ''), pagado:((g.cancelada!==true) && this.metodoAutoPagado(g.metodoPago)?(mercancia+flete):0), esObsequio, origen:(t==='ventasHist'?'historico':'shopify') };
+        const nuevaV={ id:'v'+Date.now()+Math.floor(Math.random()*99999), pedido:g.pedido, ov:g.ov, fecha:g.fecha, canal, bodega:g.bodega, cliente:g.cliente, celular:g.celular, correo:g.correo, ciudad:g.ciudad, items, envio:flete, guia:g.guia, tags:(g.tags||''), ordFulfill:(g.ordFulfill||''), metodoPago:g.metodoPago, cancelada:(g.cancelada===true), cuentaRecaudo:(this.metodoNecesitaBanco(g.metodoPago)? this.mapMetodoCuenta(g.metodoPago) : ''), pagado:((g.cancelada!==true) && this.metodoAutoPagado(g.metodoPago)?(mercancia+flete):0), esObsequio, origen:(t==='ventasHist'?'historico':'shopify') };
         // Upsert por número de pedido de Shopify: si ya existe, se actualizan datos PERO se conserva lo conciliado (liquidación, cobro, OV, perfil).
         const nuevaVE=this.applyPackagingRules(nuevaV);
         const gPedNum=this.pedidoNum({pedido:g.pedido});
@@ -8992,7 +9026,7 @@ Instrucciones de respuesta:
     out.showVentasListado = onVen && st.sub==='listado';
     out.showVentasPedidos = onVen && st.sub==='pedidos';
     out.showVentasCotizador = onVen && st.sub==='cotizador';
-    out.showVentasCarritos = onVen && st.sub==='carritos';
+    out.showVentasCarritos = onVen && st.sub==='carritos'; if(out.showVentasCarritos) this._buildCartAuto(out);
     out.showVentasServicio = onVen && st.sub==='servicio';
     out.showFinResumen = onFin && st.sub==='finresumen';
     out.showFinPagar = onFin && st.sub==='finpagar';
@@ -9866,7 +9900,7 @@ Instrucciones de respuesta:
       out.baseTabCliBg=tab==='clientes'?'var(--brand-ink)':'transparent'; out.baseTabCliFg=tab==='clientes'?'#fff':'var(--text-muted)';
       out.baseTabCampBg=tab==='camp'?'var(--brand-ink)':'transparent'; out.baseTabCampFg=tab==='camp'?'#fff':'var(--text-muted)';
       out.onBaseTabPanorama=()=>this.setState({baseTab:'panorama'}); out.onBaseTabClientes=()=>this.setState({baseTab:'clientes'}); out.onBaseTabCamp=()=>this.setState({baseTab:'camp'});
-      if(tab==='camp'){ this._buildCampanas(out, st); }
+      if(tab==='camp'||tab==='clientes'){ this._buildCampanas(out, st); }
       if(tab==='clientes'){
         const cl=this.clientesData({anio:st.baseCliAnios, mes:st.baseCliMeses, canal:st.baseCliCanales});
         out.cliTotal=cl.length;
