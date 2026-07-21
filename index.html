@@ -6971,6 +6971,7 @@ Instrucciones de respuesta:
     const cand=(pred)=> clientes.filter(o=>!usados.has(o.cel) && !bloqueado(o.cel) && pred(o));
     // 1) Agradecimiento + calificación (pedido ya ENTREGADO según las etiquetas de Shopify)
     const conEntrega=clientes.filter(o=>o.lastEnt).length;
+    const conTags=(st.ventas||[]).filter(v=>String(v.tags||'').trim()).length;
     const gracias=cand(o=> o.lastEnt && diasDe(o.lastEnt)<=40).sort((a,b)=>diasDe(a.lastEnt)-diasDe(b.lastEnt)).slice(0,40).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
       const msg=s+' 🤍 ¡gracias por tu compra en Oasis del Alma! ¿Cómo te ha ido con tu pedido? Nos encantaría leerte.'+(link?(' Si nos regalas una calificación nos ayudas muchísimo: '+link):'')+' — Oasis del Alma';
       return mkRow('gracias',o,'Entregado · pedido de hace '+diasDe(o.lastEnt)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
@@ -6988,7 +6989,7 @@ Instrucciones de respuesta:
       const msg=s+' 🌿'+(p?(' vimos que te llevaste '+p+'.'):'')+(sug?(' Combina perfecto con '+sug+' — muchos clientes los usan juntos.'):' Tenemos novedades que combinan perfecto con tu última compra.')+' ¿Te lo mostramos? oasisdelalma.co — Oasis del Alma';
       return mkRow('crosssell',o,(p?('Última compra: '+p):'Compra reciente')+(sug?(' → sugerir '+sug):''),msg); });
     out.campGraciasSecc=[
-      { titulo:'Agradecimiento y calificación', desc:(conEntrega? ('pedido entregado · últimos 40 días · '+conEntrega+' cliente(s) con entrega detectada'):'⚠ ningún pedido trae la etiqueta «CM: ENTREGADA» / «Entregado» — re-sincroniza en Ventas → Ventas y confirma el redeploy de la función shopify'), rows:gracias, count:gracias.length, vacio:gracias.length===0 },
+      { titulo:'Agradecimiento y calificación', desc:(conEntrega? ('pedido entregado · últimos 40 días · '+conEntrega+' cliente(s) con entrega detectada') : (conTags>0 ? ('⚠ '+conTags+' pedidos traen etiquetas, pero ninguna dice «ENTREGADA/Entregado» — revisa el nombre exacto del tag en Shopify') : '⚠ los pedidos llegan SIN etiquetas: la función «shopify» no está devolviendo el campo «tags». Confirma el redeploy y re-sincroniza en Ventas → Ventas')), rows:gracias, count:gracias.length, vacio:gracias.length===0 },
     ];
     out.campVentasSecc=[
       { titulo:'Clientes VIP inactivos', desc:'top 20% de gasto · 60+ días sin comprar', rows:vips, count:vips.length, vacio:vips.length===0 },
