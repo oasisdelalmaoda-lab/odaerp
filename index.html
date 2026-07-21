@@ -1625,15 +1625,18 @@
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Automatizaciones</h3>
                   <button onClick="{{ agAutoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar automatización</button>
                 </div>
-                <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">El agente clasifica cada conversación y crea el registro que corresponda, asignado al responsable. Agrega tus propias reglas — el bot las cumplirá como instrucciones en cada conversación.</p>
-                <div style="display:flex;flex-direction:column;gap:14px;">
-                  <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agLead.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agLead.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agLead.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Crear lead cuando detecta intención de compra</div><div style="font-size:11.5px;color:var(--text-muted);">Va a Ventas · Leads con la conversación enlazada</div></div></div>
-                  <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agCaso.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agCaso.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agCaso.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Crear caso de servicio ante quejas o garantías</div><div style="font-size:11.5px;color:var(--text-muted);">Va a Ventas · Servicio al cliente con folio y timeline</div></div></div>
-                  <div style="display:flex;align-items:center;gap:12px;"><div onClick="{{ agEscalar.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ agEscalar.bg }};position:relative;cursor:pointer;transition:background 140ms;"><span style="position:absolute;top:2px;left:{{ agEscalar.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div><div><div style="font-weight:700;font-size:13px;">Escalar a un humano si duda o el cliente lo pide</div><div style="font-size:11.5px;color:var(--text-muted);">La conversación queda «Necesita humano» y avisa en Inicio</div></div></div>
-                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">Reglas propias que el bot cumple como instrucciones en cada conversación. Cada regla queda bloqueada al guardarla; usa el candado para editarla.</p>
                 <sc-if value="{{ agAutosHay }}" hint-placeholder-val="{{ false }}">
-                  <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-subtle);">
+                  <div style="display:flex;flex-direction:column;gap:12px;">
                     <sc-for list="{{ agAutos }}" as="au" hint-placeholder-count="0">
+                      <sc-if value="{{ au.locked }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:12px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 14px;">
+                          <div onClick="{{ au.onTog }}" style="width:42px;height:22px;border-radius:99px;background:{{ au.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;"><span style="position:absolute;top:2px;left:{{ au.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
+                          <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:700;">{{ au.titulo }}</div><div style="font-size:11.5px;color:var(--text-muted);">{{ au.accion }}<sc-if value="{{ au.hayResp }}" hint-placeholder-val="{{ false }}"><span style="color:var(--brand-primary);font-weight:700;"> · {{ au.respName }}</span></sc-if></div></div>
+                          <button onClick="{{ au.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ au.open }}" hint-placeholder-val="{{ true }}">
                       <div style="display:flex;align-items:flex-start;gap:12px;">
                         <div onClick="{{ au.onTog }}" style="width:42px;height:22px;border-radius:99px;background:{{ au.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;margin-top:6px;"><span style="position:absolute;top:2px;left:{{ au.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
                         <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
@@ -1641,8 +1644,10 @@
                           <input value="{{ au.accion }}" onInput="{{ au.onAccion }}" placeholder="Qué debe hacer · ej. tomar los datos y escalar al responsable" style="font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
                         </div>
                         <select value="{{ au.resp }}" onChange="{{ au.onResp }}" title="Responsable" style="width:170px;margin-top:6px;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><option value="">Sin responsable</option><sc-for list="{{ agUserOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+                        <button onClick="{{ au.onLock }}" title="Bloquear" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;flex-shrink:0;margin-top:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.7-1.4"></path></svg></button>
                         <button onClick="{{ au.onDel }}" title="Eliminar" style="font-family:inherit;font-size:14px;font-weight:700;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;flex-shrink:0;margin-top:6px;">×</button>
                       </div>
+                      </sc-if>
                     </sc-for>
                   </div>
                 </sc-if>
@@ -9011,11 +9016,14 @@ Instrucciones de respuesta:
       out.agAsigServicio=ag.asignadoServicio; out.onAgAsigServicio=(e)=>this.setAgenteCfg('asignadoServicio',e.target.value);
       out.agUserOpts=(()=>{ const base=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name})); const baseL=base.map(o=>String(o.l||'').trim().toLowerCase());
         return base.concat((ag.responsablesExtra||[]).filter(r=>typeof r!=='string').map(r=>(r&&r.nombre)||'').filter(n=>String(n).trim() && !baseL.includes(String(n).trim().toLowerCase())).map(n=>({v:'manual:'+n,l:n}))); })();
-      out.agAutos=(ag.autosCustom||[]).map((a,i)=>({ titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px',
+      const _agAutoLocked=(a)=> a? ((a.lock===undefined)? !!(((a.titulo||'').trim())||((a.accion||'').trim())) : !!a.lock) : false;
+      const _agOptL=(id)=>{ const o=(out.agUserOpts||[]).find(x=>x.v===id); return o?o.l:''; };
+      out.agAutos=(ag.autosCustom||[]).map((a,i)=>{ const lk=_agAutoLocked(a); return { titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', respName:_agOptL(a.resp||''), hayResp:!!(a.resp&&_agOptL(a.resp)), bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px', locked:lk, open:!lk,
         onTog:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'on',!(cur.on!==false)); })(i),
-        onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>this.agAutoSet(ix,'resp',e.target.value))(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }));
+        onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'lock', !_agAutoLocked(cur)); })(i),
+        onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>this.agAutoSet(ix,'resp',e.target.value))(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }; });
       out.agAutosHay=(ag.autosCustom||[]).length>0;
-      out.agAutoAdd=()=>this.setAgenteCfg('autosCustom',[...(ag.autosCustom||[]),{on:true,titulo:'',accion:'',resp:''}]);
+      out.agAutoAdd=()=>this.setAgenteCfg('autosCustom',[...(ag.autosCustom||[]),{on:true,titulo:'',accion:'',resp:'',lock:false}]);
       out.agPagos=(ag.pagos||[]).map((p,i)=>({ nombre:p.nombre||'', detalle:p.detalle||'', link:p.link||'', img:p.img||'', hayImg:!!(p.img&&String(p.img).trim()), hayLink:!!(p.link&&String(p.link).trim()), locked:!!p.lock, open:!p.lock,
         onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().pagos||[])[ix]||{}); this.agPagoSet(ix,'lock',!cur.lock); })(i) }));
       out.agPagosHay=(ag.pagos||[]).length>0; out.agPagosVacio=(ag.pagos||[]).length===0;
