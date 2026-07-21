@@ -6803,7 +6803,7 @@ Instrucciones de respuesta:
         const pn=this.pedidoNum(o);
         const exI = (o.shopifyId&&idxByShop.has(String(o.shopifyId))) ? idxByShop.get(String(o.shopifyId)) : (pn&&idxByPed.has(pn)? idxByPed.get(pn) : -1);
         const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0 }; });
-        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanal(o.canal||'Página Web'), bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'' };
+        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanal(o.canal||'Página Web'), bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'' };
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
           const ex=list[exI];
@@ -6813,7 +6813,7 @@ Instrucciones de respuesta:
           // para que Shopify no vuelva a descuadrar cuentas ya conciliadas.
           const merged={ ...ex,
             items:bruto0.items, envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, canal:(ex.canal||bruto0.canal), bodega:(ex.bodega||bruto0.bodega),
-            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), id:ex.id };
+            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), id:ex.id };
           if(o.cancelado){ merged.pagado=0; merged.envio=0; }
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
           if(o.cancelado) cancelados++; else { updated++; if(guiaNueva && !o.cancelado) despachados.push(list[exI].id); }
@@ -6959,7 +6959,7 @@ Instrucciones de respuesta:
     // co-ocurrencia de productos (para cross-sell)
     const co={}; vivas.forEach(v=>{ const ns=[...new Set((v.items||[]).map(it=>it.producto).filter(Boolean))]; ns.forEach(a=>{ ns.forEach(b=>{ if(a!==b){ (co[a]=co[a]||{})[b]=(co[a][b]||0)+1; } }); }); });
     const diasSin=(o)=> o.last? Math.floor((now-new Date(o.last+'T00:00:00').getTime())/DIA) : 9999;
-    const entregada=(v)=>{ if(!v) return false; const tg=String(v.tags||'').toLowerCase(); if(/cm:\s*entregada|entregad[ao]|delivered|fulfilled/.test(tg)) return true; return this.normKey(v.ordFulfill||'')==='fulfilled'; };
+    const entregada=(v)=>{ const tg=String((v&&v.tags)||'').toLowerCase(); return /cm:\s*entregad[ao]|(^|[^a-z])entregad[ao]([^a-z]|$)/.test(tg); };
     const topProd=(o)=> Object.entries(o.prods).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||'';
     const bloqueado=(cel)=> Object.entries(cc).some(([k,ts])=> k.endsWith('|'+cel) && (now-ts)<30*DIA);
     const primer=(o)=> (o.nombre||'').split(/\s+/)[0]||'';
