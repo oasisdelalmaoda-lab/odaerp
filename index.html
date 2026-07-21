@@ -6951,15 +6951,16 @@ Instrucciones de respuesta:
     // ---- clientes desde el histórico ----
     const vivas=(st.ventas||[]).filter(v=>!v.cancelada && (v.items||[]).length);
     const norm=(c)=>{ const d=String(c||'').replace(/\D/g,''); return d.length>=10? d.slice(-10) : ''; };
+    const entregada=(v)=>{ const tg=String((v&&v.tags)||'').toLowerCase(); return /cm:\s*entregad[ao]|(^|[^a-z])entregad[ao]([^a-z]|$)/.test(tg); };
     const cli={}; vivas.forEach(v=>{ const cel=norm(v.celular); if(!cel) return; const o=cli[cel]=cli[cel]||{cel, nombre:'', ventas:[], gasto:0, prods:{}, last:''};
       if(v.cliente && (!o.nombre||String(v.cliente).length>o.nombre.length)) o.nombre=this.fixTxt(v.cliente);
-      o.ventas.push(v); o.gasto+=this.ventaTotal(v); const f=this.parseFecha(v.fecha)||''; if(f>o.last){ o.last=f; o.lastV=v; }
+      o.ventas.push(v); o.gasto+=this.ventaTotal(v); const f=this.parseFecha(v.fecha)||''; if(f>o.last){ o.last=f; o.lastV=v; } if(entregada(v) && f>(o.lastEnt||'')) o.lastEnt=f;
       (v.items||[]).forEach(it=>{ const n=it.producto||it.referencia; if(n) o.prods[n]=(o.prods[n]||0)+(Number(it.unidades)||0); }); });
     const clientes=Object.values(cli);
     // co-ocurrencia de productos (para cross-sell)
     const co={}; vivas.forEach(v=>{ const ns=[...new Set((v.items||[]).map(it=>it.producto).filter(Boolean))]; ns.forEach(a=>{ ns.forEach(b=>{ if(a!==b){ (co[a]=co[a]||{})[b]=(co[a][b]||0)+1; } }); }); });
     const diasSin=(o)=> o.last? Math.floor((now-new Date(o.last+'T00:00:00').getTime())/DIA) : 9999;
-    const entregada=(v)=>{ const tg=String((v&&v.tags)||'').toLowerCase(); return /cm:\s*entregad[ao]|(^|[^a-z])entregad[ao]([^a-z]|$)/.test(tg); };
+    const diasDe=(f)=> f? Math.floor((now-new Date(f+'T00:00:00').getTime())/DIA) : 9999;
     const topProd=(o)=> Object.entries(o.prods).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0]||'';
     const bloqueado=(cel)=> Object.entries(cc).some(([k,ts])=> k.endsWith('|'+cel) && (now-ts)<30*DIA);
     const primer=(o)=> (o.nombre||'').split(/\s+/)[0]||'';
@@ -6969,9 +6970,10 @@ Instrucciones de respuesta:
       return { cliente:o.nombre||o.cel, sub, onWa:()=>this.setState({modal:'wacompose', waCompose:{titulo:'Campaña · '+tipo, msg, full, campKey:key}}), onSkip:()=>this._marcarCampEnviada(key) }; };
     const cand=(pred)=> clientes.filter(o=>!usados.has(o.cel) && !bloqueado(o.cel) && pred(o));
     // 1) Agradecimiento + calificación (pedido ya ENTREGADO según las etiquetas de Shopify)
-    const gracias=cand(o=> entregada(o.lastV) && diasSin(o)>=1 && diasSin(o)<=25).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
+    const conEntrega=clientes.filter(o=>o.lastEnt).length;
+    const gracias=cand(o=> o.lastEnt && diasDe(o.lastEnt)<=40).sort((a,b)=>diasDe(a.lastEnt)-diasDe(b.lastEnt)).slice(0,40).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
       const msg=s+' 🤍 ¡gracias por tu compra en Oasis del Alma! ¿Cómo te ha ido con tu pedido? Nos encantaría leerte.'+(link?(' Si nos regalas una calificación nos ayudas muchísimo: '+link):'')+' — Oasis del Alma';
-      return mkRow('gracias',o,'Entregado · compró hace '+diasSin(o)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
+      return mkRow('gracias',o,'Entregado · pedido de hace '+diasDe(o.lastEnt)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
     // 2) VIP inactivos
     const vips=cand(o=> o.gasto>=p80 && diasSin(o)>=60).sort((a,b)=>b.gasto-a.gasto).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
       const msg=s+' 🤍 eres de nuestros clientes más especiales y te extrañamos en Oasis del Alma. Queremos consentirte'+(cupon?(': usa el cupón '+cupon+' en tu próxima compra en oasisdelalma.co'):' — escríbenos y te damos un beneficio en tu próxima compra')+' 🌿';
@@ -6986,7 +6988,7 @@ Instrucciones de respuesta:
       const msg=s+' 🌿'+(p?(' vimos que te llevaste '+p+'.'):'')+(sug?(' Combina perfecto con '+sug+' — muchos clientes los usan juntos.'):' Tenemos novedades que combinan perfecto con tu última compra.')+' ¿Te lo mostramos? oasisdelalma.co — Oasis del Alma';
       return mkRow('crosssell',o,(p?('Última compra: '+p):'Compra reciente')+(sug?(' → sugerir '+sug):''),msg); });
     out.campGraciasSecc=[
-      { titulo:'Agradecimiento y calificación', desc:'pedido ya entregado (según etiquetas) · pide reseña en Google', rows:gracias, count:gracias.length, vacio:gracias.length===0 },
+      { titulo:'Agradecimiento y calificación', desc:(conEntrega? ('pedido entregado · últimos 40 días · '+conEntrega+' cliente(s) con entrega detectada'):'⚠ ningún pedido trae la etiqueta «CM: ENTREGADA» / «Entregado» — re-sincroniza en Ventas → Ventas y confirma el redeploy de la función shopify'), rows:gracias, count:gracias.length, vacio:gracias.length===0 },
     ];
     out.campVentasSecc=[
       { titulo:'Clientes VIP inactivos', desc:'top 20% de gasto · 60+ días sin comprar', rows:vips, count:vips.length, vacio:vips.length===0 },
