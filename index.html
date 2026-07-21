@@ -2539,7 +2539,7 @@
                   <sc-if value="{{ cs.vacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12.5px;">Sin candidatos por ahora.</div></sc-if>
                   <sc-for list="{{ cs.rows }}" as="r" hint-placeholder-count="2">
                     <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;">
-                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div></div>
+                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div><sc-if value="{{ r.caso }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;font-weight:800;color:#B5503C;margin-top:2px;">{{ r.subWarn }}</div></sc-if></div>
                       <button onClick="{{ r.onWa }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>Enviar</button>
                       <button onClick="{{ r.onSkip }}" title="No contactar por 30 días" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;flex-shrink:0;">Omitir</button>
                     </div>
@@ -2567,7 +2567,7 @@
                   <sc-if value="{{ cs.vacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12.5px;">Sin candidatos por ahora.</div></sc-if>
                   <sc-for list="{{ cs.rows }}" as="r" hint-placeholder-count="2">
                     <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;">
-                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div></div>
+                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div><sc-if value="{{ r.caso }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;font-weight:800;color:#B5503C;margin-top:2px;">{{ r.subWarn }}</div></sc-if></div>
                       <button onClick="{{ r.onWa }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>Enviar</button>
                       <button onClick="{{ r.onSkip }}" title="No contactar por 30 días" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;flex-shrink:0;">Omitir</button>
                     </div>
@@ -6966,8 +6966,11 @@ Instrucciones de respuesta:
     const primer=(o)=> (o.nombre||'').split(/\s+/)[0]||'';
     const gastos=clientes.map(c=>c.gasto).sort((a,b)=>a-b); const p80=gastos.length? gastos[Math.floor(gastos.length*0.8)] : Infinity;
     const usados=new Set(); const cupon=(cfg.campCupon||'').trim(); const link=(cfg.campLinkGoogle||'').trim();
-    const mkRow=(tipo,o,sub,msg)=>{ usados.add(o.cel); const full='57'+o.cel; const key=tipo+'|'+o.cel;
-      return { cliente:o.nombre||o.cel, sub, onWa:()=>this.setState({modal:'wacompose', waCompose:{titulo:'Campaña · '+tipo, msg, full, campKey:key}}), onSkip:()=>this._marcarCampEnviada(key) }; };
+    const casosAb=(st.casos||[]).filter(c=>c.estado!=='cerrado' && c.estado!=='resuelto'); const casoTels=new Set();
+    casosAb.forEach(c=>{ const t=norm(c.telefono); if(t){ casoTels.add(t); return; } if(c.pedido||c.ov){ const v=(st.ventas||[]).find(x=>(c.ov&&x.ov===c.ov)||(c.pedido&&(String(x.pedido)===String(c.pedido)||('#'+String(x.pedido))===String(c.pedido)))); if(v){ const vt=norm(v.celular); if(vt) casoTels.add(vt); } } });
+    const tieneCaso=(cel)=> casoTels.has(cel);
+    const mkRow=(tipo,o,sub,msg)=>{ usados.add(o.cel); const full='57'+o.cel; const key=tipo+'|'+o.cel; const _c=tieneCaso(o.cel);
+      return { cliente:o.nombre||o.cel, sub, caso:_c, subWarn:(_c?'⚠ Tiene un caso de servicio al cliente abierto':''), onWa:()=>this.setState({modal:'wacompose', waCompose:{titulo:'Campaña · '+tipo, msg, full, campKey:key}}), onSkip:()=>this._marcarCampEnviada(key) }; };
     const cand=(pred)=> clientes.filter(o=>!usados.has(o.cel) && !bloqueado(o.cel) && pred(o));
     // 1) Agradecimiento + calificación (pedido ya ENTREGADO según las etiquetas de Shopify)
     const conEntrega=clientes.filter(o=>o.lastEnt).length;
