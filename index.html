@@ -1637,6 +1637,7 @@
                   <button onClick="{{ agAutoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar automatización</button>
                 </div>
                 <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">Reglas propias que el bot cumple como instrucciones en cada conversación. Cada regla queda bloqueada al guardarla; usa el candado para editarla.</p>
+                <div style="display:flex;align-items:center;gap:8px;margin:0 0 16px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-raised);border:1px solid var(--border-subtle);"><span style="width:7px;height:7px;border-radius:99px;background:{{ agAutosEstadoColor }};flex-shrink:0;"></span><span style="font-size:11.5px;font-weight:700;color:{{ agAutosEstadoColor }};">{{ agAutosEstado }}</span></div>
                 <sc-if value="{{ agAutosHay }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;gap:12px;">
                     <sc-for list="{{ agAutos }}" as="au" hint-placeholder-count="0">
@@ -8512,6 +8513,7 @@ Instrucciones de respuesta:
   agFaqDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', (cfg.faqs||[]).filter((_,x)=>x!==i)); }
   agFaqSet(i,k,v){ const cfg=this.agenteCfgGet(); const list=(cfg.faqs||[]).map((f,x)=> x===i? {...f,[k]:v} : f); this.setAgenteCfg('faqs', list); }
   agAutoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).map((a,x)=> x===i? {...a,[k]:v} : a)); }
+  agAutoResp(i,v,nombre){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).map((a,x)=> x===i? {...a, resp:v, respName:(nombre||String(v||'').replace(/^manual:/,''))} : a)); }
   agAutoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).filter((_,x)=>x!==i)); }
   agPagoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).map((p,x)=> x===i? {...p,[k]:v} : p)); }
   agPagoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).filter((_,x)=>x!==i)); }
@@ -9034,11 +9036,19 @@ Instrucciones de respuesta:
         return base.concat((ag.responsablesExtra||[]).filter(r=>typeof r!=='string').map(r=>(r&&r.nombre)||'').filter(n=>String(n).trim() && !baseL.includes(String(n).trim().toLowerCase())).map(n=>({v:'manual:'+n,l:n}))); })();
       const _agAutoLocked=(a)=> a? ((a.lock===undefined)? !!(((a.titulo||'').trim())||((a.accion||'').trim())) : !!a.lock) : false;
       const _agOptL=(id)=>{ const o=(out.agUserOpts||[]).find(x=>x.v===id); return o?o.l:''; };
-      out.agAutos=(ag.autosCustom||[]).map((a,i)=>{ const lk=_agAutoLocked(a); return { titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', respName:_agOptL(a.resp||''), hayResp:!!(a.resp&&_agOptL(a.resp)), bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px', locked:lk, open:!lk,
+      // Backfill (una vez): reglas viejas guardaban solo el id del responsable; la función necesita el NOMBRE.
+      if(!this._agRespBackfilled){ const need=(ag.autosCustom||[]).some(a=>a&&a.resp&&!a.respName); if(need){ this._agRespBackfilled=true; setTimeout(()=>{ const cur=this.agenteCfgGet().autosCustom||[]; this.setAgenteCfg('autosCustom', cur.map(a=> (a&&a.resp&&!a.respName)? {...a, respName:(_agOptL(a.resp)||String(a.resp).replace(/^manual:/,''))} : a)); },0); } }
+      out.agAutos=(ag.autosCustom||[]).map((a,i)=>{ const lk=_agAutoLocked(a); const rNm=a.respName||_agOptL(a.resp||''); return { titulo:a.titulo||'', accion:a.accion||'', resp:a.resp||'', respName:rNm, hayResp:!!(a.resp&&rNm), bg:a.on!==false?'var(--brand-primary)':'#D9D2C3', x:a.on!==false?'22px':'2px', locked:lk, open:!lk,
         onTog:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'on',!(cur.on!==false)); })(i),
         onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().autosCustom||[])[ix]||{}); this.agAutoSet(ix,'lock', !_agAutoLocked(cur)); })(i),
-        onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>this.agAutoSet(ix,'resp',e.target.value))(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }; });
+        onTitulo:((ix)=>(e)=>this.agAutoSet(ix,'titulo',e.target.value))(i), onAccion:((ix)=>(e)=>this.agAutoSet(ix,'accion',e.target.value))(i), onResp:((ix)=>(e)=>{ const v=e.target.value; this.agAutoResp(ix, v, _agOptL(v)); })(i), onDel:((ix)=>()=>this.agAutoDel(ix))(i) }; });
       out.agAutosHay=(ag.autosCustom||[]).length>0;
+      (()=>{ const list=(ag.autosCustom||[]); const validas=list.filter(a=>a&&a.on!==false&&(String(a.titulo||'').trim()||String(a.accion||'').trim()));
+        const vacias=list.length-list.filter(a=>a&&(String(a.titulo||'').trim()||String(a.accion||'').trim())).length;
+        out.agAutosEstado=(validas.length? (validas.length+(validas.length===1?' regla activa':' reglas activas')+' · el bot las recibe en cada respuesta') : 'Ninguna regla activa — el bot responde solo con instrucciones y conocimiento')
+          + (vacias? ' · '+vacias+' sin texto (no se envían)' : '')
+          + (this.cloudOn()? ' · sincronizadas con la nube' : ' · solo local: conéctate a la nube para que el bot las use');
+        out.agAutosEstadoColor=validas.length? (this.cloudOn()?'#4C6149':'#B5503C') : 'var(--text-muted)'; })();
       out.agAutoAdd=()=>this.setAgenteCfg('autosCustom',[...(ag.autosCustom||[]),{on:true,titulo:'',accion:'',resp:'',lock:false}]);
       out.agPagos=(ag.pagos||[]).map((p,i)=>({ nombre:p.nombre||'', detalle:p.detalle||'', link:p.link||'', img:p.img||'', hayImg:!!(p.img&&String(p.img).trim()), hayLink:!!(p.link&&String(p.link).trim()), locked:!!p.lock, open:!p.lock,
         onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().pagos||[])[ix]||{}); this.agPagoSet(ix,'lock',!cur.lock); })(i) }));
