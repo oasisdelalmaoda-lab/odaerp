@@ -1687,6 +1687,9 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Resueltas solo por el bot</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ ciBotPct }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">sin intervención de un asesor</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#B5503C;font-weight:700;">Escaladas a humano</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#B5503C;">{{ ciEscaladas }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciNecesitaAhora }} esperando ahora</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#7A6035;font-weight:700;">Con intención de compra</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#7A6035;">{{ ciVentasInt }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">clasificadas por el agente</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">Vendido tras el chat</div><div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1.1;margin-top:8px;color:var(--brand-ink);">{{ ciAtribTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciAtribPedidos }} pedidos · ticket {{ ciAtribTicket }}</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Conversión del chat</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ ciConvPct }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciConvVenta }} de {{ ciVentasInt }} con intención terminaron en pedido</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Primera respuesta</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;">{{ ciRespMin }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciRespBase }}</div></div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
@@ -1704,6 +1707,7 @@
                     <span><strong style="font-size:16px;">{{ ciMsgs }}</strong> mensajes</span>
                     <span><strong style="font-size:16px;">{{ ciMsgsBot }}</strong> respondidos por el bot</span>
                     <span><strong style="font-size:16px;">{{ ciMsgsAsesor }}</strong> por asesores</span>
+                    <span><strong style="font-size:16px;">{{ ciMsgsPorConv }}</strong> mensajes por conversación</span>
                   </div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
@@ -1720,6 +1724,7 @@
                     </sc-for>
                   </div>
                   <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-subtle);display:flex;align-items:baseline;gap:8px;"><span style="font-size:12.5px;font-weight:700;flex:1;">Total canales de chat</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--brand-ink);">{{ ciChatTotal }}</span></div>
+                  <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;text-wrap:pretty;">«Vendido tras el chat» arriba se calcula cruzando el celular del pedido con el teléfono de la conversación, no por el canal escrito en el pedido.<sc-if value="{{ ciHaySinTel }}" hint-placeholder-val="{{ false }}"> {{ ciSinTel }} conversaciones sin teléfono no se pueden cruzar.</sc-if></p>
                 </div>
               </div>
             </div>
@@ -8970,7 +8975,7 @@ Instrucciones de respuesta:
       const maxC=Math.max(1,...Object.values(porCanal));
       const canColor={'WhatsApp':'#627B60','Instagram':'#9C6B7E','Messenger':'#5A7A9E','Web':'#A78659'};
       const desde=dias? new Date(Date.now()-dias*86400000).toISOString().slice(0,10) : '';
-      const vivas=(this.state.ventas||[]).filter(v=>!v.anulada);
+      const vivas=(this.state.ventas||[]).filter(v=>!v.cancelada && !v.anulada);
       const enPeriodo=vivas.filter(v=>{ const f=this.parseFecha(v.fecha)||''; return !desde || f>=desde; });
       const chatCanales=['whatsapp','instagram','messenger','chat','web'];
       const grp={}; enPeriodo.forEach(v=>{ const c=v.canal||'Sin canal'; if(!grp[c]) grp[c]={n:0,t:0}; grp[c].n++; grp[c].t+=this.ventaSubtotal(v); });
@@ -8978,6 +8983,24 @@ Instrucciones de respuesta:
       out.ciVentas=Object.entries(grp).sort((a,b)=>b[1].t-a[1].t).map(([c,g])=>{ const esChat=chatCanales.some(k=>String(c).toLowerCase().includes(k)); if(esChat) chatTotal+=g.t; return { canal:c, esChat, pedidos:g.n, total:this.fmt(Math.round(g.t)), ticket:this.fmt(Math.round(g.t/g.n)), bg:esChat?'rgba(167,134,89,0.06)':'var(--surface-card)' }; });
       out.ciVentasVacio=out.ciVentas.length===0;
       out.ciChatTotal=this.fmt(Math.round(chatTotal));
+      // ---- atribución real: cruza el celular del pedido con el teléfono de la conversación ----
+      const _tel=(t)=>String(t||'').replace(/\D/g,'').slice(-10);
+      const telConv={}; convs.forEach(c=>{ const k=_tel(c.telefono); if(k.length>=7) (telConv[k]=telConv[k]||[]).push(c.id); });
+      const atrib=enPeriodo.filter(v=>{ const k=_tel(v.celular); return k.length>=7 && telConv[k]; });
+      const atribTotal=atrib.reduce((a,v)=>a+this.ventaSubtotal(v),0);
+      const convsConVenta=new Set(); atrib.forEach(v=>{ (telConv[_tel(v.celular)]||[]).forEach(id=>convsConVenta.add(id)); });
+      out.ciAtribPedidos=atrib.length; out.ciAtribTotal=this.fmt(Math.round(atribTotal));
+      out.ciAtribTicket=atrib.length? this.fmt(Math.round(atribTotal/atrib.length)) : '—';
+      const conTel=convs.filter(c=>_tel(c.telefono).length>=7).length;
+      out.ciSinTel=convs.length-conTel; out.ciHaySinTel=(convs.length-conTel)>0;
+      out.ciConvVenta=convsConVenta.size;
+      out.ciConvPct=out.ciVentasInt? Math.round(convsConVenta.size/out.ciVentasInt*100)+'%' : '—';
+      // ---- tiempo de primera respuesta del bot (de la hora del 1er mensaje del cliente al 1er mensaje del bot) ----
+      const _min=(h)=>{ const m=/^(\d{1,2}):(\d{2})/.exec(String(h||'')); return m? Number(m[1])*60+Number(m[2]) : null; };
+      const difs=[]; convs.forEach(c=>{ const ms=c.mensajes||[]; const i=ms.findIndex(m=>m.de==='cliente'); if(i<0) return; const j=ms.findIndex((m,x)=>x>i&&m.de==='bot'); if(j<0) return; const a=_min(ms[i].hora), b=_min(ms[j].hora); if(a===null||b===null) return; let d=b-a; if(d<0) d+=1440; if(d<=240) difs.push(d); });
+      out.ciRespMin=difs.length? (()=>{ const avg=difs.reduce((a,b)=>a+b,0)/difs.length; return avg<1? '<1 min' : Math.round(avg)+' min'; })() : '—';
+      out.ciRespBase=difs.length? difs.length+(difs.length===1?' conversación medida':' conversaciones medidas') : 'sin datos de hora';
+      out.ciMsgsPorConv=convs.length? (Math.round(mT/convs.length*10)/10).toString().replace('.',',') : '0';
     }
     if(out.showConvBandeja){
       const convs=this.convList();
