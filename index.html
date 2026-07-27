@@ -1664,32 +1664,7 @@
                   </div>
                 </sc-if>
               </div>
-              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-top:16px;">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Responsables</h3>
-                    <button onClick="{{ agRespAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar responsable</button>
-                  </div>
-                  <div style="display:flex;flex-direction:column;gap:8px;">
-                    <sc-for list="{{ agResps }}" as="rp" hint-placeholder-count="0">
-                      <sc-if value="{{ rp.locked }}" hint-placeholder-val="{{ false }}">
-                        <div style="display:flex;align-items:center;gap:10px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:8px 14px;">
-                          <span style="width:24px;height:24px;border-radius:99px;background:var(--brand-primary);color:#fff;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">{{ rp.ini }}</span>
-                          <div style="flex:1;min-width:0;"><span style="font-size:13px;font-weight:700;">{{ rp.nombre }}</span><sc-if value="{{ rp.hayRol }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:var(--text-muted);"> · {{ rp.rol }}</span></sc-if></div>
-                          <button onClick="{{ rp.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
-                        </div>
-                      </sc-if>
-                      <sc-if value="{{ rp.open }}" hint-placeholder-val="{{ true }}">
-                        <div style="display:grid;grid-template-columns:1fr 200px auto auto;gap:8px;align-items:center;">
-                          <input value="{{ rp.nombre }}" onInput="{{ rp.onNombre }}" placeholder="Nombre completo" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
-                          <input value="{{ rp.rol }}" onInput="{{ rp.onRol }}" placeholder="Cargo · ej. Ventas" style="font-family:inherit;font-size:12.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
-                          <button onClick="{{ rp.onLock }}" title="Bloquear" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.7-1.4"></path></svg></button>
-                          <button onClick="{{ rp.onDel }}" title="Eliminar" style="font-family:inherit;font-size:12px;font-weight:700;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:#B5503C;cursor:pointer;">×</button>
-                        </div>
-                      </sc-if>
-                    </sc-for>
-                  </div>
-              </div>
-              <p style="font-size:12px;color:var(--text-muted);margin:14px 0 0;line-height:1.5;">Esta configuración se guarda localmente y alimentará la función <code style="font-size:11px;">agente</code> de Supabase al conectarla — el bot usará estas instrucciones, conocimiento y reglas en todos los canales.</p>
+              <p style="font-size:12px;color:var(--text-muted);margin:14px 0 0;line-height:1.5;">El responsable de cada automatización viene de los usuarios del Hub. Cuando una regla escala, la conversación queda asignada a esa persona; si la regla no tiene responsable, se asigna según la intención (ventas o servicio).</p>
             </div>
           </sc-if>
 
@@ -1701,6 +1676,12 @@
                 <div style="flex:1;"></div>
                 <select value="{{ convInfDias }}" onChange="{{ onConvInfDias }}" style="font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;"><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="90">Últimos 90 días</option><option value="0">Todo el histórico</option></select>
               </div>
+              <sc-if value="{{ ciVacio }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;font-size:12.5px;color:var(--text-muted);line-height:1.55;text-wrap:pretty;">Todavía no hay conversaciones registradas. Las métricas se llenan solas cuando el agente empiece a atender por WhatsApp, Instagram, Messenger o el chat de la web.</div>
+              </sc-if>
+              <sc-if value="{{ ciFueraPeriodo }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;font-size:12.5px;color:var(--text-muted);line-height:1.55;">Hay conversaciones registradas, pero ninguna en el período elegido. Amplía el rango arriba.</div>
+              </sc-if>
               <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Conversaciones</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;">{{ ciTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciActivas }} activas ahora</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Resueltas solo por el bot</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ ciBotPct }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">sin intervención de un asesor</div></div>
@@ -1710,6 +1691,7 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 14px;">Conversaciones por canal</h3>
+                  <sc-if value="{{ ciCanalesVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Sin conversaciones en el período.</div></sc-if>
                   <div style="display:flex;flex-direction:column;gap:12px;">
                     <sc-for list="{{ ciCanales }}" as="k" hint-placeholder-count="3">
                       <div>
@@ -8525,8 +8507,6 @@ Instrucciones de respuesta:
   agLecDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).filter((_,x)=>x!==i)); }
   agLecSet(i,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, t:v}; })); }
   agLecLock(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, lock:!o.lock}; })); }
-  _agRespObj(i){ const r=(this.agenteCfgGet().responsablesExtra||[])[i]; return (typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{nombre:'',rol:'',lock:false}); }
-  agRespSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('responsablesExtra', (cfg.responsablesExtra||[]).map((r,x)=>{ if(x!==i) return r; const o=(typeof r==='string')?{nombre:r,rol:'',lock:true}:(r||{}); return {...o,[k]:v}; })); }
   agFaqAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', [...(cfg.faqs||[]), {p:'', r:'', lock:false}]); }
   agFaqDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', (cfg.faqs||[]).filter((_,x)=>x!==i)); }
   agFaqSet(i,k,v){ const cfg=this.agenteCfgGet(); const list=(cfg.faqs||[]).map((f,x)=> x===i? {...f,[k]:v} : f); this.setAgenteCfg('faqs', list); }
@@ -8967,8 +8947,15 @@ Instrucciones de respuesta:
     out.showConvBandeja = onConv && st.sub==='bandeja';
     out.showConvAgente = onConv && st.sub==='agente';
     out.showConvInforme = onConv && st.sub==='informe';
-    if(out.showConvInforme){ const convs=this.convList(); const dias=Number(st.convInfDias??30);
+    if(out.showConvInforme){ const dias=Number(st.convInfDias??30);
       out.convInfDias=String(dias); out.onConvInfDias=(e)=>this.setState({convInfDias:Number(e.target.value)});
+      // solo conversaciones REALES (nube o registradas localmente) — nunca las de demostración
+      const reales=(st.convsCloud || st.conversaciones || []);
+      const _cFecha=(c)=>String(c.ultimoAt||c.inicio||'').slice(0,10);
+      const desdeC=dias? new Date(Date.now()-dias*86400000).toISOString().slice(0,10) : '';
+      const convs=reales.filter(c=>{ if(!desdeC) return true; const f=_cFecha(c); return !f || f>=desdeC; });
+      out.ciVacio=reales.length===0;
+      out.ciFueraPeriodo=reales.length>0 && convs.length===0;
       out.ciTotal=convs.length; out.ciActivas=convs.filter(c=>c.estado!=='resuelta').length;
       const soloBot=convs.filter(c=>c.estado==='resuelta' && !(c.mensajes||[]).some(m=>m.de==='asesor')).length;
       const resueltas=convs.filter(c=>c.estado==='resuelta').length;
@@ -8979,9 +8966,9 @@ Instrucciones de respuesta:
       let mT=0,mB=0,mA=0; convs.forEach(c=>(c.mensajes||[]).forEach(m=>{ mT++; if(m.de==='bot')mB++; if(m.de==='asesor')mA++; }));
       out.ciMsgs=mT; out.ciMsgsBot=mB; out.ciMsgsAsesor=mA;
       const porCanal={}; convs.forEach(c=>{ const l=this.convCanalMeta(c.canal).l; porCanal[l]=(porCanal[l]||0)+1; });
+      out.ciCanalesVacio=Object.keys(porCanal).length===0;
       const maxC=Math.max(1,...Object.values(porCanal));
       const canColor={'WhatsApp':'#627B60','Instagram':'#9C6B7E','Messenger':'#5A7A9E','Web':'#A78659'};
-      out.ciCanales=Object.entries(porCanal).sort((a,b)=>b[1]-a[1]).map(([l,n])=>({ l, n, pct:(convs.length?Math.round(n/convs.length*100):0)+'%', w:Math.round(n/maxC*100)+'%', color:canColor[l]||'var(--brand-primary)' }));
       const desde=dias? new Date(Date.now()-dias*86400000).toISOString().slice(0,10) : '';
       const vivas=(this.state.ventas||[]).filter(v=>!v.anulada);
       const enPeriodo=vivas.filter(v=>{ const f=this.parseFecha(v.fecha)||''; return !desde || f>=desde; });
@@ -9050,8 +9037,7 @@ Instrucciones de respuesta:
       out.agTransfer=ag.transferencia; out.onAgTransfer=(e)=>this.setAgenteCfg('transferencia',e.target.value);
       out.agAsigVentas=ag.asignadoVentas; out.onAgAsigVentas=(e)=>this.setAgenteCfg('asignadoVentas',e.target.value);
       out.agAsigServicio=ag.asignadoServicio; out.onAgAsigServicio=(e)=>this.setAgenteCfg('asignadoServicio',e.target.value);
-      out.agUserOpts=(()=>{ const base=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name})); const baseL=base.map(o=>String(o.l||'').trim().toLowerCase());
-        return base.concat((ag.responsablesExtra||[]).filter(r=>typeof r!=='string').map(r=>(r&&r.nombre)||'').filter(n=>String(n).trim() && !baseL.includes(String(n).trim().toLowerCase())).map(n=>({v:'manual:'+n,l:n}))); })();
+      out.agUserOpts=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}))).filter(o=>String(o.l||'').trim());
       const _agAutoLocked=(a)=> a? ((a.lock===undefined)? !!(((a.titulo||'').trim())||((a.accion||'').trim())) : !!a.lock) : false;
       const _agOptL=(id)=>{ const o=(out.agUserOpts||[]).find(x=>x.v===id); return o?o.l:''; };
       // Backfill (una vez): reglas viejas guardaban solo el id del responsable; la función necesita el NOMBRE.
@@ -9072,12 +9058,6 @@ Instrucciones de respuesta:
         onNombre:((ix)=>(e)=>this.agPagoSet(ix,'nombre',e.target.value))(i), onDetalle:((ix)=>(e)=>this.agPagoSet(ix,'detalle',e.target.value))(i), onLink:((ix)=>(e)=>this.agPagoSet(ix,'link',e.target.value))(i), onImg:((ix)=>(e)=>this.agPagoSet(ix,'img',e.target.value))(i), onDel:((ix)=>()=>this.agPagoDel(ix))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().pagos||[])[ix]||{}); this.agPagoSet(ix,'lock',!cur.lock); })(i) }));
       out.agPagosHay=(ag.pagos||[]).length>0; out.agPagosVacio=(ag.pagos||[]).length===0;
       out.agPagoAdd=()=>this.setAgenteCfg('pagos',[...(ag.pagos||[]),{nombre:'',detalle:'',link:'',img:''}]);
-      const _hubNames=((this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>p.nombre) : this.users.map(u=>u.name)).map(n=>String(n||'').trim().toLowerCase());
-      const _respsList=(ag.responsablesExtra||[]).map((r,i)=>({r,i})).filter(x=>typeof x.r!=='string' && !(x.r&&x.r.nombre&&_hubNames.includes(String(x.r.nombre).trim().toLowerCase())));
-      out.agResps=_respsList.map(({r,i})=>{ const o=r||{nombre:'',rol:'',lock:false};
-        return { nombre:o.nombre, rol:o.rol||'', hayRol:!!(o.rol&&String(o.rol).trim()), locked:!!o.lock, open:!o.lock, ini:(String(o.nombre||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('')||'?').toUpperCase(),
-          onNombre:((ix)=>(e)=>this.agRespSet(ix,'nombre',e.target.value))(i), onRol:((ix)=>(e)=>this.agRespSet(ix,'rol',e.target.value))(i), onLock:((ix)=>()=>{ const cur=this._agRespObj(ix); this.agRespSet(ix,'lock',!cur.lock); })(i), onDel:((ix)=>()=>this.setAgenteCfg('responsablesExtra',(this.agenteCfgGet().responsablesExtra||[]).filter((_,x)=>x!==ix)))(i) }; });
-      out.agRespAdd=()=>this.setAgenteCfg('responsablesExtra',[...(ag.responsablesExtra||[]),{nombre:'',rol:'',lock:false}]);
     }
     out.showVentasReg = onVen && st.sub==='registro';
     out.showVentasBase = onVen && st.sub==='base';
