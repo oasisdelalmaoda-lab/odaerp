@@ -774,7 +774,7 @@
                 <div style="display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;">
                   <div style="flex:1;min-width:200px;"><div style="font-weight:700;font-size:13px;">Bolsa por defecto (pedidos sin kit)</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Se agrega automáticamente a cada venta que no contiene ningún kit. Puedes poner <strong>uno o varios códigos</strong> separados por <strong>+</strong> (ej: MP-0087 + MP-0107). Modificable desde el detalle del pedido.</div></div>
                   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-                    <input type="text" value="{{ reBolsa }}" onInput="{{ onReBolsa }}" placeholder="MP-0087 + MP-0107" style="font-family:'Courier New',monospace;font-size:13px;font-weight:700;padding:7px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:170px;">
+                    <input type="text" value="{{ reBolsa }}" onInput="{{ onReBolsa }}" onBlur="{{ onReBolsaCommit }}" onKeyDown="{{ onReBolsaKey }}" placeholder="MP-0087 + MP-0107" style="font-family:'Courier New',monospace;font-size:13px;font-weight:700;padding:7px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:170px;">
                     <span style="font-size:12px;color:var(--text-muted);">{{ reBolsaNombre }}</span>
                   </div>
                 </div>
@@ -9822,8 +9822,19 @@ Instrucciones de respuesta:
       out.onCanonCanales=()=>this.canonizarCanales();
       out.onBorrarTodasOrdenes=()=>this.askDelete('borrarordenes',{codigo:'all',nombre:this.state.ordenes.length+' órdenes de compra registradas'});
       out.onApplyEmpaqueTodos=()=>this.applyPackagingToAll();
-      out.reBolsa=re.bolsaDefault||''; out.reBolsaNombre=String(re.bolsaDefault||'').split(/[,+]/).map(s=>s.trim()).filter(Boolean).map(c=>{ const mm=(st.materias||[]).find(x=>x.codigo===c); return mm?mm.nombre:c; }).join(' + ');
-      out.onReBolsa=(e)=>{ const nv=e.target.value.trim(); const hist=[...(re.bolsasHist||[])]; if(re.bolsaDefault&&re.bolsaDefault!==nv&&!hist.includes(re.bolsaDefault)) hist.push(re.bolsaDefault); const updated={...re,bolsaDefault:nv,bolsasHist:hist}; this.setState({reglasEmpaque:updated}); try{localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(updated));}catch(ex){} if(this.cloudOn()) this.cloudSaveConfig({bolsaDefault:updated.bolsaDefault||'', bolsasHist:updated.bolsasHist||[], mapeoCajas:updated.mapeoCajas||{}}); };
+      out.reBolsa=(st.reBolsaDraft!=null?st.reBolsaDraft:(re.bolsaDefault||'')); out.reBolsaNombre=String(out.reBolsa||'').split(/[,+]/).map(s=>s.trim()).filter(Boolean).map(c=>{ const mm=(st.materias||[]).find(x=>x.codigo===c); return mm?mm.nombre:c; }).join(' + ');
+      out.onReBolsa=(e)=>{ this.setState({reBolsaDraft:e.target.value}); };
+      out.onReBolsaCommit=()=>{
+        const raw=(this.state.reBolsaDraft!=null?this.state.reBolsaDraft:(re.bolsaDefault||''));
+        const nv=String(raw).split(/[,+]/).map(s=>s.trim()).filter(Boolean).join(' + ');
+        if(nv===String(re.bolsaDefault||'')){ this.setState({reBolsaDraft:null}); return; }
+        const hist=[...(re.bolsasHist||[])]; if(re.bolsaDefault&&!hist.includes(re.bolsaDefault)) hist.push(re.bolsaDefault);
+        const updated={...re,bolsaDefault:nv,bolsasHist:hist};
+        this.setState({reglasEmpaque:updated,reBolsaDraft:null});
+        try{localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(updated));}catch(ex){}
+        if(this.cloudOn()) this.cloudSaveConfig({bolsaDefault:updated.bolsaDefault||'', bolsasHist:updated.bolsasHist||[], mapeoCajas:updated.mapeoCajas||{}});
+      };
+      out.onReBolsaKey=(e)=>{ if(e.key==='Enter'){ e.target.blur(); } };
       const mapeo=re.mapeoCajas||{};
       out.reMapeoCajas=Object.keys(mapeo).map(pCod=>{ const p=(st.productos||[]).find(x=>x.codigo===pCod); const cajaVal=mapeo[pCod]; const cajaCods=Array.isArray(cajaVal)?cajaVal:(cajaVal?[cajaVal]:[]); const cajaDisplay=cajaCods.join(' + '); const cajaNombres=cajaCods.map(c=>{ const m=(st.materias||[]).find(x=>x.codigo===c); return m?m.nombre:c; }).join(' + '); return {productoCodigo:pCod,productoNombre:p?p.nombre:pCod,cajaCodigo:cajaDisplay,cajaNombre:cajaNombres,onChangeCaja:((pc)=>(e)=>{ const raw=e.target.value.trim(); const arr=raw.split(/[,+]/).map(s=>s.trim()).filter(Boolean); const val=arr.length===1?arr[0]:arr; const m2={...mapeo,[pc]:val}; saveEmpaq('mapeoCajas',m2); })(pCod)}; });
       const up=this.state.userPerms||{};
