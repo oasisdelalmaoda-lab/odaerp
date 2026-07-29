@@ -6396,7 +6396,7 @@ class Component extends DCLogic {
     this.setState(s=>({draft:{...s.draft,[name]:v}}));
   }
 
-  nextCode(prefix,list){ const used=new Set(); let width=3; (list||[]).forEach(x=>{ const c=String(x.codigo||''); if(prefix && c.indexOf(prefix)!==0) return; const tail=(prefix? c.slice(prefix.length) : c); const m=tail.match(/(\d+)/); if(m){ const n=Number(m[1]); if(n>0 && n<100000){ used.add(n); width=Math.max(width, Math.min(m[1].length,4)); } } }); let n=1; while(used.has(n)) n++; return prefix+String(n).padStart(width,'0'); }
+  nextCode(prefix,list){ let max=0, width=3; (list||[]).forEach(x=>{ const c=String(x.codigo||''); if(prefix && c.indexOf(prefix)!==0) return; const tail=(prefix? c.slice(prefix.length) : c); const m=tail.match(/(\d+)/); if(m){ const n=Number(m[1]); if(n>0 && n<100000){ if(n>max) max=n; width=Math.max(width, Math.min(m[1].length,4)); } } }); return prefix+String(max+1).padStart(width,'0'); }
 
   // ---- proveedores ----
   nuevoProveedor(){ this.open('proveedor',{ codigo:this.nextCode('PRV-',this.state.proveedores), nombre:'', nit:'', contactoNombre:'', telefonos:[''], email:'', ciudad:'', condicionesPago:'', autorretenedor:'no', calificacion:5, _new:true }); }
