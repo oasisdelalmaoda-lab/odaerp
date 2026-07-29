@@ -463,6 +463,7 @@
                   <option value="empaque">Empaque</option>
                   <option value="etiquetas">Etiqueta</option>
                   <option value="envase">Envase / frasco</option>
+                  <option value="herramienta">Herramienta</option>
                   <option value="producto terminado">Producto terminado</option>
                 </select>
                 <select value="{{ filtroProvMat }}" onChange="{{ onFiltroProvMat }}" style="font-family:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;max-width:220px;">
@@ -482,13 +483,13 @@
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
                 <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1040px;">
                   <thead><tr style="background:var(--surface-raised);text-align:left;">
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Código</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Nombre</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Tipo</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Costo unit.</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Proveedor</th>
+                    <th onClick="{{ sortCodigo }}" style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;cursor:pointer;user-select:none;" style-hover="color:var(--brand-primary);">Código{{ arrCodigo }}</th>
+                    <th onClick="{{ sortNombre }}" style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;cursor:pointer;user-select:none;" style-hover="color:var(--brand-primary);">Nombre{{ arrNombre }}</th>
+                    <th onClick="{{ sortTipo }}" style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;cursor:pointer;user-select:none;" style-hover="color:var(--brand-primary);">Tipo{{ arrTipo }}</th>
+                    <th onClick="{{ sortCosto }}" style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;cursor:pointer;user-select:none;" style-hover="color:var(--brand-primary);">Costo unit.{{ arrCosto }}</th>
+                    <th onClick="{{ sortProv }}" style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;cursor:pointer;user-select:none;" style-hover="color:var(--brand-primary);">Proveedor{{ arrProv }}</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Marca</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Stock</th>
+                    <th onClick="{{ sortStock }}" style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;cursor:pointer;user-select:none;" style-hover="color:var(--brand-primary);">Stock{{ arrStock }}</th>
                     <th style="padding:12px 16px;"></th>
                   </tr></thead>
                   <tbody>
@@ -3942,7 +3943,7 @@
             <sc-if value="{{ isModalMateria }}" hint-placeholder-val="{{ false }}">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Código<input name="codigo" value="{{ draft.codigo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Tipo<select name="tipo" value="{{ draft.tipo }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="aceite esencial">Aceite esencial</option><option value="fragancia">Fragancia</option><option value="insumo">Insumo</option><option value="empaque">Empaque</option><option value="etiquetas">Etiqueta</option><option value="herramienta">Herramienta</option><option value="producto terminado">Producto terminado</option></select></label>
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Tipo<select name="tipo" value="{{ draft.tipo }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="aceite esencial">Aceite esencial</option><option value="fragancia">Fragancia</option><option value="insumo">Insumo</option><option value="empaque">Empaque</option><option value="etiquetas">Etiqueta</option><option value="envase">Envase / frasco</option><option value="herramienta">Herramienta</option><option value="producto terminado">Producto terminado</option></select></label>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Nombre<input name="nombre" value="{{ draft.nombre }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Unidad<input name="unidad" value="{{ draft.unidad }}" onInput="{{ onDraftInput }}" placeholder="ml, und, kg, L…" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Costo unitario base sin IVA (COP)<input name="costo" type="number" value="{{ draft.costo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
@@ -6395,7 +6396,7 @@ class Component extends DCLogic {
     this.setState(s=>({draft:{...s.draft,[name]:v}}));
   }
 
-  nextCode(prefix,list){ let max=0; (list||[]).forEach(x=>{ const c=String(x.codigo||''); if(prefix && c.indexOf(prefix)!==0) return; const m=(prefix? c.slice(prefix.length) : c).match(/(\d+)/); if(m){ const n=Number(m[1]); if(n<100000 && n>max) max=n; } }); return prefix+String(max+1).padStart(3,'0'); }
+  nextCode(prefix,list){ const used=new Set(); let width=3; (list||[]).forEach(x=>{ const c=String(x.codigo||''); if(prefix && c.indexOf(prefix)!==0) return; const tail=(prefix? c.slice(prefix.length) : c); const m=tail.match(/(\d+)/); if(m){ const n=Number(m[1]); if(n>0 && n<100000){ used.add(n); width=Math.max(width, Math.min(m[1].length,4)); } } }); let n=1; while(used.has(n)) n++; return prefix+String(n).padStart(width,'0'); }
 
   // ---- proveedores ----
   nuevoProveedor(){ this.open('proveedor',{ codigo:this.nextCode('PRV-',this.state.proveedores), nombre:'', nit:'', contactoNombre:'', telefonos:[''], email:'', ciudad:'', condicionesPago:'', autorretenedor:'no', calificacion:5, _new:true }); }
@@ -8974,13 +8975,14 @@ Instrucciones de respuesta:
       out.ciCanalesVacio=Object.keys(porCanal).length===0;
       const maxC=Math.max(1,...Object.values(porCanal));
       const canColor={'WhatsApp':'#627B60','Instagram':'#9C6B7E','Messenger':'#5A7A9E','Web':'#A78659'};
+      out.ciCanales=Object.entries(porCanal).sort((a,b)=>b[1]-a[1]).map(([l,n])=>({ l, n, pct:(convs.length?Math.round(n/convs.length*100):0)+'%', w:Math.round(n/maxC*100)+'%', color:canColor[l]||'var(--brand-primary)' }));
       const desde=dias? new Date(Date.now()-dias*86400000).toISOString().slice(0,10) : '';
       const vivas=(this.state.ventas||[]).filter(v=>!v.cancelada && !v.anulada);
       const enPeriodo=vivas.filter(v=>{ const f=this.parseFecha(v.fecha)||''; return !desde || f>=desde; });
-      const chatCanales=['whatsapp','instagram','messenger','chat','web'];
+      const chatCanales=['whatsapp','instagram','messenger','chat'];
       const grp={}; enPeriodo.forEach(v=>{ const c=v.canal||'Sin canal'; if(!grp[c]) grp[c]={n:0,t:0}; grp[c].n++; grp[c].t+=this.ventaSubtotal(v); });
       let chatTotal=0;
-      out.ciVentas=Object.entries(grp).sort((a,b)=>b[1].t-a[1].t).map(([c,g])=>{ const esChat=chatCanales.some(k=>String(c).toLowerCase().includes(k)); if(esChat) chatTotal+=g.t; return { canal:c, esChat, pedidos:g.n, total:this.fmt(Math.round(g.t)), ticket:this.fmt(Math.round(g.t/g.n)), bg:esChat?'rgba(167,134,89,0.06)':'var(--surface-card)' }; });
+      out.ciVentas=Object.entries(grp).sort((a,b)=>b[1].t-a[1].t).map(([c,g])=>{ const esChat=chatCanales.some(k=>String(c).toLowerCase().includes(k)); if(esChat) chatTotal+=g.t; return { canal:c, esChat, pedidos:g.n+(g.n===1?' pedido':' pedidos'), total:this.fmt(Math.round(g.t)), ticket:this.fmt(Math.round(g.t/g.n)), bg:esChat?'rgba(167,134,89,0.06)':'var(--surface-card)' }; });
       out.ciVentasVacio=out.ciVentas.length===0;
       out.ciChatTotal=this.fmt(Math.round(chatTotal));
       // ---- atribución real: cruza el celular del pedido con el teléfono de la conversación ----
@@ -8989,7 +8991,7 @@ Instrucciones de respuesta:
       const atrib=enPeriodo.filter(v=>{ const k=_tel(v.celular); return k.length>=7 && telConv[k]; });
       const atribTotal=atrib.reduce((a,v)=>a+this.ventaSubtotal(v),0);
       const convsConVenta=new Set(); atrib.forEach(v=>{ (telConv[_tel(v.celular)]||[]).forEach(id=>convsConVenta.add(id)); });
-      out.ciAtribPedidos=atrib.length; out.ciAtribTotal=this.fmt(Math.round(atribTotal));
+      out.ciAtribPedidos=atrib.length+(atrib.length===1?' pedido':' pedidos'); out.ciAtribTotal=this.fmt(Math.round(atribTotal));
       out.ciAtribTicket=atrib.length? this.fmt(Math.round(atribTotal/atrib.length)) : '—';
       const conTel=convs.filter(c=>_tel(c.telefono).length>=7).length;
       out.ciSinTel=convs.length-conTel; out.ciHaySinTel=(convs.length-conTel)>0;
@@ -9232,8 +9234,15 @@ Instrucciones de respuesta:
       out.filtroTipo=st.filtroTipo; out.onFiltroTipo=(e)=>this.setState({filtroTipo:e.target.value});
       out.filtroProvMat=st.filtroProvMat; out.onFiltroProvMat=(e)=>this.setState({filtroProvMat:e.target.value});
       out.matProvOpts=Array.from(new Set(st.materias.map(m=>m.proveedorCodigo).filter(Boolean))).map(c=>({codigo:c, nombre:this.provNombre(c)})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+      const sortBy=st.matSortBy||'codigo', sortDir=st.matSortDir||'asc';
+      out.matSort=(k)=>this.setState(s=>({matSortBy:k, matSortDir:((s.matSortBy||'codigo')===k && (s.matSortDir||'asc')==='asc')?'desc':'asc'}));
+      const arrow=(k)=> sortBy===k ? (sortDir==='asc'?' ▲':' ▼') : '';
+      out.sortCodigo=()=>out.matSort('codigo'); out.sortNombre=()=>out.matSort('nombre'); out.sortTipo=()=>out.matSort('tipo'); out.sortCosto=()=>out.matSort('costo'); out.sortProv=()=>out.matSort('prov'); out.sortStock=()=>out.matSort('stock');
+      out.arrCodigo=arrow('codigo'); out.arrNombre=arrow('nombre'); out.arrTipo=arrow('tipo'); out.arrCosto=arrow('costo'); out.arrProv=arrow('prov'); out.arrStock=arrow('stock');
       const q=st.qMat.toLowerCase();
       out.materiasView=st.materias.filter(m=> (st.filtroTipo==='todos'||m.tipo===st.filtroTipo) && (st.filtroProvMat==='todos'||m.proveedorCodigo===st.filtroProvMat) && (!q||(m.nombre+m.codigo).toLowerCase().includes(q))).map(m=>{ const ts=this.tipoStyle(m.tipo); const real=Math.round(this.materiaStockActual(m)); const bajo=real<(Number(m.stockMinimo)||0); return {...m, stockActual:real, tipoBg:ts.bg, tipoFg:ts.fg, costoFmt:this.fmt(m.costo), proveedorNombre:this.provNombre(m.proveedorCodigo), marca:(m.marca||'—'), stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', onEdit:()=>this.editMateria(m), onDelete:()=>this.askDelete('materia',m)}; });
+      { const dir=sortDir==='asc'?1:-1; const key=(r)=>{ if(sortBy==='nombre') return String(r.nombre||''); if(sortBy==='tipo') return String(r.tipo||''); if(sortBy==='prov') return String(r.proveedorNombre||''); if(sortBy==='costo') return Number(r.costo)||0; if(sortBy==='stock') return Number(r.stockActual)||0; return String(r.codigo||''); };
+        out.materiasView=out.materiasView.slice().sort((a,b)=>{ const ka=key(a), kb=key(b); if(typeof ka==='number') return (ka-kb)*dir; return ka.localeCompare(kb,'es',{numeric:true})*dir; }); }
     }
 
     // ---- SERVICIOS ----
