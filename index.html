@@ -2278,7 +2278,7 @@
                   <div style="font-size:12.5px;color:var(--text-body);margin-top:7px;line-height:1.55;">Estas referencias no calculan costo ni descuentan inventario hasta que crees el producto o le definas estructura y costo en Desarrollo de producto.</div>
                   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px;">
                     <sc-for list="{{ alertaProdRefs }}" as="r" hint-placeholder-count="0">
-                      <span style="display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;background:var(--surface-card);border:1px solid rgba(181,80,60,0.28);color:var(--text-strong);padding:5px 11px;border-radius:99px;">{{ r.sku }}<span style="font-weight:600;color:#B5503C;">{{ r.motivo }}</span><span style="font-weight:500;color:var(--text-muted);">{{ r.pedidosTxt }}</span></span>
+                      <button onClick="{{ r.onFix }}" title="Ajustar esta referencia" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:11.5px;font-weight:700;background:var(--surface-card);border:1px solid rgba(181,80,60,0.28);color:var(--text-strong);padding:5px 11px;border-radius:99px;cursor:pointer;" style-hover="border-color:#B5503C;background:rgba(181,80,60,0.06);">{{ r.sku }}<span style="font-weight:600;color:#B5503C;">{{ r.motivo }}</span><span style="font-weight:500;color:var(--text-muted);">{{ r.pedidosTxt }}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B5503C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
                     </sc-for>
                   </div>
                 </div>
@@ -4937,7 +4937,7 @@
                 <div style="background:rgba(181,80,60,0.07);border:1px solid rgba(181,80,60,0.32);border-radius:var(--radius-md);padding:12px 15px;margin-bottom:14px;">
                   <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#B5503C;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Referencias sin crear o sin costo</div>
                   <sc-for list="{{ detVentaProblemas }}" as="p" hint-placeholder-count="1">
-                    <div style="font-size:12.5px;color:var(--text-body);margin-top:5px;">{{ p.txt }}</div>
+                    <button onClick="{{ p.onFix }}" title="Ajustar esta referencia" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;color:var(--text-body);background:none;border:none;padding:5px 0 0;cursor:pointer;text-align:left;" style-hover="color:#B5503C;">{{ p.txt }}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B5503C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
                   </sc-for>
                 </div>
               </sc-if>
@@ -6739,11 +6739,21 @@ class Component extends DCLogic {
   _diagKey(){ return ((this.state.productos||[]).length)+':'+((this.state.kits||[]).length)+':'+((this.state.materias||[]).length)+':'+((this.state.ventas||[]).length); }
   refDiag(code){ const key=this._diagKey(); if(!this._diagCache || this._diagCache.key!==key) this._diagCache={key, map:{}};
     const c=String(code||''); const m=this._diagCache.map; if(m[c]===undefined) m[c]=this.refDiagnostico(c); return m[c]; }
+  // Abre directamente el producto/kit a ajustar; si no existe, precarga la creación con ese código.
+  fixReferencia(code, nombre){ const c=String(code||'').trim(); if(!c){ this.toast('La línea no tiene referencia'); return; }
+    const p=(this.state.productos||[]).find(x=>x.codigo===c);
+    if(p){ this.setState({module:'desarrollo', sub:'productos', modal:null}); this.editProducto(p); return; }
+    const k=(this.state.kits||[]).find(x=>x.codigo===c);
+    if(k){ this.setState({module:'desarrollo', sub:'kits', modal:null}); this.editKit(k); return; }
+    this.setState({module:'desarrollo', sub:'productos', modal:null});
+    this.nuevoProducto();
+    this.setState(st=>({draft:{...st.draft, codigo:c, nombre:(nombre||'')}}));
+    this.toast('Crea el producto '+c+' con su estructura y costo'); }
   ventaProblemas(v){ const out=[]; (v&&v.items||[]).forEach(it=>{ const code=it.productoCodigo||it.referencia||''; const m=this.refDiag(code); if(m) out.push({sku:(code||'—'), nombre:(it.nombre||it.referencia||''), motivo:m}); }); return out; }
   ventasConProblemas(){ const key=this._diagKey();
     if(this._probCache && this._probCache.key===key && (Date.now()-this._probCache.t)<4000) return this._probCache.val;
     const refs={}; let nVentas=0; const ventas=[];
-    (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const ps=this.ventaProblemas(v); if(!ps.length) return; nVentas++; ventas.push({v, ps});
+    (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||v.origen==='historico') return; const ps=this.ventaProblemas(v); if(!ps.length) return; nVentas++; ventas.push({v, ps});
       ps.forEach(p=>{ const k=p.sku+'|'+p.motivo; if(!refs[k]) refs[k]={sku:p.sku, nombre:p.nombre, motivo:p.motivo, n:0}; refs[k].n++; }); });
     const val={ nVentas, ventas, refs:Object.keys(refs).map(k=>refs[k]).sort((a,b)=>b.n-a.n) };
     this._probCache={key, t:Date.now(), val}; return val; }
@@ -10025,7 +10035,7 @@ Instrucciones de respuesta:
       let list=vivas.filter(v=>{ if(!(fcanal==='todos'||v.canal===fcanal)) return false; if(fmet!=='todos' && v.metodoPago!==fmet) return false; if(fpago!=='todos' && this.ventaEstadoPago(v).key!==fpago) return false; const f=this.parseFecha(v.fecha)||''; if(vd&&f<vd) return false; if(vh&&f>vh) return false; if(q && !((v.cliente||'')+(v.pedido||'')+(v.ov||'')+(v.ciudad||'')+(v.items||[]).map(i=>i.producto).join(' ')).toLowerCase().includes(q)) return false; return true; });
       list=list.slice().sort((a,b)=>{ const oa=this.ovNum(a), ob=this.ovNum(b); if(ob!==oa) return ob-oa; const na=this.pedidoNum(a), nb=this.pedidoNum(b); if(nb!==na) return nb-na; return (b.fecha||'').localeCompare(a.fecha||''); });
       out.ventasView=list.map(mapV); out.ventasVacio=list.length===0;
-      { const _al=this.ventasConProblemas(); out.alertaProdShow=_al.nVentas>0; out.alertaProdTitulo=_al.nVentas+' pedido'+(_al.nVentas===1?'':'s')+' con productos sin crear o sin costo'; out.alertaProdRefs=_al.refs.map(r=>({...r, pedidosTxt:r.n+' pedido'+(r.n===1?'':'s')})); }
+      { const _al=this.ventasConProblemas(); out.alertaProdShow=_al.nVentas>0; out.alertaProdTitulo=_al.nVentas+' pedido'+(_al.nVentas===1?'':'s')+' con productos sin crear o sin costo'; out.alertaProdRefs=_al.refs.map(r=>({...r, pedidosTxt:r.n+' pedido'+(r.n===1?'':'s'), onFix:()=>this.fixReferencia(r.sku, r.nombre)})); }
       out.nuevaVenta=()=>this.nuevaVenta(); out.nuevaVentaImport=()=>this.openImport('ventas'); out.nuevaMsvc=()=>this.nuevaMsvc();
       out.onVerMsvc=()=>this.setState({modal:'msvclist'});
       out.shopifySyncBtn=()=>this.shopifySyncReal(); out.shopifySyncing=!!st.shopifySyncing; out.shopifySyncLabel=st.shopifySyncing?'Sincronizando…':'Shopify';
@@ -10332,7 +10342,7 @@ Instrucciones de respuesta:
       out.onPickCotCliente=(e)=>{ const val=String(e.target.value||''); const opt=opts.find(o=>o.label===val); if(!opt) return; const c=this.clientesData().find(x=>x.key===opt.key); if(c){ this.setState(s=>({draft:{...s.draft, cliente:c.cliente, celular:c.celular||'', correo:c.correo||'', ciudad:c.ciudad||''}})); } };
     }
     if(st.modal==='detalleventa'&&st.detalleId){ const v=(st.ventas||[]).find(x=>x.id===st.detalleId); if(v){ const ep=this.ventaEstadoPago(v); const cs=this.canalStyle(v.canal);
-      { const _pb=this.ventaProblemas(v); out.detVentaProblemaShow=_pb.length>0; out.detVentaProblemas=_pb.map(p=>({...p, txt:p.sku+' — '+p.motivo})); }
+      { const _pb=this.ventaProblemas(v); out.detVentaProblemaShow=_pb.length>0; out.detVentaProblemas=_pb.map(p=>({...p, txt:p.sku+' — '+p.motivo, onFix:()=>this.fixReferencia(p.sku, p.nombre)})); }
       out.detVenta={ ov:v.ov||'—', pedido:v.pedido||'—', fechaFmt:this.fmtFecha(v.fecha), canal:v.canal, canalBg:cs.bg, canalFg:cs.fg, cliente:v.cliente, ciudad:v.ciudad||'—', celular:v.celular||'—', correo:v.correo||'—', bodega:v.bodega||'—', metodoPago:v.metodoPago||'—', guia:v.guia||'—', origenLabel:this.origenLabel(v.origen), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), items:(v.items||[]).map((it,idx)=>{ const c=it.productoCodigo||it.referencia; const pp=(this.state.productos||[]).find(x=>x.codigo===c); const kk=(this.state.kits||[]).find(x=>x.codigo===c); const em=(v.origen==='manual'); return {nombre:(pp?pp.nombre:(kk?kk.nombre:(this.fixTxt(it.producto)||it.referencia))), referencia:it.referencia||'—', unidades:it.unidades, valorUnit:(Number(it.valorUnit)||0), valorFmt:this.fmt(it.valorUnit), subtotalFmt:this.fmt((Number(it.unidades)||0)*(Number(it.valorUnit)||0)), editable:em, readonly:!em, onSetCant:((i)=>(e)=>this.setVentaItemCant(v.id,i,e.target.value))(idx), onSetValor:((i)=>(e)=>this.setVentaItemValor(v.id,i,e.target.value))(idx)}; }), subtotalFmt:this.fmt(Math.round(this.ventaSubtotal(v))), envioFmt:this.fmt(v.envio||0), envioIvaFmt:this.fmt(this.ventaIvaEnvio(v)), envioConIva:this.ventaIvaEnvio(v)>0, fleteEntregaFmt:this.fmt(v.fleteEntrega||0), tieneFleteEntrega:(Number(v.fleteEntrega)||0)>0, fleteCuentaTxt:(v.fleteCuenta||'—'), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), hayAbono:(this.ventaAbono(v)>0), abonoFmt:this.fmt(Math.round(this.ventaAbono(v))), abonoMetodoTxt:(v.abonoMetodo||'—'), abonoCuentaTxt:(v.abonoCuenta||'—'), abonoFechaFmt:(v.abonoFecha?this.fmtFecha(v.abonoFecha):'—'), saldoRecaudoFmt:this.fmt(Math.round(this.ventaRecaudoBruto(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.round(this.ventaSaldo(v))), costoFmt:this.fmt(Math.round(this.ventaCosto(v))), margenFmt:this.fmt(Math.round(this.ventaSubtotal(v)-this.ventaCosto(v))), onEditar:()=>this.editVenta(v) };
       out.detVentaEsManual=(v.origen==='manual');
       out.waHabilitado=this.waConfigurado(); out.waNoHabilitado=!this.waConfigurado();
