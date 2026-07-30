@@ -703,6 +703,7 @@
                 <div style="flex:1;min-width:220px;">
                   <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:6px;">Fecha de inicio de operaciones</div>
                   <div style="font-size:13px;color:var(--text-body);line-height:1.55;">Solo se descuentan del inventario los movimientos registrados a partir de esta fecha. Los inventarios cargados antes de esta fecha se toman como saldo base.</div>
+                  <div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-top:6px;">El conteo del inventario inicial queda fechado el día anterior — <strong style="color:var(--text-body);">{{ fechaInventarioLabel }}</strong> — y así aparece como primer movimiento en el kardex.</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap;">
                   <input type="date" value="{{ fechaCorte }}" onInput="{{ onFechaCorte }}" style="font-family:inherit;font-size:14px;font-weight:700;padding:9px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);cursor:pointer;">
@@ -715,7 +716,21 @@
                 <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Herramientas de datos</h3>
                 </div>
-                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:flex-start;gap:16px;padding:15px 20px;flex-wrap:wrap;background:{{ ocDescBg }};">
+                  <div style="flex:1;min-width:220px;">
+                    <div style="font-weight:700;font-size:13.5px;color:{{ ocDescColor }};">Órdenes con inventario descuadrado</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Compara lo pedido en cada orden contra lo realmente recibido en sus entregas. Cuando no cuadran, el stock de esa materia quedó mal. Recuadrar revierte el ingreso viejo y aplica el correcto, incluido el costo promedio.</div>
+                    <sc-if value="{{ ocDescHay }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+                        <sc-for list="{{ ocDescList }}" as="x" hint-placeholder-count="0">
+                          <div style="font-size:12px;color:var(--text-body);background:var(--surface-raised);border:1px solid rgba(181,80,60,0.25);border-radius:var(--radius-sm);padding:7px 11px;line-height:1.45;"><strong>{{ x.numero }}</strong> · {{ x.detalle }}</div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <button onClick="{{ onRecuadrarOrdenes }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:{{ ocDescBtnBg }};color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="opacity:0.85;">{{ ocDescBtn }}</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
                   <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Recalcular stock desde órdenes de compra</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Toma las entregas registradas en órdenes de compra y actualiza el <strong>stockActual</strong> y el <strong>costo unitario promedio</strong> de las materias que estén en cero. No toca materias que ya tienen stock asignado.</div></div>
                   <button onClick="{{ onRecalcularStock }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:var(--brand-ink);color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="opacity:0.85;">Ajustar desde órdenes</button>
                 </div>
@@ -6306,7 +6321,7 @@ class Component extends DCLogic {
     compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'reorden',label:'Reposición'},{key:'ordenes',label:'Órdenes de compra'}],
     desarrollo: [{key:'mezclas',label:'Mezclas'},{key:'productos',label:'Productos'},{key:'kits',label:'Kits'}],
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
-    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'kardex',label:'Kardex'}],
+    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'conteos',label:'Conteos físicos'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'},{key:'informe',label:'Informe'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
@@ -6530,6 +6545,7 @@ class Component extends DCLogic {
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
     canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null,
+    conteos:[], fConteoEstado:'pendiente',
   };
 
   componentDidMount(){
@@ -6564,7 +6580,7 @@ class Component extends DCLogic {
     if(!savedReglas) savedReglas={margenMinPct:'',descuentoMaxPct:'',umbralAprobacion:'',envioGratisDesde:''};
     let savedEmpaque=null; try{savedEmpaque=JSON.parse(localStorage.getItem('oda_hub_empaque_v1'));}catch(e){}if(!savedEmpaque) savedEmpaque={bolsaDefault:'MP-0087',mapeoCajas:{'006003':'MP-0095','006004':'MP-0096','006005':'MP-0097','006006':'MP-0098','009002':['MP-0092','MP-0107'],'009003':['MP-0092','MP-0107'],'009004':['MP-0092','MP-0107']}};
     try{ if(savedEmpaque&&!localStorage.getItem('oda_hub_empaque_v2')){ const adds={'009002':['MP-0092','MP-0107'],'009003':['MP-0092','MP-0107'],'009004':['MP-0092','MP-0107']}; Object.keys(adds).forEach(k=>{ if(!savedEmpaque.mapeoCajas||!(k in savedEmpaque.mapeoCajas)) savedEmpaque.mapeoCajas={...(savedEmpaque.mapeoCajas||{}),[k]:adds[k]}; }); localStorage.setItem('oda_hub_empaque_v2','1'); } }catch(e){}
-    const patch={ proveedores:data.proveedores, materias:data.materias, ordenes:data.ordenes, productos:data.productos, kits:data.kits, mezclas:data.mezclas, producciones:data.producciones, produccionesMezcla:data.produccionesMezcla, servicios:data.servicios, ventas:data.ventas, cotizaciones:data.cotizaciones, cuentasFin:data.cuentasFin, movimientos:data.movimientos, gastosFijos:data.gastosFijos, retenConfig:data.retenConfig, metodosFin:data.metodosFin, liquidaciones:data.liquidaciones, creditos:(data.creditos||[]), userPerms:savedPerms, reglasNeg:savedReglas, reglasEmpaque:savedEmpaque, tiendas:(data.tiendas||[]), remisiones:(data.remisiones||[]), leads:(data.leads||[]), casos:(data.casos||[]) };
+    const patch={ proveedores:data.proveedores, materias:data.materias, ordenes:data.ordenes, productos:data.productos, kits:data.kits, mezclas:data.mezclas, producciones:data.producciones, produccionesMezcla:data.produccionesMezcla, servicios:data.servicios, ventas:data.ventas, cotizaciones:data.cotizaciones, cuentasFin:data.cuentasFin, movimientos:data.movimientos, gastosFijos:data.gastosFijos, retenConfig:data.retenConfig, metodosFin:data.metodosFin, liquidaciones:data.liquidaciones, creditos:(data.creditos||[]), userPerms:savedPerms, reglasNeg:savedReglas, reglasEmpaque:savedEmpaque, tiendas:(data.tiendas||[]), remisiones:(data.remisiones||[]), leads:(data.leads||[]), casos:(data.casos||[]), conteos:(data.conteos||[]) };
     let savedProp=null; try{savedProp=JSON.parse(localStorage.getItem('oda_hub_propuesta_v1'));}catch(e){} patch.propuesta=savedProp||this.propuestaDefault();
     // El ingreso a la app ahora lo controla la sesión de nube (cloudInit). No auto-entramos con sesión local.
     try{ const _acct=localStorage.getItem('oda_hub_meta_acct_v1'); if(_acct) patch.mktAdAccountId=_acct; }catch(e){}
@@ -6583,8 +6599,8 @@ class Component extends DCLogic {
     try{ const _pd=(window.__resources&&window.__resources.propuestaDoc)||'./propuesta-doc.js'; import(_pd).then(m=>{ this._buildPropDoc=m.buildPropuestaDoc; }).catch(()=>{}); }catch(e){}
   }
 
-  save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
-  persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, ...extra }; this.save(d); }
+  save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos,conteos:d.conteos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
+  persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
   respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_conv_v1','oda_hub_agente_v1','oda_hub_movajustes_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
   writeAutoBackup(){ try{ const dump={_fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); localStorage.setItem('oda_hub_backup_v1', JSON.stringify(dump));
@@ -6737,7 +6753,7 @@ class Component extends DCLogic {
   // ---- nav ----
   goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],conversaciones:['bandeja','agente','canales','informe'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','conteos','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],conversaciones:['bandeja','agente','canales','informe'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -6746,7 +6762,7 @@ class Component extends DCLogic {
   quitarDraftArchivo(){ this.setState(s=>({draft:{...s.draft, _archivo:'', _archivoNombre:''}})); }
   close(){ this.setState({modal:null,draft:{},detalleId:null}); }
   updateDraft(name,value){
-    const numeric=['calificacion','costo','iva','stockActual','stockMinimo','montoPago','_selCantidad','_selPrecio','_selUndEmp','flete','precio','stockInicial','costoCompra','cantidadAceite','cantidad','lotes','valorUnit','unidades','envio','fleteEntrega','pagado','_selUnidades','_selValor','_selDesc','validez','descuentoPct','descuentoMasivo','monto','saldoInicial','dia','fuenteCompras','fuenteServicios','reteIva','reteIca','comisionPct','diasLiq','deduccion','comisionFijo','reteRenta','reteIca','reteIva','altComisionPct','altComisionFijo','altReteRenta','altReteIca','altReteIva','capital','tasaMensual','retenPct','nCuotas','abCapital','abInteres'];
+    const numeric=['calificacion','costo','iva','stockActual','stockMinimo','contado','montoPago','_selCantidad','_selPrecio','_selUndEmp','flete','precio','stockInicial','costoCompra','cantidadAceite','cantidad','lotes','valorUnit','unidades','envio','fleteEntrega','pagado','_selUnidades','_selValor','_selDesc','validez','descuentoPct','descuentoMasivo','monto','saldoInicial','dia','fuenteCompras','fuenteServicios','reteIva','reteIca','comisionPct','diasLiq','deduccion','comisionFijo','reteRenta','reteIca','reteIva','altComisionPct','altComisionFijo','altReteRenta','altReteIca','altReteIva','capital','tasaMensual','retenPct','nCuotas','abCapital','abInteres'];
     const v = numeric.includes(name)? (value===''? '' : Number(value)) : value;
     if(name==='_selProd' && this.state.modal==='cotizacion'){ const opt=this.cotItemOptions().find(x=>x.codigo===value); this.setState(s=>({draft:{...s.draft, _selProd:value, _selValor:(opt?opt.precio:''), _selDesc:''}})); return; }
     if(name==='_selProd' && this.state.modal==='venta'){ const opt=this.ventasProductoOptions().find(x=>x.codigo===value); this.setState(s=>({draft:{...s.draft, _selProd:value, _selValor:(opt?opt.precio:''), _selDesc:''}})); return; }
@@ -7021,7 +7037,10 @@ class Component extends DCLogic {
     (this.state.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(this.state.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===code) n+=(Number(f.cantidad)||0)*(Number(op.lotes)||0); }); });
     (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(this.state.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto' && ki.codigo===code) n+=u*(Number(ki.cantidad)||1); }); } }); (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===code) n+=(Number(e.cantidad)||0); }); });
     return n; }
-  materiaStockActual(m){ if(!m) return 0; return (Number(m.stockActual)||0) - this.materiaConsumoTotal(m.codigo); }
+  // Suma de los conteos físicos YA APROBADOS de una materia. Cada delta se calculó contra el
+  // stock del sistema en su momento (que ya incluía los deltas anteriores), así que se suman.
+  conteoDelta(codigo){ return (this.state.conteos||[]).reduce((a,c)=> (c.codigo===codigo && c.estado==='aprobado')? a+(Number(c.diferencia)||0) : a, 0); }
+  materiaStockActual(m){ if(!m) return 0; return (Number(m.stockActual)||0) - this.materiaConsumoTotal(m.codigo) + this.conteoDelta(m.codigo); }
   productoStockActual(p){ if(p&&p.esReventa){ const m=this.state.materias.find(x=>x.codigo===p.codigo); const base = m? (Number(m.stockActual)||0) : ((Number(p.stockInicial)||0)+this.productoComprado(p.codigo)); return base - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); } return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); }
   // ---- reposición automática: stock mínimo y punto de reorden desde el histórico de ventas ----
   reordenCfg(){ return { ventana:90, lead:7, anticip:7, cobertura:30, ...(this.state.reordenCfg||{}) }; }
@@ -8301,8 +8320,78 @@ Instrucciones de respuesta:
   tipoLabelInv(t){ const m={'aceite esencial':'Aceite esencial','fragancia':'Fragancia','insumo':'Insumo','empaque':'Empaque','herramienta':'Herramienta','envase':'Envase / frasco','pt':'Reventa','producto terminado':'PT'}; return m[t]||t; }
   ajustarInventario(m){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede ajustar el stock inicial'); return; }
     this.open('ajusteinv',{ codigo:m.codigo, _nombre:m.nombre, _unidad:m.unidad, _tipo:m.tipo, stockActual:m.stockActual, costo:m.costo }); }
+  // ===== CONTEO FÍSICO (con aprobación del Administrador) =====
+  MOTIVOS_CONTEO = ['Conteo periódico','Merma o derrame','Producto vencido','Error de registro anterior','Devolución a proveedor','Muestra o consumo interno','Otro'];
+  conteoSistema(codigo){ const m=(this.state.materias||[]).find(x=>x.codigo===codigo); return m? Math.round(this.materiaStockActual(m)*1000)/1000 : 0; }
+  nuevoConteo(m){
+    if(!m) return;
+    this.open('conteo',{ codigo:m.codigo, _nombre:m.nombre, _unidad:m.unidad||'und', _tipo:this.tipoLabelInv(m.tipo),
+      _sistema:this.conteoSistema(m.codigo), contado:'', motivo:'Conteo periódico', nota:'',
+      fecha:new Date().toISOString().slice(0,10) });
+  }
+  saveConteo(){
+    const d=this.state.draft;
+    if(d.contado===''||d.contado===null||d.contado===undefined){ this.toast('Escribe cuántas unidades contaste'); return; }
+    const contado=Number(d.contado); if(!isFinite(contado)||contado<0){ this.toast('El conteo debe ser un número mayor o igual a cero'); return; }
+    if(!d.motivo){ this.toast('Elige el motivo del ajuste'); return; }
+    if(d.motivo==='Otro' && !String(d.nota||'').trim()){ this.toast('Con motivo «Otro» hay que escribir la explicación'); return; }
+    // Recalculamos el sistema al guardar: pudo cambiar mientras el modal estaba abierto.
+    const sistema=this.conteoSistema(d.codigo);
+    const dif=Math.round((contado-sistema)*1000)/1000;
+    if(dif===0){ this.toast('El conteo coincide con el sistema · no hay nada que ajustar'); this.close(); return; }
+    const admin=this.isAdminUser(); const yo=this._auditUser();
+    const row={ id:'CF-'+Date.now(), codigo:d.codigo, nombre:d._nombre||'', unidad:d._unidad||'und',
+      fecha:d.fecha||new Date().toISOString().slice(0,10), sistema, contado, diferencia:dif,
+      motivo:d.motivo, nota:String(d.nota||'').trim(),
+      solicitadoPor:yo, solicitadoAt:new Date().toISOString(),
+      estado: admin? 'aprobado':'pendiente',
+      aprobadoPor: admin? yo : '', aprobadoAt: admin? new Date().toISOString() : '' };
+    const list=[...(this.state.conteos||[]), row];
+    this.setState({conteos:list, modal:null, draft:{}},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkConteos([row]);
+    const sg=(dif>0?'+':'')+this.fmtCant(dif);
+    this.toast(admin ? ('Conteo aplicado · '+sg+' '+row.unidad+' en '+row.codigo)
+                    : ('Conteo enviado a aprobación · '+sg+' '+row.unidad+' en '+row.codigo));
+  }
+  resolverConteo(id, aprobar){
+    if(!this.isAdminUser()){ this.toast('Solo el Administrador puede aprobar un conteo'); return; }
+    const c=(this.state.conteos||[]).find(x=>x.id===id); if(!c||c.estado!=='pendiente') return;
+    let row;
+    if(aprobar){
+      // Se recalcula contra el stock de HOY: entre la solicitud y la aprobación pudo haber producción.
+      const sistema=this.conteoSistema(c.codigo);
+      const dif=Math.round((Number(c.contado)-sistema)*1000)/1000;
+      row={...c, estado:'aprobado', sistemaAlAprobar:sistema, diferencia:dif,
+           aprobadoPor:this._auditUser(), aprobadoAt:new Date().toISOString()};
+    } else {
+      row={...c, estado:'rechazado', aprobadoPor:this._auditUser(), aprobadoAt:new Date().toISOString()};
+    }
+    const list=(this.state.conteos||[]).map(x=>x.id===id?row:x);
+    this.setState({conteos:list},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkConteos([row]);
+    this.toast(aprobar? ('Conteo aprobado · stock de '+c.codigo+' actualizado') : 'Conteo rechazado');
+  }
+  conteosPendientes(){ return (this.state.conteos||[]).filter(c=>c.estado==='pendiente').length; }
+  // ---- conteos compartidos (nube) ----
+  _conteoToDb(c){ return { id:c.id, codigo:c.codigo, nombre:c.nombre||'', unidad:c.unidad||'und', fecha:c.fecha||null,
+    sistema:Number(c.sistema)||0, contado:Number(c.contado)||0, diferencia:Number(c.diferencia)||0,
+    motivo:c.motivo||'', nota:c.nota||'', solicitado_por:c.solicitadoPor||'', solicitado_at:c.solicitadoAt||null,
+    estado:c.estado||'pendiente', aprobado_por:c.aprobadoPor||'', aprobado_at:c.aprobadoAt||null }; }
+  _conteoFromDb(r){ return { id:r.id, codigo:r.codigo, nombre:r.nombre||'', unidad:r.unidad||'und', fecha:r.fecha||'',
+    sistema:Number(r.sistema)||0, contado:Number(r.contado)||0, diferencia:Number(r.diferencia)||0,
+    motivo:r.motivo||'', nota:r.nota||'', solicitadoPor:r.solicitado_por||'', solicitadoAt:r.solicitado_at||'',
+    estado:r.estado||'pendiente', aprobadoPor:r.aprobado_por||'', aprobadoAt:r.aprobado_at||'' }; }
+  async cloudBulkConteos(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('conteos').upsert(list.map(c=>this._conteoToDb(c))); }catch(e){} }
+  async cloudLoadConteos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('conteos').select('*'); if(error) throw error; if(data) this.setState({conteos:data.map(r=>this._conteoFromDb(r))},()=>this.persist()); }catch(e){} }
   saveAjuste(){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede ajustar el stock inicial'); return; }
     const d=this.state.draft; const list=this.state.materias.map(m=> m.codigo===d.codigo? {...m, stockActual:Number(d.stockActual)||0, costo:Number(d.costo)||0} : m); this.setState({materias:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkMaterias(list); this.toast('Inventario actualizado'); }
+  // El inventario inicial se contó el día ANTERIOR a la fecha de inicio de operaciones:
+  // se cuenta el 17 y se empieza a descontar el 18. Se deriva del corte para que nunca se desfase.
+  fechaInventarioInicial(){
+    const c=this.state.fechaCorte||'2026-06-18';
+    const d=new Date(c+'T12:00:00'); d.setDate(d.getDate()-1);
+    return d.toISOString().slice(0,10);
+  }
   fmtCant(n){ const v=Math.round(n*1000)/1000; return Number.isInteger(v)?v.toLocaleString('es-CO'):v.toLocaleString('es-CO',{maximumFractionDigits:3}); }
   buildKardexMateria(codigo){
     const st=this.state; const m=st.materias.find(x=>x.codigo===codigo); if(!m) return [];
@@ -8310,11 +8399,18 @@ Instrucciones de respuesta:
     (st.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ const ef=e.fecha||o.fecha||''; if(!this._enCorte(ef)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===codigo&&(Number(it.cantidad)||0)>0) deliveries.push({fecha:ef,tipo:'entrada',concepto:'Compra · '+(o.numero||''),cantidad:Number(it.cantidad)||0}); }); }); });
     const totalDel=deliveries.reduce((a,d)=>a+d.cantidad,0);
     const base=(Number(m.stockActual)||0)-totalDel;
-    const rows=[{fecha:'',tipo:'inicial',concepto:'Saldo base · stock al momento de la última importación / ajuste',cantidad:base}];
+    const fIni=this.fechaInventarioInicial();
+    const rows=[{fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · conteo del '+this.fmtFecha(fIni),cantidad:base}];
     rows.push(...deliveries);
     (st.producciones||[]).forEach(op=>{ const p=(st.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!p) return; (p.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. PT · '+op.numero+' · '+p.nombre,cantidad:cant}); } }); });
     (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo){ rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); } }); } }); (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
+    (st.conteos||[]).forEach(c=>{ if(c.codigo!==codigo||c.estado!=='aprobado') return;
+      const dif=Number(c.diferencia)||0; if(!dif) return;
+      const quien=c.aprobadoPor? (' · aprobó '+c.aprobadoPor) : '';
+      rows.push({fecha:c.fecha||'', tipo:(dif<0?'salida':'entrada'),
+        concepto:'Ajuste por conteo físico · '+(c.motivo||'')+quien, cantidad:Math.abs(dif)});
+    });
     rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
     let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; }); return rows;
   }
@@ -8709,12 +8805,113 @@ Instrucciones de respuesta:
     // Pago inmediato con tarjeta de crédito: la orden queda pagada y el cargo se refleja en esa cuenta (no entra a Cuentas por pagar).
     const esTarjeta=!!d.pagoTarjeta; const tarjetas=this.cuentasList().filter(c=>c.tipo==='tarjeta'); const ctaTarjeta = esTarjeta ? (d.cuentaTarjeta || (tarjetas[0]&&tarjetas[0].nombre) || '') : '';
     if(esTarjeta && !ctaTarjeta){ this.toast('No hay una tarjeta de crédito registrada en Finanzas · créala primero en Caja y bancos'); return; }
-    if(d._id){ const list=this.state.ordenes.map(o=>{ if(o.id!==d._id) return o; const base={...o, proveedorCodigo:d.proveedorCodigo, fecha:d.fecha||o.fecha, items:d.items, flete, fleteIva, aplicaRetencion:!!d.aplicaRetencion, retencionManual:(d.retencionManual===''||d.retencionManual==null?null:Number(d.retencionManual)), sinIva:!!d.ordenSinIva, pagoTarjeta:esTarjeta, cuentaTarjeta:ctaTarjeta}; if(esTarjeta){ const tot=this.ordenTotal(base); base.pagos=[{monto:tot, fecha:base.fecha, forma:'Tarjeta de crédito', cuenta:ctaTarjeta}]; } else if(o.pagoTarjeta){ base.pagos=[]; } return base; }); this.setState({ordenes:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Orden '+(d._numero||'')+' actualizada'); return; }
+    if(d._id){
+      const o0=this.state.ordenes.find(x=>x.id===d._id);
+      let materias=this.state.materias.slice(), productos=this.state.productos.slice();
+      let entregas=(o0&&o0.entregas)||[]; let reconciliado=null;
+      // Si la orden YA tenía recepciones, editar los ítems obliga a recuadrar el inventario:
+      // se revierte lo que había ingresado y se vuelve a aplicar con las cantidades y costos nuevos.
+      const _preCorte = o0 && entregas.length && entregas.some(e=>!this._enCorte(e.fecha||o0.fecha));
+      if(o0 && entregas.length && !_preCorte){
+        const oldItems=(o0.items||[]), newItems=(d.items||[]);
+        const cVie={}, cNue={}, recVie={};
+        oldItems.forEach(it=>{ cVie[it.materiaCodigo]=Number(it.costo)||0; });
+        newItems.forEach(it=>{ cNue[it.materiaCodigo]=Number(it.costo)||0; });
+        const codes=[...new Set(oldItems.concat(newItems).map(it=>it.materiaCodigo).filter(Boolean))];
+        codes.forEach(c=>{ recVie[c]=this.ordenRecibido(o0,c); });
+        // Una orden que estaba recibida por completo se realinea: la recepción total pasa a
+        // reflejar los ítems corregidos (conservando su fecha original).
+        if(this.ordenEntregaCompleta(o0)){
+          const e0=entregas[0]||{};
+          entregas=[{ fecha:e0.fecha||o0.fecha, nota:'Recepción total · ajustada '+new Date().toISOString().slice(0,10),
+            recibidoPor:e0.recibidoPor||'', ajustadaPor:this._auditUser(),
+            items:newItems.map(it=>({materiaCodigo:it.materiaCodigo, nombre:it.nombre, cantidad:Number(it.cantidad)||0})) }];
+        }
+        const oTmp={...o0, items:newItems, entregas};
+        let cambios=0;
+        codes.forEach(c=>{
+          const antes=recVie[c]||0, ahora=this.ordenRecibido(oTmp,c);
+          if(antes===ahora && (cVie[c]||0)===(cNue[c]||0)) return;
+          cambios++;
+          if(antes>0){ const r=this.revertirIngreso(materias,productos,c,antes,cVie[c]||0); materias=r.materias; productos=r.productos; }
+          if(ahora>0){ const r=this.aplicarIngreso(materias,productos,c,ahora,cNue[c]||0); materias=r.materias; productos=r.productos; }
+        });
+        reconciliado=cambios;
+      }
+      const list=this.state.ordenes.map(o=>{ if(o.id!==d._id) return o;
+        const base={...o, proveedorCodigo:d.proveedorCodigo, fecha:d.fecha||o.fecha, items:d.items, entregas, flete, fleteIva, aplicaRetencion:!!d.aplicaRetencion, retencionManual:(d.retencionManual===''||d.retencionManual==null?null:Number(d.retencionManual)), sinIva:!!d.ordenSinIva, pagoTarjeta:esTarjeta, cuentaTarjeta:ctaTarjeta};
+        if(entregas.length) base.estado = this.ordenEntregaCompleta({...base}) ? 'recibida' : (o.estado==='recibida'?'aprobada':o.estado);
+        if(esTarjeta){ const tot=this.ordenTotal(base); base.pagos=[{monto:tot, fecha:base.fecha, forma:'Tarjeta de crédito', cuenta:ctaTarjeta}]; } else if(o.pagoTarjeta){ base.pagos=[]; }
+        return base; });
+      this.setState({ordenes:list,materias,productos,modal:null,draft:{}},()=>this.persist());
+      if(this.cloudOn()){ this.cloudBulkOrdenes(list); this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); }
+      this.toast(_preCorte ? ('Orden '+(d._numero||'')+' actualizada · el inventario NO se movió: tiene entregas anteriores a la fecha de corte, ya incluidas en el saldo base')
+              : (reconciliado ? ('Orden '+(d._numero||'')+' actualizada · inventario y costo recuadrados en '+reconciliado+' ítem'+(reconciliado===1?'':'s'))
+                              : ('Orden '+(d._numero||'')+' actualizada')));
+      return;
+    }
     const list=this.state.ordenes.slice(); const num=d._numero||this.nextCodeOrden();
     const row={ id:'o'+Date.now(), numero:num, proveedorCodigo:d.proveedorCodigo, fecha:d.fecha||new Date().toISOString().slice(0,10), items:d.items, flete, fleteIva, aplicaRetencion:!!d.aplicaRetencion, retencionManual:(d.retencionManual===''||d.retencionManual==null?null:Number(d.retencionManual)), sinIva:!!d.ordenSinIva, estado:'pendiente', factura:null, pagos:[], entregas:[], pagoTarjeta:esTarjeta, cuentaTarjeta:ctaTarjeta };
     if(esTarjeta){ const tot=this.ordenTotal(row); row.pagos=[{monto:tot, fecha:row.fecha, forma:'Tarjeta de crédito', cuenta:ctaTarjeta}]; }
     list.unshift(row);
     this.setState({ordenes:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Orden '+num+(esTarjeta?' creada · pagada con tarjeta':' creada · queda por aprobar')); }
+  // Órdenes en las que lo recibido en las entregas no coincide con lo pedido en los ítems:
+  // ahí el stock de la materia quedó mal (típicamente por editar una orden ya recibida).
+  ordenesDescuadradas(){
+    const out=[];
+    (this.state.ordenes||[]).forEach(o=>{
+      const ents=(o.entregas||[]);
+      if(o.estado==='rechazada' || !ents.length) return;
+      // Las entregas ANTERIORES a la fecha de corte ya están dentro del saldo base del
+      // inventario: recuadrarlas volvería a sumar lo mismo. Esas órdenes no se tocan.
+      if(ents.some(e=>!this._enCorte(e.fecha||o.fecha))) return;
+      const malas=[];
+      const items=(o.items||[]);
+      items.forEach(it=>{
+        const c=it.materiaCodigo; if(!c) return;
+        const pedido=Number(it.cantidad)||0; const recibido=this.ordenRecibido(o,c);
+        if(Math.abs(pedido-recibido)>0.001) malas.push({codigo:c, nombre:it.nombre||this.refNombre(c)||c, pedido, recibido, costo:Number(it.costo)||0});
+      });
+      // Códigos que entraron por una entrega pero ya no están en los ítems: hay que devolverlos
+      // al inventario (si no, quedan como stock fantasma sin respaldo en la orden).
+      const enItems=new Set(items.map(it=>it.materiaCodigo).filter(Boolean));
+      const huerfanos={};
+      ents.forEach(e=>(e.items||[]).forEach(it=>{ const c=it.materiaCodigo;
+        if(c && !enItems.has(c)) huerfanos[c]=(huerfanos[c]||0)+(Number(it.cantidad)||0); }));
+      Object.keys(huerfanos).forEach(c=>{ if(huerfanos[c]>0.001)
+        malas.push({codigo:c, nombre:this.refNombre(c)||c, pedido:0, recibido:huerfanos[c], costo:0, huerfano:true}); });
+      if(malas.length) out.push({id:o.id, numero:o.numero, fecha:o.fecha, items:malas});
+    });
+    return out;
+  }
+  // Realinea las entregas con los ítems y recuadra stock y costo promedio.
+  recuadrarOrdenes(){
+    const desc=this.ordenesDescuadradas();
+    if(!desc.length){ this.toast('Todas las órdenes cuadran · no hay nada que recuadrar'); return; }
+    const total=desc.reduce((a,d)=>a+d.items.length,0);
+    const _huerf=desc.reduce((a,d)=>a+d.items.filter(x=>x.huerfano).length,0);
+    if(!window.confirm('Se van a recuadrar '+total+' ítem(s) en '+desc.length+' orden(es).'+(_huerf?('\n\n'+_huerf+' ítem(s) ya no están en la orden: se devuelven al inventario.'):'')+'\n\nEl inventario y el costo promedio de esas materias se recalculan con las cantidades de la orden, y las entregas quedan alineadas conservando su fecha original.\n\n¿Continuar?')) return;
+    let materias=this.state.materias.slice(), productos=this.state.productos.slice();
+    const ids={}; desc.forEach(d=>{ ids[d.id]=d; });
+    const ordenes=(this.state.ordenes||[]).map(o=>{
+      const d=ids[o.id]; if(!d) return o;
+      d.items.forEach(it=>{
+        // Se revierte lo que había ingresado y se aplica lo pedido. Un huérfano (pedido 0)
+        // solo se revierte: ese código ya no pertenece a la orden.
+        if(it.recibido>0){ const _mh=(this.state.materias||[]).find(m=>m.codigo===it.codigo); const cVie = it.huerfano? (Number(_mh&&_mh.costo)||0) : it.costo;
+          const r=this.revertirIngreso(materias,productos,it.codigo,it.recibido,cVie); materias=r.materias; productos=r.productos; }
+        if(it.pedido>0){ const r=this.aplicarIngreso(materias,productos,it.codigo,it.pedido,it.costo); materias=r.materias; productos=r.productos; }
+      });
+      const e0=(o.entregas||[])[0]||{};
+      const entregas=[{ fecha:e0.fecha||o.fecha, nota:'Recepción total · recuadrada '+new Date().toISOString().slice(0,10),
+        recibidoPor:e0.recibidoPor||'', ajustadaPor:this._auditUser(),
+        items:(o.items||[]).map(x=>({materiaCodigo:x.materiaCodigo, nombre:x.nombre, cantidad:Number(x.cantidad)||0})) }];
+      return {...o, entregas, estado:'recibida'};
+    });
+    this.setState({ordenes, materias, productos},()=>this.persist());
+    if(this.cloudOn()){ this.cloudBulkOrdenes(ordenes); this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); }
+    this.toast(total+' ítem(s) recuadrado(s) en '+desc.length+' orden(es) · stock y costo promedio corregidos');
+  }
   nextCodeOrden(){ let max=0; this.state.ordenes.forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OC-2026-'+String(max+1).padStart(3,'0'); }
 
   setEstado(id,estado,msg){ const list=this.state.ordenes.map(o=> o.id===id? {...o,estado} : o); this.setState({ordenes:list},()=>this.persist()); if(this.cloudOn()){ const _o=list.find(x=>x.id===id); if(_o) this.cloudSaveOrden(_o); } if(msg) this.toast(msg); }
@@ -8728,6 +8925,28 @@ Instrucciones de respuesta:
       const stock=Number(m.stockActual)||0; const old=Number(m.costo)||0; const nuevoStock=stock+cant;
       const nuevoCosto = nuevoStock>0 ? Math.round((stock*old + cant*(Number(costoUnit)||0))/nuevoStock) : old;
       return {...m, stockActual:nuevoStock, costo:nuevoCosto}; });
+  }
+  // Deshace un ingreso: quita las unidades y devuelve el costo promedio al valor que tenía
+  // antes de esa entrada. Es el inverso de ingresarInventario.
+  revertirInventario(list, materiaCodigo, cantidad, costoUnit){
+    const cant=Number(cantidad)||0; if(cant<=0) return list;
+    return list.map(m=>{ if(m.codigo!==materiaCodigo) return m;
+      const stock=Number(m.stockActual)||0; const prom=Number(m.costo)||0;
+      const nuevoStock=Math.max(0, stock-cant);
+      const nuevoCosto = nuevoStock>0 ? Math.max(0, Math.round((stock*prom - cant*(Number(costoUnit)||0))/nuevoStock)) : prom;
+      return {...m, stockActual:nuevoStock, costo:nuevoCosto}; });
+  }
+  revertirIngreso(materias, productos, code, cant, costoUnit){
+    const m=(materias||[]).find(x=>x.codigo===code);
+    if(m){ return { materias:this.revertirInventario(materias, code, cant, costoUnit), productos }; }
+    const pr=(productos||[]).find(x=>x.codigo===code && x.esReventa);
+    if(pr){ const ya=this.productoComprado(code); const old=Number(pr.costoCompra)||0; const c=Number(cant)||0;
+      const base=Math.max(0, ya-c);
+      const nuevo= base>0? Math.max(0, Math.round((ya*old - c*(Number(costoUnit)||0))/base)) : old;
+      productos=productos.map(x=>x.codigo===code? {...x, costoCompra:nuevo} : x);
+      return {materias, productos};
+    }
+    return { materias:this.revertirInventario(materias, code, cant, costoUnit), productos };
   }
   // Enruta un ingreso por recepción. Las órdenes se registran contra la MATERIA (mismo código
   // que el producto de reventa): si existe la materia, alimenta su stock y costo promedio y el
@@ -9249,7 +9468,7 @@ Instrucciones de respuesta:
     out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
-    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
+    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_conteos=subVis('inventario','conteos'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
@@ -9378,8 +9597,8 @@ Instrucciones de respuesta:
     out.invNavBg = onInv? 'rgba(167,134,89,0.18)':'transparent';
     out.invNavColor = onInv? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyI=(k)=>{ const a=onInv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvKardex=subStyI('kardex');
-    out.subnavInv={ resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
+    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvConteos=subStyI('conteos'); out.subInvKardex=subStyI('kardex');
+    out.subnavInv={ conteos:()=>this.setState({module:'inventario',sub:'conteos'}), resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
     const invAcc = acc? (acc.admin?'write':(acc.inventario||'none')) : 'none';
     out.canWriteInv = invAcc==='write';
 
@@ -9448,6 +9667,7 @@ Instrucciones de respuesta:
     out.showInvPT = onInv && st.sub==='pt';
     out.showInvConsig = onInv && st.sub==='consig';
     out.showInvKardex = onInv && st.sub==='kardex';
+    out.showInvConteos = onInv && st.sub==='conteos';
     out.showInvReorden = st.module==='compras' && st.sub==='reorden';
     if(out.showInvReorden){ const cfg=this.reordenCfg();
       out.reoVentana=cfg.ventana; out.reoLead=cfg.lead; out.reoAnticip=cfg.anticip; out.reoCobertura=cfg.cobertura;
@@ -10436,6 +10656,7 @@ Instrucciones de respuesta:
         this.setState({aiGemDraft:null, aiAntDraft:null, aiGemReveal:false, aiAntReveal:false}); };
       out.onAiKeyClear=()=>{ try{ localStorage.removeItem('oda_hub_ai_gemini_v1'); localStorage.removeItem('oda_hub_ai_anthropic_v1'); localStorage.removeItem('oda_hub_aikey_v1'); localStorage.removeItem('oda_hub_ai_provider_v1'); }catch(e){} this.setState({aiGemDraft:'', aiAntDraft:'', aiGemReveal:false, aiAntReveal:false}); this.toast('Claves de IA eliminadas'); };
       out.fechaCorteLabel=this.fmtFecha(st.fechaCorte||'2026-06-18');
+      out.fechaInventarioLabel=this.fmtFecha(this.fechaInventarioInicial());
       out.onFechaCorte=(e)=>{ const v=e.target.value; if(v) this.setState({fechaCorte:v},()=>this.persist()); };
       const rn=st.reglasNeg||{margenMinPct:'',descuentoMaxPct:'',umbralAprobacion:'',envioGratisDesde:''};
       const saveRegla=(key)=>(e)=>{ const v=e.target.value===''?'':(Number(e.target.value)||0); const updated={...rn,[key]:v}; this.setState({reglasNeg:updated}); try{localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(updated));}catch(ex){} };
@@ -10450,7 +10671,17 @@ Instrucciones de respuesta:
       out.onToggleWaCloud=()=>{ const nv=!rn.waCloudOn; const updated={...rn, waCloudOn:nv}; this.setState({reglasNeg:updated}); try{localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(updated));}catch(ex){} if(this.cloudOn()) this.cloudSaveConfig({waCloudOn:nv}); this.toast(nv?'WhatsApp automático activado':'WhatsApp automático desactivado'); };
       const re=st.reglasEmpaque||{bolsaDefault:'MP-0087',mapeoCajas:{'006003':'MP-0095','006004':'MP-0096','006005':'MP-0097','006006':'MP-0098'}};
       const saveEmpaq=(key,val)=>{ const updated={...re,[key]:val}; this.setState({reglasEmpaque:updated}); try{localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(updated));}catch(ex){} if(this.cloudOn()) this.cloudSaveConfig({bolsaDefault:updated.bolsaDefault||'', bolsasHist:updated.bolsasHist||[], mapeoCajas:updated.mapeoCajas||{}}); };
-      out.onRecalcularStock=()=>this.recalcularStockOrdenes();
+      { const _desc=this.ordenesDescuadradas();
+      out.ocDescHay=_desc.length>0;
+      out.ocDescList=_desc.map(d=>({ numero:d.numero,
+        detalle: d.items.map(it=> it.huerfano ? (it.nombre+': ya no está en la orden · recibido '+this.fmtCant(it.recibido)+' (se devuelve)') : (it.nombre+': pedido '+this.fmtCant(it.pedido)+' · recibido '+this.fmtCant(it.recibido))).join(' · ') }));
+      out.ocDescBtn=_desc.length? ('Recuadrar '+_desc.length+' orden'+(_desc.length===1?'':'es')) : 'Todo cuadra';
+      out.ocDescBtnBg=_desc.length? '#B5503C' : 'var(--brand-ink)';
+      out.ocDescBg=_desc.length? 'rgba(181,80,60,0.06)' : 'transparent';
+      out.ocDescColor=_desc.length? '#8E3F2F' : 'var(--text-strong)';
+      out.onRecuadrarOrdenes=()=>this.recuadrarOrdenes();
+    }
+    out.onRecalcularStock=()=>this.recalcularStockOrdenes();
       out.onRecuperarCostos=()=>this.recuperarCostosOrdenes();
       out.onLimpiarHistorico=()=>this.limpiarHistorico();
       out.onFusionarDuplicados=()=>this.fusionarPedidosDuplicados();
@@ -11064,7 +11295,7 @@ Instrucciones de respuesta:
     out.reventaOptions=(st.productos||[]).filter(p=>p.esReventa).map(p=>({codigo:p.codigo,label:p.codigo+' · '+p.nombre+(p.costoCompra?' ('+this.fmt(p.costoCompra)+'/und)':'')}));
     out.reventaHay=(st.productos||[]).some(p=>p.esReventa);
     out.svcPagoTarjeta=(st.modal==='servicio' && !!st.draft.pagoTarjeta); out.svcTarjetaOptions=this.cuentasList().filter(c=>c.tipo==='tarjeta').map(c=>c.nombre);
-    out.saveModal=()=>this._withAudit(()=>{ if(st.modal==='editmasivo')this.saveEditMasivo(); else if(st.modal==='proveedor')this.saveProveedor(); else if(st.modal==='materia')this.saveMateria(); else if(st.modal==='orden')this.saveOrden(); else if(st.modal==='factura')this.saveFactura(); else if(st.modal==='pago')this.savePago(); else if(st.modal==='producto')this.saveProducto(); else if(st.modal==='kit')this.saveKit(); else if(st.modal==='mezcla')this.saveMezcla(); else if(st.modal==='bulkproducto')this.generarBulk(); else if(st.modal==='produccion')this.saveProduccion(); else if(st.modal==='ajusteinv')this.saveAjuste(); else if(st.modal==='servicio')this.saveServicio(); else if(st.modal==='entrega')this.saveEntrega(); else if(st.modal==='recibirorden')this.confirmarRecibirOrden(); else if(st.modal==='produccionmez')this.saveProduccionMez(); else if(st.modal==='venta')this.saveVenta(); else if(st.modal==='cotizacion')this.saveCotizacion(); else if(st.modal==='movimiento')this.saveMovimiento(); else if(st.modal==='cuentafin')this.saveCuentaFin(); else if(st.modal==='saldoreal')this.saveSaldoReal(); else if(st.modal==='dianpago')this.saveDianPago(); else if(st.modal==='disputa')this.saveDisputa(); else if(st.modal==='cobro')this.saveCobro(); else if(st.modal==='gastofijo')this.saveGastoFijo(); else if(st.modal==='pagargasto')this.confirmarPagoGasto(); else if(st.modal==='pagarsvc')this.confirmarPagoServicio(); else if(st.modal==='retenconfig')this.saveRetenConfig(); else if(st.modal==='liquidacion')this.saveLiquidacion(); else if(st.modal==='metodofin')this.saveMetodoFin(); else if(st.modal==='tienda')this.saveTienda(); else if(st.modal==='remision')this.saveRemision(); else if(st.modal==='msvc')this.saveMsvc(); else if(st.modal==='traslado')this.saveTraslado(); else if(st.modal==='pagartarjeta')this.confirmarPagoTarjeta(); else if(st.modal==='credito')this.saveCredito(); else if(st.modal==='abonocred')this.saveAbonoCred(); else if(st.modal==='lead')this.saveLead(); });
+    out.saveModal=()=>this._withAudit(()=>{ if(st.modal==='conteo')this.saveConteo(); else if(st.modal==='editmasivo')this.saveEditMasivo(); else if(st.modal==='proveedor')this.saveProveedor(); else if(st.modal==='materia')this.saveMateria(); else if(st.modal==='orden')this.saveOrden(); else if(st.modal==='factura')this.saveFactura(); else if(st.modal==='pago')this.savePago(); else if(st.modal==='producto')this.saveProducto(); else if(st.modal==='kit')this.saveKit(); else if(st.modal==='mezcla')this.saveMezcla(); else if(st.modal==='bulkproducto')this.generarBulk(); else if(st.modal==='produccion')this.saveProduccion(); else if(st.modal==='ajusteinv')this.saveAjuste(); else if(st.modal==='servicio')this.saveServicio(); else if(st.modal==='entrega')this.saveEntrega(); else if(st.modal==='recibirorden')this.confirmarRecibirOrden(); else if(st.modal==='produccionmez')this.saveProduccionMez(); else if(st.modal==='venta')this.saveVenta(); else if(st.modal==='cotizacion')this.saveCotizacion(); else if(st.modal==='movimiento')this.saveMovimiento(); else if(st.modal==='cuentafin')this.saveCuentaFin(); else if(st.modal==='saldoreal')this.saveSaldoReal(); else if(st.modal==='dianpago')this.saveDianPago(); else if(st.modal==='disputa')this.saveDisputa(); else if(st.modal==='cobro')this.saveCobro(); else if(st.modal==='gastofijo')this.saveGastoFijo(); else if(st.modal==='pagargasto')this.confirmarPagoGasto(); else if(st.modal==='pagarsvc')this.confirmarPagoServicio(); else if(st.modal==='retenconfig')this.saveRetenConfig(); else if(st.modal==='liquidacion')this.saveLiquidacion(); else if(st.modal==='metodofin')this.saveMetodoFin(); else if(st.modal==='tienda')this.saveTienda(); else if(st.modal==='remision')this.saveRemision(); else if(st.modal==='msvc')this.saveMsvc(); else if(st.modal==='traslado')this.saveTraslado(); else if(st.modal==='pagartarjeta')this.confirmarPagoTarjeta(); else if(st.modal==='credito')this.saveCredito(); else if(st.modal==='abonocred')this.saveAbonoCred(); else if(st.modal==='lead')this.saveLead(); });
     out.addItem=()=>this.addItem();
     out.formasPagoOptions=this.formasPago; out.cuentasOptions=this.cuentasList().map(c=>c.nombre); out.cuentasFinOptions=this.cuentasList().map(c=>c.nombre);
     out.gastoCatOptions=['Servicios públicos','Arriendo','Nómina','Software','Marketing','Logística','Bancarios','Impuestos','Otros'];
