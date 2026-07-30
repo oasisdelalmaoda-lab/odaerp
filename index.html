@@ -1603,7 +1603,7 @@
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.costoFmt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.valorFmt }}</td>
                         <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ m.estadoBg }};color:{{ m.estadoFg }};">{{ m.estadoLabel }}</span></td>
-                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><button onClick="{{ m.onAjustar }}" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Ajustar</button></td></sc-if>
+                        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><button onClick="{{ m.onAjustar }}" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Ajustar</button></td></sc-if>
                       </tr>
                     </sc-for>
                   </tbody>
@@ -2118,7 +2118,7 @@
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.costoFmt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.valorFmt }}</td>
                         <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ m.estadoBg }};color:{{ m.estadoFg }};">{{ m.estadoLabel }}</span></td>
-                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><button onClick="{{ m.onAjustar }}" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Ajustar</button></td></sc-if>
+                        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><button onClick="{{ m.onAjustar }}" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Ajustar</button></td></sc-if>
                       </tr>
                     </sc-for>
                   </tbody>
@@ -4286,7 +4286,12 @@
                 <label style="grid-column:1/3;display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--text-body);cursor:pointer;"><input name="ivaExento" type="checkbox" checked="{{ draft.ivaExento }}" onChange="{{ onDraftIvaExento }}" style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;">Exenta de IVA (ej. agua) — el IVA queda en 0%</label>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Proveedor<input list="dlProvPick" value="{{ provPickText }}" onChange="{{ onprovPick }}" onInput="{{ onprovPick }}" placeholder="Escribe o elige un proveedor…" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><datalist id="dlProvPick"><sc-for list="{{ proveedoresOptions }}" as="p" hint-placeholder-count="0"><option value="{{ p.label }}"></option></sc-for></datalist></label>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Marca del producto<input name="marca" value="{{ draft.marca }}" onInput="{{ onDraftInput }}" placeholder="Marca o fabricante del insumo" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Stock actual<input name="stockActual" type="number" value="{{ draft.stockActual }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Stock inicial<input name="stockActual" type="number" value="{{ draft.stockActual }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><span style="display:block;font-weight:400;font-size:10.5px;color:var(--text-muted);margin-top:4px;line-height:1.4;">Punto de partida del inventario. El stock que ves en las listas es este número menos lo consumido en producción.</span></label>
+                </sc-if>
+                <sc-if value="{{ noAdmin }}" hint-placeholder-val="{{ false }}">
+                  <div><span style="font-size:12px;font-weight:700;color:var(--text-body);">Stock inicial</span><div style="margin-top:5px;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-muted);">{{ draft.stockActual }}</div><span style="display:block;font-size:10.5px;color:var(--text-muted);margin-top:4px;line-height:1.4;">Solo un administrador puede modificarlo.</span></div>
+                </sc-if>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Stock mínimo<input name="stockMinimo" type="number" value="{{ draft.stockMinimo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
               <div style="margin-top:14px;display:flex;gap:9px;align-items:flex-start;background:rgba(101,150,166,0.1);border:1px solid rgba(101,150,166,0.25);border-radius:var(--radius-sm);padding:10px 12px;"><span style="color:#3F6A7A;display:flex;flex-shrink:0;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><span style="font-size:11.5px;color:var(--text-body);line-height:1.5;">El <strong>costo base</strong> es la información histórica de partida. De ahí en adelante, cada <strong>orden de compra recibida</strong> recalcula el costo como <strong>promedio ponderado</strong> con las cantidades y precios nuevos.</span></div>
@@ -4577,10 +4582,10 @@
             <sc-if value="{{ isModalAjuste }}" hint-placeholder-val="{{ false }}">
               <p style="font-size:13px;color:var(--text-body);margin:0 0 16px;">{{ draft._tipo }} · <strong>{{ draft._nombre }}</strong> ({{ draft.codigo }})</p>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Stock actual ({{ draft._unidad }})<input name="stockActual" type="number" step="any" value="{{ draft.stockActual }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Stock inicial ({{ draft._unidad }})<input name="stockActual" type="number" step="any" value="{{ draft.stockActual }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Costo unitario (COP)<input name="costo" type="number" step="any" value="{{ draft.costo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
-              <p style="font-size:11.5px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">Usa este ajuste para cargar el conteo real de inventario o actualizar el costo cuando cambie el precio de compra. Queda como el costo vigente para valorar el inventario y costear productos.</p>
+              <p style="font-size:11.5px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">El <strong>stock inicial</strong> es el punto de partida del inventario: el stock que ves en las listas es este número menos lo consumido en producción. No escribas acá un conteo físico — se restaría dos veces. El <strong>costo</strong> queda como el vigente para valorar inventario y costear productos.</p>
             </sc-if>
 
             <!-- PRODUCTO FORM -->
@@ -6855,6 +6860,8 @@ class Component extends DCLogic {
     const renombra = !d._new && oldC && oldC!==newC;
     if(renombra && !this.isAdminUser()){ this.toast('Solo el Administrador puede cambiar el código de una materia'); return; }
     if(renombra && this.state.materias.some(x=>x.codigo===newC)){ this.toast('Ya existe una materia con el código '+newC); return; }
+    // El stock inicial solo lo puede tocar un administrador: si no lo es, conservamos el valor guardado.
+    if(!d._new && !this.isAdminUser()){ const prev=this.state.materias.find(x=>x.codigo===(renombra?oldC:newC)); if(prev) d.stockActual=prev.stockActual; }
     let list=this.state.materias.slice(); const i=list.findIndex(x=>x.codigo===(renombra?oldC:newC));
     const row={codigo:newC,nombre:d.nombre,tipo:d.tipo||'insumo',unidad:d.unidad||'und',costo:Number(d.costo)||0,iva:(d.iva===''||d.iva===undefined?19:Number(d.iva)),proveedorCodigo:d.proveedorCodigo||'',marca:d.marca||'',stockActual:Number(d.stockActual)||0,stockMinimo:Number(d.stockMinimo)||0};
     if(i>=0 && !d._new) list[i]=row; else list.push(row);
@@ -8292,8 +8299,10 @@ Instrucciones de respuesta:
   invBucketValor(tipos){ const rev=new Set((this.state.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); return this.state.materias.filter(m=>tipos.includes(m.tipo) && !rev.has(m.codigo)).reduce((a,m)=>a+this.materiaValor(m),0); }
   invBucketValorFn(fn){ const rev=new Set((this.state.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); return this.state.materias.filter(m=>fn(m) && !rev.has(m.codigo)).reduce((a,m)=>a+this.materiaValor(m),0); }
   tipoLabelInv(t){ const m={'aceite esencial':'Aceite esencial','fragancia':'Fragancia','insumo':'Insumo','empaque':'Empaque','herramienta':'Herramienta','envase':'Envase / frasco','pt':'Reventa','producto terminado':'PT'}; return m[t]||t; }
-  ajustarInventario(m){ this.open('ajusteinv',{ codigo:m.codigo, _nombre:m.nombre, _unidad:m.unidad, _tipo:m.tipo, stockActual:m.stockActual, costo:m.costo }); }
-  saveAjuste(){ const d=this.state.draft; const list=this.state.materias.map(m=> m.codigo===d.codigo? {...m, stockActual:Number(d.stockActual)||0, costo:Number(d.costo)||0} : m); this.setState({materias:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkMaterias(list); this.toast('Inventario actualizado'); }
+  ajustarInventario(m){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede ajustar el stock inicial'); return; }
+    this.open('ajusteinv',{ codigo:m.codigo, _nombre:m.nombre, _unidad:m.unidad, _tipo:m.tipo, stockActual:m.stockActual, costo:m.costo }); }
+  saveAjuste(){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede ajustar el stock inicial'); return; }
+    const d=this.state.draft; const list=this.state.materias.map(m=> m.codigo===d.codigo? {...m, stockActual:Number(d.stockActual)||0, costo:Number(d.costo)||0} : m); this.setState({materias:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkMaterias(list); this.toast('Inventario actualizado'); }
   fmtCant(n){ const v=Math.round(n*1000)/1000; return Number.isInteger(v)?v.toLocaleString('es-CO'):v.toLocaleString('es-CO',{maximumFractionDigits:3}); }
   buildKardexMateria(codigo){
     const st=this.state; const m=st.materias.find(x=>x.codigo===codigo); if(!m) return [];
@@ -9235,7 +9244,7 @@ Instrucciones de respuesta:
     if(st.view!=='app') return out;
 
     out.userName=u.name; out.userInitials=u.initials; out.userRole=u.role; out.userColor=u.color; out.isAdmin=isAdmin;
-    out.canWrite=canWrite;
+    out.canWrite=canWrite; out.noAdmin=!isAdmin;
     const subVis=(mod,key)=>{ const a=acc||{}; if(a.admin) return true; const k=mod+'__'+key; if(a[k]!==undefined) return a[k]!=='none'; return (a[mod]||'none')!=='none'; };
     out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
