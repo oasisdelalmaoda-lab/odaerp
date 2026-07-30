@@ -5153,6 +5153,11 @@
                 <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:{{ detVenta.canalBg }};color:{{ detVenta.canalFg }};">{{ detVenta.canal }}</span>
                 <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:{{ detVenta.epBg }};color:{{ detVenta.epFg }};">{{ detVenta.epLabel }}</span>
                 <span style="font-size:11.5px;color:var(--text-muted);">{{ detVenta.origenLabel }}</span>
+                <sc-if value="{{ detVentaLockShow }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ onToggleVentaLock }}" title="{{ detVentaLockTxt }}" style="display:flex;align-items:center;gap:6px;font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border-radius:99px;cursor:pointer;background:{{ detVentaLockBg }};border:1px solid {{ detVentaLockBd }};color:{{ detVentaLockFg }};">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>{{ detVentaLockLabel }}
+                  </button>
+                </sc-if>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13px;color:var(--text-body);margin-bottom:14px;">
                 <div>OV: <strong>{{ detVenta.ov }}</strong></div>
@@ -6702,6 +6707,12 @@ class Component extends DCLogic {
     out['on'+key]=(e)=>{ const v=String(e.target.value||''); const o=(opts||[]).find(x=>x.label===v);
       this.setState(st=>({draft:{...st.draft, [tkey]:v}}), ()=>{ if(o) this.updateDraft(field, val(o)); else if(v==='') this.updateDraft(field,''); }); };
   }
+  // Protege de una sola vez los pedidos de Shopify que hoy ya no tienen novedad de referencia
+  // (probable corrección manual reciente), antes de que un nuevo sync los pueda volver a romper.
+  protegerPediosCorregidos(){ let n=0; const list=(this.state.ventas||[]).map(v=>{ if(v.origen==='shopify' && !v.itemsLocked && !v.cancelada){ const p=this.ventaProblemas(v); if(!p.length && (v.items||[]).length){ n++; return {...v, itemsLocked:true}; } } return v; });
+    if(!n){ this.toast('No hay pedidos nuevos para proteger'); return; }
+    this.setState({ventas:list},()=>this.persist()); if(this.cloudOn()) list.filter(v=>v.itemsLocked).forEach(v=>this.cloudSaveVenta(v));
+    this.toast(n+' pedido'+(n===1?'':'s')+' protegido'+(n===1?'':'s')+' de futuros sync de Shopify'); }
   isAdminUser(){ const a=this.access(); return !!(a&&a.admin); }
   editMateria(m){ this.open('materia',{...m, _orig:m.codigo, marca:(m.marca||''), ivaExento:(Number(m.iva)===0)}); }
   // Renombra el código de una materia en TODAS las transacciones que la referencian.
@@ -7177,8 +7188,8 @@ Instrucciones de respuesta:
           // NUNCA toca la clasificación de pago (método, recaudo, pagado, liquidación) de un pedido ya existente,
           // para que Shopify no vuelva a descuadrar cuentas ya conciliadas.
           const merged={ ...ex,
-            items:bruto0.items, envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, canal:(ex.canal||bruto0.canal), bodega:(ex.bodega||bruto0.bodega),
-            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), id:ex.id };
+            items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, canal:(ex.canal||bruto0.canal), bodega:(ex.bodega||bruto0.bodega),
+            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), id:ex.id };
           if(o.cancelado){ merged.pagado=0; merged.envio=0; }
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
           if(o.cancelado) cancelados++; else { updated++; if(guiaNueva && !o.cancelado) despachados.push(list[exI].id); }
@@ -7504,7 +7515,11 @@ Instrucciones de respuesta:
     // Consecutivo OV: para pedidos nuevos (o si el OV mostrado quedó viejo por sincronización de nube y ahora choca con otro), se recalcula el siguiente libre AL GUARDAR.
     const _ovNumDraft=this.ovNum({ov:d._ov}); const _ovDup=(this.state.ventas||[]).some(v=>v.id!==d.id && v.origen!=='historico' && this.ovNum(v)===_ovNumDraft && _ovNumDraft>0); const _ov=(d._new || _ovDup || !_ovNumDraft)? this.nextOV() : d._ov;
     const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || this.metodoAutoPagado(d.metodoPago))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:((d.canal==='Tiendas' && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true) };
-    let list=(this.state.ventas||[]).slice(); const rowFinal=d._new?this.applyPackagingRules(row):row; const i=list.findIndex(x=>x.id===rowFinal.id); if(i>=0&&!d._new) list[i]=rowFinal; else list.unshift(rowFinal);
+    let list=(this.state.ventas||[]).slice(); const rowFinal=d._new?this.applyPackagingRules(row):row;
+    // Si un humano edita a mano los ítems de un pedido que vino de Shopify, esa corrección queda protegida:
+    // la próxima sincronización ya no puede sobrescribir sus referencias/SKU.
+    if(!d._new && rowFinal.origen==='shopify') rowFinal.itemsLocked=true;
+    const i=list.findIndex(x=>x.id===rowFinal.id); if(i>=0&&!d._new) list[i]=rowFinal; else list.unshift(rowFinal);
     this.setState({ventas:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveVenta(rowFinal);
     const _pb=this.ventaProblemas(rowFinal);
     if(_pb.length) this.toast('⚠ Venta '+rowFinal.ov+' registrada, pero '+_pb.length+' referencia(s) sin crear o sin costo: '+_pb.map(p=>p.sku+' ('+p.motivo+')').join(' · '));
@@ -10243,6 +10258,7 @@ Instrucciones de respuesta:
     if(out.showVentasReg){
       out.qVenta=st.qVenta; out.onQVenta=(e)=>this.setState({qVenta:e.target.value});
       out.filtroCanal=st.filtroCanal||'todos'; out.onFiltroCanal=(e)=>this.setState({filtroCanal:e.target.value});
+      out.onProtegerPedidos=()=>this.protegerPediosCorregidos();
       out.canalesOptions=canalesAll;
       out.filtroPago=st.filtroPago||'todos'; out.onFiltroPago=(e)=>this.setState({filtroPago:e.target.value});
       out.filtroMetodoVenta=st.filtroMetodoVenta||'todos'; out.onFiltroMetodoVenta=(e)=>this.setState({filtroMetodoVenta:e.target.value});
@@ -10606,6 +10622,11 @@ Instrucciones de respuesta:
     }
     if(st.modal==='detalleventa'&&st.detalleId){ const v=(st.ventas||[]).find(x=>x.id===st.detalleId); if(v){ const ep=this.ventaEstadoPago(v); const cs=this.canalStyle(v.canal);
       { const _pb=this.ventaProblemas(v); out.detVentaProblemaShow=_pb.length>0; out.detVentaProblemas=_pb.map(p=>({...p, txt:p.sku+' — '+p.motivo, onFix:()=>this.fixReferencia(p.sku, p.nombre)})); }
+      out.detVentaLockShow=(v.origen==='shopify'); out.detVentaLocked=!!v.itemsLocked;
+      out.detVentaLockLabel=v.itemsLocked?'SKU protegidos':'Proteger SKU';
+      out.detVentaLockBg=v.itemsLocked?'rgba(98,123,96,0.14)':'transparent'; out.detVentaLockBd=v.itemsLocked?'rgba(98,123,96,0.4)':'var(--border-strong)'; out.detVentaLockFg=v.itemsLocked?'#4C6B4A':'var(--text-muted)';
+      out.detVentaLockTxt=v.itemsLocked?'SKU protegidos: Shopify ya no puede sobrescribir estas referencias.':'Shopify puede sobrescribir estas referencias en la próxima sincronización.';
+      out.onToggleVentaLock=()=>{ const list=(this.state.ventas||[]).map(x=>x.id===v.id?{...x, itemsLocked:!x.itemsLocked}:x); this.setState({ventas:list},()=>this.persist()); const nv=list.find(x=>x.id===v.id); if(this.cloudOn()) this.cloudSaveVenta(nv); this.toast(nv.itemsLocked?'SKU protegidos de este pedido':'Se permite que Shopify vuelva a actualizar el SKU'); };
       out.detVenta={ ov:v.ov||'—', pedido:v.pedido||'—', fechaFmt:this.fmtFecha(v.fecha), canal:v.canal, canalBg:cs.bg, canalFg:cs.fg, cliente:v.cliente, ciudad:v.ciudad||'—', celular:v.celular||'—', cedula:v.cedula||'—', correo:v.correo||'—', bodega:v.bodega||'—', metodoPago:v.metodoPago||'—', guia:v.guia||'—', origenLabel:this.origenLabel(v.origen), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), items:(v.items||[]).map((it,idx)=>{ const c=it.productoCodigo||it.referencia; const pp=(this.state.productos||[]).find(x=>x.codigo===c); const kk=(this.state.kits||[]).find(x=>x.codigo===c); const em=(v.origen==='manual'); return {nombre:(pp?pp.nombre:(kk?kk.nombre:(this.fixTxt(it.producto)||it.referencia))), referencia:it.referencia||'—', unidades:it.unidades, valorUnit:(Number(it.valorUnit)||0), valorFmt:this.fmt(it.valorUnit), subtotalFmt:this.fmt((Number(it.unidades)||0)*(Number(it.valorUnit)||0)), editable:em, readonly:!em, onSetCant:((i)=>(e)=>this.setVentaItemCant(v.id,i,e.target.value))(idx), onSetValor:((i)=>(e)=>this.setVentaItemValor(v.id,i,e.target.value))(idx)}; }), subtotalFmt:this.fmt(Math.round(this.ventaSubtotal(v))), envioFmt:this.fmt(v.envio||0), envioIvaFmt:this.fmt(this.ventaIvaEnvio(v)), envioConIva:this.ventaIvaEnvio(v)>0, fleteEntregaFmt:this.fmt(v.fleteEntrega||0), tieneFleteEntrega:(Number(v.fleteEntrega)||0)>0, fleteCuentaTxt:(v.fleteCuenta||'—'), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), hayAbono:(this.ventaAbono(v)>0), abonoFmt:this.fmt(Math.round(this.ventaAbono(v))), abonoMetodoTxt:(v.abonoMetodo||'—'), abonoCuentaTxt:(v.abonoCuenta||'—'), abonoFechaFmt:(v.abonoFecha?this.fmtFecha(v.abonoFecha):'—'), saldoRecaudoFmt:this.fmt(Math.round(this.ventaRecaudoBruto(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.round(this.ventaSaldo(v))), costoFmt:this.fmt(Math.round(this.ventaCosto(v))), margenFmt:this.fmt(Math.round(this.ventaSubtotal(v)-this.ventaCosto(v))), onEditar:()=>this.editVenta(v) };
       out.detVentaEsManual=(v.origen==='manual');
       out.waHabilitado=this.waConfigurado(); out.waNoHabilitado=!this.waConfigurado();
