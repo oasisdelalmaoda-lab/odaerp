@@ -6617,6 +6617,17 @@ class Component extends DCLogic {
   restaurarRespaldo(e){ const f=e.target.files&&e.target.files[0]; if(!f){ return; } const reader=new FileReader(); reader.onload=()=>{ try{ const dump=JSON.parse(reader.result); if(!dump||!dump.keys||typeof dump.keys!=='object') throw new Error('bad'); let n=0; Object.keys(dump.keys).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n) throw new Error('empty'); this.toast('Respaldo restaurado · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(err){ this.toast('Archivo de respaldo inválido'); } try{ e.target.value=''; }catch(x){} }; reader.readAsText(f); }
   restaurarAutoBackup(){ try{ const raw=localStorage.getItem('oda_hub_backup_v1'); if(!raw){ this.toast('Aún no hay copia automática'); return; } const dump=JSON.parse(raw); let n=0; Object.keys(dump.keys||{}).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n){ this.toast('Copia automática vacía'); return; } this.toast('Copia automática restaurada · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(e){ this.toast('No se pudo restaurar la copia'); } }
   migrate(d){
+    // El stock pasó a derivarse de las entregas: el campo stockActual guarda solo el SALDO BASE.
+    // Se le resta una vez lo recibido en órdenes para que el stock mostrado no cambie hoy.
+    try{ if(!localStorage.getItem('oda_hub_stockderivado_v1') && Array.isArray(d.materias)){
+      const rec={};
+      (d.ordenes||[]).forEach(o=>{ if(o.estado==='rechazada') return;
+        (o.entregas||[]).forEach(e=>{ const f=e.fecha||o.fecha||''; const c=this.state?this.state.fechaCorte:'2026-06-18';
+          if(!f || f < (c||'2026-06-18')) return;
+          (e.items||[]).forEach(it=>{ const k=it.materiaCodigo; const q=Number(it.cantidad)||0; if(k&&q>0) rec[k]=(rec[k]||0)+q; }); }); });
+      d.materias=d.materias.map(m=> rec[m.codigo]? {...m, stockActual:Math.max(0,(Number(m.stockActual)||0)-rec[m.codigo])} : m);
+      localStorage.setItem('oda_hub_stockderivado_v1','1');
+    } }catch(e){}
     // Auditoría: marca una sola vez los registros previos como «histórico» (creadoPor:'')
     // para que el sello automático solo aplique a lo que se cree de aquí en adelante.
     try{ if(!localStorage.getItem('oda_hub_audit_v2')){ this.AUDIT_KEYS.forEach(k=>{ if(Array.isArray(d[k])) d[k].forEach(r=>{ if(r&&typeof r==='object'){ r.creadoPor=''; delete r.creadoPorId; delete r.creadoEn; } }); }); localStorage.setItem('oda_hub_audit_v2','1'); localStorage.setItem('oda_hub_audit_v1','1'); } }catch(e){}
@@ -6923,7 +6934,8 @@ class Component extends DCLogic {
   saveEntrega(){ const d=this.state.draft; const lineas=(d._lineas||[]).filter(l=>(Number(l.cantidad)||0)>0); if(!lineas.length){ this.toast('Indica al menos una cantidad recibida'); return; }
     const o0=this.state.ordenes.find(x=>x.id===d._id);
     let materias=this.state.materias.slice(); let productos=this.state.productos.slice();
-    lineas.forEach(l=>{ const it=(o0&&o0.items||[]).find(x=>x.materiaCodigo===l.materiaCodigo); const r=this.aplicarIngreso(materias,productos,l.materiaCodigo,Number(l.cantidad)||0,it?this.itemCostoUnit(it):0); materias=r.materias; productos=r.productos; });
+    const _fEnt=d.fecha||new Date().toISOString().slice(0,10);
+    lineas.forEach(l=>{ const it=(o0&&o0.items||[]).find(x=>x.materiaCodigo===l.materiaCodigo); const r=this.aplicarIngreso(materias,productos,l.materiaCodigo,Number(l.cantidad)||0,it?this.itemCostoUnit(it):0,_fEnt); materias=r.materias; productos=r.productos; });
     const entrega={ fecha:d.fecha||new Date().toISOString().slice(0,10), nota:d.nota||'', items:lineas.map(l=>({materiaCodigo:l.materiaCodigo, nombre:l.nombre, cantidad:Number(l.cantidad)||0})) };
     const list=this.state.ordenes.map(o=>{ if(o.id!==d._id) return o; const entregas=(o.entregas||[]).slice(); entregas.push(entrega); let no={...o,entregas}; if(this.ordenEntregaCompleta(no)) no.estado='recibida'; return no; });
     this.setState({ordenes:list,materias,productos,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); this.cloudBulkOrdenes(list); }
@@ -7040,7 +7052,11 @@ class Component extends DCLogic {
   // Suma de los conteos físicos YA APROBADOS de una materia. Cada delta se calculó contra el
   // stock del sistema en su momento (que ya incluía los deltas anteriores), así que se suman.
   conteoDelta(codigo){ return (this.state.conteos||[]).reduce((a,c)=> (c.codigo===codigo && c.estado==='aprobado')? a+(Number(c.diferencia)||0) : a, 0); }
-  materiaStockActual(m){ if(!m) return 0; return (Number(m.stockActual)||0) - this.materiaConsumoTotal(m.codigo) + this.conteoDelta(m.codigo); }
+  // Stock DERIVADO: saldo base (conteo inicial) + lo recibido en órdenes − consumo + ajustes por conteo.
+  // El campo stockActual guarda SOLO el saldo base; ninguna recepción lo modifica. Así una misma
+  // entrega nunca puede sumarse dos veces, por más que se guarde o edite la orden.
+  materiaStockActual(m){ if(!m) return 0;
+    return (Number(m.stockActual)||0) + this.productoComprado(m.codigo) - this.materiaConsumoTotal(m.codigo) + this.conteoDelta(m.codigo); }
   productoStockActual(p){ if(p&&p.esReventa){ const m=this.state.materias.find(x=>x.codigo===p.codigo); const base = m? (Number(m.stockActual)||0) : ((Number(p.stockInicial)||0)+this.productoComprado(p.codigo)); return base - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); } return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); }
   // ---- reposición automática: stock mínimo y punto de reorden desde el histórico de ventas ----
   reordenCfg(){ return { ventana:90, lead:7, anticip:7, cobertura:30, ...(this.state.reordenCfg||{}) }; }
@@ -8397,8 +8413,7 @@ Instrucciones de respuesta:
     const st=this.state; const m=st.materias.find(x=>x.codigo===codigo); if(!m) return [];
     const deliveries=[];
     (st.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ const ef=e.fecha||o.fecha||''; if(!this._enCorte(ef)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===codigo&&(Number(it.cantidad)||0)>0) deliveries.push({fecha:ef,tipo:'entrada',concepto:'Compra · '+(o.numero||''),cantidad:Number(it.cantidad)||0}); }); }); });
-    const totalDel=deliveries.reduce((a,d)=>a+d.cantidad,0);
-    const base=(Number(m.stockActual)||0)-totalDel;
+    const base=Number(m.stockActual)||0;
     const fIni=this.fechaInventarioInicial();
     const rows=[{fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · conteo del '+this.fmtFecha(fIni),cantidad:base}];
     rows.push(...deliveries);
@@ -8828,6 +8843,8 @@ Instrucciones de respuesta:
             items:newItems.map(it=>({materiaCodigo:it.materiaCodigo, nombre:it.nombre, cantidad:Number(it.cantidad)||0})) }];
         }
         const oTmp={...o0, items:newItems, entregas};
+        // El stock se deriva de las entregas, así que basta con haberlas realineado arriba.
+        // Acá solo se ajusta el COSTO promedio cuando cambió el costo unitario del ítem.
         let cambios=0;
         codes.forEach(c=>{
           const antes=recVie[c]||0, ahora=this.ordenRecibido(oTmp,c);
@@ -8857,6 +8874,9 @@ Instrucciones de respuesta:
     this.setState({ordenes:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Orden '+num+(esTarjeta?' creada · pagada con tarjeta':' creada · queda por aprobar')); }
   // Órdenes en las que lo recibido en las entregas no coincide con lo pedido en los ítems:
   // ahí el stock de la materia quedó mal (típicamente por editar una orden ya recibida).
+  // Recepciones registradas ANTES de la fecha de inicio de operaciones. Esas cantidades ya
+  // estaban físicamente contadas en el inventario inicial, así que no debieron sumarse al
+  // stock: cuando se sumaron, la materia quedó inflada por ese mismo valor.
   ordenesDescuadradas(){
     const out=[];
     (this.state.ordenes||[]).forEach(o=>{
@@ -8919,22 +8939,25 @@ Instrucciones de respuesta:
   rechazar(id){ this.setEstado(id,'rechazada','Orden rechazada'); }
   // Entrada de inventario con costo promedio ponderado: el costo manual es la base
   // histórica; cada compra recibida recalcula el costo promedio de la materia.
+  // El stock se deriva de las entregas, así que acá SOLO se recalcula el costo promedio ponderado.
   ingresarInventario(list, materiaCodigo, cantidad, costoUnit){
     const cant=Number(cantidad)||0; if(cant<=0) return list;
     return list.map(m=>{ if(m.codigo!==materiaCodigo) return m;
-      const stock=Number(m.stockActual)||0; const old=Number(m.costo)||0; const nuevoStock=stock+cant;
+      const stock=Math.max(0, this.materiaStockActual(m)); const old=Number(m.costo)||0;
+      const nuevoStock=stock+cant;
       const nuevoCosto = nuevoStock>0 ? Math.round((stock*old + cant*(Number(costoUnit)||0))/nuevoStock) : old;
-      return {...m, stockActual:nuevoStock, costo:nuevoCosto}; });
+      return {...m, costo:nuevoCosto}; });
   }
   // Deshace un ingreso: quita las unidades y devuelve el costo promedio al valor que tenía
   // antes de esa entrada. Es el inverso de ingresarInventario.
+  // Igual que el ingreso: solo deshace el efecto en el COSTO promedio.
   revertirInventario(list, materiaCodigo, cantidad, costoUnit){
     const cant=Number(cantidad)||0; if(cant<=0) return list;
     return list.map(m=>{ if(m.codigo!==materiaCodigo) return m;
-      const stock=Number(m.stockActual)||0; const prom=Number(m.costo)||0;
-      const nuevoStock=Math.max(0, stock-cant);
-      const nuevoCosto = nuevoStock>0 ? Math.max(0, Math.round((stock*prom - cant*(Number(costoUnit)||0))/nuevoStock)) : prom;
-      return {...m, stockActual:nuevoStock, costo:nuevoCosto}; });
+      const stock=Math.max(0, this.materiaStockActual(m)); const prom=Number(m.costo)||0;
+      const base=Math.max(0, stock-cant);
+      const nuevoCosto = base>0 ? Math.max(0, Math.round((stock*prom - cant*(Number(costoUnit)||0))/base)) : prom;
+      return {...m, costo:nuevoCosto}; });
   }
   revertirIngreso(materias, productos, code, cant, costoUnit){
     const m=(materias||[]).find(x=>x.codigo===code);
@@ -8952,7 +8975,9 @@ Instrucciones de respuesta:
   // que el producto de reventa): si existe la materia, alimenta su stock y costo promedio y el
   // producto de reventa hereda esa info. Solo si no hay materia con ese código, se actualiza el
   // costo de compra del producto directamente.
-  aplicarIngreso(materias, productos, code, cant, costoUnit){
+  // fechaMov (opcional): si la recepción es ANTERIOR a la fecha de inicio de operaciones,
+  // esa mercancía ya está contada en el inventario inicial y no debe volver a sumarse.
+  aplicarIngreso(materias, productos, code, cant, costoUnit, fechaMov){
     const m=(materias||[]).find(x=>x.codigo===code);
     if(m){ materias=this.ingresarInventario(materias, code, cant, costoUnit); return {materias, productos}; }
     const pr=(productos||[]).find(x=>x.codigo===code && x.esReventa);
@@ -8964,7 +8989,7 @@ Instrucciones de respuesta:
   }
   recibir(id){ const o=this.state.ordenes.find(x=>x.id===id); if(!o) return; const pend=(o.items||[]).map(it=>{ const ya=this.ordenRecibido(o,it.materiaCodigo); return {nombre:(it.nombre||this.refNombre(it.materiaCodigo)||it.materiaCodigo), cantidad:Math.max(0,(Number(it.cantidad)||0)-ya)}; }).filter(x=>x.cantidad>0); this.open('recibirorden',{ _id:id, _numero:o.numero, _proveedor:this.provNombre(o.proveedorCodigo), fecha:new Date().toISOString().slice(0,10), _pendientes:pend }); }
   confirmarRecibirOrden(){ const d=this.state.draft; const id=d._id; const o=this.state.ordenes.find(x=>x.id===id); if(!o){ this.toast('Orden no encontrada'); return; } if(!d.fecha){ this.toast('Confirma la fecha de recibo'); return; } const fecha=d.fecha; let materias=this.state.materias.slice(); let productos=this.state.productos.slice(); const lineas=[];
-    (o.items||[]).forEach(it=>{ const ya=this.ordenRecibido(o,it.materiaCodigo); const pend=Math.max(0,(Number(it.cantidad)||0)-ya); if(pend>0){ const r=this.aplicarIngreso(materias,productos,it.materiaCodigo,pend,this.itemCostoUnit(it)); materias=r.materias; productos=r.productos; lineas.push({materiaCodigo:it.materiaCodigo, nombre:it.nombre, cantidad:pend}); } });
+    (o.items||[]).forEach(it=>{ const ya=this.ordenRecibido(o,it.materiaCodigo); const pend=Math.max(0,(Number(it.cantidad)||0)-ya); if(pend>0){ const r=this.aplicarIngreso(materias,productos,it.materiaCodigo,pend,this.itemCostoUnit(it),fecha); materias=r.materias; productos=r.productos; lineas.push({materiaCodigo:it.materiaCodigo, nombre:it.nombre, cantidad:pend}); } });
     const ordenes=this.state.ordenes.map(x=>{ if(x.id!==id) return x; const entregas=(x.entregas||[]).slice(); if(lineas.length) entregas.push({fecha, nota:'Recepci\u00f3n total', items:lineas}); return {...x, estado:'recibida', entregas}; });
     this.setState({ordenes, materias, productos, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); const _o=ordenes.find(x=>x.id===id); if(_o) this.cloudSaveOrden(_o); } this.toast('Orden recibida el '+this.fmtFecha(fecha)+' \u00b7 inventario y costo actualizados'); }
 
