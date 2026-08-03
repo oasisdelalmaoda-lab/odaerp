@@ -7574,7 +7574,7 @@ Instrucciones de respuesta:
     recordatorio_pago:{ label:'Recordatorio de pago',   lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaSaldo(v)))] },
     pedido_contraentrega:{ label:'Confirmar contraentrega', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.waResumenItems(v), this.fmt(Math.round(this.ventaTotal(v))), ((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'—')), this.waDespachoTxt()] },
     postventa:        { label:'Encuesta postventa',     lang:'es', vars:(v)=>{ const c=this.waCuponPostventa(v); return [this.waNombre(v), c.code, c.hasta]; } },
-    carrito_abierto:  { label:'Carrito / cotización',   lang:'es', vars:(v)=>[this.waNombre(v)] },
+    carrito_abandonado:{ label:'Carrito abandonado',   lang:'es', vars:(v)=>[this.waNombre(v)] },
   }; }
   // Resumen corto de los productos del pedido, para la plantilla de confirmación contraentrega
   // --- Promesa de despacho: L-V no festivos, corte 3:00 pm ---
@@ -7777,7 +7777,7 @@ Instrucciones de respuesta:
       recordatorio_pago:s+' 🌿 tu pedido '+ref+' tiene un saldo pendiente de '+saldo+'. Cuando quieras te ayudamos a completarlo. — Oasis del Alma',
       pedido_contraentrega:s+' 🌿 confirmamos tu pedido '+ref+' contraentrega: '+this.waResumenItems(v)+'. Total a pagar al recibir: '+t+', entrega en '+((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'tu ciudad'))+'. Si nos confirmas, lo despachamos '+this.waDespachoTxt()+'. ¿Están correctos los datos? — Oasis del Alma',
       postventa:(n?(n+', '):'')+'¿cómo te sentiste con tu experiencia Oasis del Alma? 💛 Tu opinión nos ayuda a cuidar mejor de ti. Y como agradecimiento, usa el código '+this.waCuponPostventa(v).code+' ('+this.WA_CUPON_PCT+'% de descuento) en tu próxima compra, válido hasta el '+this.waCuponPostventa(v).hasta+'.',
-      carrito_abierto:s+' 🌿 notamos que dejaste algo en tu carrito. ¿Te ayudamos a completar tu momento de bienestar? — Oasis del Alma',
+      carrito_abandonado:s+' 🌿 notamos que dejaste algo en tu carrito. ¿Te ayudamos a completar tu momento de bienestar? — Oasis del Alma',
     };
     return M[key]||'';
   }
