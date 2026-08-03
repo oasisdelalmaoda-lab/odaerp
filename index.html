@@ -1804,6 +1804,22 @@
                 <label style="font-size:11.5px;font-weight:700;color:var(--text-body);display:block;">Base de conocimiento (políticas, envíos, FAQs)<textarea value="{{ agConoc }}" onInput="{{ onAgConoc }}" rows="5" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);resize:vertical;line-height:1.5;"></textarea></label>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 6px;">Catálogo adjunto</h3>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">El agente ya lee los precios en vivo de oasisdelalma.co. Adjunta un catálogo solo si quieres darle información que no está en la tienda: precios mayoristas, fichas técnicas, ingredientes, medidas. Acepta Excel (.xlsx), CSV o texto.</p>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <label style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-page);color:var(--text-strong);cursor:pointer;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    Adjuntar catálogo
+                    <input type="file" accept=".xlsx,.xls,.csv,.txt" onChange="{{ onAgCatalogoFile }}" style="display:none;">
+                  </label>
+                  <sc-if value="{{ agCatalogoHay }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12.5px;color:var(--text-body);background:rgba(167,134,89,0.14);border-radius:99px;padding:7px 13px;font-weight:700;">{{ agCatalogoNombre }}</span>
+                    <span style="font-size:11.5px;color:var(--text-muted);">{{ agCatalogoInfo }}</span>
+                    <button onClick="{{ agCatalogoQuitar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid rgba(181,80,60,0.32);background:transparent;color:#B5503C;cursor:pointer;">Quitar</button>
+                  </sc-if>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Preguntas frecuentes (entrenamiento)</h3>
                   <button onClick="{{ agFaqAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar pregunta</button>
@@ -3609,7 +3625,7 @@
                     <div style="padding:15px 20px;border-bottom:1px solid var(--border-subtle);"><h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Pendiente por método</h3></div>
                     <sc-for list="{{ recGrupos }}" as="g" hint-placeholder-count="2">
                       <div style="padding:14px 20px;border-bottom:1px solid var(--border-subtle);">
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="font-weight:700;font-size:14px;flex:1;">{{ g.metodo }}</span><sc-if value="{{ recCanWrite }}" hint-placeholder-val="{{ true }}"><button onClick="{{ g.onLiquidar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 13px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;">Liquidar todo</button></sc-if></div>
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="font-weight:700;font-size:14px;flex:1;">{{ g.metodo }}</span><sc-if value="{{ recCanWrite }}" hint-placeholder-val="{{ true }}"><button onClick="{{ g.onLiquidar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 13px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;">Liquidar todo</button></sc-if><sc-if value="{{ recSoloLectura }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:var(--text-muted);background:var(--surface-raised);border-radius:99px;padding:4px 10px;" title="Un administrador debe darte permiso de escritura en Finanzas">Solo lectura</span></sc-if></div>
                         <div style="display:flex;gap:18px;font-size:12.5px;color:var(--text-body);">
                           <span style="color:var(--text-muted);">{{ g.n }} ventas</span>
                           <span>Bruto <strong>{{ g.brutoFmt }}</strong></span>
@@ -9461,6 +9477,18 @@ Instrucciones de respuesta:
     else if(localTs>cloudTs && this.state.agenteCfg){ this.cloudSaveAgenteCfg(this.agenteCfgGet()); } }catch(e){} }
   async cloudSaveAgenteCfg(cfg){ const sb=this._sbClient(); if(!sb) return; try{ const {error}=await sb.from('agente_config').upsert({id:1, config:cfg, actualizado:new Date().toISOString()}); if(error) throw error; }catch(e){ this.toast('No se pudo guardar la config del agente en la nube — revisa tu conexión'); } }
   agenteCfgGet(){ return { nombre:'Oda', tono:'Cálido y cercano (tú)', instrucciones:'Eres el asistente de bienestar de Oasis del Alma. Responde en español, tono cálido y cercano (tú), frases cortas. Vende por beneficio: calma, descanso, energía. Si el cliente pide hablar con una persona, detecta una queja o pide precios especiales, escala a un asesor.', conocimiento:'Envíos: todo Colombia, 2-4 días hábiles, gratis desde $150.000. Pagos: PSE, tarjetas, contraentrega en ciudades principales. Cambios: 30 días con empaque original. Productos estrella: Kit Inhala $100.000, Kit Descansa $100.000, aceites esenciales desde $29.900.', crearLeadAuto:true, crearCasoAuto:true, escalarSiDuda:true, asignadoVentas:'u4', asignadoServicio:'u4', faqs:[], lecciones:[], transferencia:'', ...(this.state.agenteCfg||{}) }; }
+  // Catálogo adjunto para el agente: xlsx/csv/txt → texto plano guardado en la config del agente.
+  agCatalogoCargar(file){ if(!file) return;
+    const nombre=file.name||'catalogo'; const esExcel=/\.(xlsx|xls)$/i.test(nombre);
+    const fin=(txt)=>{ txt=String(txt||'').replace(/\r/g,'').trim(); if(!txt){ this.toast('El archivo llegó vacío'); return; }
+      const MAX=60000; const cortado=txt.length>MAX; if(cortado) txt=txt.slice(0,MAX);
+      this.setAgenteCfg('catalogoDoc', { nombre, txt, at:new Date().toISOString(), chars:txt.length });
+      this.toast('Catálogo adjuntado'+(cortado?' (recortado por tamaño)':'')); };
+    if(esExcel){ if(typeof XLSX==='undefined'){ this.toast('El lector de Excel aún está cargando'); return; }
+      const fr=new FileReader(); fr.onload=()=>{ try{ const wb=XLSX.read(new Uint8Array(fr.result),{type:'array'});
+        const partes=wb.SheetNames.map(n=>'== '+n+' ==\n'+XLSX.utils.sheet_to_csv(wb.Sheets[n]));
+        fin(partes.join('\n\n')); }catch(e){ this.toast('No se pudo leer el Excel'); } }; fr.readAsArrayBuffer(file); return; }
+    const fr=new FileReader(); fr.onload=()=>fin(fr.result); fr.onerror=()=>this.toast('No se pudo leer el archivo'); fr.readAsText(file); }
   agLecAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', [...(cfg.lecciones||[]), {t:'',lock:false}]); }
   agLecDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).filter((_,x)=>x!==i)); }
   agLecSet(i,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, t:v}; })); }
@@ -10087,7 +10115,7 @@ Instrucciones de respuesta:
           onSel:()=>this.setState({convSelId:c.id}) }; };
       const secEsp=base.filter(c=>_esperando(c)), secAct=base.filter(c=>!_esperando(c)&&c.estado!=='resuelta'), secRes=base.filter(c=>c.estado==='resuelta');
       const feed=[];
-      if(secEsp.length){ feed.push({esHeader:true,label:'Esperando tu respuesta',hdFg:'#B5503C',hdBg:'rgba(181,80,60,0.07)'}); secEsp.forEach(c=>feed.push(_row(c))); }
+      if(secEsp.length){ feed.push({esHeader:true,label:'Esperando respuesta',hdFg:'#B5503C',hdBg:'rgba(181,80,60,0.07)'}); secEsp.forEach(c=>feed.push(_row(c))); }
       if(secAct.length){ feed.push({esHeader:true,label:'El bot está atendiendo',hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secAct.forEach(c=>feed.push(_row(c))); }
       if(secRes.length){ feed.push({esHeader:true,label:'Resueltas · '+secRes.length,hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secRes.slice(0,15).forEach(c=>feed.push(_row(c))); }
       out.convFeed=feed; out.convRowsVacio=feed.length===0;
@@ -10157,6 +10185,11 @@ Instrucciones de respuesta:
       out.agFaqs=(ag.faqs||[]).map((f,i)=>{ const lk=_faqLocked(f); return { p:f.p||'', r:f.r||'', hayR:!!(f.r&&String(f.r).trim()), locked:lk, open:!lk, onP:((ix)=>(e)=>this.agFaqSet(ix,'p',e.target.value))(i), onR:((ix)=>(e)=>this.agFaqSet(ix,'r',e.target.value))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().faqs||[])[ix]||{}); this.agFaqSet(ix,'lock', !_faqLocked(cur)); })(i), onDel:((ix)=>()=>this.agFaqDel(ix))(i) }; });
       out.agFaqsVacio=(ag.faqs||[]).length===0;
       out.agFaqAdd=()=>this.agFaqAdd();
+      const _cat=ag.catalogoDoc||null;
+      out.agCatalogoHay=!!(_cat&&_cat.txt); out.agCatalogoNombre=_cat?(_cat.nombre||'catálogo'):'';
+      out.agCatalogoInfo=_cat? (Math.round((Number(_cat.chars)||String(_cat.txt||'').length)/1000)+' mil caracteres · '+this.fmtFecha(String(_cat.at||'').slice(0,10))) : '';
+      out.onAgCatalogoFile=(e)=>{ const f=e.target.files&&e.target.files[0]; e.target.value=''; this.agCatalogoCargar(f); };
+      out.agCatalogoQuitar=()=>{ if(!window.confirm('¿Quitar el catálogo adjunto? El agente seguirá usando los precios en vivo de la tienda.')) return; this.setAgenteCfg('catalogoDoc', null); };
       out.agLecs=(ag.lecciones||[]).map((l,i)=>{ const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return { v:o.t, locked:!!o.lock, open:!o.lock, onV:((ix)=>(e)=>this.agLecSet(ix,e.target.value))(i), onDel:((ix)=>()=>this.agLecDel(ix))(i), onLock:((ix)=>()=>this.agLecLock(ix))(i) }; });
       out.agLecsVacio=(ag.lecciones||[]).length===0;
       out.agLecAdd=()=>this.agLecAdd();
@@ -10845,7 +10878,7 @@ Instrucciones de respuesta:
       out.recDetalleBrutoFmt=this.fmt(Math.round(dBruto)); out.recDetalleNetoFmt=this.fmt(Math.round(dNeto)); out.recDetalleDedFmt=this.fmt(Math.round(dBruto-dNeto));
       const scopeIds=filtrados.map(v=>v.id); const hayFiltroRec=!!(qrec||fDesde||fHasta);
       out.recLegalizarSel=()=>this.legalizarVarias(sel, hayFiltroRec?scopeIds:null);
-      out.recCanWrite=out.canWriteFin;
+      out.recCanWrite=out.canWriteFin; out.recSoloLectura=!out.canWriteFin;
     }
     if(st.modal==='liquidacion'){ const d=st.draft; const sel=d.sel||[]; const single=(d._single===true); let pend=this.recaudosPendientes().filter(v=>this.metodoNombreNorm(v.metodoPago)===d.metodo); if(single) pend=pend.filter(v=>sel.includes(v.id)); else if(Array.isArray(d._scope)) pend=pend.filter(v=>d._scope.includes(v.id));
       out.liqMetodo=d.metodo; out.liqEsSingle=single; out.liqEsMulti=!single;
