@@ -5050,6 +5050,7 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Correo<input name="correo" type="email" value="{{ draft.correo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Ciudad<input name="ciudad" value="{{ draft.ciudad }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">N° de guía<input name="guia" value="{{ draft.guia }}" onInput="{{ onDraftInput }}" placeholder="Transportadora" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Dirección de entrega<input name="direccion" value="{{ draft.direccion }}" onInput="{{ onDraftInput }}" placeholder="Cra 00 # 00-00, apto / barrio · indicaciones" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
 
               <sc-if value="{{ ventaEsTiendas }}" hint-placeholder-val="{{ false }}">
@@ -7559,13 +7560,40 @@ Instrucciones de respuesta:
 
   // ====================== WHATSAPP CLOUD API (Fase 1) ======================
   // Catálogo de plantillas (deben registrarse y aprobarse en Meta con estos nombres).
+  // Link de rastreo según la transportadora (va como variable {{5}} en la plantilla pedido_despachado)
+  waLinkRastreo(v){ const g=String((v&&v.guia)||'').trim(); const t=String((v&&v.transportadora)||'').toLowerCase();
+    if(!g) return 'https://oasisdelalma.co/pages/rastreo';
+    if(t.includes('interrapid')) return 'https://interrapidisimo.com/sigue-tu-envio/?guia='+encodeURIComponent(g);
+    if(t.includes('envia')) return 'https://envia.co/rastreo?guia='+encodeURIComponent(g);
+    if(t.includes('servientrega')) return 'https://www.servientrega.com/wps/portal/rastreo-envio?guia='+encodeURIComponent(g);
+    if(t.includes('tcc')) return 'https://tcc.com.co/rastreo/?guia='+encodeURIComponent(g);
+    return 'https://www.coordinadora.com/portafolio-de-servicios/servicios-en-linea/rastrear-guias/?guia='+encodeURIComponent(g); }
   waTemplates(){ return {
     pedido_recibido:  { label:'Confirmación de pedido', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaTotal(v)))] },
-    pedido_despachado:{ label:'Despachado + guía',      lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), (v.transportadora||'Coordinadora'), (v.guia||'')] },
+    pedido_despachado:{ label:'Despachado + guía',      lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), (v.transportadora||'Coordinadora'), (v.guia||''), this.waLinkRastreo(v)] },
     recordatorio_pago:{ label:'Recordatorio de pago',   lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaSaldo(v)))] },
+    pedido_contraentrega:{ label:'Confirmar contraentrega', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.waResumenItems(v), this.fmt(Math.round(this.ventaTotal(v))), ((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'—')), this.waDespachoTxt()] },
     postventa:        { label:'Encuesta postventa',     lang:'es', vars:(v)=>[this.waNombre(v)] },
     carrito_abierto:  { label:'Carrito / cotización',   lang:'es', vars:(v)=>[this.waNombre(v)] },
   }; }
+  // Resumen corto de los productos del pedido, para la plantilla de confirmación contraentrega
+  // --- Promesa de despacho: L-V no festivos, corte 3:00 pm ---
+  FESTIVOS_CO=['2026-01-01','2026-01-12','2026-03-23','2026-04-02','2026-04-03','2026-05-01','2026-05-18','2026-06-08','2026-06-15','2026-06-29','2026-07-20','2026-08-07','2026-08-17','2026-10-12','2026-11-02','2026-11-16','2026-12-08','2026-12-25','2027-01-01','2027-01-11','2027-03-22','2027-03-25','2027-03-26','2027-05-01','2027-05-10','2027-05-31','2027-06-07','2027-07-05','2027-07-20','2027-08-07','2027-08-16','2027-10-18','2027-11-01','2027-11-15','2027-12-08','2027-12-25'];
+  esDiaHabil(d){ const dow=d.getDay(); if(dow===0||dow===6) return false;
+    const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return this.FESTIVOS_CO.indexOf(iso)<0; }
+  // Texto listo para el cliente: «hoy antes de las 3», «mañana» o «el lunes» (nunca promete sábado/festivo)
+  waDespachoTxt(){ const now=new Date(); const antesDelCorte=(now.getHours()<15);
+    const dias=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    if(this.esDiaHabil(now) && antesDelCorte) return 'hoy mismo';
+    const d=new Date(now.getTime()); let i=0;
+    do { d.setDate(d.getDate()+1); i++; } while(!this.esDiaHabil(d) && i<10);
+    const manana=new Date(now.getTime()); manana.setDate(manana.getDate()+1);
+    const esManana=(d.toDateString()===manana.toDateString());
+    const cuando=esManana? 'mañana' : ('el '+dias[d.getDay()]);
+    return cuando; }
+  waResumenItems(v){ const its=(v&&v.items)||[]; const txt=its.map(it=>((Number(it.unidades)||1)+' × '+String(it.nombre||it.referencia||'').trim())).join(', ');
+    return (txt.length>240? txt.slice(0,237)+'…' : (txt||'tu pedido')); }
   waNombre(v){ const n=this.titleCase(String((v&&v.cliente)||'').trim()); return (n.split(' ')[0]||''); }
   waSaludo(v){ const p=this.waNombre(v); return p?('Hola '+p):'Hola'; }
   waCfg(){ return (this.state.reglasNeg||{}); }
@@ -7734,8 +7762,9 @@ Instrucciones de respuesta:
     const nom=n||'';
     const M={
       pedido_recibido:s+' 🌿 recibimos tu pedido '+ref+' por '+t+'. Ya lo estamos preparando con cariño y te avisamos cuando salga. — Oasis del Alma',
-      pedido_despachado:(n?(n+', '):'')+'tu pedido '+ref+' ya va en camino 🚚 Enviado por '+transp+(guia?(', guía '+guia):'')+'. Gracias por confiar en tu bienestar. — Oasis del Alma',
+      pedido_despachado:(n?(n+', '):'')+'tu pedido '+ref+' ya va en camino 🚚 Enviado por '+transp+(guia?(', guía '+guia):'')+'. Rastréalo acá: '+this.waLinkRastreo(v)+' — Oasis del Alma',
       recordatorio_pago:s+' 🌿 tu pedido '+ref+' tiene un saldo pendiente de '+saldo+'. Cuando quieras te ayudamos a completarlo. — Oasis del Alma',
+      pedido_contraentrega:s+' 🌿 confirmamos tu pedido '+ref+' contraentrega: '+this.waResumenItems(v)+'. Total a pagar al recibir: '+t+', entrega en '+((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'tu ciudad'))+'. Si nos confirmas, lo despachamos '+this.waDespachoTxt()+'. ¿Están correctos los datos? — Oasis del Alma',
       postventa:(n?(n+', '):'')+'¿cómo te sentiste con tu experiencia Oasis del Alma? 💛 Tu opinión nos ayuda a cuidar mejor de ti. ¿Nos cuentas?',
       carrito_abierto:s+' 🌿 notamos que dejaste algo en tu carrito. ¿Te ayudamos a completar tu momento de bienestar? — Oasis del Alma',
     };
@@ -7781,7 +7810,7 @@ Instrucciones de respuesta:
   reassignOV(){ const list=(this.state.ventas||[]).slice(); const ordered=list.slice().sort((a,b)=>{ const na=this.pedidoNum(a), nb=this.pedidoNum(b); if(na&&nb&&na!==nb) return na-nb; if(na&&!nb) return -1; if(!na&&nb) return 1; return (a.fecha||'').localeCompare(b.fecha||''); }); const map={}; ordered.forEach((v,i)=>{ map[v.id]='ODA-'+String(i+1).padStart(5,'0'); }); const out=list.map(v=>({...v, ov:map[v.id]||v.ov})); this.setState({ventas:out},()=>this.persist()); }
   exportListado(rows){ if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando, intenta de nuevo'); return; } const headers=['Fecha','Pedido','OV Shopify','Canal','Cliente','Celular','SKU','Producto','Unidades','Valor unitario','Base sin IVA','IVA','Total pedido','Costo','Ciudad','Método de pago','Flete']; const aoa=[headers]; (rows||[]).forEach(r=>aoa.push([r.fechaFmt, r.pedido, r.ov, r.canal, r.cliente, r.celular, r.sku, r.nombre, r.unidades, r.valorUnit, r.baseLine, r.ivaLine, r.total, r.costo, r.ciudad, r.metodoPago, r.flete])); const ws=XLSX.utils.aoa_to_sheet(aoa); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Listado'); XLSX.writeFile(wb,'listado_pedidos.xlsx'); this.toast('Listado exportado'); }
   ventasProductoOptions(){ return [ ...(this.state.productos||[]).map(p=>({codigo:p.codigo, nombre:p.nombre, precio:Number(p.precio)||0})), ...(this.state.kits||[]).map(k=>({codigo:k.codigo, nombre:k.nombre, precio:Number(k.precio)||0})) ]; }
-  nuevaVenta(canalDefault){ this.open('venta',{ _new:true, _ov:this.nextOV(), fecha:new Date().toISOString().slice(0,10), pedido:'', canal:canalDefault||'Página Web', bodega:'Principal', cliente:'', celular:'', correo:'', ciudad:'', items:[], envio:'', fleteEntrega:'', fleteCuenta:'', guia:'', metodoPago:'', pagado:'', _pagoTotal:false, abono:'', abonoCuenta:'', abonoMetodo:'Transferencia', abonoFecha:new Date().toISOString().slice(0,10), origen:'manual', cobraIva:true, descuentoMasivo:'', _selProd:'', _selProdText:'', _selUnidades:1, _selValor:'' }); }
+  nuevaVenta(canalDefault){ this.open('venta',{ _new:true, _ov:this.nextOV(), fecha:new Date().toISOString().slice(0,10), pedido:'', canal:canalDefault||'Página Web', bodega:'Principal', cliente:'', celular:'', correo:'', ciudad:'', direccion:'', items:[], envio:'', fleteEntrega:'', fleteCuenta:'', guia:'', metodoPago:'', pagado:'', _pagoTotal:false, abono:'', abonoCuenta:'', abonoMetodo:'Transferencia', abonoFecha:new Date().toISOString().slice(0,10), origen:'manual', cobraIva:true, descuentoMasivo:'', _selProd:'', _selProdText:'', _selUnidades:1, _selValor:'' }); }
   editVenta(v){ const _tot=this.ventaTotal(v); this.open('venta',{...v, _ov:v.ov||this.nextOV(), consignDescuenta:!!v.consignTienda, cobraIva:(typeof v.cobraIva==='boolean'? v.cobraIva : this.ventaConIva(v)), descuentoMasivo:'', _pagoTotal:(_tot>0 && (Number(v.pagado)||0)>=_tot), items:(v.items||[]).slice(), _selProd:'', _selProdText:'', _selUnidades:1, _selValor:''}); }
   addEmpaqueVenta(){ const id=this.state.detalleId; const code=this.state.empSel; const cant=Number(this.state.empCant)||0; if(!code){ this.toast('Elige el material de empaque'); return; } if(cant<=0){ this.toast('Indica la cantidad'); return; } const list=(this.state.ventas||[]).map(v=> v.id===id? {...v, empaques:[...(v.empaques||[]), {materiaCodigo:code, cantidad:cant, manual:true}]} : v); this.setState({ventas:list, empSel:'', empCant:''},()=>this.persist()); this.toast('Material de empaque registrado · descontado de inventario'); }
   removeEmpaqueVenta(idx){ const id=this.state.detalleId; const list=(this.state.ventas||[]).map(v=>{ if(v.id!==id) return v; const arr=(v.empaques||[]).slice(); const rem=arr[idx]; arr.splice(idx,1); let excl=Array.isArray(v.empExcluidos)?v.empExcluidos.slice():[]; if(rem && rem.materiaCodigo && !rem.manual && !excl.includes(rem.materiaCodigo)) excl.push(rem.materiaCodigo); return {...v, empaques:arr, empExcluidos:excl}; }); this.setState({ventas:list},()=>this.persist()); if(this.cloudOn()){ const _cv=list.find(x=>x.id===id); if(_cv) this.cloudSaveVenta(_cv); } }
@@ -7864,7 +7893,7 @@ Instrucciones de respuesta:
     const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true)}; });
     // Consecutivo OV: para pedidos nuevos (o si el OV mostrado quedó viejo por sincronización de nube y ahora choca con otro), se recalcula el siguiente libre AL GUARDAR.
     const _ovNumDraft=this.ovNum({ov:d._ov}); const _ovDup=(this.state.ventas||[]).some(v=>v.id!==d.id && v.origen!=='historico' && this.ovNum(v)===_ovNumDraft && _ovNumDraft>0); const _ov=(d._new || _ovDup || !_ovNumDraft)? this.nextOV() : d._ov;
-    const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || this.metodoAutoPagado(d.metodoPago))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true) };
+    const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', direccion:d.direccion||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || this.metodoAutoPagado(d.metodoPago))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true) };
     let list=(this.state.ventas||[]).slice(); const rowFinal=d._new?this.applyPackagingRules(row):row;
     // Si un humano edita a mano los ítems de un pedido que vino de Shopify, esa corrección queda protegida:
     // la próxima sincronización ya no puede sobrescribir sus referencias/SKU.
