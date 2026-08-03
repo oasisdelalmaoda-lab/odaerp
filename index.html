@@ -7573,7 +7573,7 @@ Instrucciones de respuesta:
     pedido_despachado:{ label:'Despachado + guía',      lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), (v.transportadora||'Coordinadora'), (v.guia||''), this.waLinkRastreo(v)] },
     recordatorio_pago:{ label:'Recordatorio de pago',   lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaSaldo(v)))] },
     pedido_contraentrega:{ label:'Confirmar contraentrega', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.waResumenItems(v), this.fmt(Math.round(this.ventaTotal(v))), ((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'—')), this.waDespachoTxt()] },
-    postventa:        { label:'Encuesta postventa',     lang:'es', vars:(v)=>[this.waNombre(v)] },
+    postventa:        { label:'Encuesta postventa',     lang:'es', vars:(v)=>{ const c=this.waCuponPostventa(v); return [this.waNombre(v), c.code, c.hasta]; } },
     carrito_abierto:  { label:'Carrito / cotización',   lang:'es', vars:(v)=>[this.waNombre(v)] },
   }; }
   // Resumen corto de los productos del pedido, para la plantilla de confirmación contraentrega
@@ -7592,6 +7592,17 @@ Instrucciones de respuesta:
     const esManana=(d.toDateString()===manana.toDateString());
     const cuando=esManana? 'mañana' : ('el '+dias[d.getDay()]);
     return cuando; }
+  // --- Cupón de postventa: uno por mes (mismo vencimiento para toda la cohorte) ---
+  // Ej.: quien compra en agosto 2026 recibe GRACIAS0826, válido hasta el 30 de septiembre.
+  // Más adelante estos códigos se crearán automáticamente en Shopify por API.
+  WA_CUPON_PCT=15;
+  waCuponPostventa(v){ const base=this.parseFecha(v&&v.fecha)||new Date().toISOString().slice(0,10);
+    const d=new Date(base+'T12:00:00');
+    const mm=String(d.getMonth()+1).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
+    const code='GRACIAS'+mm+yy;
+    const fin=new Date(d.getFullYear(), d.getMonth()+2, 0); // último día del mes siguiente
+    const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return { code, pct:this.WA_CUPON_PCT, hasta:(fin.getDate()+' de '+meses[fin.getMonth()]) }; }
   waResumenItems(v){ const its=(v&&v.items)||[]; const txt=its.map(it=>((Number(it.unidades)||1)+' × '+String(it.nombre||it.referencia||'').trim())).join(', ');
     return (txt.length>240? txt.slice(0,237)+'…' : (txt||'tu pedido')); }
   waNombre(v){ const n=this.titleCase(String((v&&v.cliente)||'').trim()); return (n.split(' ')[0]||''); }
@@ -7765,7 +7776,7 @@ Instrucciones de respuesta:
       pedido_despachado:(n?(n+', '):'')+'tu pedido '+ref+' ya va en camino 🚚 Enviado por '+transp+(guia?(', guía '+guia):'')+'. Rastréalo acá: '+this.waLinkRastreo(v)+' — Oasis del Alma',
       recordatorio_pago:s+' 🌿 tu pedido '+ref+' tiene un saldo pendiente de '+saldo+'. Cuando quieras te ayudamos a completarlo. — Oasis del Alma',
       pedido_contraentrega:s+' 🌿 confirmamos tu pedido '+ref+' contraentrega: '+this.waResumenItems(v)+'. Total a pagar al recibir: '+t+', entrega en '+((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'tu ciudad'))+'. Si nos confirmas, lo despachamos '+this.waDespachoTxt()+'. ¿Están correctos los datos? — Oasis del Alma',
-      postventa:(n?(n+', '):'')+'¿cómo te sentiste con tu experiencia Oasis del Alma? 💛 Tu opinión nos ayuda a cuidar mejor de ti. ¿Nos cuentas?',
+      postventa:(n?(n+', '):'')+'¿cómo te sentiste con tu experiencia Oasis del Alma? 💛 Tu opinión nos ayuda a cuidar mejor de ti. Y como agradecimiento, usa el código '+this.waCuponPostventa(v).code+' ('+this.WA_CUPON_PCT+'% de descuento) en tu próxima compra, válido hasta el '+this.waCuponPostventa(v).hasta+'.',
       carrito_abierto:s+' 🌿 notamos que dejaste algo en tu carrito. ¿Te ayudamos a completar tu momento de bienestar? — Oasis del Alma',
     };
     return M[key]||'';
