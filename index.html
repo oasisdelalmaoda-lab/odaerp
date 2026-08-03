@@ -3619,6 +3619,13 @@
                         <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Comisión {{ g.comisionTxt }} {{ g.diasTxt }}</div>
                       </div>
                     </sc-for>
+                    <sc-if value="{{ recSinMetodos }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin:14px 20px;background:rgba(196,146,63,0.1);border:1px solid rgba(196,146,63,0.35);border-radius:var(--radius-sm);padding:13px 15px;">
+                        <div style="font-size:12.5px;font-weight:700;color:#8A6321;">No se cargaron los métodos de pago</div>
+                        <div style="font-size:12px;color:var(--text-body);margin-top:5px;line-height:1.5;">Sin ellos ninguna venta se puede clasificar como recaudo diferido, por eso la lista sale vacía. Suele ser la conexión con la nube.<sc-if value="{{ recMetodosErr }}" hint-placeholder-val="{{ false }}"><br><span style="color:var(--text-muted);">Detalle: {{ recMetodosErr }}</span></sc-if></div>
+                        <button onClick="{{ recReintentarMetodos }}" style="font-family:inherit;margin-top:10px;font-size:12.5px;font-weight:700;padding:8px 15px;border-radius:99px;border:1px solid rgba(196,146,63,0.45);background:transparent;color:#8A6321;cursor:pointer;">Reintentar carga</button>
+                      </div>
+                    </sc-if>
                     <sc-if value="{{ recVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:34px 20px;text-align:center;color:var(--text-muted);font-size:13px;">No hay recaudos diferidos pendientes. Todo cruzado.</div></sc-if>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
@@ -3772,6 +3779,8 @@
                 <button onClick="{{ finMesPrev }}" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
                 <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;min-width:160px;text-align:center;text-transform:capitalize;">{{ finMesLabel }}</span>
                 <button onClick="{{ finMesNext }}" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+                <div style="flex:1;"></div>
+                <button onClick="{{ pgExportMovs }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);" title="Todas las cuentas, solo el mes que estás viendo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Movimientos del mes (Excel)</button>
               </div>
               <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
               <div style="flex:0 0 720px;max-width:720px;min-width:0;">
@@ -4809,6 +4818,7 @@
                       <span style="font-size:9.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 7px;border-radius:99px;background:var(--surface-raised);color:var(--text-muted);white-space:nowrap;">{{ it.tipoLabel }}</span>
                       <span style="flex:1;min-width:0;">{{ it.nombre }}</span>
                       <span style="color:var(--text-muted);white-space:nowrap;">{{ it.cantidad }} × {{ it.precioUnitFmt }}</span>
+                      <span style="color:var(--text-muted);white-space:nowrap;font-size:12px;" title="Costo unitario × cantidad">Costo {{ it.costoTotalFmt }}</span>
                       <span style="font-weight:700;width:92px;text-align:right;">{{ it.subtotalFmt }}</span>
                       <button onClick="{{ it.onRemove }}" style="background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;padding:3px;" style-hover="color:var(--oda-sale);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
                     </div>
@@ -4824,7 +4834,8 @@
                 <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;color:var(--text-body);"><span style="color:var(--text-muted);">Precio final del kit (con IVA)</span><span style="font-weight:700;">{{ kitPrecioFmt }}</span></div>
                 <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;color:var(--text-body);"><span style="color:var(--text-muted);">Precio del kit sin IVA</span><span style="font-weight:600;">{{ kitPrecioNetoFmt }}</span></div>
                 <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;"><span style="color:var(--text-muted);">Ahorro para el cliente</span><span style="font-weight:800;color:#4C6149;">{{ kitAhorroFmt }} · {{ kitAhorroPct }}</span></div>
-                <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;border-top:1px solid var(--border-subtle);padding-top:6px;margin-top:2px;"><span style="color:var(--text-muted);">Costo → margen (sin IVA)</span><span style="font-weight:700;color:{{ kitMargenColor }};">{{ kitCostoFmt }} → {{ kitMargenFmt }} ({{ kitMargenPct }})</span></div>
+                <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;border-top:1px solid var(--border-subtle);padding-top:6px;margin-top:2px;"><span style="color:var(--text-muted);">Costo de producción del kit</span><span style="font-weight:800;">{{ kitCostoFmt }}</span></div>
+                <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;"><span style="color:var(--text-muted);">Margen (sin IVA)</span><span style="font-weight:700;color:{{ kitMargenColor }};">{{ kitMargenFmt }} · {{ kitMargenPct }}</span></div>
               </div>
             </sc-if>
 
@@ -8183,7 +8194,7 @@ Instrucciones de respuesta:
   cloudSubscribeCotizaciones(){ const sb=this._sbClient(); if(!sb||this._cotSub) return; try{ this._cotSub=sb.channel('oda-cotizaciones').on('postgres_changes',{event:'*',schema:'public',table:'cotizaciones'},()=>{ this.cloudLoadCotizaciones(); }).subscribe(); }catch(e){} }
   // ---- finanzas compartidas (nube) ----
   _finToDb(o){ return { id:o.id, data:o, actualizado:new Date().toISOString() }; }
-  async _cloudLoadList(table, key, seedList){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from(table).select('id,data'); if(error) throw error; if(data && data.length){ let rows=data.map(r=>({...(r.data||{}), id:r.id})); if(key==='ventas'){ const d=this._ventasAutoDedupe(rows); if(d.removed.length){ rows=d.list; d.removed.forEach(id=>this._cloudDelOne(table, id)); } } this.setState({[key]:rows},()=>this.persist()); } else { const cur=seedList||[]; if(cur.length){ try{ await sb.from(table).upsert(cur.map(o=>this._finToDb(o))); }catch(e){} } } }catch(e){} }
+  async _cloudLoadList(table, key, seedList, _retry){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from(table).select('id,data'); if(error) throw error; if(data && data.length){ let rows=data.map(r=>({...(r.data||{}), id:r.id})); if(key==='ventas'){ const d=this._ventasAutoDedupe(rows); if(d.removed.length){ rows=d.list; d.removed.forEach(id=>this._cloudDelOne(table, id)); } } this.setState({[key]:rows},()=>this.persist()); } else { const cur=seedList||[]; if(cur.length){ try{ await sb.from(table).upsert(cur.map(o=>this._finToDb(o))); }catch(e){} } } }catch(e){ if(!_retry){ setTimeout(()=>this._cloudLoadList(table,key,seedList,true), 2500); } else { const errs={...(this.state.cloudLoadErrs||{})}; errs[table]=String((e&&e.message)||e); this.setState({cloudLoadErrs:errs}); } } }
   async _cloudBulk(table, list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from(table).upsert(list.slice(i,i+200).map(o=>this._finToDb(o))); } }catch(e){} }
   async _cloudSaveOne(table, o){ const sb=this._sbClient(); if(!sb||!o) return; try{ await sb.from(table).upsert(this._finToDb(o)); }catch(e){} }
   async _cloudDelOne(table, id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from(table).delete().eq('id',id); }catch(e){} }
@@ -8657,6 +8668,23 @@ Instrucciones de respuesta:
   borrarMovimiento(id){ const list=(this.state.movimientos||[]).filter(x=>x.id!==id); this.setState({movimientos:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteMovimiento(id); this.toast('Movimiento eliminado'); }
   verSaldoDetalle(c){ this.open('saldodetalle', { _id:c.id, nombre:c.nombre }); }
   exportSaldoDetalle(nombre){ if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando'); return; } const cta=this.cuentasList().find(x=>x.nombre===nombre); const ini=cta?(Number(cta.saldoInicial)||0):0; const movs=this.cajaMovs().filter(m=>m.cuenta===nombre && !m.noBanco).slice().sort((a,b)=>{ const fc=String(a.fecha||'').localeCompare(String(b.fecha||'')); if(fc!==0) return fc; return (Number(a.ts)||0)-(Number(b.ts)||0); }); let saldo=ini; const rows=[{Fecha:'',Concepto:'Saldo inicial',Categoria:'',Ingreso:'',Egreso:'',Saldo:Math.round(ini)}]; movs.forEach(m=>{ const mv=Math.round(Number(m.monto)||0); saldo += (m.tipo==='ingreso'? mv : -mv); rows.push({ Fecha:(m.fecha||''), Concepto:(m.concepto||m.categoria||''), Categoria:(m.categoria||''), Ingreso:(m.tipo==='ingreso'?mv:''), Egreso:(m.tipo==='egreso'?mv:''), Saldo:Math.round(saldo) }); }); const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Saldo '+nombre.slice(0,20)); XLSX.writeFile(wb,'detalle_saldo_'+nombre.replace(/\s+/g,'_')+'.xlsx'); this.toast('Detalle de saldo descargado'); }
+  // Descarga los movimientos de caja/banco del MES que se está viendo en el estado de resultados.
+  exportTodosMovimientos(ym){ if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando'); return; }
+    const mes=ym||this.finMes();
+    const movs=this.cajaMovs().filter(m=>this.mesDe(m.fecha||'')===mes).slice().sort((a,b)=>{ const fc=String(a.fecha||'').localeCompare(String(b.fecha||'')); if(fc!==0) return fc; return (Number(a.ts)||0)-(Number(b.ts)||0); });
+    if(!movs.length){ this.toast('No hay movimientos en este mes'); return; }
+    const rows=movs.map(m=>{ const mv=Math.round(Number(m.monto)||0); return {
+      Fecha:(m.fecha||''), Mes:this.mesDe(m.fecha||''), Tipo:(m.tipo==='ingreso'?'Ingreso':'Egreso'),
+      Cuenta:(m.cuenta||''), Categoria:(m.categoria||''), Concepto:(m.concepto||''),
+      Ingreso:(m.tipo==='ingreso'?mv:''), Egreso:(m.tipo==='egreso'?mv:''), Monto:mv,
+      Ajustado:(m.ajustado?'Sí':''), Origen:(m.esTraslado?'Traslado':(m.ventaId?'Venta':(m.ordenId?'Compra':(String(m.id||'').match(/-(br|ded)$/)?'Recaudo':'Manual')))),
+      Referencia:(m.ventaId||m.ordenId||m.id||'') }; });
+    const tot=rows.reduce((a,r)=>({ ing:a.ing+(Number(r.Ingreso)||0), eg:a.eg+(Number(r.Egreso)||0) }), {ing:0,eg:0});
+    rows.push({}); rows.push({ Fecha:'TOTAL', Ingreso:tot.ing, Egreso:tot.eg, Monto:(tot.ing-tot.eg) });
+    const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Movimientos '+mes);
+    XLSX.writeFile(wb,'movimientos_oda_'+mes+'.xlsx');
+    this.toast(movs.length+' movimientos de '+mes+' descargados'); }
   saldoDetalleRows(nombre){ const cta=this.cuentasList().find(x=>x.nombre===nombre); const ini=cta?(Number(cta.saldoInicial)||0):0; const movs=this.cajaMovs().filter(m=>m.cuenta===nombre && !m.noBanco).slice().sort((a,b)=>{ const fc=String(a.fecha||'').localeCompare(String(b.fecha||'')); if(fc!==0) return fc; return (Number(a.ts)||0)-(Number(b.ts)||0); }); let saldo=ini; const rows=movs.map(m=>{ const mv=Number(m.monto)||0; saldo += (m.tipo==='ingreso'? mv : -mv); return { fechaFmt:this.fmtFecha(m.fecha), concepto:(m.concepto||m.categoria||'—'), categoria:(m.categoria||''), esIngreso:(m.tipo==='ingreso'), signo:(m.tipo==='ingreso'?'+':'−'), montoFmt:this.fmt(Math.round(mv)), color:(m.tipo==='ingreso'?'#4C6149':'var(--oda-sale)'), saldoFmt:this.fmt(Math.round(saldo)), saldoNeg:(saldo<0) }; }); return { iniFmt:this.fmt(Math.round(ini)), rows, finalFmt:this.fmt(Math.round(saldo)), finalNeg:(saldo<0), n:rows.length }; }
   ponerSaldoReal(c){ this.open('saldoreal', { _id:c.id, nombre:c.nombre, saldoActualFmt:this.fmt(Math.round(this.cuentaSaldo(c.nombre))), saldoReal:(c.saldoReal!==undefined&&c.saldoReal!==null?String(c.saldoReal):''), fecha:(c.saldoRealFecha||new Date().toISOString().slice(0,10)), nota:(c.saldoRealNota||'') }); }
   cuentaSaldoAFecha(nombre, hastaISO){ const c=this.cuentasList().find(x=>x.nombre===nombre); let s=c?(Number(c.saldoInicial)||0):0; this.cajaMovs().forEach(m=>{ if(m.cuenta===nombre && !m.noBanco){ const f=m.fecha||''; if(hastaISO && f>hastaISO) return; s += (m.tipo==='ingreso'? m.monto : -m.monto); } }); return s; }
@@ -10741,7 +10769,7 @@ Instrucciones de respuesta:
       out.fgNuevoFijo=()=>this.nuevoGastoFijo(); out.fgCanWrite=out.canWriteFin; out.fgIsAdmin=isAdmin;
     }
     if(out.showFinPyg){
-      const ym=this.finMes(); const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
+      const ym=this.finMes(); out.pgExportMovs=()=>this.exportTodosMovimientos(ym); const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.pgIngresos=this.fmt(Math.round(p.ingresos)); out.pgCosto=this.fmt(Math.round(p.costo)); out.pgBruta=this.fmt(Math.round(p.bruta));
       out.pgMargenBruto=(p.ingresos>0?Math.round(p.bruta/p.ingresos*100):0)+'%';
       out.pgGastosOper=this.fmt(Math.round(p.gastosOper)); out.pgFletes=this.fmt(Math.round(p.fletes)); out.pgGastos=this.fmt(Math.round(p.gastos)); out.pgObsequios=this.fmt(Math.round(p.obsequios||0)); out.pgGmf=this.fmt(Math.round(p.gmf||0)); out.pgHayGmf=(p.gmf||0)>0;; out.pgHayObsequios=(p.obsequios||0)>0;
@@ -10785,6 +10813,11 @@ Instrucciones de respuesta:
       out.rtEditarTasas=()=>this.nuevoRetenConfig(); out.rtCanWrite=out.canWriteFin;
     }
     if(out.showFinRecaudos){
+      // Si los métodos de pago no cargaron (conexión o permisos de la nube), ninguna venta se
+      // clasifica como diferida y la lista sale vacía — se avisa y se puede reintentar.
+      out.recSinMetodos=(this.metodosFinList().length===0);
+      out.recMetodosErr=String(((this.state.cloudLoadErrs||{}).metodos_fin)||'');
+      out.recReintentarMetodos=()=>{ this.cloudLoadMetodos(); this.cloudLoadLiquidaciones(); this.toast('Recargando métodos de pago…'); };
       const grupos=this.recaudosPorMetodo().map(g=>{ const ded=this.metodoDeduccionEst(g.metodo,g.bruto,g.ventas.length); const m=this.metodoMatch(g.metodo); return {metodo:g.metodo, n:g.ventas.length, brutoFmt:this.fmt(Math.round(g.bruto)), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(g.bruto-ded)), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m&&m.diasLiq?this.diasLiqTxt(m):''), onLiquidar:()=>this.nuevaLiquidacion(g.metodo, true)}; });
       out.recGrupos=grupos; out.recVacio=grupos.length===0;
       const totBruto=this.recaudosPendientes().reduce((a,v)=>a+this.ventaRecaudoBruto(v),0);
@@ -11608,7 +11641,7 @@ Instrucciones de respuesta:
     if(st.modal==='kit'){ const d=st.draft;
       out.kitComponentOptions=this.ordenarPorCodigo([ ...st.productos.map(p=>({value:'producto:'+p.codigo, label:'Producto · '+p.nombre+' ('+this.fmt(p.precio)+')'})), ...st.materias.filter(m=>m.tipo==='insumo'||m.tipo==='empaque').map(m=>({value:'materia:'+m.codigo, label:(m.tipo==='empaque'?'Empaque':'Insumo')+' · '+m.nombre+' ('+this.fmt(m.costo)+')'})) ]);
       this.combo(out,'kitPick','_selKitItem',out.kitComponentOptions);
-      out.kitItemsDraft=(d.items||[]).map((it,i)=>{ const isP=it.tipo==='producto'; const ref=isP?st.productos.find(x=>x.codigo===it.codigo):st.materias.find(x=>x.codigo===it.codigo); const precioU=isP?(ref?Number(ref.precio)||0:0):(ref?Number(ref.costo)||0:0); const cant=Number(it.cantidad)||1; return {nombre:ref?ref.nombre:it.codigo, tipoLabel:isP?'Producto':(ref&&ref.tipo==='empaque'?'Empaque':'Insumo'), cantidad:cant, precioUnitFmt:this.fmt(precioU), subtotalFmt:this.fmt(precioU*cant), onRemove:()=>this.removeKitItem(i)}; });
+      out.kitItemsDraft=(d.items||[]).map((it,i)=>{ const isP=it.tipo==='producto'; const ref=isP?st.productos.find(x=>x.codigo===it.codigo):st.materias.find(x=>x.codigo===it.codigo); const precioU=isP?(ref?Number(ref.precio)||0:0):(ref?Number(ref.costo)||0:0); const cant=Number(it.cantidad)||1; const costoU=this.kitComponentCosto(it); return {nombre:ref?ref.nombre:it.codigo, tipoLabel:isP?'Producto':(ref&&ref.tipo==='empaque'?'Empaque':'Insumo'), cantidad:cant, precioUnitFmt:this.fmt(precioU), costoUnitFmt:this.fmt(costoU), costoTotalFmt:this.fmt(Math.round(costoU*cant)), subtotalFmt:this.fmt(precioU*cant), onRemove:()=>this.removeKitItem(i)}; });
       out.kitItemsVacio=(d.items||[]).length===0;
       const suma=(d.items||[]).reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0);
       const costo=(d.items||[]).reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0);
