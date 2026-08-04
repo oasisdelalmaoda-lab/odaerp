@@ -7774,7 +7774,7 @@ Instrucciones de respuesta:
     const M={
       pedido_recibido:s+' 🌿 recibimos tu pedido '+ref+' por '+t+'. Ya lo estamos preparando con cariño y te avisamos cuando salga. — Oasis del Alma',
       pedido_despachado:(n?(n+', '):'')+'tu pedido '+ref+' ya va en camino 🚚 Enviado por '+transp+(guia?(', guía '+guia):'')+'. Rastréalo acá: '+this.waLinkRastreo(v)+' — Oasis del Alma',
-      recordatorio_pago:s+' 🌿 tu pedido '+ref+' tiene un saldo pendiente de '+saldo+'. Cuando quieras te ayudamos a completarlo. — Oasis del Alma',
+      recordatorio_pago:s+' 🌿 tu pedido '+ref+' quedó registrado con pago por transferencia y tiene un saldo pendiente de '+saldo+'. Puedes pagar a la llave 3134063259 a nombre de OdA Labs SAS. Envíanos el comprobante por acá y despachamos tu pedido. — Oasis del Alma',
       pedido_contraentrega:s+' 🌿 confirmamos tu pedido '+ref+' contraentrega: '+this.waResumenItems(v)+'. Total a pagar al recibir: '+t+', entrega en '+((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'tu ciudad'))+'. Si nos confirmas, lo despachamos '+this.waDespachoTxt()+'. ¿Están correctos los datos? — Oasis del Alma',
       postventa:(n?(n+', '):'')+'¿cómo te sentiste con tu experiencia Oasis del Alma? 💛 Tu opinión nos ayuda a cuidar mejor de ti. Y como agradecimiento, usa el código '+this.waCuponPostventa(v).code+' ('+this.WA_CUPON_PCT+'% de descuento) en tu próxima compra, válido hasta el '+this.waCuponPostventa(v).hasta+'.',
       carrito_abandonado:s+' 🌿 notamos que dejaste algo en tu carrito. ¿Te ayudamos a completar tu momento de bienestar? — Oasis del Alma',
