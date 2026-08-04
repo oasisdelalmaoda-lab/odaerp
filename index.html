@@ -2116,9 +2116,11 @@
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Todas las plantillas de la cuenta</h3>
                     <span style="font-size:11.5px;color:var(--text-muted);">{{ canalesPlantResumen }}</span>
+                    <button onClick="{{ canalesVerTodasTog }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;white-space:nowrap;">{{ canalesVerTodasL }}</button>
                   </div>
                   <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Solo las plantillas aprobadas se pueden enviar fuera de la ventana de 24 h. Las marcadas en rojo apuntan a un dominio que no es tuyo — hay que recrearlas con links propios.</p>
                   <sc-if value="{{ canalesPlantVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">No hay plantillas en esta cuenta.</div></sc-if>
+                  <sc-if value="{{ canalesVerTodas }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;gap:8px;">
                     <sc-for list="{{ canalesPlantillas }}" as="t" hint-placeholder-count="0">
                       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-raised);border:1px solid {{ t.borde }};border-radius:var(--radius-md);padding:10px 14px;">
@@ -2131,6 +2133,7 @@
                       </div>
                     </sc-for>
                   </div>
+                  </sc-if>
                 </div>
               </sc-if>
 
@@ -10448,6 +10451,9 @@ Instrucciones de respuesta:
         out.canalesReqBorde = faltan? 'rgba(181,80,60,0.35)' : 'var(--border-subtle)';
       }
       out.canalesPlantVacio = !!T && T.estado==='ok' && tItems.length===0;
+      out.canalesVerTodas=!!st.canalesVerTodas;
+      out.canalesVerTodasTog=()=>this.setState({canalesVerTodas:!st.canalesVerTodas});
+      out.canalesVerTodasL=st.canalesVerTodas? 'Ocultar' : ('Ver las '+tItems.length);
       // Interruptores de las automatizaciones de pedidos (las ejecuta la función 'automatizaciones')
       { const _ac=this.agenteCfgGet(); const tog=(k)=>{ const v=!!_ac[k]; return { v, bg:v?'var(--brand-primary)':'#D9D2C3', x:v?'22px':'2px', on:()=>this.setAgenteCfg(k,!v) }; };
         out.autoReglas=[
@@ -10455,6 +10461,7 @@ Instrucciones de respuesta:
           {...tog('autoRecordatorioOn'), plantilla:'recordatorio_pago', regla:'Pedido de la tienda online por transferencia (Bank Deposit) que sigue sin pagar. Al ingresar, a las 24 h y a las 72 h; se corta cuando entra el pago. Solo pedidos de hoy en adelante.'},
           {...tog('autoContraentregaOn'), plantilla:'pedido_contraentrega', regla:'Pedido contraentrega nuevo que todavía no salió. Si el cliente responde «sí» o «confirmo», el Hub anota «ok confirmado» en Shopify; si responde otra cosa, pasa a un asesor. Solo pedidos de hoy en adelante.'},
           {...tog('autoPostventaOn'), plantilla:'postventa', regla:'48 horas después de aparecer la etiqueta de entregado (CM: ENTREGADA o Entregado), para compras desde el 1 de julio. Si la entrega es de hace más de 5 días sale de una. Incluye el cupón del mes de la compra.'},
+          {...tog('campCarritosOn'), plantilla:'carrito_abandonado', regla:'Carrito abandonado en la tienda, a la hora que esté configurada en Ventas → Carritos. No se manda si el cliente ya hizo un pedido después de ese carrito, ni si pidió detener promociones.'},
         ];
         const pv=!!_ac.autoPruebaOn;
         out.autoPruebaTog=()=>this.setAgenteCfg('autoPruebaOn',!pv);
