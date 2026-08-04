@@ -3940,6 +3940,25 @@
                   </sc-for>
                   <sc-if value="{{ fcjVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:34px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Sin movimientos este mes. Registra un ingreso o egreso, o paga una orden / cobra una venta.</div></sc-if>
                 </div>
+                <sc-if value="{{ fcjAnulHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:16px;background:var(--surface-card);border:1px solid rgba(181,80,60,0.28);border-radius:var(--radius-lg);overflow:hidden;">
+                    <div style="padding:13px 18px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:10px;">
+                      <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin:0;flex:1;">Transacciones anuladas</h3>
+                      <span style="font-size:11.5px;color:var(--text-muted);">{{ fcjAnulN }}</span>
+                    </div>
+                    <p style="font-size:11.5px;color:var(--text-muted);margin:0;padding:10px 18px 0;line-height:1.5;text-wrap:pretty;">No cuentan en el saldo ni generan 4×1000. El pedido, la orden o la liquidación que las originó sigue intacta.</p>
+                    <sc-for list="{{ fcjAnulados }}" as="a" hint-placeholder-count="0">
+                      <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+                        <div style="flex:1;min-width:180px;">
+                          <div style="font-size:13px;font-weight:700;text-decoration:line-through;color:var(--text-muted);">{{ a.concepto }}</div>
+                          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">{{ a.fecha }} · {{ a.cuenta }}<sc-if value="{{ a.detalle }}" hint-placeholder-val="{{ false }}"> · {{ a.detalle }}</sc-if></div>
+                        </div>
+                        <span style="font-weight:800;color:var(--text-muted);text-decoration:line-through;white-space:nowrap;">{{ a.monto }}</span>
+                        <button onClick="{{ a.onReactivar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">Reactivar</button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
               </div>
             </div>
           </sc-if>
@@ -5910,6 +5929,7 @@
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
                 <button onClick="{{ mdOnEditar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;">{{ mdEditarLabel }}</button>
                 <sc-if value="{{ mdAjustado }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mdOnQuitarAjuste }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:transparent;color:#B5503C;border:1px solid rgba(181,80,60,0.32);cursor:pointer;">Quitar ajuste manual</button></sc-if>
+                <sc-if value="{{ mdPuedeAnular }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mdOnAnular }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:transparent;color:#8E3F2F;border:1px solid rgba(181,80,60,0.4);cursor:pointer;" style-hover="background:rgba(181,80,60,0.1);">Anular transacción</button></sc-if>
                 <sc-if value="{{ mdEsTraslado }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mdOnBorrar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:transparent;color:#B5503C;border:1px solid rgba(181,80,60,0.32);cursor:pointer;">Cancelar traslado</button></sc-if>
                 </div>
               </sc-if>
@@ -9185,6 +9205,16 @@ Instrucciones de respuesta:
   // --- ajustes manuales de transacciones (solo Administrador) ---
   movAjustesGet(){ if(this.state.movAjustes) return this.state.movAjustes; let a=null; try{ a=JSON.parse(localStorage.getItem('oda_hub_movajustes_v1')); }catch(e){} return a||{}; }
   setMovAjuste(id, patch){ const m={...this.movAjustesGet()}; if(patch) m[id]=patch; else delete m[id]; this.setState({movAjustes:m},()=>this.persist()); if(this.cloudOn()) this.cloudSaveConfig({movAjustes:m}); try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(m)); }catch(e){} }
+  // Anular una transacción: la saca de la caja sin borrar el documento que la originó
+  // (pedido, orden o liquidación), y siempre se puede revertir.
+  anularMovimiento(m, motivo){ if(!m||!m.id) return;
+    const base=this.movAjustesGet()[m.id]||{};
+    this.setMovAjuste(m.id, { ...base, anulado:true, anuladoMotivo:String(motivo||''), anuladoPor:this.recMeNombre(), anuladoAt:new Date().toISOString(),
+      anuladoSnap:{ fecha:m.fecha, monto:m.monto, cuenta:m.cuenta, tipo:m.tipo, categoria:m.categoria, concepto:m.concepto } }); }
+  reactivarMovimiento(id){ const a={...(this.movAjustesGet()[id]||{})};
+    delete a.anulado; delete a.anuladoMotivo; delete a.anuladoPor; delete a.anuladoAt; delete a.anuladoSnap;
+    this.setMovAjuste(id, Object.keys(a).length? a : null); }
+  movsAnulados(){ const aj=this.movAjustesGet(); return Object.keys(aj).filter(k=>aj[k]&&aj[k].anulado).map(k=>({ id:k, ...(aj[k].anuladoSnap||{}), motivo:aj[k].anuladoMotivo||'', por:aj[k].anuladoPor||'', at:aj[k].anuladoAt||'' })); }
   // --- movimientos de caja unificados ---
   cajaMovs(){ const out=[];
     (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.pagos||[]).forEach((p,i)=>{ if(!(Number(p.monto)>0)) return; out.push({ id:o.id+'-pg'+i, fecha:this.parseFecha(p.fecha), tipo:'egreso', cuenta:p.cuenta||'', monto:Number(p.monto)||0, categoria:'Pago a proveedor', concepto:'Pago '+(o.numero||'')+' \u00b7 '+this.provNombre(o.proveedorCodigo), origen:'compra', editable:false, ordenId:o.id }); }); });
@@ -9205,7 +9235,10 @@ Instrucciones de respuesta:
     (this.state.liquidaciones||[]).forEach(l=>{ const bruto=Number(l.bruto)||0; const ded=Number(l.deduccion)||0; const neto=bruto-ded; if(bruto>0){ out.push({ id:l.id+'-br', fecha:this.parseFecha(l.fecha), tipo:'ingreso', cuenta:l.cuenta||'', monto:neto, categoria:'Recaudo liquidado', concepto:'Liquidación neta '+(l.metodo||'')+' · '+((l.ventaIds||[]).length)+' ventas', origen:'liquidacion', editable:false, ventaIds:(l.ventaIds||[]) }); } if(ded>0){ out.push({ id:l.id+'-de', fecha:this.parseFecha(l.fecha), tipo:'egreso', cuenta:l.cuenta||'', monto:ded, categoria:'Comisiones y recaudo', concepto:'Comisión y retenciones '+(l.metodo||''), origen:'liquidacion', editable:false, noBanco:true, ventaIds:(l.ventaIds||[]) }); } });
     // Ajustes manuales del Administrador: sobrescriben el valor calculado del movimiento (el GMF se recalcula sobre el ajuste).
     const _aj=this.movAjustesGet(); if(Object.keys(_aj).length){ for(let i=0;i<out.length;i++){ const a=_aj[out[i].id]; if(!a) continue; const o=out[i];
-      out[i]={...o, ...a, ajustado:true, ajusteOrig:{fecha:o.fecha, monto:o.monto, cuenta:o.cuenta, categoria:o.categoria, concepto:o.concepto, tipo:o.tipo}}; } }
+      out[i]={...o, ...a, ajustado:true, ajusteOrig:{fecha:o.fecha, monto:o.monto, cuenta:o.cuenta, categoria:o.categoria, concepto:o.concepto, tipo:o.tipo}}; }
+      // Una transacción anulada deja de existir para la caja: no suma, no resta y no genera GMF.
+      // Queda guardada en los ajustes, así que se puede reactivar sin perder nada.
+      for(let i=out.length-1;i>=0;i--){ if(out[i] && out[i].anulado) out.splice(i,1); } }
     // GMF (4x1000): se descuenta del saldo de la cuenta por cada egreso gravado (transferencias/pagos de banco), como en el extracto real.
     const _gmfRate=this.gmfRate(); out.slice().forEach(m=>{ if(m.tipo==='egreso' && !m.noBanco && this.cuentaEsBanco(m.cuenta) && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)'){ const g=Math.round((Number(m.monto)||0)*_gmfRate); if(g>0){ out.push({ id:m.id+'-gmf', fecha:m.fecha, tipo:'egreso', cuenta:m.cuenta, monto:g, categoria:'GMF (4x1000)', concepto:'GMF 4×1000 · '+(m.concepto||m.categoria||''), origen:'gmf', editable:false }); } } });
     return out.sort((a,b)=>{ const fc=(b.fecha||'').localeCompare(a.fecha||''); if(fc!==0) return fc; return (Number(b.ts)||0)-(Number(a.ts)||0); }); }
@@ -11503,6 +11536,14 @@ Instrucciones de respuesta:
       out.fcjIng=this.fmt(Math.round(ing)); out.fcjEg=this.fmt(Math.round(eg)); out.fcjNeto=this.fmt(Math.round(ing-eg)); out.fcjNetoColor=(ing-eg)>=0?'#4C6149':'var(--oda-sale)';
       out.fcjMovs=movs.map(m=>({id:m.id, fechaFmt:this.fmtFecha(m.fecha)+(m.ts?(' · '+new Date(m.ts).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})):''), concepto:m.concepto||m.categoria, categoria:m.categoria, cuenta:m.cuenta||'\u2014', signo:(m.tipo==='ingreso'?'+':'\u2212'), montoFmt:this.fmt(Math.round(m.monto)), color:(m.tipo==='ingreso'?'#4C6149':'var(--oda-sale)'), editable:m.editable, ajustado:!!m.ajustado, onEdit:()=>this.verMovimiento(m)}));
       out.fcjVacio=movs.length===0;
+      // Transacciones anuladas: quedan fuera de la caja pero visibles para poder revertirlas.
+      { const _an=this.movsAnulados(); out.fcjAnulHay=_an.length>0 && !!out.isAdmin; out.fcjAnulN=String(_an.length);
+        out.fcjAnulados=_an.sort((a,b)=>String(b.at||'').localeCompare(String(a.at||''))).map(a=>({
+          concepto:(a.concepto||a.categoria||'Movimiento'),
+          fecha:this.fmtFecha(a.fecha), cuenta:(a.cuenta||'—'),
+          monto:((a.tipo==='ingreso'?'+':'\u2212')+this.fmt(Math.round(Number(a.monto)||0))),
+          detalle:[(a.motivo||''), (a.por? ('anuló '+a.por):'')].filter(Boolean).join(' \u00b7 '),
+          onReactivar:((id)=>()=>{ if(!window.confirm('¿Reactivar esta transacción? Vuelve a contar en el saldo de la cuenta.')) return; this.reactivarMovimiento(id); this.toast('Transacción reactivada'); })(a.id) })); }
       out.fcjNuevoIngreso=()=>this.nuevoMovimiento('ingreso'); out.fcjNuevoEgreso=()=>this.nuevoMovimiento('egreso'); out.fcjNuevoTraslado=()=>this.nuevoTraslado(); out.fcjNuevaCuenta=()=>this.nuevaCuentaFin(); out.fcjCanWrite=out.canWriteFin;
       out.fcjMetodos=this.metodosFinList().map(m=>({id:m.id, nombre:m.nombre, tipoTxt:(m.tipo==='diferido'?'Diferido':'Inmediato'), esDif:(m.tipo==='diferido'), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m.tipo==='diferido'?(this.diasLiqTxt(m)+' en liquidar'):'Entra de una'), onEdit:()=>this.editarMetodoFin(m.id)}));
       out.fcjMetodosVacio=this.metodosFinList().length===0; out.fcjNuevoMetodo=()=>this.nuevoMetodoFin(); out.fcjVacioCuentas=this.cuentasList().length===0;
@@ -12398,6 +12439,9 @@ Instrucciones de respuesta:
       out.mdLiqNVentas=_liq? String((_liq.ventaIds||[]).length) : '0';
       out.mdOnCancelarLiq=()=>{ if(!_liq) return; this.setState({modal:null,draft:{}}); this.askDelete('liquidacion',{codigo:_liq.id, nombre:'el recaudo de '+(_liq.metodo||'')+' del '+this.fmtFecha(_liq.fecha)}); };
       const _mdReal=(this.state.movimientos||[]).some(x=>x.id===d.id);
+      out.mdPuedeAnular=!!out.isAdmin;
+      out.mdOnAnular=()=>{ const mot=window.prompt('¿Por qué se anula esta transacción?\n\nSale de la caja y deja de sumar al saldo. El pedido, la orden o la liquidación que la originó NO se tocan, y la puedes reactivar cuando quieras.',''); if(mot===null) return;
+        this.anularMovimiento(d, mot); this.setState({modal:null, draft:{}}); this.toast('Transacción anulada · ya no afecta la caja'); };
       out.mdEditable=(!!d.editable || d.esTraslado===true || !!out.isAdmin); out.mdEsTraslado=(d.esTraslado===true);
       const _mdAuto=(!d.editable && !d.esTraslado);
       out.mdEditarLabel=_mdAuto? 'Ajustar transacción (Administrador)' : 'Editar';
