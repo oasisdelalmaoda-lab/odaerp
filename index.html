@@ -108,6 +108,7 @@
           <div class="oda-navitem" onClick="{{ nav.inicio }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;margin-bottom:4px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ inicioNavColor }};background:{{ inicioNavBg }};">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>
             <span style="flex:1;">Inicio</span>
+            <sc-if value="{{ recBadgeShow }}" hint-placeholder-val="{{ false }}"><span title="{{ recBadgeTitle }}" style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;flex-shrink:0;">{{ recBadgeCount }}</span></sc-if>
           </div>
           <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:6px 10px 8px;">Módulos</div>
 
@@ -290,6 +291,7 @@
                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;">Alertas y recordatorios</h3>
                   <span style="font-size:11.5px;color:var(--text-muted);flex:1;">{{ recPendN }} pendientes</span>
+                  <sc-if value="{{ recHaySinLeer }}" hint-placeholder-val="{{ false }}"><button onClick="{{ recMarcarTodo }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid rgba(181,80,60,0.35);background:rgba(181,80,60,0.1);color:#8E3F2F;">{{ recSinLeerTxt }} · marcar leído</button></sc-if>
                   <button onClick="{{ onRecTabPend }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ recTabPendBg }};color:{{ recTabPendFg }};">Pendientes</button>
                   <button onClick="{{ onRecTabHechos }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ recTabHechoBg }};color:{{ recTabHechoFg }};">Hechos</button>
                   <button onClick="{{ recNuevoBtn }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Nuevo recordatorio</button>
@@ -297,7 +299,8 @@
                 <sc-if value="{{ recVacio }}" hint-placeholder-val="{{ true }}"><div style="padding:24px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">{{ recVacioTxt }}</div></sc-if>
                 <div style="display:flex;flex-direction:column;gap:0;">
                   <sc-for list="{{ recList }}" as="r" hint-placeholder-count="0">
-                    <div onClick="{{ r.abrir }}" class="oda-row" style="display:flex;align-items:flex-start;gap:12px;padding:12px 8px;border-bottom:1px solid var(--border-subtle);cursor:pointer;">
+                    <div onClick="{{ r.abrir }}" class="oda-row" style="display:flex;align-items:flex-start;gap:12px;padding:12px 8px;border-bottom:1px solid var(--border-subtle);cursor:pointer;background:{{ r.fondo }};">
+                      <sc-if value="{{ r.sinLeer }}" hint-placeholder-val="{{ false }}"><span title="Sin leer" style="flex-shrink:0;width:8px;height:8px;border-radius:99px;background:#B5503C;margin-top:6px;"></span></sc-if>
                       <div style="flex:1;min-width:0;">
                         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                           <span style="font-size:13.5px;font-weight:700;line-height:1.4;">{{ r.titulo }}</span>
@@ -8354,7 +8357,7 @@ Instrucciones de respuesta:
   async cloudLoadRecordatorios(){ const sb=this._sbClient(); if(!sb) return;
     try{ const {data,error}=await sb.from('recordatorios').select('*').order('cuando',{ascending:true}).limit(400);
       if(error) throw error;
-      const list=(data||[]).map(r=>({ id:r.id, titulo:r.titulo||'', detalle:r.detalle||'', cuando:r.cuando||'', avisoMin:(r.aviso_min==null?30:Number(r.aviso_min)), estado:r.estado||'pendiente', creadoPor:r.creado_por||'', creadoPorNombre:r.creado_por_nombre||'', invitados:(Array.isArray(r.invitados)?r.invitados:[]), notas:(Array.isArray(r.notas)?r.notas:[]) }));
+      const list=(data||[]).map(r=>({ id:r.id, titulo:r.titulo||'', detalle:r.detalle||'', cuando:r.cuando||'', avisoMin:(r.aviso_min==null?30:Number(r.aviso_min)), estado:r.estado||'pendiente', creadoPor:r.creado_por||'', creadoPorNombre:r.creado_por_nombre||'', invitados:(Array.isArray(r.invitados)?r.invitados:[]), notas:(Array.isArray(r.notas)?r.notas:[]), actualizadoAt:r.actualizado_at||r.creado_at||'' }));
       this.setState({recordatorios:list}, ()=>this.recChequearAvisos());
     }catch(e){ if(this.state.recordatorios===null) this.setState({recordatorios:[]}); } }
   cloudSubscribeRecordatorios(){ const sb=this._sbClient(); if(!sb||this._recSub) return;
@@ -8365,6 +8368,40 @@ Instrucciones de respuesta:
   recMios(){ const me=this.recMe(); return (this.state.recordatorios||[]).filter(r=>r.creadoPor===me || (r.invitados||[]).indexOf(me)>=0); }
   recFechaTxt(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return '—';
     return d.toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+  // ---- «sin leer»: cada usuario marca en su navegador qué recordatorios ya vio. Si el
+  // recordatorio cambia después (lo editan, le dejan una nota), vuelve a contar como sin leer.
+  _recLeidosKey(){ return 'oda_hub_rec_leidos_'+(this.recMe()||'x'); }
+  recLeidos(){ try{ return JSON.parse(localStorage.getItem(this._recLeidosKey())||'{}')||{}; }catch(e){ return {}; } }
+  recSinLeer(){ const leidos=this.recLeidos(); const ahora=Date.now();
+    return this.recMios().filter(r=>{
+      if(r.estado==='hecho') return false;
+      const t=r.cuando? new Date(r.cuando).getTime() : 0;
+      const aviso=t? (t-(Number(r.avisoMin)||0)*60000) : 0;
+      if(aviso && ahora<aviso) return false;   // todavía no toca avisar
+      return leidos[r.id]!==(r.actualizadoAt||r.cuando||'1');
+    }); }
+  recMarcarLeido(id){ const r=(this.state.recordatorios||[]).find(x=>x.id===id); if(!r) return;
+    try{ const l=this.recLeidos(); l[id]=(r.actualizadoAt||r.cuando||'1'); localStorage.setItem(this._recLeidosKey(), JSON.stringify(l)); }catch(e){}
+    this.forceUpdate(); }
+  recMarcarTodoLeido(){ try{ const l=this.recLeidos(); this.recSinLeer().forEach(r=>{ l[r.id]=(r.actualizadoAt||r.cuando||'1'); }); localStorage.setItem(this._recLeidosKey(), JSON.stringify(l)); }catch(e){}
+    this.forceUpdate(); }
+  // Todo lo que está esperando A ESTA PERSONA: recordatorios sin leer, conversaciones asignadas
+  // que siguen abiertas, casos de servicio sin cerrar y leads en curso. Es lo que cuenta el badge
+  // de Inicio, igual que el de Conversaciones.
+  inicioPendientes(){ const st=this.state; const uid=st.userId; const cuid=(st.cloudUser&&st.cloudUser.id)||uid;
+    const mio=(a)=>!!a && (a===cuid || a===uid);
+    const partes=[];
+    const rec=this.recSinLeer().length;
+    if(rec) partes.push(rec+' recordatorio'+(rec===1?'':'s')+' sin leer');
+    let conv=0;
+    try{ conv=(this.convList()||[]).filter(c=>c.estado!=='resuelta' && mio(c.asignadoA)).length; }catch(e){}
+    if(conv) partes.push(conv+' conversación'+(conv===1?'':'es')+' asignada'+(conv===1?'':'s'));
+    const casos=(st.casos||[]).filter(c=>c.estado!=='cerrado' && mio(c.asignadoA)).length;
+    if(casos) partes.push(casos+' caso'+(casos===1?'':'s')+' por cerrar');
+    const leadsSrc=this.cloudOn()? (st.cloudLeads||[]) : (st.leads||[]);
+    const leads=leadsSrc.filter(l=>l.estado!=='Ganado' && l.estado!=='Perdido' && mio(l.asignadoA)).length;
+    if(leads) partes.push(leads+' lead'+(leads===1?'':'s')+' en curso');
+    return { n:rec+conv+casos+leads, detalle:partes.join(' · ') }; }
   // Avisa una sola vez por recordatorio (queda marcado en el navegador de cada usuario)
   recChequearAvisos(){ try{
     const me=this.recMe(); if(!me) return;
@@ -10123,6 +10160,9 @@ Instrucciones de respuesta:
     out.showInicio = st.module==='inicio';
     out.inicioNavBg = out.showInicio? 'rgba(167,134,89,0.18)':'transparent';
     out.inicioNavColor = out.showInicio? '#D9BE92':'rgba(251,248,242,0.85)';
+    // Badge de Inicio: todo lo asignado a esta persona que sigue esperando (recordatorios sin
+    // leer, conversaciones, casos por cerrar, leads en curso).
+    { const p=this.inicioPendientes(); out.recBadgeShow=p.n>0; out.recBadgeCount=p.n>99?'99+':String(p.n); out.recBadgeTitle=p.detalle; }
     if(out.showInicio){
       // ---- alertas y recordatorios ----
       { const me=this.recMe(); const mios=this.recMios(); const filtro=st.recFiltro||'pendientes';
@@ -10134,11 +10174,17 @@ Instrucciones de respuesta:
         out.onRecTabPend=()=>this.setState({recFiltro:'pendientes'}); out.onRecTabHechos=()=>this.setState({recFiltro:'hechos'});
         out.recNuevoBtn=()=>this.recNuevo();
         out.recPendN=mios.filter(r=>r.estado!=='hecho').length;
+        { const sl=this.recSinLeer(); out.recSinLeerN=sl.length; out.recHaySinLeer=sl.length>0;
+          out.recSinLeerTxt=sl.length===1? '1 sin leer' : (sl.length+' sin leer');
+          out.recMarcarTodo=()=>this.recMarcarTodoLeido();
+          out.recSinLeerIds=sl.reduce((a,r)=>{ a[r.id]=true; return a; },{}); }
         out.recList=vis.slice().sort((a,b)=>String(a.cuando).localeCompare(String(b.cuando))).map(r=>{
           const t=r.cuando? new Date(r.cuando).getTime() : 0;
           const vencido=r.estado!=='hecho' && t && t<ahora;
           const hoy=t && new Date(t).toDateString()===new Date().toDateString();
           return { id:r.id, titulo:r.titulo, detalle:r.detalle, hayDetalle:!!r.detalle,
+            sinLeer:!!out.recSinLeerIds[r.id],
+            fondo:(out.recSinLeerIds[r.id]?'rgba(167,134,89,0.07)':'var(--surface-card)'),
             cuando:this.recFechaTxt(r.cuando),
             cuandoFg:(vencido?'#B5503C':(hoy?'var(--brand-primary)':'var(--text-muted)')),
             etiqueta:(r.estado==='hecho'?'Hecho':(vencido?'Vencido':(hoy?'Hoy':''))),
@@ -10150,7 +10196,7 @@ Instrucciones de respuesta:
             invitados:(r.invitados||[]).map(u=>({ ini:this.leadUInitials(u), color:this.leadUColor(u), nombre:this.leadUName(u) })),
             hayInvitados:(r.invitados||[]).length>0,
             notasN:(r.notas||[]).length, hayNotas:(r.notas||[]).length>0,
-            abrir:()=>this.setState({modal:'recver', recVerId:r.id, draft:{_nota:''}}) }; });
+            abrir:()=>{ this.recMarcarLeido(r.id); this.setState({modal:'recver', recVerId:r.id, draft:{_nota:''}}); } }; });
         out.recVacio=vis.length===0;
         out.recVacioTxt=(filtro==='hechos')?'Aún no has cerrado ningún recordatorio.':'No tienes recordatorios pendientes. Crea uno con «Nuevo recordatorio».';
       }
