@@ -213,6 +213,7 @@
               <sc-if value="{{ vF_pagar }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.pagar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPagar.c }};background:{{ subFinPagar.bg }};border-left:2px solid {{ subFinPagar.b }};">Cuentas por pagar</div></sc-if>
               <sc-if value="{{ vF_cobrar }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.cobrar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCobrar.c }};background:{{ subFinCobrar.bg }};border-left:2px solid {{ subFinCobrar.b }};">Cuentas por cobrar</div></sc-if>
               <sc-if value="{{ vF_recaudos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.recaudos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinRecaudos.c }};background:{{ subFinRecaudos.bg }};border-left:2px solid {{ subFinRecaudos.b }};">Recaudos por cruzar</div></sc-if>
+              <sc-if value="{{ vF_bold }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.bold }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinBold.c }};background:{{ subFinBold.bg }};border-left:2px solid {{ subFinBold.b }};"><span style="flex:1;">Bold</span><sc-if value="{{ boldNavBadge }}" hint-placeholder-val="{{ false }}"><span style="background:#B5503C;color:#fff;font-size:9.5px;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ boldNavCount }}</span></sc-if></div></sc-if>
               <sc-if value="{{ vF_caja }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.caja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCaja.c }};background:{{ subFinCaja.bg }};border-left:2px solid {{ subFinCaja.b }};">Caja y bancos</div></sc-if>
               <sc-if value="{{ vF_gastos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.gastos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinGastos.c }};background:{{ subFinGastos.bg }};border-left:2px solid {{ subFinGastos.b }};">Gastos</div></sc-if>
               <sc-if value="{{ vF_pyg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.pyg }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPyg.c }};background:{{ subFinPyg.bg }};border-left:2px solid {{ subFinPyg.b }};">Estado de resultados</div></sc-if>
@@ -3730,6 +3731,76 @@
             </div>
           </sc-if>
 
+          <!-- ===== FINANZAS · BOLD ===== -->
+          <sc-if value="{{ showFinBold }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 18px;max-width:700px;line-height:1.55;text-wrap:pretty;">Cada pago que entra por Bold — datáfono, link de pago o botón de la tienda — llega acá solo. Los links se generan a mano con el nombre del cliente como referencia, y el Hub propone con qué pedido cruzarlos; los pagos presenciales llegan sin referencia y se cuadran a mano.</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Recibido este mes</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;line-height:1.1;margin-top:5px;">{{ boldTotalMes }}</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid rgba(212,150,80,0.4);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9A6B2E;">Sin cruzar</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;line-height:1.1;margin-top:5px;color:#9A6B2E;">{{ boldPendN }}</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ boldPendMonto }}</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Cruzados</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;line-height:1.1;margin-top:5px;color:#4C6149;">{{ boldConcN }}</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Rechazadas o anuladas</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;line-height:1.1;margin-top:5px;">{{ boldRechN }}</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+                <button onClick="{{ boldTabPend.on }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:7px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ boldTabPend.bg }};color:{{ boldTabPend.fg }};">Sin cruzar</button>
+                <button onClick="{{ boldTabConc.on }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:7px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ boldTabConc.bg }};color:{{ boldTabConc.fg }};">Cruzados</button>
+                <button onClick="{{ boldTabRech.on }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:7px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ boldTabRech.bg }};color:{{ boldTabRech.fg }};">Rechazadas</button>
+                <button onClick="{{ boldTabTodos.on }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:7px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ boldTabTodos.bg }};color:{{ boldTabTodos.fg }};">Todas</button>
+                <input value="{{ qBoldVal }}" onInput="{{ onQBold }}" placeholder="Buscar por referencia, pedido o monto…" style="flex:1;min-width:220px;max-width:340px;box-sizing:border-box;font-family:inherit;font-size:12.5px;padding:8px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);" />
+                <button onClick="{{ boldRecargar }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:8px 16px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;">Actualizar</button>
+              </div>
+              <sc-if value="{{ boldHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 16px;margin-bottom:14px;background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-md);font-size:12.5px;color:#8E3F2F;">{{ boldErrTxt }} — ¿ya corriste el SQL de Bold?</div></sc-if>
+              <sc-if value="{{ boldSinConectar }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;margin-bottom:14px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);text-align:center;font-size:12.5px;color:var(--text-muted);line-height:1.6;text-wrap:pretty;">Todavía no ha llegado ningún pago. Revisá que el webhook esté registrado en panel.bold.co → Integraciones → Webhooks, y que las llaves de integración estén activas.</div></sc-if>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                <sc-if value="{{ boldVacio }}" hint-placeholder-val="{{ true }}"><div style="padding:30px 20px;text-align:center;color:var(--text-muted);font-size:12.5px;">{{ boldVacioTxt }}</div></sc-if>
+                <sc-for list="{{ boldRows }}" as="p" hint-placeholder-count="0">
+                  <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;">
+                    <div style="width:78px;flex-shrink:0;">
+                      <div style="font-size:12.5px;font-weight:700;">{{ p.fecha }}</div>
+                      <div style="font-size:11px;color:var(--text-muted);">{{ p.hora }}</div>
+                    </div>
+                    <div style="flex:1;min-width:190px;">
+                      <div style="font-size:13.5px;font-weight:700;line-height:1.35;">{{ p.referencia }}</div>
+                      <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ p.canal }} · {{ p.metodo }}</div>
+                      <sc-if value="{{ p.hayDetalle }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:var(--text-muted);margin-top:1px;">{{ p.detalle }}</div></sc-if>
+                      <sc-if value="{{ p.sinFirma }}" hint-placeholder-val="{{ false }}"><div style="font-size:10.5px;font-weight:800;color:#8E3F2F;margin-top:4px;">Firma no verificada · revisar a mano</div></sc-if>
+                    </div>
+                    <div style="width:120px;text-align:right;flex-shrink:0;">
+                      <div style="font-size:14px;font-weight:800;">{{ p.monto }}</div>
+                      <span style="display:inline-block;margin-top:4px;font-size:9.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:{{ p.estBg }};color:{{ p.estFg }};">{{ p.estado }}</span>
+                    </div>
+                    <div style="width:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:92px;">
+                      <sc-if value="{{ p.hayPedido }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:11.5px;color:var(--text-body);">Cruzado con <strong>{{ p.pedido }}</strong></span>
+                        <button onClick="{{ p.onDeshacer }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">Deshacer</button>
+                      </sc-if>
+                      <sc-if value="{{ p.haySug }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:11px;color:var(--text-muted);">Cruzar con:</span>
+                        <sc-for list="{{ p.sugerencias }}" as="s" hint-placeholder-count="0">
+                          <button onClick="{{ s.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--brand-primary);border-radius:99px;background:rgba(167,134,89,0.1);color:var(--brand-ink);cursor:pointer;">{{ s.label }}</button>
+                        </sc-for>
+                      </sc-if>
+                      <button onClick="{{ p.onManual }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px dashed var(--border-strong);border-radius:99px;background:transparent;color:var(--text-strong);cursor:pointer;">Escribir el pedido</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
           <!-- ===== FINANZAS · RECAUDOS POR CRUZAR ===== -->
           <sc-if value="{{ showFinRecaudos }}" hint-placeholder-val="{{ false }}">
             <div>
@@ -6681,7 +6752,7 @@ class Component extends DCLogic {
     inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'conteos',label:'Conteos físicos'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'},{key:'informe',label:'Informe'}],
-    finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
+    finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'finbold',label:'Bold'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
   };
 
@@ -6902,6 +6973,7 @@ class Component extends DCLogic {
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
     canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null, waEnvios:null, autoCorriendo:false,
+    boldPagos:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
     recordatorios:null, recVerId:null, recFiltro:'pendientes',
     conteos:[], fConteoEstado:'pendiente',
   };
@@ -8368,6 +8440,34 @@ Instrucciones de respuesta:
   recMios(){ const me=this.recMe(); return (this.state.recordatorios||[]).filter(r=>r.creadoPor===me || (r.invitados||[]).indexOf(me)>=0); }
   recFechaTxt(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return '—';
     return d.toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+  // ---- Bold: pagos recibidos por webhook y su conciliación contra las ventas ----
+  async cloudLoadBold(){ const sb=this._sbClient(); if(!sb) return;
+    this.setState({boldLoading:true});
+    try{ const {data,error}=await sb.from('bold_pagos').select('*').order('creado_at',{ascending:false}).limit(600);
+      if(error) throw error;
+      this.setState({boldPagos:(data||[]), boldLoading:false, boldErr:''});
+    }catch(e){ this.setState({boldPagos:(this.state.boldPagos||[]), boldLoading:false, boldErr:(e&&e.message)||'No se pudo cargar'}); } }
+  boldMetodoL(m){ const t={CARD:'Datáfono',BOLD_TAP:'Datáfono móvil',CARD_WEB:'Tarjeta web',NEQUI:'Nequi',PSE:'PSE',BOTON_BANCOLOMBIA:'Botón Bancolombia',QR:'QR Bold'}; return t[m]||m||'—'; }
+  boldIntegracionL(i){ const t={POS:'Presencial',LINK:'Link de pago',API_INTEGRATIONS:'API',BOLD_TAP:'Datáfono móvil'}; return t[i]||i||'—'; }
+  // Los links de pago se generan a mano con el NOMBRE DEL CLIENTE como referencia, así que el
+  // cruce se hace por nombre; el monto solo confirma. Los pagos presenciales llegan sin
+  // referencia y se cuadran a mano desde la pantalla.
+  _boldNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
+  boldSugerencias(p){ const ref=this._boldNorm(p.referencia); const monto=Math.round(Number(p.monto)||0);
+    const fp=String(p.creado_at||'').slice(0,10);
+    const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada);
+    const puntua=(v)=>{ let s=0; const nom=this._boldNorm(v.cliente);
+      if(ref && nom){ if(nom===ref) s+=60; else { const partes=ref.split(' ').filter(x=>x.length>2); const hit=partes.filter(x=>nom.indexOf(x)>=0).length; if(hit) s+=Math.min(45, hit*18); } }
+      const tot=Math.round(this.ventaTotal(v)); if(monto && tot){ const dif=Math.abs(tot-monto); if(dif===0) s+=30; else if(dif<=1000) s+=18; else if(dif/monto<0.05) s+=8; }
+      if(fp && v.fecha){ const dias=Math.abs((new Date(fp)-new Date(v.fecha))/86400000); if(dias<=1) s+=12; else if(dias<=5) s+=6; else if(dias>30) s-=10; }
+      return s; };
+    return ventas.map(v=>({v, s:puntua(v)})).filter(x=>x.s>=30).sort((a,b)=>b.s-a.s).slice(0,4); }
+  async boldConciliar(paymentId, pedido){ const sb=this._sbClient(); if(!sb) return;
+    try{ await sb.from('bold_pagos').update({ pedido:pedido||null, conciliado:!!pedido, conciliado_por:this.recMeNombre(), conciliado_at:new Date().toISOString() }).eq('payment_id',paymentId);
+      this.cloudLoadBold(); this.toast(pedido? ('Pago cruzado con '+pedido) : 'Cruce deshecho');
+    }catch(e){ this.toast('No se pudo guardar el cruce'); } }
+  async boldNota(paymentId, nota){ const sb=this._sbClient(); if(!sb) return;
+    try{ await sb.from('bold_pagos').update({nota}).eq('payment_id',paymentId); this.cloudLoadBold(); }catch(e){} }
   // ---- «sin leer»: cada usuario marca en su navegador qué recordatorios ya vio. Si el
   // recordatorio cambia después (lo editan, le dejan una nota), vuelve a contar como sin leer.
   _recLeidosKey(){ return 'oda_hub_rec_leidos_'+(this.recMe()||'x'); }
@@ -10151,7 +10251,7 @@ Instrucciones de respuesta:
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
     out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_conteos=subVis('inventario','conteos'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
-    out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
+    out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_bold=subVis('finanzas','finbold'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
@@ -10337,8 +10437,8 @@ Instrucciones de respuesta:
     out.finNavBg = onFin? 'rgba(167,134,89,0.18)':'transparent';
     out.finNavColor = onFin? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyF=(k)=>{ const a=onFin&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subFinResumen=subStyF('finresumen'); out.subFinPagar=subStyF('finpagar'); out.subFinCobrar=subStyF('fincobrar'); out.subFinRecaudos=subStyF('finrecaudos'); out.subFinCaja=subStyF('fincaja'); out.subFinGastos=subStyF('fingastos'); out.subFinPyg=subStyF('finpyg'); out.subFinImp=subStyF('finimpuestos');
-    out.subnavFin={ resumen:()=>this.setState({module:'finanzas',sub:'finresumen'}), pagar:()=>this.setState({module:'finanzas',sub:'finpagar'}), cobrar:()=>this.setState({module:'finanzas',sub:'fincobrar'}), recaudos:()=>this.setState({module:'finanzas',sub:'finrecaudos'}), caja:()=>this.setState({module:'finanzas',sub:'fincaja'}), gastos:()=>this.setState({module:'finanzas',sub:'fingastos'}), pyg:()=>this.setState({module:'finanzas',sub:'finpyg'}), impuestos:()=>this.setState({module:'finanzas',sub:'finimpuestos'}) };
+    out.subFinResumen=subStyF('finresumen'); out.subFinPagar=subStyF('finpagar'); out.subFinCobrar=subStyF('fincobrar'); out.subFinRecaudos=subStyF('finrecaudos'); out.subFinBold=subStyF('finbold'); out.subFinCaja=subStyF('fincaja'); out.subFinGastos=subStyF('fingastos'); out.subFinPyg=subStyF('finpyg'); out.subFinImp=subStyF('finimpuestos');
+    out.subnavFin={ resumen:()=>this.setState({module:'finanzas',sub:'finresumen'}), pagar:()=>this.setState({module:'finanzas',sub:'finpagar'}), cobrar:()=>this.setState({module:'finanzas',sub:'fincobrar'}), recaudos:()=>this.setState({module:'finanzas',sub:'finrecaudos'}), bold:()=>{ this.setState({module:'finanzas',sub:'finbold'}); this.cloudLoadBold(); }, caja:()=>this.setState({module:'finanzas',sub:'fincaja'}), gastos:()=>this.setState({module:'finanzas',sub:'fingastos'}), pyg:()=>this.setState({module:'finanzas',sub:'finpyg'}), impuestos:()=>this.setState({module:'finanzas',sub:'finimpuestos'}) };
     const finAcc = acc? (acc.admin?'write':(acc.finanzas||'none')) : 'none';
     out.canWriteFin = finAcc==='write';
 
@@ -10772,6 +10872,9 @@ Instrucciones de respuesta:
     out.showFinPagar = onFin && st.sub==='finpagar';
     out.showFinCobrar = onFin && st.sub==='fincobrar';
     out.showFinRecaudos = onFin && st.sub==='finrecaudos';
+    // Badge de Bold en el menú: pagos aprobados que todavía no están cruzados con un pedido
+    { const bp=(st.boldPagos||[]).filter(p=>p.aprobado && !p.anulado && !p.conciliado).length; out.boldNavBadge=bp>0; out.boldNavCount=bp>99?'99+':String(bp); }
+    out.showFinBold = onFin && st.sub==='finbold';
     out.showFinCaja = onFin && st.sub==='fincaja';
     out.showFinGastos = onFin && st.sub==='fingastos';
     out.showFinPyg = onFin && st.sub==='finpyg';
@@ -10790,7 +10893,7 @@ Instrucciones de respuesta:
     else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
     else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':(st.sub==='informe'?'Informe del chatbot':(st.sub==='canales'?'Canales · estado de conexión':'Bandeja de conversaciones')); }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
-    else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
+    else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',finbold:'Bold · pagos y conciliación',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
     else if(onMkt){ out.crumb='Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
     else { out.crumb='Hub Intelligence'; out.pageTitle=modNames[st.module]||'Módulo'; }
@@ -11387,6 +11490,44 @@ Instrucciones de respuesta:
       out.rtVacio=r.docs.length===0;
       const cfg=this.retenCfg(); out.rtCfgFuente=cfg.fuenteCompras+'%'; out.rtCfgIva=cfg.reteIva+'%'; out.rtCfgIca=cfg.reteIca+'\u2030';
       out.rtEditarTasas=()=>this.nuevoRetenConfig(); out.rtCanWrite=out.canWriteFin;
+    }
+    if(out.showFinBold){
+      const pagos=(st.boldPagos||[]); const f=st.boldFiltro||'pendientes'; const q=this._boldNorm(st.qBold);
+      out.boldCargando=!!st.boldLoading; out.boldHayErr=!!st.boldErr; out.boldErrTxt=st.boldErr||'';
+      out.boldSinConectar = st.boldPagos!==null && pagos.length===0 && !st.boldLoading && !st.boldErr;
+      out.boldRecargar=()=>this.cloudLoadBold();
+      const aprob=pagos.filter(p=>p.aprobado && !p.anulado);
+      const pend=aprob.filter(p=>!p.conciliado);
+      out.boldTotalMes=this.fmt(Math.round(aprob.filter(p=>String(p.creado_at||'').slice(0,7)===this.mesActual()).reduce((a,p)=>a+(Number(p.monto)||0),0)));
+      out.boldPendN=pend.length;
+      out.boldPendMonto=this.fmt(Math.round(pend.reduce((a,p)=>a+(Number(p.monto)||0),0)));
+      out.boldConcN=aprob.length-pend.length;
+      out.boldRechN=pagos.filter(p=>!p.aprobado || p.anulado).length;
+      const tab=(k)=>({ bg:(f===k)?'var(--text-strong)':'transparent', fg:(f===k)?'var(--surface-card)':'var(--text-strong)', on:()=>this.setState({boldFiltro:k}) });
+      out.boldTabPend=tab('pendientes'); out.boldTabConc=tab('cruzados'); out.boldTabTodos=tab('todos'); out.boldTabRech=tab('rechazados');
+      out.onQBold=(e)=>this.setState({qBold:e.target.value}); out.qBoldVal=st.qBold||'';
+      let vis = f==='pendientes'? pend : (f==='cruzados'? aprob.filter(p=>p.conciliado) : (f==='rechazados'? pagos.filter(p=>!p.aprobado||p.anulado) : pagos));
+      if(q) vis=vis.filter(p=>this._boldNorm((p.referencia||'')+' '+(p.pedido||'')+' '+(p.correo_pagador||'')+' '+(p.vendedor||'')+' '+Math.round(Number(p.monto)||0)).indexOf(q)>=0);
+      out.boldRows=vis.slice(0,300).map(p=>{
+        const sug=(!p.conciliado && p.aprobado)? this.boldSugerencias(p) : [];
+        const est = p.anulado? {l:'Anulada',bg:'rgba(181,80,60,0.14)',fg:'#8E3F2F'} : (!p.aprobado? {l:'Rechazada',bg:'rgba(181,80,60,0.1)',fg:'#9B3E2C'} : (p.conciliado? {l:'Cruzado',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} : {l:'Sin cruzar',bg:'rgba(212,150,80,0.18)',fg:'#9A6B2E'}));
+        return { id:p.payment_id,
+          fecha:this.fmtFecha(String(p.creado_at||'').slice(0,10)),
+          hora:String(p.creado_at||'').slice(11,16),
+          referencia:(p.referencia||'—'), hayRef:!!p.referencia,
+          monto:this.fmt(Math.round(Number(p.monto)||0)),
+          metodo:this.boldMetodoL(p.metodo), canal:this.boldIntegracionL(p.integracion),
+          detalle:[p.franquicia, p.tarjeta, (p.cuotas>1? (p.cuotas+' cuotas'):''), p.vendedor].filter(Boolean).join(' · '),
+          hayDetalle:!!(p.franquicia||p.tarjeta||p.vendedor),
+          estado:est.l, estBg:est.bg, estFg:est.fg,
+          pedido:(p.pedido||''), hayPedido:!!p.pedido,
+          sinFirma:!p.verificado,
+          sugerencias:sug.map(x=>({ label:this.ventaRef(x.v)+' · '+(x.v.cliente||'')+' · '+this.fmt(Math.round(this.ventaTotal(x.v))), on:()=>this.boldConciliar(p.payment_id, this.ventaRef(x.v)) })),
+          haySug:sug.length>0,
+          onDeshacer:()=>this.boldConciliar(p.payment_id, ''),
+          onManual:()=>{ const r=window.prompt('¿Con qué pedido se cruza este pago de '+this.fmt(Math.round(Number(p.monto)||0))+'?', p.pedido||p.referencia||''); if(r!==null && String(r).trim()) this.boldConciliar(p.payment_id, String(r).trim()); } }; });
+      out.boldVacio=out.boldRows.length===0;
+      out.boldVacioTxt = f==='pendientes'? 'No hay pagos sin cruzar. Todo cuadrado.' : 'No hay pagos que coincidan.';
     }
     if(out.showFinRecaudos){
       // Si los métodos de pago no cargaron (conexión o permisos de la nube), ninguna venta se
