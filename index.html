@@ -3788,9 +3788,9 @@
                         <button onClick="{{ p.onDeshacer }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">Deshacer</button>
                       </sc-if>
                       <sc-if value="{{ p.haySug }}" hint-placeholder-val="{{ false }}">
-                        <span style="font-size:11px;color:var(--text-muted);">Cruzar con:</span>
+                        <span style="font-size:11px;color:var(--text-muted);">{{ p.sugTxt }}</span>
                         <sc-for list="{{ p.sugerencias }}" as="s" hint-placeholder-count="0">
-                          <button onClick="{{ s.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--brand-primary);border-radius:99px;background:rgba(167,134,89,0.1);color:var(--brand-ink);cursor:pointer;">{{ s.label }}</button>
+                          <button onClick="{{ s.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid {{ s.borde }};border-radius:99px;background:{{ s.bg }};color:{{ s.fg }};cursor:pointer;">{{ s.label }}</button>
                         </sc-for>
                       </sc-if>
                       <button onClick="{{ p.onManual }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px dashed var(--border-strong);border-radius:99px;background:transparent;color:var(--text-strong);cursor:pointer;">Escribir el pedido</button>
@@ -6973,7 +6973,7 @@ class Component extends DCLogic {
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
     canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null, waEnvios:null, autoCorriendo:false,
-    boldPagos:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
+    boldPagos:null, boldRefs:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
     recordatorios:null, recVerId:null, recFiltro:'pendientes',
     conteos:[], fConteoEstado:'pendiente',
   };
@@ -8446,22 +8446,31 @@ Instrucciones de respuesta:
     try{ const {data,error}=await sb.from('bold_pagos').select('*').order('creado_at',{ascending:false}).limit(600);
       if(error) throw error;
       this.setState({boldPagos:(data||[]), boldLoading:false, boldErr:''});
-    }catch(e){ this.setState({boldPagos:(this.state.boldPagos||[]), boldLoading:false, boldErr:(e&&e.message)||'No se pudo cargar'}); } }
+    }catch(e){ this.setState({boldPagos:(this.state.boldPagos||[]), boldLoading:false, boldErr:(e&&e.message)||'No se pudo cargar'}); }
+    // Referencias de pago de Shopify: la «Referencia de la orden» que muestra Bold es el mismo
+    // ID de pago que Shopify guarda en la transacción, así que el cruce sale exacto.
+    try{ const {data,error}=await sb.functions.invoke('shopify',{ body:{ mode:'payrefs', limit:250 } });
+      if(!error && data && Array.isArray(data.refs)){ const m={}; data.refs.forEach(r=>{ if(r.ref) m[String(r.ref).trim()]=r; }); this.setState({boldRefs:m}); }
+    }catch(e){} }
   boldMetodoL(m){ const t={CARD:'Datáfono',BOLD_TAP:'Datáfono móvil',CARD_WEB:'Tarjeta web',NEQUI:'Nequi',PSE:'PSE',BOTON_BANCOLOMBIA:'Botón Bancolombia',QR:'QR Bold'}; return t[m]||m||'—'; }
-  boldIntegracionL(i){ const t={POS:'Presencial',LINK:'Link de pago',API_INTEGRATIONS:'API',BOLD_TAP:'Datáfono móvil'}; return t[i]||i||'—'; }
+  boldIntegracionL(i){ const t={POS:'Presencial',LINK:'Link de pago',BUTTON:'Botón de la tienda',API_INTEGRATIONS:'API',BOLD_TAP:'Datáfono móvil'}; return t[i]||i||'—'; }
   // Los links de pago se generan a mano con el NOMBRE DEL CLIENTE como referencia, así que el
   // cruce se hace por nombre; el monto solo confirma. Los pagos presenciales llegan sin
   // referencia y se cuadran a mano desde la pantalla.
   _boldNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
-  boldSugerencias(p){ const ref=this._boldNorm(p.referencia); const monto=Math.round(Number(p.monto)||0);
+  boldSugerencias(p){ const ref=String(p.referencia||'').trim();
+    // 1) Cruce exacto: la referencia de Bold es el ID de pago de la transacción en Shopify.
+    const exacta=(this.state.boldRefs||{})[ref];
+    if(exacta) return [{ exacta:true, pedido:exacta.pedido, cliente:exacta.cliente, total:exacta.total, s:100 }];
+    const refN=this._boldNorm(ref); const monto=Math.round(Number(p.monto)||0);
     const fp=String(p.creado_at||'').slice(0,10);
     const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada);
     const puntua=(v)=>{ let s=0; const nom=this._boldNorm(v.cliente);
-      if(ref && nom){ if(nom===ref) s+=60; else { const partes=ref.split(' ').filter(x=>x.length>2); const hit=partes.filter(x=>nom.indexOf(x)>=0).length; if(hit) s+=Math.min(45, hit*18); } }
+      if(refN && nom){ if(nom===refN) s+=60; else { const partes=refN.split(' ').filter(x=>x.length>2); const hit=partes.filter(x=>nom.indexOf(x)>=0).length; if(hit) s+=Math.min(45, hit*18); } }
       const tot=Math.round(this.ventaTotal(v)); if(monto && tot){ const dif=Math.abs(tot-monto); if(dif===0) s+=30; else if(dif<=1000) s+=18; else if(dif/monto<0.05) s+=8; }
       if(fp && v.fecha){ const dias=Math.abs((new Date(fp)-new Date(v.fecha))/86400000); if(dias<=1) s+=12; else if(dias<=5) s+=6; else if(dias>30) s-=10; }
       return s; };
-    return ventas.map(v=>({v, s:puntua(v)})).filter(x=>x.s>=30).sort((a,b)=>b.s-a.s).slice(0,4); }
+    return ventas.map(v=>({v, s:puntua(v)})).filter(x=>x.s>=30).sort((a,b)=>b.s-a.s).slice(0,4).map(x=>({ exacta:false, v:x.v, s:x.s })); }
   async boldConciliar(paymentId, pedido){ const sb=this._sbClient(); if(!sb) return;
     try{ await sb.from('bold_pagos').update({ pedido:pedido||null, conciliado:!!pedido, conciliado_por:this.recMeNombre(), conciliado_at:new Date().toISOString() }).eq('payment_id',paymentId);
       this.cloudLoadBold(); this.toast(pedido? ('Pago cruzado con '+pedido) : 'Cruce deshecho');
@@ -11522,8 +11531,11 @@ Instrucciones de respuesta:
           estado:est.l, estBg:est.bg, estFg:est.fg,
           pedido:(p.pedido||''), hayPedido:!!p.pedido,
           sinFirma:!p.verificado,
-          sugerencias:sug.map(x=>({ label:this.ventaRef(x.v)+' · '+(x.v.cliente||'')+' · '+this.fmt(Math.round(this.ventaTotal(x.v))), on:()=>this.boldConciliar(p.payment_id, this.ventaRef(x.v)) })),
+          sugerencias:sug.map(x=> x.exacta
+            ? ({ label:x.pedido+' · '+(x.cliente||'')+' · '+this.fmt(Math.round(x.total||0)), exacta:true, borde:'#4C6149', bg:'rgba(98,123,96,0.14)', fg:'#4C6149', on:()=>this.boldConciliar(p.payment_id, x.pedido) })
+            : ({ label:this.ventaRef(x.v)+' · '+(x.v.cliente||'')+' · '+this.fmt(Math.round(this.ventaTotal(x.v))), exacta:false, borde:'var(--brand-primary)', bg:'rgba(167,134,89,0.1)', fg:'var(--brand-ink)', on:()=>this.boldConciliar(p.payment_id, this.ventaRef(x.v)) })),
           haySug:sug.length>0,
+          sugTxt:(sug.length && sug[0].exacta)? 'Coincide el ID de pago:' : 'Cruzar con:',
           onDeshacer:()=>this.boldConciliar(p.payment_id, ''),
           onManual:()=>{ const r=window.prompt('¿Con qué pedido se cruza este pago de '+this.fmt(Math.round(Number(p.monto)||0))+'?', p.pedido||p.referencia||''); if(r!==null && String(r).trim()) this.boldConciliar(p.payment_id, String(r).trim()); } }; });
       out.boldVacio=out.boldRows.length===0;
