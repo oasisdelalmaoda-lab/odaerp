@@ -5442,7 +5442,7 @@
                 </sc-for>
               </div>
               <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button onClick="{{ onCancelDel }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 18px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;">Cancelar</button>
+                <button onClick="{{ recCancelar }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 18px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;">Cancelar</button>
                 <button onClick="{{ recGuardarBtn }}" style="font-family:inherit;font-size:12.5px;font-weight:800;padding:9px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Guardar</button>
               </div>
             </sc-if>
@@ -11855,6 +11855,7 @@ Instrucciones de respuesta:
           bg:(on?'rgba(167,134,89,0.14)':'transparent'), bd:(on?'var(--brand-primary)':'var(--border-subtle)'), fg:(on?'var(--brand-ink)':'var(--text-body)'),
           on:()=>this.recToggleInvitado(p.id) }; });
       out.recInvitadosVacio=out.recInvitadosOpts.length===0;
+      out.recCancelar=()=>this.close();
       out.recGuardarBtn=()=>this.recGuardar();
     }
     if(st.modal==='recver'){ const r=(st.recordatorios||[]).find(x=>x.id===st.recVerId)||{};
