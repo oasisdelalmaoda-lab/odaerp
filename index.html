@@ -2022,6 +2022,15 @@
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Automatizaciones de pedidos</h3>
                 <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;text-wrap:pretty;">El servidor revisa Shopify cada 10 minutos y dispara la plantilla que corresponda. Cada envío queda registrado para no repetirse.</p>
+                <div onClick="{{ autoPruebaTog }}" style="display:flex;align-items:flex-start;gap:12px;padding:13px 14px;margin-bottom:14px;border-radius:var(--radius-md);cursor:pointer;background:{{ autoPruebaBgCard }};border:1px solid {{ autoPruebaBorde }};">
+                  <div style="flex-shrink:0;margin-top:2px;width:42px;height:22px;border-radius:99px;background:{{ autoPruebaBg }};position:relative;transition:background 140ms;">
+                    <div style="position:absolute;top:2px;left:{{ autoPruebaX }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;box-shadow:0 1px 3px rgba(58,51,38,0.25);"></div>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;font-weight:800;color:{{ autoPruebaFg }};">Modo prueba · {{ autoPruebaEstado }}</div>
+                    <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;line-height:1.5;text-wrap:pretty;">Las reglas se calculan y se reportan, pero no sale ningún WhatsApp y nada queda marcado como enviado. Sirve para revisar a quién le llegaría antes de soltarlo.</div>
+                  </div>
+                </div>
                 <div style="display:flex;flex-direction:column;gap:2px;">
                   <sc-for list="{{ autoReglas }}" as="a" hint-placeholder-count="4">
                     <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle);">
@@ -7048,7 +7057,10 @@ class Component extends DCLogic {
   // Algunas compras (ej. Amazon) no traen factura para subir: pueden cerrar sin factura adjunta.
   ordenNoRequiereFactura(o){ if(o && o.sinFactura===true) return true; const p=(this.state.proveedores||[]).find(x=>x.codigo===(o&&o.proveedorCodigo)); return !!(p && /amazon/i.test(p.nombre||'')); }
   ordenCerrada(o){ return o.estado==='recibida' && this.ordenPagada(o) && (this.ordenTieneFacturaAdjunta(o) || this.ordenNoRequiereFactura(o)); }
-  ordenAbierta(o){ return o.estado!=='rechazada' && !this.ordenCerrada(o); }
+  // Una orden CANCELADA queda en el historial (con quién y cuándo la canceló) pero no produce
+  // ningún efecto: no suma inventario, no genera cuenta por pagar, no mueve caja ni IVA.
+  ordenAnulada(o){ return !!(o && (o.cancelada===true || o.estado==='cancelada')); }
+  ordenAbierta(o){ return o.estado!=='rechazada' && !this.ordenAnulada(o) && !this.ordenCerrada(o); }
   ordenNumSort(o){ const m=String(o.numero||'').match(/(\d+)\s*$/); return m? Number(m[1]) : 0; }
   provNombre(c){ const p=this.state.proveedores.find(x=>x.codigo===c); return p? p.nombre : (c||'—'); }
 
@@ -7405,7 +7417,7 @@ class Component extends DCLogic {
   productoVendido(code){ let n=0; const enC=(f)=>this._enCorte(f); (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||v.consignTienda||!enC(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; if(it.productoCodigo===code){ n+=u; } else if(it.productoCodigo){ const k=(this.state.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&ki.codigo===code) n+=u*(Number(ki.cantidad)||1); }); } } }); }); return n; }
   // Unidades de PT entregadas como MSVC (muestras sin valor comercial) — descuentan stock como una salida.
   productoMuestreado(code){ let n=0; const enC=(f)=>this._enCorte(f); (this.state.msvc||[]).forEach(mv=>{ if(mv.anulada||!enC(mv.fecha)) return; (mv.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; if(this.padSku(it.productoCodigo)===this.padSku(code)){ n+=u; } else if(it.productoCodigo){ const k=(this.state.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&this.padSku(ki.codigo)===this.padSku(code)) n+=u*(Number(ki.cantidad)||1); }); } } }); }); return n; }
-  productoComprado(code){ let n=0; (this.state.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ if(!this._enCorte(e.fecha||o.fecha)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===code) n+=Number(it.cantidad)||0; }); }); }); return n; }
+  productoComprado(code){ let n=0; (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.entregas||[]).forEach(e=>{ if(!this._enCorte(e.fecha||o.fecha)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===code) n+=Number(it.cantidad)||0; }); }); }); return n; }
   // Consumo de una materia/mezcla (por código) = producción de PT (fórmula) + producción de mezclas (fórmula) + kits con ese componente directo vendidos.
   materiaConsumoTotal(code){ let n=0;
     (this.state.producciones||[]).forEach(op=>{ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!p) return; (p.formula||[]).forEach(f=>{ if(f.materiaCodigo===code) n+=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); }); });
@@ -7418,9 +7430,23 @@ class Component extends DCLogic {
   // Stock DERIVADO: saldo base (conteo inicial) + lo recibido en órdenes − consumo + ajustes por conteo.
   // El campo stockActual guarda SOLO el saldo base; ninguna recepción lo modifica. Así una misma
   // entrega nunca puede sumarse dos veces, por más que se guarde o edite la orden.
+  // Un producto de REVENTA tiene un solo inventario físico, aunque se vea en dos pantallas
+  // (Insumos, porque se compra, y Producto terminado, porque se vende). Este es el único
+  // cálculo válido: las dos vistas y el kardex lo usan para no mostrar cifras distintas.
+  esProdReventa(codigo){ return !!(this.state.productos||[]).find(x=>x.codigo===codigo && x.esReventa); }
+  stockReventa(codigo){
+    const m=(this.state.materias||[]).find(x=>x.codigo===codigo);
+    const p=(this.state.productos||[]).find(x=>x.codigo===codigo);
+    const base = m? (Number(m.stockActual)||0) : (Number((p&&p.stockInicial))||0);
+    return base + this.productoComprado(codigo) + this.conteoDelta(codigo)
+      - this.productoVendido(codigo) - this.productoRemisionado(codigo) - this.productoMuestreado(codigo)
+      - this.materiaConsumoTotal(codigo);
+  }
   materiaStockActual(m){ if(!m) return 0;
+    if(this.esProdReventa(m.codigo)) return this.stockReventa(m.codigo);
     return (Number(m.stockActual)||0) + this.productoComprado(m.codigo) - this.materiaConsumoTotal(m.codigo) + this.conteoDelta(m.codigo); }
-  productoStockActual(p){ if(p&&p.esReventa){ const m=this.state.materias.find(x=>x.codigo===p.codigo); const base = m? (Number(m.stockActual)||0) : ((Number(p.stockInicial)||0)+this.productoComprado(p.codigo)); return base - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); } return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); }
+  productoStockActual(p){ if(p&&p.esReventa) return this.stockReventa(p.codigo);
+    return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); }
   // ---- reposición automática: stock mínimo y punto de reorden desde el histórico de ventas ----
   reordenCfg(){ return { ventana:90, lead:7, anticip:7, cobertura:30, ...(this.state.reordenCfg||{}) }; }
   setReordenCfg(k,v){ const cfg={...this.reordenCfg(), [k]:(v===''?'':Number(v))}; this.setState({reordenCfg:cfg}); try{ localStorage.setItem('oda_hub_reorden_v1', JSON.stringify(cfg)); }catch(e){} }
@@ -8096,7 +8122,7 @@ Instrucciones de respuesta:
     return {...venta,empaques};
   }
   applyPackagingToAll(){ const ventas=this.state.ventas||[]; let count=0; const changed=[]; const updated=ventas.map(v=>{ const nv=this.applyPackagingRules(v); if(JSON.stringify(nv.empaques)!==JSON.stringify(v.empaques)){ count++; changed.push(nv); } return nv; }); this.setState({ventas:updated},()=>this.persist()); if(this.cloudOn()&&changed.length) this.cloudBulkVentas(changed); this.toast(count+' pedido'+(count===1?'':'s')+' actualizado'+(count===1?'':'s')+' con reglas de empaque'); }
-  recuperarCostosOrdenes(){ const acc={}; (this.state.ordenes||[]).forEach(o=>{ if(o.estado==='rechazada') return; (o.items||[]).forEach(it=>{ const c=it.materiaCodigo; const cant=Number(it.cantidad)||0; const costo=Number(it.costo)||0; if(!c||costo<=0||cant<=0) return; if(!acc[c]) acc[c]={v:0,q:0}; acc[c].v+=cant*costo; acc[c].q+=cant; }); }); let n=0; const list=(this.state.materias||[]).map(m=>{ const a=acc[m.codigo]; if(a&&a.q>0){ const avg=Math.round(a.v/a.q); if(avg>0 && avg!==(Number(m.costo)||0)){ n++; return {...m, costo:avg}; } } return m; }); this.setState({materias:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkMaterias(list); this.toast(n+' costo(s) recuperado(s) desde órdenes · stock sin cambios'); }
+  recuperarCostosOrdenes(){ const acc={}; (this.state.ordenes||[]).forEach(o=>{ if(o.estado==='rechazada'||this.ordenAnulada(o)) return; (o.items||[]).forEach(it=>{ const c=it.materiaCodigo; const cant=Number(it.cantidad)||0; const costo=Number(it.costo)||0; if(!c||costo<=0||cant<=0) return; if(!acc[c]) acc[c]={v:0,q:0}; acc[c].v+=cant*costo; acc[c].q+=cant; }); }); let n=0; const list=(this.state.materias||[]).map(m=>{ const a=acc[m.codigo]; if(a&&a.q>0){ const avg=Math.round(a.v/a.q); if(avg>0 && avg!==(Number(m.costo)||0)){ n++; return {...m, costo:avg}; } } return m; }); this.setState({materias:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkMaterias(list); this.toast(n+' costo(s) recuperado(s) desde órdenes · stock sin cambios'); }
   recalcularStockOrdenes(){
     const ordenes=this.state.ordenes||[]; const data={};
     ordenes.forEach(o=>{
@@ -8899,10 +8925,45 @@ Instrucciones de respuesta:
     return d.toISOString().slice(0,10);
   }
   fmtCant(n){ const v=Math.round(n*1000)/1000; return Number.isInteger(v)?v.toLocaleString('es-CO'):v.toLocaleString('es-CO',{maximumFractionDigits:3}); }
+  // Kardex ÚNICO de un producto de reventa. Espeja línea por línea a stockReventa(), así que
+  // Insumos y Producto terminado muestran exactamente las mismas filas y el mismo saldo.
+  buildKardexReventa(codigo){
+    const st=this.state; const rows=[];
+    const m=(st.materias||[]).find(x=>x.codigo===codigo);
+    const p=(st.productos||[]).find(x=>x.codigo===codigo);
+    const base = m? (Number(m.stockActual)||0) : (Number((p&&p.stockInicial))||0);
+    const fIni=this.fechaInventarioInicial();
+    rows.push({fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · producto de reventa · conteo del '+this.fmtFecha(fIni),cantidad:base});
+    // + productoComprado
+    (st.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.entregas||[]).forEach(e=>{ const ef=e.fecha||o.fecha||''; if(!this._enCorte(ef)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===codigo&&(Number(it.cantidad)||0)>0) rows.push({fecha:ef,tipo:'entrada',concepto:'Compra · '+(o.numero||''),cantidad:Number(it.cantidad)||0}); }); }); });
+    // ± conteoDelta
+    (st.conteos||[]).forEach(c=>{ if(c.codigo!==codigo||c.estado!=='aprobado') return; const dif=Number(c.diferencia)||0; if(!dif) return;
+      rows.push({fecha:c.fecha||'',tipo:(dif<0?'salida':'entrada'),concepto:'Ajuste por conteo físico · '+(c.motivo||'')+(c.aprobadoPor?(' · aprobó '+c.aprobadoPor):''),cantidad:Math.abs(dif)}); });
+    // − productoVendido (directo y dentro de kits)
+    (st.ventas||[]).forEach(v=>{ if(v.cancelada||v.consignTienda||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return;
+      if(it.productoCodigo===codigo){ rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta · '+this.ventaRef(v),cantidad:u}); }
+      else if(it.productoCodigo){ const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit '+k.nombre+' · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); } }); });
+    // − productoRemisionado (directo y dentro de kits)
+    (st.remisiones||[]).forEach(r=>{ if(r.tipo!=='remision'||!this._enCorte(r.fecha)) return; (r.items||[]).forEach(it=>{
+      if(this.padSku(it.codigo)===this.padSku(codigo)) rows.push({fecha:r.fecha||'',tipo:'salida',concepto:'Remisión · '+r.numero+' · '+this.tiendaNombre(r.tiendaId),cantidad:Number(it.cantidad)||0});
+      else { const k=(st.kits||[]).find(x=>x.codigo===it.codigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&this.padSku(ki.codigo)===this.padSku(codigo)) rows.push({fecha:r.fecha||'',tipo:'salida',concepto:'Remisión kit · '+r.numero+' · '+this.tiendaNombre(r.tiendaId),cantidad:(Number(it.cantidad)||0)*(Number(ki.cantidad)||1)}); }); } }); });
+    // − productoMuestreado (directo y dentro de kits)
+    (st.msvc||[]).forEach(mv=>{ if(mv.anulada||!this._enCorte(mv.fecha)) return; const cpt=mv.casoId?('Muestra (Servicio) · '+(mv.motivo||mv.numero||'')):('Muestra MSVC · '+(mv.numero||mv.destinatario||'')); (mv.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return;
+      if(this.padSku(it.productoCodigo)===this.padSku(codigo)) rows.push({fecha:mv.fecha||'',tipo:(u<0?'entrada':'salida'),concepto:cpt,cantidad:Math.abs(u)});
+      else if(it.productoCodigo){ const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&this.padSku(ki.codigo)===this.padSku(codigo)) rows.push({fecha:mv.fecha||'',tipo:(u<0?'entrada':'salida'),concepto:cpt,cantidad:Math.abs(u)*(Number(ki.cantidad)||1)}); }); } }); });
+    // − materiaConsumoTotal (si además se usa como componente)
+    (st.producciones||[]).forEach(op=>{ const pr=(st.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!pr) return; (pr.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. PT · '+op.numero+' · '+pr.nombre,cantidad:cant}); } }); });
+    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
+    (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit (componente) · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); });
+      (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
+    rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
+    let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; }); return rows;
+  }
   buildKardexMateria(codigo){
+    if(this.esProdReventa(codigo)) return this.buildKardexReventa(codigo);
     const st=this.state; const m=st.materias.find(x=>x.codigo===codigo); if(!m) return [];
     const deliveries=[];
-    (st.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ const ef=e.fecha||o.fecha||''; if(!this._enCorte(ef)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===codigo&&(Number(it.cantidad)||0)>0) deliveries.push({fecha:ef,tipo:'entrada',concepto:'Compra · '+(o.numero||''),cantidad:Number(it.cantidad)||0}); }); }); });
+    (st.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.entregas||[]).forEach(e=>{ const ef=e.fecha||o.fecha||''; if(!this._enCorte(ef)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===codigo&&(Number(it.cantidad)||0)>0) deliveries.push({fecha:ef,tipo:'entrada',concepto:'Compra · '+(o.numero||''),cantidad:Number(it.cantidad)||0}); }); }); });
     const base=Number(m.stockActual)||0;
     const fIni=this.fechaInventarioInicial();
     const rows=[{fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · conteo del '+this.fmtFecha(fIni),cantidad:base}];
@@ -8921,17 +8982,9 @@ Instrucciones de respuesta:
   }
   buildKardexProducto(codigo){
     const st=this.state; const p=(st.productos||[]).find(x=>x.codigo===codigo); if(!p) return [];
+    if(p.esReventa) return this.buildKardexReventa(codigo);
     const rows=[];
-    if(p.esReventa){
-      // Producto de reventa: el inventario inicial y las entradas están amarrados a la materia que se compra (mismo código).
-      const m=(st.materias||[]).find(x=>x.codigo===codigo);
-      const deliveries=[];
-      (st.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ const ef=e.fecha||o.fecha||''; if(!this._enCorte(ef)) return; (e.items||[]).forEach(it=>{ if(it.materiaCodigo===codigo&&(Number(it.cantidad)||0)>0) deliveries.push({fecha:ef,tipo:'entrada',concepto:'Compra · '+(o.numero||''),cantidad:Number(it.cantidad)||0}); }); }); });
-      const totalDel=deliveries.reduce((a,d)=>a+d.cantidad,0);
-      const base = m? ((Number(m.stockActual)||0)-totalDel) : (Number(p.stockInicial)||0);
-      rows.push({fecha:'',tipo:'inicial',concepto:'Inventario inicial · producto de reventa',cantidad:base});
-      rows.push(...deliveries);
-    } else {
+    {
       rows.push({fecha:'',tipo:'inicial',concepto:'Stock inicial registrado',cantidad:Number(p.stockInicial)||0});
       (st.producciones||[]).forEach(op=>{ if(op.productoCodigo===codigo&&(Number(op.cantidad)||0)>0) rows.push({fecha:op.fecha||'',tipo:'entrada',concepto:'Producción · '+op.numero,cantidad:Number(op.cantidad)||0}); });
     }
@@ -8946,7 +8999,7 @@ Instrucciones de respuesta:
   mesActual(){ return new Date().toISOString().slice(0,7); }
   // ---- valoración de inventario a fecha de corte (para cierres mensuales) ----
   invValorActualTotal(){ const rev=new Set((this.state.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); const valMat=(this.state.materias||[]).filter(m=>!rev.has(m.codigo)).reduce((a,m)=>a+Math.max(0,this.materiaStockActual(m))*(Number(m.costo)||0),0); const valMez=(this.state.mezclas||[]).reduce((a,mz)=>a+this.mezclaMlStock(mz.codigo)*this.mezclaCostoUnit(mz),0); const valPT=(this.state.productos||[]).reduce((a,p)=>a+this.productoValor(p),0); return valMat+valMez+valPT; }
-  invEntradasCosto(desde,hasta){ let n=0; (this.state.ordenes||[]).forEach(o=>{ (o.entregas||[]).forEach(e=>{ const f=this.parseFecha(e.fecha||o.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; (e.items||[]).forEach(it=>{ const m=(this.state.materias||[]).find(x=>x.codigo===it.materiaCodigo); const costo=m?(Number(m.costo)||0):0; n+=(Number(it.cantidad)||0)*costo; }); }); }); (this.state.producciones||[]).forEach(op=>{ const f=this.parseFecha(op.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); n+=(p?this.productoCosto(p):0)*(Number(op.cantidad)||0); }); return n; }
+  invEntradasCosto(desde,hasta){ let n=0; (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.entregas||[]).forEach(e=>{ const f=this.parseFecha(e.fecha||o.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; (e.items||[]).forEach(it=>{ const m=(this.state.materias||[]).find(x=>x.codigo===it.materiaCodigo); const costo=m?(Number(m.costo)||0):0; n+=(Number(it.cantidad)||0)*costo; }); }); }); (this.state.producciones||[]).forEach(op=>{ const f=this.parseFecha(op.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); n+=(p?this.productoCosto(p):0)*(Number(op.cantidad)||0); }); return n; }
   invSalidasCosto(desde,hasta){ let n=0; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const f=this.parseFecha(v.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; n+=this.ventaCosto(v); }); return n; }
   invValorAFecha(hasta){ return this.invValorActualTotal() - this.invEntradasCosto(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), '') + this.invSalidasCosto(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), ''); }
   dayAfter(d){ try{ const dt=new Date(d+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+1); return dt.toISOString().slice(0,10); }catch(e){ return d; } }
@@ -8968,7 +9021,7 @@ Instrucciones de respuesta:
   setMovAjuste(id, patch){ const m={...this.movAjustesGet()}; if(patch) m[id]=patch; else delete m[id]; this.setState({movAjustes:m},()=>this.persist()); if(this.cloudOn()) this.cloudSaveConfig({movAjustes:m}); try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(m)); }catch(e){} }
   // --- movimientos de caja unificados ---
   cajaMovs(){ const out=[];
-    (this.state.ordenes||[]).forEach(o=>{ (o.pagos||[]).forEach((p,i)=>{ if(!(Number(p.monto)>0)) return; out.push({ id:o.id+'-pg'+i, fecha:this.parseFecha(p.fecha), tipo:'egreso', cuenta:p.cuenta||'', monto:Number(p.monto)||0, categoria:'Pago a proveedor', concepto:'Pago '+(o.numero||'')+' \u00b7 '+this.provNombre(o.proveedorCodigo), origen:'compra', editable:false, ordenId:o.id }); }); });
+    (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.pagos||[]).forEach((p,i)=>{ if(!(Number(p.monto)>0)) return; out.push({ id:o.id+'-pg'+i, fecha:this.parseFecha(p.fecha), tipo:'egreso', cuenta:p.cuenta||'', monto:Number(p.monto)||0, categoria:'Pago a proveedor', concepto:'Pago '+(o.numero||'')+' \u00b7 '+this.provNombre(o.proveedorCodigo), origen:'compra', editable:false, ordenId:o.id }); }); });
     (this.state.ventas||[]).forEach(v=>{ const pag=Number(v.pagado)||0; if(v.origen!=='historico' && !v.cancelada && pag>0 && this.metodoTipo(v.metodoPago)!=='diferido'){ out.push({ id:v.id+'-rc', fecha:this.parseFecha(v.fechaCobro||v.fecha), tipo:'ingreso', cuenta:(v.cuentaRecaudo||this.mapMetodoCuenta(v.metodoPago)), monto:pag, categoria:'Recaudo de venta', concepto:'Recaudo '+this.ventaRef(v)+(v.cliente?(' \u00b7 '+v.cliente):''), origen:'venta', editable:false, ventaIds:[v.id] }); } });
     // Abono inmediato (pago mixto): parte pagada por otro medio que entra YA al banco, aunque el saldo quede como recaudo diferido. Al liquidar, el bruto ya excluye este abono, así que no se duplica.
     (this.state.ventas||[]).forEach(v=>{ if(v.origen==='historico'||v.cancelada) return; const ab=this.ventaAbono(v); if(ab>0 && v.abonoCuenta){ out.push({ id:v.id+'-ab', fecha:this.parseFecha(v.abonoFecha||v.fecha), tipo:'ingreso', cuenta:v.abonoCuenta, monto:ab, categoria:'Abono de venta', concepto:'Abono '+(v.abonoMetodo?(v.abonoMetodo+' '):'')+this.ventaRef(v)+(v.cliente?(' \u00b7 '+v.cliente):''), origen:'venta', editable:false, ventaIds:[v.id] }); } });
@@ -9086,7 +9139,7 @@ Instrucciones de respuesta:
   deshacerPagoGasto(id){ const ym=this.finMes(); const mv=this.gastoFijoMovMes(id,ym); if(!mv){ this.toast('No hay pago registrado este mes'); return; } if(!window.confirm('\u00bfDeshacer el pago de este gasto? Se eliminar\u00e1 el egreso de la caja.')) return; const list=(this.state.movimientos||[]).filter(m=>m.id!==mv.id); this.setState({movimientos:list},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteMovimiento(mv.id); this.toast('Pago deshecho'); }
 
   // --- cuentas por pagar / cobrar ---
-  finPorPagar(){ return (this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenSaldo(o)>0.5); }
+  finPorPagar(){ return (this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && !this.ordenAnulada(o) && this.ordenSaldo(o)>0.5); }
   // Deuda viva de una tarjeta de crédito = saldo negativo (los cargos son egresos; los pagos, ingresos)
   tarjetaDeuda(c){ return Math.max(0, -this.cuentaSaldo(c.nombre)); }
   finTarjetasPorPagar(){ return this.cuentasList().filter(c=>c.tipo==='tarjeta' && this.tarjetaDeuda(c)>0.5); }
@@ -9283,11 +9336,11 @@ Instrucciones de respuesta:
     return null; }
   // El IVA de la comisión de un método es descontable salvo que se desactive, o solo a partir de una fecha (p.ej. Coordinadora con facturas a nombre personal hasta que cambie a la empresa).
   metodoIvaDescontableEn(nombre, fechaLiq){ const m=this.metodoMatch(nombre); if(!m) return false; if(m.ivaDescontable===false) return false; const desde=this.parseFecha(m.ivaDescontableDesde); if(desde){ const f=this.parseFecha(fechaLiq)||''; if(!f || f<desde) return false; } return true; }
-  finIva(ym){ const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const generado=ventas.reduce((a,v)=>a+this.ventaIvaGen(v),0); const compras=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym); const descCompras=compras.reduce((a,o)=>a+this.ordenIva(o),0); const liqs=(this.state.liquidaciones||[]).filter(l=>this.mesDe(l.fecha)===ym); const descComis=liqs.reduce((a,l)=>{ if(!this.metodoIvaDescontableEn(l.metodo, l.fecha)) return a; const dg=this.liqDesglose(l.ventaIds||[], l.metodo); return a+(dg.comIva||0); },0); const descontable=descCompras+descComis; return {generado, descontable, descCompras, descComis, saldo:generado-descontable}; }
+  finIva(ym){ const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const generado=ventas.reduce((a,v)=>a+this.ventaIvaGen(v),0); const compras=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && !this.ordenAnulada(o) && this.ordenMes(o)===ym); const descCompras=compras.reduce((a,o)=>a+this.ordenIva(o),0); const liqs=(this.state.liquidaciones||[]).filter(l=>this.mesDe(l.fecha)===ym); const descComis=liqs.reduce((a,l)=>{ if(!this.metodoIvaDescontableEn(l.metodo, l.fecha)) return a; const dg=this.liqDesglose(l.ventaIds||[], l.metodo); return a+(dg.comIva||0); },0); const descontable=descCompras+descComis; return {generado, descontable, descCompras, descComis, saldo:generado-descontable}; }
   retenCfg(){ return this.state.retenConfig || {fuenteCompras:2.5, fuenteServicios:4, reteIva:15, reteIca:9.66}; }
   provAutorretenedor(codigo){ const p=(this.state.proveedores||[]).find(x=>x.codigo===codigo); return !!(p && (p.autorretenedor==='si'||p.autorretenedor===true)); }
   ordenRetencion(o){ if(!o||!o.aplicaRetencion) return 0; const cfg=this.retenCfg(); const base=this.ordenBase(o); const iva=this.ordenIva(o); if(o.retencionManual!=null && o.retencionManual!=='' && !isNaN(Number(o.retencionManual))) return Math.round(base*Number(o.retencionManual)/100); return Math.round(base*(Number(cfg.fuenteCompras)||0)/100 + iva*(Number(cfg.reteIva)||0)/100 + base*(Number(cfg.reteIca)||0)/1000); }
-  finReten(ym){ const cfg=this.retenCfg(); const compras=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym && o.aplicaRetencion); let fuente=0, reteiva=0, reteica=0; const docs=compras.map(o=>{ const base=this.ordenBase(o); const iva=this.ordenIva(o); const _man=(o.retencionManual!=null && o.retencionManual!=='' && !isNaN(Number(o.retencionManual))); let rf,ri,ric; if(_man){ rf=Math.round(base*Number(o.retencionManual)/100); ri=0; ric=0; } else { rf=base*(Number(cfg.fuenteCompras)||0)/100; ri=iva*(Number(cfg.reteIva)||0)/100; ric=base*(Number(cfg.reteIca)||0)/1000; } fuente+=rf; reteiva+=ri; reteica+=ric; return {numero:o.numero, proveedor:this.provNombre(o.proveedorCodigo), base, fuente:rf, reteiva:ri, reteica:ric, total:rf+ri+ric}; }); return {fuente, reteiva, reteica, total:fuente+reteiva+reteica, docs}; }
+  finReten(ym){ const cfg=this.retenCfg(); const compras=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && !this.ordenAnulada(o) && this.ordenMes(o)===ym && o.aplicaRetencion); let fuente=0, reteiva=0, reteica=0; const docs=compras.map(o=>{ const base=this.ordenBase(o); const iva=this.ordenIva(o); const _man=(o.retencionManual!=null && o.retencionManual!=='' && !isNaN(Number(o.retencionManual))); let rf,ri,ric; if(_man){ rf=Math.round(base*Number(o.retencionManual)/100); ri=0; ric=0; } else { rf=base*(Number(cfg.fuenteCompras)||0)/100; ri=iva*(Number(cfg.reteIva)||0)/100; ric=base*(Number(cfg.reteIca)||0)/1000; } fuente+=rf; reteiva+=ri; reteica+=ric; return {numero:o.numero, proveedor:this.provNombre(o.proveedorCodigo), base, fuente:rf, reteiva:ri, reteica:ric, total:rf+ri+ric}; }); return {fuente, reteiva, reteica, total:fuente+reteiva+reteica, docs}; }
   dianBimestreDe(ym){ const p=String(ym||this.mesActual()).split('-').map(Number); const y=p[0], m=p[1]; const idx=Math.floor((m-1)/2); const m1=idx*2+1; const labels=['Ene–Feb','Mar–Abr','May–Jun','Jul–Ago','Sep–Oct','Nov–Dic']; return { key:y+'-B'+(idx+1), label:labels[idx]+' '+y, ym1:y+'-'+String(m1).padStart(2,'0'), ym2:y+'-'+String(m1+1).padStart(2,'0') }; }
   dianSugerido(ym){ const b=this.dianBimestreDe(ym); let ivaTot=0, retTot=0; [b.ym1,b.ym2].forEach(mm=>{ const iva=this.finIva(mm); if(iva) ivaTot+=(Number(iva.saldo)||0); retTot+=this.finReten(mm).total; }); return Math.round(Math.max(0,ivaTot)+retTot); }
   dianPagoDe(label){ return (this.state.movimientos||[]).find(x=>x.categoria==='Impuestos DIAN' && String(x.concepto||'').indexOf('bimestre '+label)>=0)||null; }
@@ -9295,7 +9348,7 @@ Instrucciones de respuesta:
   saveDianPago(){ const d=this.state.draft; const monto=Number(d.monto)||0; if(monto<=0){ this.toast('Ingresa el valor pagado'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta'); return; } const mv={ id:(d._yaId||('mv'+Date.now())), ts:Date.now(), tipo:'egreso', fecha:d.fecha||new Date().toISOString().slice(0,10), cuenta:d.cuenta, monto, categoria:'Impuestos DIAN', concepto:'IVA + retenciones · bimestre '+(d.label||'') }; let movs=(this.state.movimientos||[]).slice(); const mi=movs.findIndex(x=>x.id===mv.id); if(mi>=0) movs[mi]=mv; else movs.unshift(mv); this.setState({movimientos:movs, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveMovimiento(mv); this.toast('Pago DIAN registrado · '+(d.label||'')); }
   nuevoRetenConfig(){ const c=this.retenCfg(); this.open('retenconfig',{ fuenteCompras:c.fuenteCompras, fuenteServicios:c.fuenteServicios, reteIva:c.reteIva, reteIca:c.reteIca }); }
   saveRetenConfig(){ const d=this.state.draft; const cfg={ fuenteCompras:Number(d.fuenteCompras)||0, fuenteServicios:Number(d.fuenteServicios)||0, reteIva:Number(d.reteIva)||0, reteIca:Number(d.reteIca)||0 }; this.setState({retenConfig:cfg,modal:null,draft:{}},()=>this.persist()); this.toast('Tasas actualizadas'); }
-  finGastosCat(ym){ const map={}; this.cajaMovs().forEach(m=>{ if(m.tipo==='egreso' && this.mesDe(m.fecha)===ym){ map[m.categoria]=(map[m.categoria]||0)+m.monto; } }); (this.state.ordenes||[]).forEach(o=>{ if(o.estado!=='rechazada' && this.ordenMes(o)===ym && this.ordenFlete(o)>0){ map['Flete / transporte']=(map['Flete / transporte']||0)+this.ordenFlete(o); } }); const obseq=(this.state.ventas||[]).filter(v=>this.mesDe(v.fecha)===ym).reduce((a,v)=>a+this.ventaObsequioCosto(v),0); if(obseq>0) map['Obsequios / muestras (MSVC)']=(map['Obsequios / muestras (MSVC)']||0)+obseq; const gmf=this.gmfMes(ym); if(gmf>0) map['4x1000 (GMF)']=(map['4x1000 (GMF)']||0)+gmf; return Object.keys(map).map(k=>({categoria:k, monto:map[k]})).sort((a,b)=>b.monto-a.monto); }
+  finGastosCat(ym){ const map={}; this.cajaMovs().forEach(m=>{ if(m.tipo==='egreso' && this.mesDe(m.fecha)===ym){ map[m.categoria]=(map[m.categoria]||0)+m.monto; } }); (this.state.ordenes||[]).forEach(o=>{ if(o.estado!=='rechazada' && !this.ordenAnulada(o) && this.ordenMes(o)===ym && this.ordenFlete(o)>0){ map['Flete / transporte']=(map['Flete / transporte']||0)+this.ordenFlete(o); } }); const obseq=(this.state.ventas||[]).filter(v=>this.mesDe(v.fecha)===ym).reduce((a,v)=>a+this.ventaObsequioCosto(v),0); if(obseq>0) map['Obsequios / muestras (MSVC)']=(map['Obsequios / muestras (MSVC)']||0)+obseq; const gmf=this.gmfMes(ym); if(gmf>0) map['4x1000 (GMF)']=(map['4x1000 (GMF)']||0)+gmf; return Object.keys(map).map(k=>({categoria:k, monto:map[k]})).sort((a,b)=>b.monto-a.monto); }
   finCajaMes(ym){ const movs=this.cajaMovs().filter(m=>this.mesDe(m.fecha)===ym && !m.noBanco); const ing=movs.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0); const eg=movs.filter(m=>m.tipo==='egreso').reduce((a,m)=>a+m.monto,0); return {ing, eg, neto:ing-eg, movs}; }
 
   // ---- ordenes ----
@@ -9391,7 +9444,7 @@ Instrucciones de respuesta:
     const out=[];
     (this.state.ordenes||[]).forEach(o=>{
       const ents=(o.entregas||[]);
-      if(o.estado==='rechazada' || !ents.length) return;
+      if(o.estado==='rechazada' || this.ordenAnulada(o) || !ents.length) return;
       // Las entregas ANTERIORES a la fecha de corte ya están dentro del saldo base del
       // inventario: recuadrarlas volvería a sumar lo mismo. Esas órdenes no se tocan.
       if(ents.some(e=>!this._enCorte(e.fecha||o.fecha))) return;
@@ -9509,6 +9562,32 @@ Instrucciones de respuesta:
     const list=this.state.ordenes.map(o=> o._id===d._id||o.id===d._id? {...o,factura:{numero:d.facturaNumero,fecha:d.facturaFecha, archivo:(d._archivo||''), archivoNombre:(d._archivoNombre||'')}} : o);
     this.setState({ordenes:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkOrdenes(list); this.toast('Factura registrada'); }
 
+  // ---- cancelar una orden de compra ----
+  // Queda en el historial con motivo, autor y fecha, pero deja de tener cualquier efecto:
+  // no suma inventario, no genera cuenta por pagar, no mueve caja, IVA ni retenciones.
+  pedirCancelarOrden(o){ if(!o) return;
+    this.open('cancelorden',{ _id:o.id, _numero:o.numero||'', _proveedor:this.provNombre(o.proveedorCodigo),
+      _total:this.fmt(this.ordenTotal(o)), _pagado:this.fmt(this.ordenPagado(o)),
+      _hayPagos:(o.pagos||[]).length>0, _hayEntregas:(o.entregas||[]).length>0, motivo:'' }); }
+  confirmarCancelarOrden(){ const d=this.state.draft||{};
+    const motivo=String(d.motivo||'').trim();
+    if(!motivo){ this.toast('Escribe el motivo de la cancelación'); return; }
+    const quien=this._auditUser()||((this.state.cloudUser&&this.state.cloudUser.nombre)||'Usuario');
+    let saved=null;
+    const list=(this.state.ordenes||[]).map(o=>{ if(o.id!==d._id) return o;
+      saved={...o, cancelada:true, estado:'cancelada', motivoCancel:motivo, canceladaPor:quien, canceladaAt:new Date().toISOString()};
+      return saved; });
+    this.setState({ordenes:list, modal:null, draft:{}, detalleId:null},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkOrdenes(list);
+    this.toast('Orden '+(d._numero||'')+' cancelada · se revirtieron sus movimientos'); }
+  reactivarOrden(id){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede reactivar una orden'); return; }
+    let saved=null;
+    const list=(this.state.ordenes||[]).map(o=>{ if(o.id!==id) return o;
+      saved={...o, cancelada:false, estado:(o.entregas||[]).length? 'recibida':'aprobada', reactivadaPor:(this.leadUName(this.recMe())||'Administrador'), reactivadaAt:new Date().toISOString()};
+      return saved; });
+    this.setState({ordenes:list, modal:null, draft:{}, detalleId:null},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkOrdenes(list);
+    this.toast('Orden reactivada'); }
   openPago(o){ const saldo=this.ordenSaldo(o); const reten=this.ordenRetencion(o); this.open('pago',{ _id:o.id, _numero:o.numero, _proveedor:this.provNombre(o.proveedorCodigo), _saldo:saldo, _saldoFmt:this.fmt(saldo), _reten:reten, _retenFmt:this.fmt(reten), _hayReten:(reten>0), _netoFmt:this.fmt(Math.max(0,saldo-reten)), montoPago:Math.max(0, saldo-reten), formaPago:'', cuenta:'', pagoFecha:new Date().toISOString().slice(0,10) }); }
   savePago(){ const d=this.state.draft; const monto=Number(d.montoPago)||0; if(monto<=0){ this.toast('Ingresa un monto válido'); return; } if(!d.formaPago){ this.toast('Selecciona la forma de pago'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta de origen'); return; }
     const list=this.state.ordenes.map(o=>{ if(o.id!==d._id) return o; const saldo=this.ordenSaldo(o); const m=Math.min(saldo,monto); const pagos=(o.pagos||[]).slice(); pagos.push({monto:m, fecha:d.pagoFecha||new Date().toISOString().slice(0,10), forma:d.formaPago, cuenta:d.cuenta}); return {...o,pagos}; });
@@ -10375,8 +10454,17 @@ Instrucciones de respuesta:
           {...tog('autoDespachadoOn'), plantilla:'pedido_despachado', regla:'Cuando el pedido queda cumplido en Shopify y ya tiene número de guía. Solo pedidos de hoy en adelante.'},
           {...tog('autoRecordatorioOn'), plantilla:'recordatorio_pago', regla:'Pedido de la tienda online por transferencia (Bank Deposit) que sigue sin pagar. Al ingresar, a las 24 h y a las 72 h; se corta cuando entra el pago. Solo pedidos de hoy en adelante.'},
           {...tog('autoContraentregaOn'), plantilla:'pedido_contraentrega', regla:'Pedido contraentrega nuevo que todavía no salió. Si el cliente responde «sí» o «confirmo», el Hub anota «ok confirmado» en Shopify; si responde otra cosa, pasa a un asesor. Solo pedidos de hoy en adelante.'},
-          {...tog('autoPostventaOn'), plantilla:'postventa', regla:'48 horas después de aparecer la etiqueta de entregado (CM: ENTREGADA o Entregado), para compras desde el 1 de agosto. Incluye el cupón del mes.'},
-        ]; }
+          {...tog('autoPostventaOn'), plantilla:'postventa', regla:'48 horas después de aparecer la etiqueta de entregado (CM: ENTREGADA o Entregado), para compras desde el 1 de julio. Si la entrega es de hace más de 5 días sale de una. Incluye el cupón del mes de la compra.'},
+        ];
+        const pv=!!_ac.autoPruebaOn;
+        out.autoPruebaTog=()=>this.setAgenteCfg('autoPruebaOn',!pv);
+        out.autoPruebaBg=pv?'#D49650':'#D9D2C3';
+        out.autoPruebaX=pv?'22px':'2px';
+        out.autoPruebaEstado=pv?'encendido, no se envía nada':'apagado, los envíos salen de verdad';
+        out.autoPruebaFg=pv?'#9A6B2E':'var(--text-strong)';
+        out.autoPruebaBgCard=pv?'rgba(212,150,80,0.12)':'var(--surface-raised)';
+        out.autoPruebaBorde=pv?'rgba(212,150,80,0.4)':'var(--border-subtle)';
+      }
       out.canalesPlantResumen = T? ((T.aprobadas||0)+' de '+(T.total||0)+' aprobadas'+((T.conExternos||0)?' · '+T.conExternos+' por migrar':'')) : '';
 
       const log=(st.envLog||[]);
@@ -10749,7 +10837,7 @@ Instrucciones de respuesta:
       const activas=st.ordenes.filter(o=>o.estado!=='recibida'&&o.estado!=='rechazada');
       out.kpiActivas=activas.length;
       out.kpiPorAprobar=porAprobar;
-      const saldo=st.ordenes.filter(o=>o.estado!=='rechazada').reduce((a,o)=>{ const s=this.ordenSaldo(o); return a+(s>0?s:0); },0) + this.finServiciosPorPagar().reduce((a,s)=>a+this.servicioSaldo(s),0);
+      const saldo=st.ordenes.filter(o=>o.estado!=='rechazada' && !this.ordenAnulada(o)).reduce((a,o)=>{ const s=this.ordenSaldo(o); return a+(s>0?s:0); },0) + this.finServiciosPorPagar().reduce((a,s)=>a+this.servicioSaldo(s),0);
       out.kpiPorPagar=this.fmt(saldo);
       const bajos=st.materias.filter(m=>Math.round(this.materiaStockActual(m))<(Number(m.stockMinimo)||0));
       out.kpiStockBajo=bajos.length;
@@ -10816,7 +10904,7 @@ Instrucciones de respuesta:
       out.fPendBg=sel('pendiente')?'var(--surface-card)':'transparent'; out.fPendFg=sel('pendiente')?'var(--brand-ink)':'var(--text-muted)';
       out.fAprBg=sel('aprobada')?'var(--surface-card)':'transparent'; out.fAprFg=sel('aprobada')?'var(--brand-ink)':'var(--text-muted)';
       out.fRecBg=sel('recibida')?'var(--surface-card)':'transparent'; out.fRecFg=sel('recibida')?'var(--brand-ink)':'var(--text-muted)';
-      const esActivaOrden=(o)=> o.estado!=='rechazada' && (o.estado==='pendiente' || !this.ordenCerrada(o) || this.ordenSaldo(o)>0);
+      const esActivaOrden=(o)=> o.estado!=='rechazada' && !this.ordenAnulada(o) && (o.estado==='pendiente' || !this.ordenCerrada(o) || this.ordenSaldo(o)>0);
       let list=st.ordenes.slice().sort((a,b)=>{ const na=this.ordenNumSort(a), nb=this.ordenNumSort(b); if(nb!==na) return nb-na; return (b.fecha||'').localeCompare(a.fecha||''); });
       if(f==='activas') list=list.filter(esActivaOrden);
       else if(f==='pendiente') list=list.filter(o=>o.estado==='pendiente');
@@ -11840,6 +11928,14 @@ Instrucciones de respuesta:
     }
     // ---- modales de recordatorios ----
     out.isModalRec=st.modal==='rec'; out.isModalRecVer=st.modal==='recver';
+    out.isModalCancelOrden=st.modal==='cancelorden';
+    if(st.modal==='cancelorden'){ const d=st.draft||{};
+      out.coNumero=d._numero||''; out.coProveedor=d._proveedor||''; out.coTotal=d._total||''; out.coPagado=d._pagado||'';
+      out.coHayPagos=!!d._hayPagos; out.coHayEntregas=!!d._hayEntregas;
+      out.coMotivo=d.motivo||''; out.onCoMotivo=(e)=>this.updateDraft('motivo',e.target.value);
+      out.coCancelar=()=>this.close();
+      out.coConfirmar=()=>this.confirmarCancelarOrden();
+    }
     if(st.modal==='rec'){ const d=st.draft||{};
       out.recEsEdicion=!!d._id; out.recModalTitulo=d._id? 'Editar recordatorio':'Nuevo recordatorio';
       out.recTitulo=d.titulo||''; out.onRecTitulo=(e)=>this.updateDraft('titulo',e.target.value);
@@ -12175,7 +12271,15 @@ Instrucciones de respuesta:
           pendFmt:(Math.abs(pend)<0.001?'—':this.fmtCant(pend)),
           pendColor:(Math.abs(pend)<0.001?'var(--text-muted)':(pend>0?'#8A6522':'#8E3F2F')) }; }),
       recepResumen:(()=>{ const p=this.ordenEntregaProgreso(o); return p.recibidos>=p.total? ('Completa · '+p.total+' de '+p.total) : ('Parcial · '+p.recibidos+' de '+p.total+' ítems'); })(),
-      recepColor:(this.ordenEntregaCompleta(o)?'#4C6149':'#8A6522') }; } }
+      recepColor:(this.ordenEntregaCompleta(o)?'#4C6149':'#8A6522') };
+      out.detalle.anulada=this.ordenAnulada(o);
+      out.detalle.noAnulada=!this.ordenAnulada(o);
+      out.detalle.cancelInfo=this.ordenAnulada(o)? ('Cancelada'+(o.canceladaPor?(' por '+o.canceladaPor):'')+(o.canceladaAt?(' · '+this.fmtFecha(String(o.canceladaAt).slice(0,10))):'')+(o.motivoCancel?(' · '+o.motivoCancel):'')) : '';
+      out.detalle.puedeCancelar=(canWrite || isAdmin) && !this.ordenAnulada(o);
+      out.detalle.onCancelar=()=>this.pedirCancelarOrden(o);
+      out.detalle.puedeReactivar=isAdmin && this.ordenAnulada(o);
+      out.detalle.onReactivar=()=>this.reactivarOrden(o.id);
+    } }
 
     if(st.modal==='entrega'){ const d=st.draft;
       out.entregaLineas=(d._lineas||[]).map((l,i)=>{ const pend=Math.max(0,(Number(l.ordenada)||0)-(Number(l.yaRecibida)||0)); return {nombre:l.nombre, ordenada:l.ordenada, yaRecibida:l.yaRecibida, pendiente:pend, cantidad:l.cantidad, onCantidad:(e)=>this.updateEntregaLinea(i,e.target.value)}; });
