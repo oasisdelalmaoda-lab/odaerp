@@ -1664,6 +1664,13 @@
                     <button onClick="{{ onConvTabSin }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ tabSinBg }};color:{{ tabSinFg }};">Sin asignar · {{ convNumSin }}</button>
                     <button onClick="{{ onConvTabTodos }}" style="font-family:inherit;font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:{{ tabTodosBg }};color:{{ tabTodosFg }};">Todos</button>
                   </div>
+                  <sc-if value="{{ convAutoHay }}" hint-placeholder-val="{{ false }}">
+                    <div class="oda-scroll" style="padding:9px 14px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border-subtle);">
+                      <sc-for list="{{ convAutoChips }}" as="a" hint-placeholder-count="3">
+                        <button onClick="{{ a.onSel }}" style="flex-shrink:0;font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border-radius:99px;cursor:pointer;border:1px solid {{ a.bd }};background:{{ a.bg }};color:{{ a.fg }};white-space:nowrap;">{{ a.l }} · {{ a.n }}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
                   <div class="oda-scroll" style="flex:1;overflow-y:auto;max-height:620px;">
                     <sc-if value="{{ convRowsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:40px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Nada por acá con este filtro</div></sc-if>
                     <sc-for list="{{ convFeed }}" as="c" hint-placeholder-count="5">
@@ -1692,6 +1699,7 @@
                               <sc-if value="{{ c.online }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;text-transform:uppercase;color:#2E7D46;"><span style="width:6px;height:6px;border-radius:99px;background:#3FA45B;"></span>en línea</span></sc-if>
                               <sc-if value="{{ c.hayAsig }}" hint-placeholder-val="{{ false }}"><span style="width:19px;height:19px;border-radius:99px;background:{{ c.asigColor }};color:#fff;font-size:8.5px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ c.asigIni }}</span></sc-if>
                               <sc-if value="{{ c.vendio }}" hint-placeholder-val="{{ false }}"><span style="font-size:9.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#4C6149;background:rgba(98,123,96,0.14);border-radius:99px;padding:2px 8px;">{{ c.vendioTxt }}</span></sc-if>
+                              <sc-if value="{{ c.hayAuto }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--brand-primary);background:rgba(167,134,89,0.12);padding:2px 7px;border-radius:99px;">{{ c.autoL }}</span></sc-if>
                             </div>
                           </div>
                         </div>
@@ -9580,10 +9588,9 @@ Instrucciones de respuesta:
       if(!dup) out.push(m); }); return out; }
   async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb) return; try{
       const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(200); if(error) throw error;
-      const {data:msgs}=await sb.from('mensajes').select('conversacion_id,de,texto,creado_at').order('creado_at',{ascending:true}).limit(2000);
-      const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
-      const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(byConv[r.id]||[]) }));
-      this._convNotify(list);
+      const {data:msgs}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').order('creado_at',{ascending:true}).limit(2000);
+      const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+      const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(byConv[r.id]||[]) }));      this._convNotify(list);
       this.setState({convsCloud:list});
     }catch(e){} }
   _convNotify(list){ try{ const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; const prev=this._convSeen; const seen={}; (list||[]).forEach(c=>{ seen[c.id]=(c.mensajes||[]).length; });
@@ -10261,6 +10268,23 @@ Instrucciones de respuesta:
           bg:(k==='todos'? 'var(--surface-raised)' : _logoBg(k)), bd:(canalSel===k? '2px solid var(--brand-primary)':'2px solid transparent'),
           onSel:()=>this.setState({convCanalSel:k}) }; });
       let base=convs.filter(c=> canalSel==='todos' || c.canal===canalSel);
+      // ---- filtro por automatización: qué plantilla tocó la conversación ----
+      const AUTOL={pedido_despachado:'Despachado', recordatorio_pago:'Recordatorio de pago', pedido_contraentrega:'Contraentrega', postventa:'Postventa', carrito_abandonado:'Carrito abandonado'};
+      const _autos=(c)=>[...new Set(((c.mensajes||[]).map(m=>m.auto).filter(Boolean)))];
+      const autoSel=st.convAutoSel||'todos';
+      { const cuenta={}; base.forEach(c=>_autos(c).forEach(k=>{ cuenta[k]=(cuenta[k]||0)+1; }));
+        const sinAuto=base.filter(c=>_autos(c).length===0).length;
+        const chips=[{k:'todos', l:'Todas', n:base.length}];
+        Object.keys(AUTOL).forEach(k=>{ if(cuenta[k]) chips.push({k, l:AUTOL[k], n:cuenta[k]}); });
+        if(sinAuto) chips.push({k:'ninguna', l:'Sin automatización', n:sinAuto});
+        out.convAutoChips=chips.map(x=>({ ...x, activo:autoSel===x.k,
+          bg:(autoSel===x.k?'var(--brand-primary)':'transparent'), fg:(autoSel===x.k?'var(--text-on-brand)':'var(--text-body)'),
+          bd:(autoSel===x.k?'var(--brand-primary)':'var(--border-subtle)'),
+          onSel:()=>this.setState({convAutoSel:x.k}) }));
+        out.convAutoHay=chips.length>1;
+      }
+      if(autoSel==='ninguna') base=base.filter(c=>_autos(c).length===0);
+      else if(autoSel!=='todos') base=base.filter(c=>_autos(c).indexOf(autoSel)>=0);
       out.convNumMios=base.filter(c=>c.asignadoA===me && c.estado!=='resuelta').length;
       out.convNumSin=base.filter(c=>!c.asignadoA && c.estado!=='resuelta').length;
       if(tab==='mios') base=base.filter(c=>c.asignadoA===me); else if(tab==='sin') base=base.filter(c=>!c.asignadoA);
@@ -10276,6 +10300,7 @@ Instrucciones de respuesta:
           preview:prev.slice(0,58)+(prev.length>58?'…':''), online:(c.canal==='web' && _wo.indexOf(String(c.id))>=0),
           sinDatos:(!c.telefono && c.estado!=='resuelta'), asigIni:asigN?this._initialsFrom(asigN):'', asigColor:c.asignadoA?this.leadUColor(c.asignadoA):'#9b8e78', hayAsig:!!asigN,
           noLeidos:c.noLeidos||0, hayNoLeidos:(c.noLeidos||0)>0, vendio:(c.estado==='resuelta'), vendioTxt:'Resuelta',
+          autoL:(_autos(c).map(k=>AUTOL[k]||k).join(' · ')), hayAuto:_autos(c).length>0,
           op:(c.estado==='resuelta'?'0.7':'1'), selBg:(c.id===selId?'var(--surface-page)':'transparent'), selBd:(c.id===selId?'3px solid var(--brand-primary)':'3px solid transparent'),
           onSel:()=>this.setState({convSelId:c.id}) }; };
       const secEsp=base.filter(c=>_esperando(c)), secAct=base.filter(c=>!_esperando(c)&&c.estado!=='resuelta'), secRes=base.filter(c=>c.estado==='resuelta');
