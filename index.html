@@ -2041,6 +2041,28 @@
                 </div>
 
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Envíos automáticos</h3>
+                    <span style="font-size:11.5px;color:var(--text-muted);">{{ autoEnviosResumen }}</span>
+                    <button onClick="{{ autoEnviosRefrescar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">Actualizar</button>
+                  </div>
+                  <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Todo lo que el servidor envió solo: qué plantilla, a qué pedido y si Meta lo aceptó. Acá se valida que las automatizaciones estén funcionando.</p>
+                  <sc-if value="{{ autoEnviosVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Todavía no hay envíos automáticos. El servidor revisa Shopify cada 10 minutos.</div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:0;">
+                    <sc-for list="{{ autoEnvios }}" as="e" hint-placeholder-count="0">
+                      <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-subtle);">
+                        <span style="font-size:11px;color:var(--text-muted);width:104px;flex-shrink:0;line-height:1.5;">{{ e.cuando }}</span>
+                        <div style="flex:1;min-width:0;">
+                          <div style="font-size:12.5px;font-weight:700;line-height:1.4;">{{ e.que }} <span style="font-weight:400;color:var(--text-muted);">{{ e.ref }}</span></div>
+                          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.45;word-break:break-word;">{{ e.destino }} {{ e.detalle }}</div>
+                        </div>
+                        <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ e.bg }};color:{{ e.fg }};flex-shrink:0;">{{ e.estado }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Todas las plantillas de la cuenta</h3>
                     <span style="font-size:11.5px;color:var(--text-muted);">{{ canalesPlantResumen }}</span>
@@ -6717,7 +6739,7 @@ class Component extends DCLogic {
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
-    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null,
+    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null, waEnvios:null,
     conteos:[], fConteoEstado:'pendiente',
   };
 
@@ -7680,6 +7702,13 @@ Instrucciones de respuesta:
       this.setState({canDiag:data||null, canDiagLoading:false, canDiagTs:Date.now()});
     }catch(e){ this.setState({canDiagLoading:false, canDiagErr:(e&&e.message)||'No se pudo verificar los canales'}); }
     this.cargarEnvLog();
+  }
+  async cargarWaEnvios(){
+    try{
+      const sb=this._sbClient(); if(!sb){ this.setState({waEnvios:[]}); return; }
+      const { data, error } = await sb.from('wa_envios').select('*').order('creado_at',{ascending:false}).limit(60);
+      this.setState({waEnvios: (error? [] : (data||[]))});
+    }catch(_e){ this.setState({waEnvios:[]}); }
   }
   async cargarEnvLog(){
     try{
@@ -10025,6 +10054,7 @@ Instrucciones de respuesta:
       out.canalesTsShow=!!st.canDiagTs;
       out.canalesTs=st.canDiagTs? new Date(st.canDiagTs).toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
       if(st.envLog===null && !st.canDiagLoading){ setTimeout(()=>{ if(this.state.sub==='canales' && this.state.envLog===null) this.cargarEnvLog(); },0); }
+      if(st.waEnvios===null){ setTimeout(()=>{ if(this.state.sub==='canales' && this.state.waEnvios===null) this.cargarWaEnvios(); },0); }
 
       const card=(titulo,color,estado,detalle)=>({titulo, dot:color, borde:(color===ROJO?'rgba(181,80,60,0.35)':'var(--border-subtle)'), estado, detalle});
       const cards=[];
@@ -10099,6 +10129,19 @@ Instrucciones de respuesta:
                  msg: e.error_msg||'Error sin descripción', meta: bits.join(' · ') }; });
       out.envLogVacio = st.envLog!==null && log.length===0;
       out.envFallasCount=log.length; out.envFallasShow=log.length>0;
+      // Bitácora de envios automaticos (tabla wa_envios: la escriben automatizaciones y carritos-auto)
+      { const ETIQ={despachado:'Pedido despachado', recordatorio_pago:'Recordatorio de pago', contraentrega:'Confirmar contraentrega', postventa:'Encuesta postventa', carrito1:'Carrito · 1º aviso', carrito2:'Carrito · 2º aviso'};
+        const rows=(st.waEnvios||[]).filter(e=>e.tipo!=='entrega_vista');
+        out.autoEnvios=rows.map(e=>{ const d=e.creado_at? new Date(e.creado_at):null;
+          const ref=String(e.clave||'').split('|')[1]||'';
+          return { cuando: d? d.toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—',
+            que: ETIQ[e.tipo]||e.tipo, ref:(ref?('pedido '+ref):''), destino:e.destino||'',
+            estado:(e.ok?'Enviado':'Falló'), bg:(e.ok?'rgba(98,123,96,0.16)':'rgba(181,80,60,0.14)'), fg:(e.ok?'#4C6149':'#8E3F2F'),
+            detalle:(e.ok? '' : String(e.detalle||'')) }; });
+        out.autoEnviosVacio = st.waEnvios!==null && rows.length===0;
+        out.autoEnviosResumen = rows.length? (rows.filter(r=>r.ok).length+' enviados · '+rows.filter(r=>!r.ok).length+' con error') : '';
+        out.autoEnviosRefrescar=()=>{ this.setState({waEnvios:null}); this.cargarWaEnvios(); };
+      }
     }
     if(out.showConvInforme){ const dias=Number(st.convInfDias??30);
       out.convInfDias=String(dias); out.onConvInfDias=(e)=>this.setState({convInfDias:Number(e.target.value)});
