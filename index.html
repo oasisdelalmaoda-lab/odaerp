@@ -2002,6 +2002,7 @@
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Envíos automáticos</h3>
                   <span style="font-size:11.5px;color:var(--text-muted);">{{ autoEnviosResumen }}</span>
+                  <button onClick="{{ autoCorrer }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">{{ autoCorrerTxt }}</button>
                   <button onClick="{{ autoEnviosRefrescar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">Actualizar</button>
                 </div>
                 <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Todo lo que el servidor envió solo: qué plantilla, a qué pedido y si Meta lo aceptó. Acá se valida que las automatizaciones estén funcionando.</p>
@@ -2165,6 +2166,29 @@
                   </div>
                   <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-subtle);display:flex;align-items:baseline;gap:8px;"><span style="font-size:12.5px;font-weight:700;flex:1;">Total canales de chat</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--brand-ink);">{{ ciChatTotal }}</span></div>
                   <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;text-wrap:pretty;">«Vendido tras el chat» arriba se calcula cruzando el celular del pedido con el teléfono de la conversación, no por el canal escrito en el pedido.<sc-if value="{{ ciHaySinTel }}" hint-placeholder-val="{{ false }}"> {{ ciSinTel }} conversaciones sin teléfono no se pueden cruzar.</sc-if></p>
+                </div>
+              </div>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-top:14px;">
+                <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Pedidos vendidos tras el chat</h3>
+                  <span style="font-size:11.5px;color:var(--text-muted);">{{ ciAtribPedidos }} · {{ ciAtribTotal }}</span>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Cada pedido cuyo celular coincide con una conversación del período. Toca uno para abrir su conversación.</p>
+                <sc-if value="{{ ciAtribVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Ningún pedido del período cruza con una conversación.</div></sc-if>
+                <div style="display:flex;flex-direction:column;gap:0;">
+                  <sc-for list="{{ ciAtribList }}" as="p" hint-placeholder-count="0">
+                    <div onClick="{{ p.abrir }}" class="oda-row" style="display:flex;align-items:center;gap:12px;padding:11px 8px;border-bottom:1px solid var(--border-subtle);cursor:pointer;">
+                      <span style="font-size:11.5px;color:var(--text-muted);width:78px;flex-shrink:0;">{{ p.fecha }}</span>
+                      <span style="font-size:12.5px;font-weight:700;width:82px;flex-shrink:0;">{{ p.pedido }}</span>
+                      <div style="flex:1;min-width:0;">
+                        <div style="font-size:12.5px;font-weight:700;line-height:1.4;">{{ p.cliente }}</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:1px;line-height:1.45;">{{ p.items }}</div>
+                      </div>
+                      <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ p.canalBg }};color:{{ p.canalFg }};flex-shrink:0;">{{ p.canal }}</span>
+                      <span style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--brand-ink);white-space:nowrap;width:104px;text-align:right;flex-shrink:0;">{{ p.total }}</span>
+                    </div>
+                  </sc-for>
                 </div>
               </div>
             </div>
@@ -6739,7 +6763,7 @@ class Component extends DCLogic {
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
-    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null, waEnvios:null,
+    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null, waEnvios:null, autoCorriendo:false,
     conteos:[], fConteoEstado:'pendiente',
   };
 
@@ -7611,7 +7635,6 @@ Instrucciones de respuesta:
     if(t.includes('tcc')) return 'https://tcc.com.co/rastreo/?guia='+encodeURIComponent(g);
     return 'https://www.coordinadora.com/portafolio-de-servicios/servicios-en-linea/rastrear-guias/?guia='+encodeURIComponent(g); }
   waTemplates(){ return {
-    pedido_recibido:  { label:'Confirmación de pedido', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaTotal(v)))] },
     pedido_despachado:{ label:'Despachado + guía',      lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), (v.transportadora||'Coordinadora'), (v.guia||''), this.waLinkRastreo(v)] },
     recordatorio_pago:{ label:'Recordatorio de pago',   lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.fmt(Math.round(this.ventaSaldo(v)))] },
     pedido_contraentrega:{ label:'Confirmar contraentrega', lang:'es', vars:(v)=>[this.waNombre(v), this.ventaRef(v), this.waResumenItems(v), this.fmt(Math.round(this.ventaTotal(v))), ((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'—')), this.waDespachoTxt()] },
@@ -7702,6 +7725,22 @@ Instrucciones de respuesta:
       this.setState({canDiag:data||null, canDiagLoading:false, canDiagTs:Date.now()});
     }catch(e){ this.setState({canDiagLoading:false, canDiagErr:(e&&e.message)||'No se pudo verificar los canales'}); }
     this.cargarEnvLog();
+  }
+  async autoCorrerAhora(){
+    if(this.state.autoCorriendo) return;
+    this.setState({autoCorriendo:true});
+    try{
+      const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
+      const { data, error } = await sb.functions.invoke('automatizaciones', { body:{} });
+      if(error) throw new Error('La función no respondió');
+      if(data && data.error) throw new Error(String(data.error).slice(0,180));
+      const acc=(data&&data.acciones)||[]; const ped=(data&&data.pedidos);
+      if(data && data.skipped) this.toast('Sin acciones: '+data.skipped);
+      else if(!acc.length) this.toast('Revisó '+(ped||0)+' pedidos y no había nada por enviar');
+      else this.toast(acc.length+' envío'+(acc.length===1?'':'s')+' · '+acc.map(a=>a.regla+' '+(a.ok?'ok':'falló')).join(', '));
+      this.setState({autoCorriendo:false, waEnvios:null});
+      this.cargarWaEnvios();
+    }catch(e){ this.setState({autoCorriendo:false}); this.toast((e&&e.message)||'No se pudo correr la automatización'); }
   }
   async cargarWaEnvios(){
     try{
@@ -7821,7 +7860,6 @@ Instrucciones de respuesta:
     const saldo=this.fmt(Math.round(this.ventaSaldo(v))); const transp=(v.transportadora||'Coordinadora'); const guia=(v.guia||'');
     const nom=n||'';
     const M={
-      pedido_recibido:s+' 🌿 recibimos tu pedido '+ref+' por '+t+'. Ya lo estamos preparando con cariño y te avisamos cuando salga. — Oasis del Alma',
       pedido_despachado:(n?(n+', '):'')+'tu pedido '+ref+' ya va en camino 🚚 Enviado por '+transp+(guia?(', guía '+guia):'')+'. Rastréalo acá: '+this.waLinkRastreo(v)+' — Oasis del Alma',
       recordatorio_pago:s+' 🌿 tu pedido '+ref+' quedó registrado con pago por transferencia y tiene un saldo pendiente de '+saldo+'. Puedes pagar a la llave 3134063259 a nombre de OdA Labs SAS. Envíanos el comprobante por acá y despachamos tu pedido. — Oasis del Alma',
       pedido_contraentrega:s+' 🌿 confirmamos tu pedido '+ref+' contraentrega: '+this.waResumenItems(v)+'. Total a pagar al recibir: '+t+', entrega en '+((String(v.direccion||'').trim()? (String(v.direccion).trim()+', ') : '')+(this.titleCase(v.ciudad||'')||'tu ciudad'))+'. Si nos confirmas, lo despachamos '+this.waDespachoTxt()+'. ¿Están correctos los datos? — Oasis del Alma',
@@ -10115,10 +10153,10 @@ Instrucciones de respuesta:
       // Interruptores de las automatizaciones de pedidos (las ejecuta la función 'automatizaciones')
       { const _ac=this.agenteCfgGet(); const tog=(k)=>{ const v=!!_ac[k]; return { v, bg:v?'var(--brand-primary)':'#D9D2C3', x:v?'22px':'2px', on:()=>this.setAgenteCfg(k,!v) }; };
         out.autoReglas=[
-          {...tog('autoDespachadoOn'), plantilla:'pedido_despachado', regla:'Cuando el pedido queda cumplido en Shopify y ya tiene número de guía. Incluye transportadora, guía y link de rastreo.'},
-          {...tog('autoRecordatorioOn'), plantilla:'recordatorio_pago', regla:'Pedido de la tienda online pagado por transferencia (Bank Deposit) que sigue sin pagar. Se envía al ingresar, a las 24 h y a las 72 h; se corta cuando entra el pago.'},
-          {...tog('autoContraentregaOn'), plantilla:'pedido_contraentrega', regla:'Pedido contraentrega nuevo. Si el cliente responde «sí» o «confirmo», el Hub anota «ok confirmado» en el pedido de Shopify; si responde otra cosa, la conversación pasa a un asesor.'},
-          {...tog('autoPostventaOn'), plantilla:'postventa', regla:'48 horas después de aparecer la etiqueta de entregado (CM: ENTREGADA o Entregado). Incluye el cupón de agradecimiento del mes.'},
+          {...tog('autoDespachadoOn'), plantilla:'pedido_despachado', regla:'Cuando el pedido queda cumplido en Shopify y ya tiene número de guía. Solo pedidos de hoy en adelante.'},
+          {...tog('autoRecordatorioOn'), plantilla:'recordatorio_pago', regla:'Pedido de la tienda online por transferencia (Bank Deposit) que sigue sin pagar. Al ingresar, a las 24 h y a las 72 h; se corta cuando entra el pago. Solo pedidos de hoy en adelante.'},
+          {...tog('autoContraentregaOn'), plantilla:'pedido_contraentrega', regla:'Pedido contraentrega nuevo que todavía no salió. Si el cliente responde «sí» o «confirmo», el Hub anota «ok confirmado» en Shopify; si responde otra cosa, pasa a un asesor. Solo pedidos de hoy en adelante.'},
+          {...tog('autoPostventaOn'), plantilla:'postventa', regla:'48 horas después de aparecer la etiqueta de entregado (CM: ENTREGADA o Entregado), para compras desde el 1 de agosto. Incluye el cupón del mes.'},
         ]; }
       out.canalesPlantResumen = T? ((T.aprobadas||0)+' de '+(T.total||0)+' aprobadas'+((T.conExternos||0)?' · '+T.conExternos+' por migrar':'')) : '';
 
@@ -10141,6 +10179,8 @@ Instrucciones de respuesta:
         out.autoEnviosVacio = st.waEnvios!==null && rows.length===0;
         out.autoEnviosResumen = rows.length? (rows.filter(r=>r.ok).length+' enviados · '+rows.filter(r=>!r.ok).length+' con error') : '';
         out.autoEnviosRefrescar=()=>{ this.setState({waEnvios:null}); this.cargarWaEnvios(); };
+        out.autoCorrerTxt=st.autoCorriendo? 'Revisando Shopify…' : 'Correr ahora';
+        out.autoCorrer=()=>this.autoCorrerAhora();
       }
     }
     if(out.showConvInforme){ const dias=Number(st.convInfDias??30);
@@ -10183,6 +10223,17 @@ Instrucciones de respuesta:
       const convsConVenta=new Set(); atrib.forEach(v=>{ (telConv[_tel(v.celular)]||[]).forEach(id=>convsConVenta.add(id)); });
       out.ciAtribPedidos=atrib.length+(atrib.length===1?' pedido':' pedidos'); out.ciAtribTotal=this.fmt(Math.round(atribTotal));
       out.ciAtribTicket=atrib.length? this.fmt(Math.round(atribTotal/atrib.length)) : '—';
+      // Detalle de los pedidos atribuidos al chat
+      { const nomIt=(it)=>{ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return (p?p.nombre:(k?k.nombre:(it.producto||c||'')))||''; };
+        out.ciAtribList=atrib.slice().sort((a,b)=>String(this.parseFecha(b.fecha)||'').localeCompare(String(this.parseFecha(a.fecha)||''))).slice(0,60).map(v=>{
+          const cs=this.canalStyle(v.canal); const its=(v.items||[]);
+          const txt=its.map(it=>((Number(it.unidades)||1)+' × '+nomIt(it))).join(', ');
+          const ids=(telConv[_tel(v.celular)]||[]);
+          return { pedido:(v.pedido||v.ov||'—'), fecha:this.fmtFecha(v.fecha), cliente:this.titleCase(v.cliente||''),
+            items:(txt.length>90? txt.slice(0,87)+'…' : txt), canal:(v.canal||'—'), canalBg:cs.bg, canalFg:cs.fg,
+            total:this.fmt(Math.round(this.ventaSubtotal(v))),
+            abrir:()=>{ if(ids[0]) this.setState({module:'conversaciones', sub:'bandeja', convSelId:ids[0]}); } }; });
+        out.ciAtribVacio=atrib.length===0; }
       const conTel=convs.filter(c=>_tel(c.telefono).length>=7).length;
       out.ciSinTel=convs.length-conTel; out.ciHaySinTel=(convs.length-conTel)>0;
       out.ciConvVenta=convsConVenta.size;
