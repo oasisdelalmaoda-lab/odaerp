@@ -9209,11 +9209,45 @@ Instrucciones de respuesta:
   // (pedido, orden o liquidación), y siempre se puede revertir.
   anularMovimiento(m, motivo){ if(!m||!m.id) return;
     const base=this.movAjustesGet()[m.id]||{};
+    // Si el movimiento es el recaudo de una venta, se deshace el cobro: la venta vuelve a
+    // quedar con saldo y reaparece en Cuentas por cobrar.
+    const rev=(m.origen==='venta')? this._revertirCobroVenta(m) : null;
     this.setMovAjuste(m.id, { ...base, anulado:true, anuladoMotivo:String(motivo||''), anuladoPor:this.recMeNombre(), anuladoAt:new Date().toISOString(),
-      anuladoSnap:{ fecha:m.fecha, monto:m.monto, cuenta:m.cuenta, tipo:m.tipo, categoria:m.categoria, concepto:m.concepto } }); }
+      anuladoRev:rev||null,
+      anuladoSnap:{ fecha:m.fecha, monto:m.monto, cuenta:m.cuenta, tipo:m.tipo, categoria:m.categoria, concepto:m.concepto, origen:m.origen } });
+    return rev; }
   reactivarMovimiento(id){ const a={...(this.movAjustesGet()[id]||{})};
-    delete a.anulado; delete a.anuladoMotivo; delete a.anuladoPor; delete a.anuladoAt; delete a.anuladoSnap;
+    if(a.anuladoRev) this._restaurarCobroVenta(a.anuladoRev);
+    delete a.anulado; delete a.anuladoMotivo; delete a.anuladoPor; delete a.anuladoAt; delete a.anuladoSnap; delete a.anuladoRev;
     this.setMovAjuste(id, Object.keys(a).length? a : null); }
+  // Quita el cobro que generó ese movimiento y baja el pagado de la venta.
+  _revertirCobroVenta(m){ const vid=(m.ventaIds||[])[0]; if(!vid) return null;
+    let snap=null;
+    const list=(this.state.ventas||[]).map(v=>{ if(v.id!==vid) return v;
+      const cob=(Array.isArray(v.cobros)? v.cobros.slice() : []);
+      if(m.cobroId){ const k=cob.findIndex(c=>c.id===m.cobroId); if(k<0) return v;
+        snap={ ventaId:vid, cobro:cob[k] }; cob.splice(k,1);
+        return {...v, cobros:cob, pagado:Math.max(0,(Number(v.pagado)||0)-(Number(snap.cobro.monto)||0))}; }
+      const suma=cob.reduce((a,c)=>a+(Number(c.monto)||0),0);
+      const resto=Math.max(0,(Number(v.pagado)||0)-suma);
+      if(resto<=0) return v;
+      snap={ ventaId:vid, resto, fechaCobro:(v.fechaCobro||''), cuentaRecaudo:(v.cuentaRecaudo||'') };
+      return {...v, pagado:suma};
+    });
+    if(!snap) return null;
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()){ const _cv=list.find(x=>x.id===vid); if(_cv) this.cloudSaveVenta(_cv); }
+    return snap; }
+  _restaurarCobroVenta(rev){ if(!rev||!rev.ventaId) return;
+    const list=(this.state.ventas||[]).map(v=>{ if(v.id!==rev.ventaId) return v;
+      if(rev.cobro){ const cob=(Array.isArray(v.cobros)? v.cobros.slice() : []);
+        if(cob.some(c=>c.id===rev.cobro.id)) return v;
+        cob.push(rev.cobro);
+        return {...v, cobros:cob, pagado:(Number(v.pagado)||0)+(Number(rev.cobro.monto)||0)}; }
+      return {...v, pagado:(Number(v.pagado)||0)+(Number(rev.resto)||0), fechaCobro:(rev.fechaCobro||v.fechaCobro), cuentaRecaudo:(rev.cuentaRecaudo||v.cuentaRecaudo)};
+    });
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()){ const _cv=list.find(x=>x.id===rev.ventaId); if(_cv) this.cloudSaveVenta(_cv); } }
   movsAnulados(){ const aj=this.movAjustesGet(); return Object.keys(aj).filter(k=>aj[k]&&aj[k].anulado).map(k=>({ id:k, ...(aj[k].anuladoSnap||{}), motivo:aj[k].anuladoMotivo||'', por:aj[k].anuladoPor||'', at:aj[k].anuladoAt||'' })); }
   // --- movimientos de caja unificados ---
   cajaMovs(){ const out=[];
@@ -9222,7 +9256,7 @@ Instrucciones de respuesta:
       const _cli=(v.cliente?(' \u00b7 '+v.cliente):'');
       const _cob=(Array.isArray(v.cobros)?v.cobros:[]).filter(c=>Number(c.monto)>0);
       // Un movimiento por cada abono, con su propia fecha y cuenta.
-      _cob.forEach((c,i)=>{ out.push({ id:v.id+'-rc'+i, fecha:this.parseFecha(c.fecha||v.fechaCobro||v.fecha), tipo:'ingreso', cuenta:(c.cuenta||v.cuentaRecaudo||this.mapMetodoCuenta(v.metodoPago)), monto:Number(c.monto)||0, categoria:'Recaudo de venta', concepto:'Recaudo '+this.ventaRef(v)+_cli+(_cob.length>1?(' \u00b7 abono '+(i+1)+' de '+_cob.length):''), origen:'venta', editable:false, ventaIds:[v.id] }); });
+      _cob.forEach((c,i)=>{ out.push({ id:v.id+'-rc'+i, cobroId:(c.id||''), fecha:this.parseFecha(c.fecha||v.fechaCobro||v.fecha), tipo:'ingreso', cuenta:(c.cuenta||v.cuentaRecaudo||this.mapMetodoCuenta(v.metodoPago)), monto:Number(c.monto)||0, categoria:'Recaudo de venta', concepto:'Recaudo '+this.ventaRef(v)+_cli+(_cob.length>1?(' \u00b7 abono '+(i+1)+' de '+_cob.length):''), origen:'venta', editable:false, ventaIds:[v.id] }); });
       // Lo cobrado antes de que se guardaran los abonos por separado queda como un solo movimiento.
       const _yaEnCobros=_cob.reduce((a,c)=>a+(Number(c.monto)||0),0);
       const _resto=Math.round(pag-_yaEnCobros);
@@ -9241,6 +9275,13 @@ Instrucciones de respuesta:
       for(let i=out.length-1;i>=0;i--){ if(out[i] && out[i].anulado) out.splice(i,1); } }
     // GMF (4x1000): se descuenta del saldo de la cuenta por cada egreso gravado (transferencias/pagos de banco), como en el extracto real.
     const _gmfRate=this.gmfRate(); out.slice().forEach(m=>{ if(m.tipo==='egreso' && !m.noBanco && this.cuentaEsBanco(m.cuenta) && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)'){ const g=Math.round((Number(m.monto)||0)*_gmfRate); if(g>0){ out.push({ id:m.id+'-gmf', fecha:m.fecha, tipo:'egreso', cuenta:m.cuenta, monto:g, categoria:'GMF (4x1000)', concepto:'GMF 4×1000 · '+(m.concepto||m.categoria||''), origen:'gmf', editable:false }); } } });
+    // Segunda pasada: el GMF se genera después del filtro, así que una fila 4×1000 anulada
+    // (o ajustada) hay que sacarla acá; si no, seguía restando del saldo.
+    { const _aj2=this.movAjustesGet();
+      for(let i=out.length-1;i>=0;i--){ const a=_aj2[out[i].id]; if(!a) continue;
+        if(a.anulado){ out.splice(i,1); continue; }
+        if(String(out[i].origen)==='gmf'){ const o2=out[i]; out[i]={...o2, ...a, ajustado:true, ajusteOrig:{fecha:o2.fecha, monto:o2.monto, cuenta:o2.cuenta, categoria:o2.categoria, concepto:o2.concepto, tipo:o2.tipo}}; }
+      } }
     return out.sort((a,b)=>{ const fc=(b.fecha||'').localeCompare(a.fecha||''); if(fc!==0) return fc; return (Number(b.ts)||0)-(Number(a.ts)||0); }); }
   cuentaSaldo(nombre){ const c=this.cuentasList().find(x=>x.nombre===nombre); let s = c? (Number(c.saldoInicial)||0):0; this.cajaMovs().forEach(m=>{ if(m.cuenta===nombre && !m.noBanco){ s += (m.tipo==='ingreso'? m.monto : -m.monto); } }); return s; }
   cajaSaldoTotal(){ return this.cuentasList().reduce((a,c)=>a+(c.tipo==='tarjeta'?0:this.cuentaSaldo(c.nombre)),0); }
@@ -11542,7 +11583,7 @@ Instrucciones de respuesta:
           concepto:(a.concepto||a.categoria||'Movimiento'),
           fecha:this.fmtFecha(a.fecha), cuenta:(a.cuenta||'—'),
           monto:((a.tipo==='ingreso'?'+':'\u2212')+this.fmt(Math.round(Number(a.monto)||0))),
-          detalle:[(a.motivo||''), (a.por? ('anuló '+a.por):'')].filter(Boolean).join(' \u00b7 '),
+          detalle:[(a.motivo||''), (a.por? ('anuló '+a.por):''), (a.origen==='venta'? 'el pedido volvió a Cuentas por cobrar':'')].filter(Boolean).join(' \u00b7 '),
           onReactivar:((id)=>()=>{ if(!window.confirm('¿Reactivar esta transacción? Vuelve a contar en el saldo de la cuenta.')) return; this.reactivarMovimiento(id); this.toast('Transacción reactivada'); })(a.id) })); }
       out.fcjNuevoIngreso=()=>this.nuevoMovimiento('ingreso'); out.fcjNuevoEgreso=()=>this.nuevoMovimiento('egreso'); out.fcjNuevoTraslado=()=>this.nuevoTraslado(); out.fcjNuevaCuenta=()=>this.nuevaCuentaFin(); out.fcjCanWrite=out.canWriteFin;
       out.fcjMetodos=this.metodosFinList().map(m=>({id:m.id, nombre:m.nombre, tipoTxt:(m.tipo==='diferido'?'Diferido':'Inmediato'), esDif:(m.tipo==='diferido'), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m.tipo==='diferido'?(this.diasLiqTxt(m)+' en liquidar'):'Entra de una'), onEdit:()=>this.editarMetodoFin(m.id)}));
@@ -12440,8 +12481,13 @@ Instrucciones de respuesta:
       out.mdOnCancelarLiq=()=>{ if(!_liq) return; this.setState({modal:null,draft:{}}); this.askDelete('liquidacion',{codigo:_liq.id, nombre:'el recaudo de '+(_liq.metodo||'')+' del '+this.fmtFecha(_liq.fecha)}); };
       const _mdReal=(this.state.movimientos||[]).some(x=>x.id===d.id);
       out.mdPuedeAnular=!!out.isAdmin;
-      out.mdOnAnular=()=>{ const mot=window.prompt('¿Por qué se anula esta transacción?\n\nSale de la caja y deja de sumar al saldo. El pedido, la orden o la liquidación que la originó NO se tocan, y la puedes reactivar cuando quieras.',''); if(mot===null) return;
-        this.anularMovimiento(d, mot); this.setState({modal:null, draft:{}}); this.toast('Transacción anulada · ya no afecta la caja'); };
+      out.mdOnAnular=()=>{ const _esVenta=(d.origen==='venta');
+        const _txt=_esVenta
+          ? '¿Por qué se anula este recaudo?\n\nSale de la caja y el pedido vuelve a quedar con saldo, en Cuentas por cobrar. Lo puedes reactivar cuando quieras.'
+          : '¿Por qué se anula esta transacción?\n\nSale de la caja y deja de sumar al saldo. La orden o la liquidación que la originó NO se toca, y la puedes reactivar cuando quieras.';
+        const mot=window.prompt(_txt,''); if(mot===null) return;
+        const rev=this.anularMovimiento(d, mot); this.setState({modal:null, draft:{}});
+        this.toast(rev? 'Recaudo anulado · el pedido volvió a Cuentas por cobrar' : 'Transacción anulada · ya no afecta la caja'); };
       out.mdEditable=(!!d.editable || d.esTraslado===true || !!out.isAdmin); out.mdEsTraslado=(d.esTraslado===true);
       const _mdAuto=(!d.editable && !d.esTraslado);
       out.mdEditarLabel=_mdAuto? 'Ajustar transacción (Administrador)' : 'Editar';
