@@ -1407,7 +1407,7 @@
                   <div>
                     <sc-for list="{{ stockMezView }}" as="s" hint-placeholder-count="3">
                       <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border-subtle);">
-                        <span style="flex:1;min-width:0;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.nombre }}</span><span style="display:block;font-size:11px;color:var(--text-muted);">{{ s.inicialTxt }}rendimiento {{ s.rend }} ml/lote</span></span>
+                        <span style="flex:1;min-width:0;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.nombre }}</span><span style="display:block;font-size:11px;color:var(--text-muted);">{{ s.inicialTxt }}rendimiento {{ s.rend }} ml/lote · costo vigente {{ s.costoVigFmt }}</span><sc-if value="{{ s.hayDif }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:10.5px;color:var(--brand-primary);font-weight:700;margin-top:2px;">{{ s.difTxt }}</span></sc-if></span>
                         <span style="text-align:right;"><span style="display:block;font-size:15px;font-weight:800;color:var(--brand-ink);white-space:nowrap;">{{ s.ml }}</span><span style="display:block;font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;">ml</span></span>
                       </div>
                     </sc-for>
@@ -7113,6 +7113,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount(){
+    setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
     let data=null, sess=null;
     try{ data=JSON.parse(localStorage.getItem(this.STORAGE)); }catch(e){}
     try{ sess=JSON.parse(localStorage.getItem(this.SESSION)); }catch(e){}
@@ -7529,12 +7530,60 @@ class Component extends DCLogic {
     const upd=list.find(o=>o.id===d._id); this.toast(upd && upd.estado==='recibida' ? 'Entrega registrada · orden completa, inventario y costo actualizados' : 'Entrega parcial registrada · inventario y costo actualizados'); }
 
   // ---- mezclas, productos & kits (Desarrollo de producto) ----
-  refCostoUnit(code){ const m=this.state.materias.find(x=>x.codigo===code); if(m) return Number(m.costo)||0; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); if(mz) return this.mezclaCostoUnit(mz); const pr=(this.state.productos||[]).find(x=>x.codigo===code&&x.esReventa); if(pr) return Number(pr.costoCompra)||0; return 0; }
+  refCostoUnit(code){ const m=this.state.materias.find(x=>x.codigo===code); if(m) return Number(m.costo)||0; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); if(mz) return this.mezclaCostoMlActual(code); const pr=(this.state.productos||[]).find(x=>x.codigo===code&&x.esReventa); if(pr) return Number(pr.costoCompra)||0; return 0; }
   refNombre(code){ const m=this.state.materias.find(x=>x.codigo===code); if(m) return m.nombre; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); if(mz) return 'Mezcla '+mz.nombre; const pr=(this.state.productos||[]).find(x=>x.codigo===code&&x.esReventa); if(pr) return pr.nombre; return code; }
   refUnidad(code){ const m=this.state.materias.find(x=>x.codigo===code); if(m) return m.unidad; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); if(mz) return 'ml'; const pr=(this.state.productos||[]).find(x=>x.codigo===code&&x.esReventa); if(pr) return 'und'; return ''; }
   mezclaCosto(mz){ return (mz.formula||[]).reduce((a,f)=>{ const m=this.state.materias.find(x=>x.codigo===f.materiaCodigo); return a+(m?Number(m.costo)||0:0)*(Number(f.cantidad)||0); },0); }
   mezclaRendimiento(mz){ return (mz.formula||[]).reduce((a,f)=>a+(Number(f.cantidad)||0),0); }
   mezclaCostoUnit(mz){ const r=this.mezclaRendimiento(mz); return r>0? this.mezclaCosto(mz)/r : 0; }
+  // ---- Historial congelado de cada orden de producción de mezcla (OM) ----
+  // Editar la fórmula de una mezcla NO reescribe el pasado: cada OM guarda la fórmula,
+  // el rendimiento y el costo por lote con los que realmente se produjo. Las OM viejas
+  // (grabadas antes de este cambio, sin snapshot) siguen leyendo la fórmula actual.
+  omFormula(op){ if(op&&Array.isArray(op.formulaSnap)&&op.formulaSnap.length) return op.formulaSnap; const mz=(this.state.mezclas||[]).find(x=>x.codigo===(op&&op.mezclaCodigo)); return mz?(mz.formula||[]):[]; }
+  omRendimiento(op){ const r=Number(op&&op.rendimiento)||0; if(r>0) return r; return this.omFormula(op).reduce((a,f)=>a+(Number(f.cantidad)||0),0); }
+  omMl(op){ if(op&&op.ml!=null) return Number(op.ml)||0; return (Number(op&&op.lotes)||0)*this.omRendimiento(op); }
+  omCostoLote(op){ if(op&&op.costoLote!=null) return Number(op.costoLote)||0; return this.omFormula(op).reduce((a,f)=>{ const m=this.state.materias.find(x=>x.codigo===f.materiaCodigo); return a+(m?Number(m.costo)||0:0)*(Number(f.cantidad)||0); },0); }
+  omCostoMl(op){ const r=this.omRendimiento(op); return r>0? this.omCostoLote(op)/r : 0; }
+  omCostoTotal(op){ return this.omCostoMl(op)*this.omMl(op); }
+  // ---- Capas FIFO del stock de una mezcla ----
+  // Cada producción es una capa con su costo/ml congelado. El consumo sale de la capa más
+  // antigua primero, así que una fórmula nueva solo cambia el costo cuando se agota lo que ya hay.
+  _mezSig(){ const st=this.state; let s=(st.produccionesMezcla||[]).length+'|'+(st.producciones||[]).length+'|'+(st.ventas||[]).length+'|'+(st.kits||[]).length+'|'+(st.productos||[]).length;
+    (st.mezclas||[]).forEach(m=>{ s+='|'+m.codigo+':'+(m.formula||[]).map(f=>f.materiaCodigo+'x'+f.cantidad).join(',')+':'+(m.stockInicial||0); });
+    return s+'|'+(st.materias||[]).reduce((a,m)=>a+(Number(m.costo)||0),0); }
+  // Congela la fórmula en las OM registradas ANTES de que existiera el snapshot, para que
+  // editar una fórmula tampoco reescriba esas. Idempotente: solo toca las que no lo tienen
+  // y cuya mezcla ya está cargada con fórmula (así no congela contra datos a medio cargar).
+  _backfillOMSnaps(){
+    const st=this.state; const oms=st.produccionesMezcla||[]; const mezclas=st.mezclas||[];
+    if(!oms.length||!mezclas.length) return;
+    let hubo=false;
+    const list=oms.map(op=>{
+      if(op&&Array.isArray(op.formulaSnap)&&op.formulaSnap.length) return op;
+      const mz=mezclas.find(x=>x.codigo===(op&&op.mezclaCodigo)); if(!mz||!(mz.formula||[]).length) return op;
+      const rend=this.mezclaRendimiento(mz)||0; if(!(rend>0)) return op;
+      hubo=true;
+      return {...op, ml:(op.ml!=null? op.ml : (Number(op.lotes)||0)*rend), rendimiento:rend, costoLote:this.mezclaCosto(mz),
+        formulaSnap:(mz.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo, cantidad:Number(f.cantidad)||0}))};
+    });
+    if(!hubo) return;
+    this.setState({produccionesMezcla:list},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkProdMez(list);
+  }
+  mezclaCapas(code){ const st=this.state; const mz=(st.mezclas||[]).find(x=>x.codigo===code); if(!mz) return [];
+    const capas=[]; const ini=Number(mz.stockInicial)||0;
+    if(ini>0) capas.push({fecha:this.fechaInventarioInicial(), ml:ini, costoMl:(mz.costoMlInicial!=null?(Number(mz.costoMlInicial)||0):this.mezclaCostoUnit(mz)), etiqueta:'Inventario inicial'});
+    (st.produccionesMezcla||[]).filter(o=>o.mezclaCodigo===code).forEach(op=>{ const ml=this.omMl(op); if(ml>0) capas.push({fecha:op.fecha||'', ml, costoMl:this.omCostoMl(op), etiqueta:op.numero||''}); });
+    capas.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||''))); return capas; }
+  mezclaCapasRestantes(code){ const sig=this._mezSig(); if(!this._mezCache||this._mezCacheSig!==sig){ this._mezCache={}; this._mezCacheSig=sig; }
+    if(this._mezCache[code]) return this._mezCache[code];
+    let cons=this.materiaConsumoTotal(code); const out=[];
+    this.mezclaCapas(code).forEach(c=>{ if(cons<=0){ out.push({...c}); return; } if(cons>=c.ml){ cons-=c.ml; return; } out.push({...c, ml:c.ml-cons}); cons=0; });
+    this._mezCache[code]=out; return out; }
+  // Costo del próximo ml que se va a consumir = el de la capa más antigua que queda.
+  mezclaCostoMlActual(code){ const r=this.mezclaCapasRestantes(code); if(r.length&&r[0].ml>0) return r[0].costoMl; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); return mz?this.mezclaCostoUnit(mz):0; }
+  mezclaValorStock(code){ return this.mezclaCapasRestantes(code).reduce((a,c)=>a+c.ml*c.costoMl,0); }
   nuevaMezcla(){ this.open('mezcla',{ codigo:this.nextCode('MZ-',this.state.mezclas), nombre:'', descripcion:'', stockInicial:0, formula:[], _selMateria:'', _selCantidad:'', _new:true }); }
   editMezcla(mz){ this.open('mezcla',{...mz, stockInicial:(mz.stockInicial||0), formula:(mz.formula||[]).slice(), _selMateria:'', _selCantidad:''}); }
   addMezclaItem(){ const d=this.state.draft; if(!d._selMateria||!d._selCantidad){ this.toast('Elige un aceite y la cantidad'); return; } const f=(d.formula||[]).slice(); f.push({materiaCodigo:d._selMateria, cantidad:Number(d._selCantidad)||0}); this.setState({draft:{...d,formula:f,_selMateria:'',_selCantidad:''}}); }
@@ -7633,7 +7682,7 @@ class Component extends DCLogic {
   // Consumo de una materia/mezcla (por código) = producción de PT (fórmula) + producción de mezclas (fórmula) + kits con ese componente directo vendidos.
   materiaConsumoTotal(code){ let n=0;
     (this.state.producciones||[]).forEach(op=>{ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!p) return; (p.formula||[]).forEach(f=>{ if(f.materiaCodigo===code) n+=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); }); });
-    (this.state.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(this.state.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===code) n+=(Number(f.cantidad)||0)*(Number(op.lotes)||0); }); });
+    (this.state.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; if(!(this.state.mezclas||[]).some(x=>x.codigo===op.mezclaCodigo)) return; this.omFormula(op).forEach(f=>{ if(f.materiaCodigo===code) n+=(Number(f.cantidad)||0)*(Number(op.lotes)||0); }); });
     (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(this.state.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto' && ki.codigo===code) n+=u*(Number(ki.cantidad)||1); }); } }); (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===code) n+=(Number(e.cantidad)||0); }); });
     return n; }
   // Suma de los conteos físicos YA APROBADOS de una materia. Cada delta se calculó contra el
@@ -7727,7 +7776,7 @@ class Component extends DCLogic {
 
   // ---- producción de mezclas ----
   mezclaLotesProducidos(code){ return (this.state.produccionesMezcla||[]).filter(x=>x.mezclaCodigo===code).reduce((a,x)=>a+(Number(x.lotes)||0),0); }
-  mezclaMlProducidos(code){ const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); const r=mz?this.mezclaRendimiento(mz):0; return this.mezclaLotesProducidos(code)*r; }
+  mezclaMlProducidos(code){ return (this.state.produccionesMezcla||[]).filter(x=>x.mezclaCodigo===code).reduce((a,op)=>a+this.omMl(op),0); }
   mezclaMlInicial(code){ const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); return mz?(Number(mz.stockInicial)||0):0; }
   mezclaMlStock(code){ return this.mezclaMlInicial(code)+this.mezclaMlProducidos(code)-this.materiaConsumoTotal(code); }
   nextCodeProduccionMez(){ let max=0; (this.state.produccionesMezcla||[]).forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OM-2026-'+String(max+1).padStart(3,'0'); }
@@ -7735,7 +7784,7 @@ class Component extends DCLogic {
   saveProduccionMez(){ const d=this.state.draft; if(!d.mezclaCodigo){ this.toast('Selecciona una mezcla'); return; } const ml=Number(d.ml)||0; if(ml<=0){ this.toast('Indica cuántos ml vas a producir'); return; }
     const mz=(this.state.mezclas||[]).find(x=>x.codigo===d.mezclaCodigo); const rend=mz?this.mezclaRendimiento(mz):0; const lotes=rend>0? ml/rend : 0;
     const list=(this.state.produccionesMezcla||[]).slice(); const num=d._numero||this.nextCodeProduccionMez();
-    list.unshift({ id:'omz'+Date.now(), numero:num, mezclaCodigo:d.mezclaCodigo, ml, lotes, fecha:d.fecha||new Date().toISOString().slice(0,10) });
+    list.unshift({ id:'omz'+Date.now(), numero:num, mezclaCodigo:d.mezclaCodigo, ml, lotes, fecha:d.fecha||new Date().toISOString().slice(0,10), formulaSnap:(mz?(mz.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo, cantidad:Number(f.cantidad)||0})):[]), rendimiento:rend, costoLote:(mz?this.mezclaCosto(mz):0) });
     this.setState({produccionesMezcla:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProdMez(list[0]); this.toast('Producción '+num+' registrada · stock de mezcla actualizado'); }
 
   // ---- ventas ----
@@ -8378,8 +8427,8 @@ Instrucciones de respuesta:
     ...(this.state.productos||[]).map(p=>({codigo:p.codigo, nombre:p.nombre, precio:Number(p.precio)||0, tipo:'producto', costo:this.productoCosto(p)})),
     ...(this.state.kits||[]).map(k=>({codigo:k.codigo, nombre:k.nombre, precio:Number(k.precio)||0, tipo:'kit', costo:this.kitCosto(k)})),
     ...(this.state.materias||[]).map(m=>({codigo:m.codigo, nombre:m.nombre, precio:0, tipo:'materia', costo:Number(m.costo)||0})),
-    ...(this.state.mezclas||[]).map(mz=>({codigo:mz.codigo, nombre:'Mezcla '+mz.nombre, precio:0, tipo:'mezcla', costo:this.mezclaCostoUnit(mz)})) ]; }
-  cotItemCosto(it){ const code=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k); const m=(this.state.materias||[]).find(x=>x.codigo===code); if(m) return Number(m.costo)||0; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); if(mz) return this.mezclaCostoUnit(mz); return 0; }
+    ...(this.state.mezclas||[]).map(mz=>({codigo:mz.codigo, nombre:'Mezcla '+mz.nombre, precio:0, tipo:'mezcla', costo:this.mezclaCostoMlActual(mz.codigo)})) ]; }
+  cotItemCosto(it){ const code=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k); const m=(this.state.materias||[]).find(x=>x.codigo===code); if(m) return Number(m.costo)||0; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); if(mz) return this.mezclaCostoMlActual(code); return 0; }
   nextCotizacion(){ let max=0; (this.state.cotizaciones||[]).forEach(c=>{ const m=(c.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'COT-2026-'+String(max+1).padStart(3,'0'); }
   nuevaCotizacion(){ this.open('cotizacion',{ _new:true, _numero:this.nextCotizacion(), fecha:new Date().toISOString().slice(0,10), cliente:'', celular:'', correo:'', ciudad:'', items:[], envio:'', descuentoPct:0, validez:15, nota:'', _selProd:'', _selProdText:'', _selUnidades:1, _selValor:'' }); }
   editCotizacion(c){ this.open('cotizacion',{...c, _numero:c.numero, items:(c.items||[]).slice(), _selProd:'', _selProdText:'', _selUnidades:1, _selValor:''}); }
@@ -8753,7 +8802,7 @@ Instrucciones de respuesta:
   async cloudSaveProduccion(o){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('producciones').upsert(this._opToDb(o)); }catch(e){} }
   async cloudBulkProducciones(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('producciones').upsert(list.map(o=>this._opToDb(o))); }catch(e){} }
   cloudSubscribeProducciones(){ const sb=this._sbClient(); if(!sb||this._popSub) return; try{ this._popSub=sb.channel('oda-producciones').on('postgres_changes',{event:'*',schema:'public',table:'producciones'},()=>{ this.cloudLoadProducciones(); }).subscribe(); }catch(e){} }
-  async cloudLoadProdMez(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('producciones_mezcla').select('id,data'); if(error) throw error; if(data && data.length){ this.setState({produccionesMezcla:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.produccionesMezcla||[]; if(cur.length){ try{ await sb.from('producciones_mezcla').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
+  async cloudLoadProdMez(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('producciones_mezcla').select('id,data'); if(error) throw error; if(data && data.length){ this.setState({produccionesMezcla:data.map(r=>({...(r.data||{}), id:r.id}))},()=>{ this.persist(); this._backfillOMSnaps(); }); } else { const cur=this.state.produccionesMezcla||[]; if(cur.length){ try{ await sb.from('producciones_mezcla').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
   async cloudSaveProdMez(o){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('producciones_mezcla').upsert(this._opToDb(o)); }catch(e){} }
   async cloudBulkProdMez(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('producciones_mezcla').upsert(list.map(o=>this._opToDb(o))); }catch(e){} }
   cloudSubscribeProdMez(){ const sb=this._sbClient(); if(!sb||this._pomSub) return; try{ this._pomSub=sb.channel('oda-prodmez').on('postgres_changes',{event:'*',schema:'public',table:'producciones_mezcla'},()=>{ this.cloudLoadProdMez(); }).subscribe(); }catch(e){} }
@@ -9246,7 +9295,7 @@ Instrucciones de respuesta:
       else if(it.productoCodigo){ const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&this.padSku(ki.codigo)===this.padSku(codigo)) rows.push({fecha:mv.fecha||'',tipo:(u<0?'entrada':'salida'),concepto:cpt,cantidad:Math.abs(u)*(Number(ki.cantidad)||1)}); }); } }); });
     // − materiaConsumoTotal (si además se usa como componente)
     (st.producciones||[]).forEach(op=>{ const pr=(st.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!pr) return; (pr.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. PT · '+op.numero+' · '+pr.nombre,cantidad:cant}); } }); });
-    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
+    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; this.omFormula(op).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit (componente) · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); });
       (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
     rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
@@ -9258,10 +9307,9 @@ Instrucciones de respuesta:
     const st=this.state; const mez=(st.mezclas||[]).find(x=>x.codigo===codigo); if(!mez) return [];
     const fIni=this.fechaInventarioInicial();
     const rows=[{fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · conteo del '+this.fmtFecha(fIni),cantidad:(Number(mez.stockInicial)||0)}];
-    const rend=this.mezclaRendimiento(mez)||0;
-    (st.produccionesMezcla||[]).forEach(op=>{ if(op.mezclaCodigo!==codigo) return; const ml=(Number(op.lotes)||0)*rend; if(ml>0) rows.push({fecha:op.fecha||'',tipo:'entrada',concepto:'Producción · '+(op.numero||'')+' · '+(Number(op.lotes)||0)+' lote'+((Number(op.lotes)||0)===1?'':'s'),cantidad:ml}); });
+    (st.produccionesMezcla||[]).forEach(op=>{ if(op.mezclaCodigo!==codigo) return; const ml=this.omMl(op); if(ml>0) rows.push({fecha:op.fecha||'',tipo:'entrada',concepto:'Producción · '+(op.numero||'')+' · '+this.fmtCant(Math.round(ml))+' ml',cantidad:ml}); });
     (st.producciones||[]).forEach(op=>{ const p=(st.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!p) return; (p.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. PT · '+op.numero+' · '+p.nombre,cantidad:cant}); } }); });
-    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz||mz.codigo===codigo) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
+    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz||mz.codigo===codigo) return; this.omFormula(op).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return;
       (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); });
       (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
@@ -9279,7 +9327,7 @@ Instrucciones de respuesta:
     const rows=[{fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · conteo del '+this.fmtFecha(fIni),cantidad:base}];
     rows.push(...deliveries);
     (st.producciones||[]).forEach(op=>{ const p=(st.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!p) return; (p.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. PT · '+op.numero+' · '+p.nombre,cantidad:cant}); } }); });
-    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
+    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return; this.omFormula(op).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo){ rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); } }); } }); (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
     (st.conteos||[]).forEach(c=>{ if(c.codigo!==codigo||c.estado!=='aprobado') return;
       const dif=Number(c.diferencia)||0; if(!dif) return;
@@ -11539,11 +11587,13 @@ Instrucciones de respuesta:
       out.produccionesMezVacio=oms.length===0;
       out.omCount=oms.length;
       out.omLotes=oms.reduce((a,x)=>a+(Number(x.lotes)||0),0);
-      out.omMl=Math.round(oms.reduce((a,op)=>{ if(op.ml!=null) return a+(Number(op.ml)||0); const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); const r=mz?this.mezclaRendimiento(mz):0; return a+r*(Number(op.lotes)||0); },0));
-      const costoTot=oms.reduce((a,op)=>{ const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); const c=mz?this.mezclaCosto(mz):0; return a+c*(Number(op.lotes)||0); },0);
+      out.omMl=Math.round(oms.reduce((a,op)=>a+this.omMl(op),0));
+      const costoTot=oms.reduce((a,op)=>a+this.omCostoTotal(op),0);
       out.omCostoTotalFmt=this.fmt(Math.round(costoTot));
-      out.produccionesMezView=oms.slice().sort((a,b)=>{ const fa=a.fecha||'', fb=b.fecha||''; if(fb!==fa) return fb.localeCompare(fa); return String(b.numero||'').localeCompare(String(a.numero||'')); }).map(op=>{ const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); const r=mz?this.mezclaRendimiento(mz):0; const c=mz?this.mezclaCosto(mz):0; return {...op, mezclaNombre:mz?('Mezcla '+mz.nombre):op.mezclaCodigo, fechaFmt:this.fmtFecha(op.fecha), mlTotal:(op.ml!=null?Math.round(Number(op.ml)||0):Math.round(r*(Number(op.lotes)||0))), costoUnitFmt:this.fmt(Math.round(mz?this.mezclaCostoUnit(mz):0))+'/ml', totalFmt:this.fmt(Math.round(c*(Number(op.lotes)||0)))}; });
-      out.stockMezView=(st.mezclas||[]).map(mz=>({codigo:mz.codigo, nombre:mz.nombre, lotes:this.mezclaLotesProducidos(mz.codigo), inicial:(Number(mz.stockInicial)||0), inicialTxt:((Number(mz.stockInicial)||0)>0?('inicial '+(Number(mz.stockInicial)||0)+' ml · '):''), ml:this.mezclaMlStock(mz.codigo), rend:this.mezclaRendimiento(mz)}));
+      out.produccionesMezView=oms.slice().sort((a,b)=>{ const fa=a.fecha||'', fb=b.fecha||''; if(fb!==fa) return fb.localeCompare(fa); return String(b.numero||'').localeCompare(String(a.numero||'')); }).map(op=>{ const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); return {...op, mezclaNombre:mz?('Mezcla '+mz.nombre):op.mezclaCodigo, fechaFmt:this.fmtFecha(op.fecha), mlTotal:Math.round(this.omMl(op)), costoUnitFmt:this.fmt(Math.round(this.omCostoMl(op)))+'/ml', totalFmt:this.fmt(Math.round(this.omCostoTotal(op)))}; });
+      out.stockMezView=(st.mezclas||[]).map(mz=>{ const capas=this.mezclaCapasRestantes(mz.codigo); const vig=this.mezclaCostoMlActual(mz.codigo); const nuevo=this.mezclaCostoUnit(mz); const dif=Math.abs(nuevo-vig)>0.5 && capas.length>0;
+        return {codigo:mz.codigo, nombre:mz.nombre, lotes:this.mezclaLotesProducidos(mz.codigo), inicial:(Number(mz.stockInicial)||0), inicialTxt:((Number(mz.stockInicial)||0)>0?('inicial '+(Number(mz.stockInicial)||0)+' ml · '):''), ml:this.mezclaMlStock(mz.codigo), rend:this.mezclaRendimiento(mz),
+          costoVigFmt:this.fmt(Math.round(vig))+'/ml', hayDif:dif, difTxt:(dif?('la fórmula nueva costará '+this.fmt(Math.round(nuevo))+'/ml cuando se agoten estos '+this.fmtCant(Math.round(capas.reduce((a,c)=>a+c.ml,0)))+' ml'):'')}; });
       out.nuevaProduccionMez=()=>this.nuevaProduccionMez();
     }
 
@@ -11551,7 +11601,7 @@ Instrucciones de respuesta:
     if(onInv){
       const mpTipos=['aceite esencial','fragancia']; const empTipos=['empaque']; const envTipos=['envase']; const esInsumoMat=(m)=> !mpTipos.includes(m.tipo) && !empTipos.includes(m.tipo) && !envTipos.includes(m.tipo) && m.tipo!=='pt';
       const valMP=this.invBucketValor(mpTipos), valIns=this.invBucketValorFn(esInsumoMat), valEmp=this.invBucketValor(empTipos), valEnv=this.invBucketValor(envTipos);
-      const valMez=(st.mezclas||[]).reduce((a,mz)=>a+this.mezclaMlStock(mz.codigo)*this.mezclaCostoUnit(mz),0);
+      const valMez=(st.mezclas||[]).reduce((a,mz)=>a+this.mezclaValorStock(mz.codigo),0);
       const valPT=st.productos.reduce((a,p)=>a+this.productoValor(p),0);
       const total=valMP+valIns+valEmp+valEnv+valMez+valPT;
       if(out.showInvResumen){
@@ -11584,7 +11634,7 @@ Instrucciones de respuesta:
           else if(selCat==='insumos') rows=st.materias.filter(m=>esInsumoMat(m)&&!revC.has(m.codigo)).map(m=>mk(m.nombre,this.materiaStockActual(m),m.unidad,this.materiaValor(m)));
           else if(selCat==='empaque') rows=st.materias.filter(m=>empTipos.includes(m.tipo)&&!revC.has(m.codigo)).map(m=>mk(m.nombre,this.materiaStockActual(m),m.unidad,this.materiaValor(m)));
           else if(selCat==='envase') rows=st.materias.filter(m=>envTipos.includes(m.tipo)&&!revC.has(m.codigo)).map(m=>mk(m.nombre,this.materiaStockActual(m),m.unidad,this.materiaValor(m)));
-          else if(selCat==='mez') rows=(st.mezclas||[]).map(mz=>mk('Mezcla '+mz.nombre,this.mezclaMlStock(mz.codigo),'ml',this.mezclaMlStock(mz.codigo)*this.mezclaCostoUnit(mz)));
+          else if(selCat==='mez') rows=(st.mezclas||[]).map(mz=>mk('Mezcla '+mz.nombre,this.mezclaMlStock(mz.codigo),'ml',this.mezclaValorStock(mz.codigo)));
           else if(selCat==='pt') rows=st.productos.map(p=>mk(p.nombre,this.productoStockActual(p),'und',this.productoValor(p)));
           rows.sort((a,b)=>b._v-a._v);
           out.invCatLabel={mp:'Materia prima',insumos:'Insumos',empaque:'Empaques',envase:'Envases',mez:'Mezclas',pt:'Producto terminado'}[selCat];
