@@ -2631,6 +2631,7 @@
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap;">
                 <div style="display:flex;background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);overflow:hidden;">
                   <button onClick="{{ onKardexTipoMateria }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border:none;cursor:pointer;background:{{ kardexBgMat }};color:{{ kardexFgMat }};transition:background 140ms;">Materias e insumos</button>
+                  <button onClick="{{ onKardexTipoMezcla }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border:none;cursor:pointer;background:{{ kardexBgMez }};color:{{ kardexFgMez }};transition:background 140ms;">Mezclas</button>
                   <button onClick="{{ onKardexTipoProducto }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border:none;cursor:pointer;background:{{ kardexBgProd }};color:{{ kardexFgProd }};transition:background 140ms;">Productos terminados</button>
                 </div>
                 <div style="flex:1;max-width:440px;position:relative;">
@@ -2647,7 +2648,7 @@
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 20px;background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);">
                   <span style="color:var(--brand-primary);opacity:0.5;display:flex;margin-bottom:14px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/><line x1="7" y1="3" x2="7" y2="21"/></svg></span>
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin:0 0 6px;">Selecciona un item</h3>
-                  <p style="font-size:13.5px;color:var(--text-muted);max-width:380px;margin:0;text-wrap:pretty;">Elige una materia prima, insumo o producto terminado para ver todos sus movimientos de inventario en orden cronológico.</p>
+                  <p style="font-size:13.5px;color:var(--text-muted);max-width:380px;margin:0;text-wrap:pretty;">Elige una materia prima, insumo, mezcla o producto terminado para ver todos sus movimientos de inventario en orden cronológico.</p>
                 </div>
               </sc-if>
               <sc-if value="{{ kardexHaySel }}" hint-placeholder-val="{{ false }}">
@@ -9251,6 +9252,23 @@ Instrucciones de respuesta:
     rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
     let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; }); return rows;
   }
+  // Kardex de una mezcla (blend), en ml. Espeja exactamente mezclaMlStock():
+  // inicial + producción de mezcla − consumo (PT, otras mezclas, kits, empaques).
+  buildKardexMezcla(codigo){
+    const st=this.state; const mez=(st.mezclas||[]).find(x=>x.codigo===codigo); if(!mez) return [];
+    const fIni=this.fechaInventarioInicial();
+    const rows=[{fecha:fIni,tipo:'inicial',concepto:'Inventario inicial · conteo del '+this.fmtFecha(fIni),cantidad:(Number(mez.stockInicial)||0)}];
+    const rend=this.mezclaRendimiento(mez)||0;
+    (st.produccionesMezcla||[]).forEach(op=>{ if(op.mezclaCodigo!==codigo) return; const ml=(Number(op.lotes)||0)*rend; if(ml>0) rows.push({fecha:op.fecha||'',tipo:'entrada',concepto:'Producción · '+(op.numero||'')+' · '+(Number(op.lotes)||0)+' lote'+((Number(op.lotes)||0)===1?'':'s'),cantidad:ml}); });
+    (st.producciones||[]).forEach(op=>{ const p=(st.productos||[]).find(x=>x.codigo===op.productoCodigo); if(!p) return; (p.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.cantidad)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. PT · '+op.numero+' · '+p.nombre,cantidad:cant}); } }); });
+    (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz||mz.codigo===codigo) return; (mz.formula||[]).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
+    (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return;
+      (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (k.items||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); });
+      (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
+    rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
+    let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; });
+    return rows;
+  }
   buildKardexMateria(codigo){
     if(this.esProdReventa(codigo)) return this.buildKardexReventa(codigo);
     const st=this.state; const m=st.materias.find(x=>x.codigo===codigo); if(!m) return [];
@@ -11688,21 +11706,24 @@ Instrucciones de respuesta:
       if(out.showInvKardex){
         const tipoKdx=st.kardexTipo||'materia'; const codKdx=st.kardexCodigo||'';
         out.kardexCodigo=codKdx;
-        out.onKardexTipoMateria=()=>this.setState({kardexTipo:'materia',kardexCodigo:''});
-        out.onKardexTipoProducto=()=>this.setState({kardexTipo:'producto',kardexCodigo:''});
+        out.onKardexTipoMateria=()=>this.setState({kardexTipo:'materia',kardexCodigo:'',kardexText:''});
+        out.onKardexTipoProducto=()=>this.setState({kardexTipo:'producto',kardexCodigo:'',kardexText:''});
+        out.onKardexTipoMezcla=()=>this.setState({kardexTipo:'mezcla',kardexCodigo:'',kardexText:''});
         out.kardexBgMat=tipoKdx==='materia'?'var(--brand-ink)':'transparent';
         out.kardexFgMat=tipoKdx==='materia'?'#fff':'var(--text-muted)';
         out.kardexBgProd=tipoKdx==='producto'?'var(--brand-ink)':'transparent';
         out.kardexFgProd=tipoKdx==='producto'?'#fff':'var(--text-muted)';
-        out.kardexOptions=this.ordenarPorCodigo(tipoKdx==='materia'?st.materias.map(m=>({codigo:m.codigo,label:m.codigo+' · '+m.nombre})):(st.productos||[]).map(p=>({codigo:p.codigo,label:p.codigo+' · '+p.nombre})));
+        out.kardexBgMez=tipoKdx==='mezcla'?'var(--brand-ink)':'transparent';
+        out.kardexFgMez=tipoKdx==='mezcla'?'#fff':'var(--text-muted)';
+        out.kardexOptions=this.ordenarPorCodigo(tipoKdx==='materia'?st.materias.map(m=>({codigo:m.codigo,label:m.codigo+' · '+m.nombre})):(tipoKdx==='mezcla'?(st.mezclas||[]).map(mz=>({codigo:mz.codigo,label:mz.codigo+' · '+mz.nombre})):(st.productos||[]).map(p=>({codigo:p.codigo,label:p.codigo+' · '+p.nombre}))));
         { const _sel=out.kardexOptions.find(o=>o.codigo===codKdx); out.kardexSelText=(st.kardexText!==undefined?st.kardexText:(_sel?_sel.label:'')); }
         out.onKardexSel=(e)=>{ const v=String(e.target.value||''); const opt=out.kardexOptions.find(o=>o.label===v); this.setState({kardexText:v, kardexCodigo:(opt?opt.codigo:(v===''?'':this.state.kardexCodigo))}); };
         out.kardexHaySel=!!codKdx; out.kardexSinSel=!codKdx;
         if(codKdx){
-          const item=tipoKdx==='materia'?st.materias.find(x=>x.codigo===codKdx):(st.productos||[]).find(x=>x.codigo===codKdx);
+          const item=tipoKdx==='materia'?st.materias.find(x=>x.codigo===codKdx):(tipoKdx==='mezcla'?(st.mezclas||[]).find(x=>x.codigo===codKdx):(st.productos||[]).find(x=>x.codigo===codKdx));
           out.kardexNombreItem=item?item.nombre:'';
-          out.kardexUnidad=item?(tipoKdx==='materia'?item.unidad:'und'):'';
-          const rows=tipoKdx==='materia'?this.buildKardexMateria(codKdx):this.buildKardexProducto(codKdx);
+          out.kardexUnidad=item?(tipoKdx==='materia'?item.unidad:(tipoKdx==='mezcla'?'ml':'und')):'';
+          const rows=tipoKdx==='materia'?this.buildKardexMateria(codKdx):(tipoKdx==='mezcla'?this.buildKardexMezcla(codKdx):this.buildKardexProducto(codKdx));
           out.kardexRows=rows.map(r=>({ fecha:r.fecha||'—', concepto:r.concepto, signo:(r.tipo==='salida'?'-':'+'), cantidadFmt:this.fmtCant(r.cantidad), saldoFmt:this.fmtCant(Math.round(r.saldo*1000)/1000), saldoColor:r.saldo<0?'var(--oda-sale)':'var(--text-strong)', tipoBg:r.tipo==='inicial'?'#EFE9DD':(r.tipo==='entrada'?'rgba(98,123,96,0.13)':'rgba(181,80,60,0.10)'), tipoFg:r.tipo==='inicial'?'var(--text-body)':(r.tipo==='entrada'?'#4C6149':'#B5503C'), tipoLabel:r.tipo==='inicial'?'Base':(r.tipo==='entrada'?'Entrada':'Salida') }));
           out.kardexVacio=rows.length===0;
           const lastSaldo=rows.length>0?rows[rows.length-1].saldo:0;
