@@ -4557,7 +4557,7 @@
 
     <!-- ===================== MODAL ===================== -->
     <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(58,51,38,0.4);backdrop-filter:blur(2px);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(58,51,38,0.4);backdrop-filter:blur(2px);z-index:70;display:flex;align-items:center;justify-content:center;padding:24px;">
         <div onClick="{{ stop }}" class="oda-scroll" style="background:var(--surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:{{ modalMaxW }};max-height:88vh;overflow-y:auto;">
           <div style="padding:20px 24px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface-card);z-index:2;">
             <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0;">{{ modalTitle }}</h3>
@@ -5277,6 +5277,55 @@
                 <sc-if value="{{ detalle.puedeReactivar }}" hint-placeholder-val="{{ false }}">
                   <button onClick="{{ detalle.onReactivar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;" style-hover="background:var(--surface-raised)">Reactivar orden</button>
                 </sc-if>
+              </div>
+            </sc-if>
+
+            <!-- CERRAR CASO · DESENLACE CON LA TRANSPORTADORA -->
+            <sc-if value="{{ isModalCerrarCaso }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:12.5px;color:var(--text-body);margin:0 0 14px;line-height:1.6;">Ya le enviamos la reposición al cliente, pero el caso <strong>{{ ccFolio }}</strong> sigue abierto con <strong>{{ ccTransp }}</strong> (guía {{ ccGuia }}). Antes de cerrarlo, dinos cómo terminó: de eso depende si el producto vuelve al inventario o si entra plata.</p>
+              <div style="display:flex;flex-direction:column;gap:9px;">
+                <div onClick="{{ ccPickRetorno }}" style="border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:13px 15px;cursor:pointer;background:var(--surface-card);" style-hover="background:var(--surface-raised)">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <sc-if value="{{ ccEsRetorno }}" hint-placeholder-val="{{ false }}"><span style="width:15px;height:15px;border-radius:999px;border:5px solid var(--brand-primary);flex:0 0 auto;box-sizing:border-box;"></span></sc-if><sc-if value="{{ ccNoRetorno }}" hint-placeholder-val="{{ true }}"><span style="width:15px;height:15px;border-radius:999px;border:1px solid var(--border-strong);flex:0 0 auto;box-sizing:border-box;"></span></sc-if>
+                    <span style="font-size:13.5px;font-weight:700;color:var(--text-strong);">La transportadora retornó el paquete original</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:5px;line-height:1.5;">El producto vuelve a bodega y se reintegra al inventario. No entra plata.</div>
+                  <sc-if value="{{ ccEsRetorno }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top:11px;padding-top:11px;border-top:1px solid var(--border-subtle);">
+                      <sc-if value="{{ ccHayItems }}" hint-placeholder-val="{{ true }}">
+                        <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:7px;">Vuelve al inventario</div>
+                        <sc-for list="{{ ccItems }}" as="it" hint-placeholder-count="2">
+                          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--text-body);padding:3px 0;"><span>{{ it.nombre }}</span><span style="font-weight:700;">{{ it.uds }} uds</span></div>
+                        </sc-for>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+                <div onClick="{{ ccPickSeguro }}" style="border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:13px 15px;cursor:pointer;background:var(--surface-card);" style-hover="background:var(--surface-raised)">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <sc-if value="{{ ccEsSeguro }}" hint-placeholder-val="{{ false }}"><span style="width:15px;height:15px;border-radius:999px;border:5px solid var(--brand-primary);flex:0 0 auto;box-sizing:border-box;"></span></sc-if><sc-if value="{{ ccNoSeguro }}" hint-placeholder-val="{{ true }}"><span style="width:15px;height:15px;border-radius:999px;border:1px solid var(--border-strong);flex:0 0 auto;box-sizing:border-box;"></span></sc-if>
+                    <span style="font-size:13.5px;font-weight:700;color:var(--text-strong);">La transportadora pagó el valor del seguro</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:5px;line-height:1.5;">El paquete se perdió: entra el dinero del siniestro a la cuenta que elijas. El inventario no cambia.</div>
+                  <sc-if value="{{ ccEsSeguro }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:11px;padding-top:11px;border-top:1px solid var(--border-subtle);">
+                      <label style="font-size:12px;font-weight:700;color:var(--text-body);">Valor pagado (COP)<input name="seguroMonto" type="number" value="{{ draft.seguroMonto }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                      <label style="font-size:12px;font-weight:700;color:var(--text-body);">¿A qué cuenta entró?<select name="seguroCuenta" value="{{ draft.seguroCuenta }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><sc-for list="{{ cuentasOptions }}" as="c" hint-placeholder-count="2"><option value="{{ c }}">{{ c }}</option></sc-for></select></label>
+                    </div>
+                  </sc-if>
+                </div>
+                <div onClick="{{ ccPickNinguno }}" style="border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:13px 15px;cursor:pointer;background:var(--surface-card);" style-hover="background:var(--surface-raised)">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <sc-if value="{{ ccEsNinguno }}" hint-placeholder-val="{{ false }}"><span style="width:15px;height:15px;border-radius:999px;border:5px solid var(--brand-primary);flex:0 0 auto;box-sizing:border-box;"></span></sc-if><sc-if value="{{ ccNoNinguno }}" hint-placeholder-val="{{ true }}"><span style="width:15px;height:15px;border-radius:999px;border:1px solid var(--border-strong);flex:0 0 auto;box-sizing:border-box;"></span></sc-if>
+                    <span style="font-size:13.5px;font-weight:700;color:var(--text-strong);">Ni retorno ni seguro</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:5px;line-height:1.5;">Se cierra sin recuperar nada. La pérdida queda cargada al caso.</div>
+                </div>
+              </div>
+              <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);margin-top:14px;">Nota del cierre <span style="font-weight:400;color:var(--text-muted);">· opcional</span><textarea name="nota" value="{{ draft.nota }}" onInput="{{ onDraftInput }}" rows="2" placeholder="Ej.: la transportadora reconoció el siniestro el 4 de agosto" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);resize:vertical;"></textarea></label>
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+                <button onClick="{{ ccCancelar }}" style="font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 20px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Volver</button>
+                <button onClick="{{ ccConfirmar }}" style="font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#fff;cursor:pointer;">Cerrar el caso</button>
               </div>
             </sc-if>
 
@@ -10416,7 +10465,65 @@ Instrucciones de respuesta:
     if(res==='reembolso' && dinero>0){ nota += ' Reembolso de '+this.casoCop(dinero)+' registrado en Finanzas.'; }
     if(res==='nota_credito' && dinero>0){ nota += ' Nota crédito de '+this.casoCop(dinero)+' registrada en Finanzas.'; }
     return {...c, _impAplicados:true, costo:nuevoCosto, movimientoId:movId, msvcIds, impactos:auto, invNota:nota.trim() }; }
-  casoAvanzar(){ const id=this.state.casoOpenId; const est=this.casoEstados(); let saved=null, msg='Caso actualizado'; const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; const i=est.indexOf(c.estado); if(i>=est.length-1) return c; const next=est[i+1]; let nc={...c, estado:next}; if(next==='resuelto'){ nc=this.aplicarImpactosCaso(nc); const acc=(nc.impactos||[]).map(k=>this.casoImpactoMeta(k).l); msg=acc.length?('Resuelto · aplicado: '+acc.join(' · ')):'Caso resuelto'; } nc.timeline=(c.timeline||[]).concat([{estado:next, fecha:new Date().toISOString().slice(0,10), who:(c.responsable||''), nota: (next==='resuelto'&&(nc.impactos||[]).length)?('Impactos aplicados automáticamente: '+(nc.impactos||[]).map(k=>this.casoImpactoMeta(k).l).join(', ')+'.'):''}]); saved=nc; return nc; }); this.setState({casos:list},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); this.toast(msg); }
+  casoAvanzar(){ const id=this.state.casoOpenId; const est=this.casoEstados();
+    const cur=(this.state.casos||[]).find(x=>x.id===id);
+    // El último paso es el cierre: siempre por el mismo camino que el botón «Cerrar caso»,
+    // para no saltarse la pregunta del desenlace con la transportadora.
+    if(cur && est.indexOf(cur.estado)===est.length-2){ this.abrirCierreCaso(); return; }
+    let saved=null, msg='Caso actualizado'; const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; const i=est.indexOf(c.estado); if(i>=est.length-1) return c; const next=est[i+1]; let nc={...c, estado:next}; if(next==='resuelto'){ nc=this.aplicarImpactosCaso(nc); const acc=(nc.impactos||[]).map(k=>this.casoImpactoMeta(k).l); msg=acc.length?('Resuelto · aplicado: '+acc.join(' · ')):'Caso resuelto'; } nc.timeline=(c.timeline||[]).concat([{estado:next, fecha:new Date().toISOString().slice(0,10), who:(c.responsable||''), nota: (next==='resuelto'&&(nc.impactos||[]).length)?('Impactos aplicados automáticamente: '+(nc.impactos||[]).map(k=>this.casoImpactoMeta(k).l).join(', ')+'.'):''}]); saved=nc; return nc; }); this.setState({casos:list},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); this.toast(msg); }
+  // ¿Hay algo pendiente con la transportadora al cerrar? (ya se repuso el producto al
+  // cliente, pero el paquete original o el seguro siguen en manos de la transportadora)
+  casoCierrePendiente(c){ if(!c) return false; const dp=c.disputa||{};
+    const hayDisputa=!!(dp.transportadora||dp.guia||dp.monto||dp.estado);
+    if(dp.cierreDesenlace) return false;
+    return hayDisputa || this.casoTipoTransportadora(c.tipo); }
+  abrirCierreCaso(){ const c=(this.state.casos||[]).find(x=>x.id===this.state.casoOpenId); if(!c){ return; }
+    if(!this.casoCierrePendiente(c)){ this.casoCerrar(); return; }
+    const dp=c.disputa||{}; const v=this.casoVentaLink?this.casoVentaLink(c):null;
+    const opts=this.casoItemOptions();
+    const orig=((v&&v.items)||[]).map(it=>{ const cod=(it.productoCodigo||it.referencia||''); const o=opts.find(z=>z.codigo===cod);
+      return { codigo:cod, nombre:((o&&o.nombre)||it.producto||cod||''), unidades:(Number(it.unidades)||0) }; });
+    this.open('cerrarcaso', { casoId:c.id, folio:(c.folio||''), desenlace:'', transportadora:(dp.transportadora||c.transportadora||'Coordinadora'), guia:(dp.guia||c.guia||''),
+      seguroMonto:(dp.reintegro? String(dp.reintegro) : (dp.monto? String(dp.monto) : String(Number(c.costo)||''))), seguroCuenta:(dp.reintegroCuenta||this.primeraCuenta()),
+      _items:orig, _yaReintegro:!!dp._reintegroHecho, nota:'' }); }
+  cierreCasoItems(){ return ((this.state.draft&&this.state.draft._items)||[]); }
+  // Cierra el caso aplicando el desenlace con la transportadora:
+  //  · retorno → el paquete original vuelve a bodega: reingresa al inventario
+  //  · seguro  → la transportadora paga el siniestro: entra plata a la cuenta
+  //  · ninguno → se cierra sin recuperar nada (pérdida ya cargada al caso)
+  confirmarCierreCaso(){ const d=this.state.draft||{}; const c=(this.state.casos||[]).find(x=>x.id===d.casoId); if(!c) return;
+    const des=d.desenlace;
+    if(!des){ this.toast('Elige cómo terminó el caso con la transportadora'); return; }
+    const hoy=new Date().toISOString().slice(0,10); const uid=this.casoCurrentUid(); const who=this.casoUserName();
+    let msvc=null, mov=null, resumen='';
+    if(des==='retorno'){
+      const items=(d._items||[]).filter(it=>it.codigo && (Number(it.unidades)||0)>0).map(it=>({productoCodigo:it.codigo, nombre:it.nombre||'', unidades:-(Number(it.unidades)||0)}));
+      if(!items.length){ this.toast('El pedido original no tiene productos para reintegrar'); return; }
+      msvc={ id:'msvcrt'+Date.now(), fecha:hoy, responsableId:uid, responsableNombre:who, destinatario:c.cliente||'', ciudad:c.ciudad||'', motivo:'Retorno de la transportadora · Caso '+(c.folio||''), casoId:c.id, reingreso:true, items };
+      resumen='La transportadora retornó el paquete original · '+items.length+' referencia(s) reintegrada(s) al inventario';
+    } else if(des==='seguro'){
+      const monto=Number(d.seguroMonto)||0;
+      if(monto<=0){ this.toast('Escribe el valor que pagó la transportadora'); return; }
+      if(d._yaReintegro){ this.toast('El reintegro ya se había registrado en la disputa'); return; }
+      mov={ id:'mv'+Date.now(), ts:Date.now(), tipo:'ingreso', fecha:hoy, cuenta:(d.seguroCuenta||this.primeraCuenta()), monto, categoria:'Reintegro transportadora',
+        concepto:'Seguro '+(d.transportadora||'')+(d.guia?(' · guía '+d.guia):'')+' · Caso '+(c.folio||'') };
+      resumen='La transportadora pagó el seguro por '+this.casoCop(monto);
+    } else { resumen='Se cerró sin recuperar el paquete ni el seguro'; }
+    const dp={...(c.disputa||{}), cierreDesenlace:des, cierreResumen:resumen, cierreFecha:hoy };
+    if(des==='seguro'){ dp.reintegro=Number(d.seguroMonto)||0; dp.reintegroCuenta=(d.seguroCuenta||''); dp._reintegroHecho=true; dp.abierta=false; dp.estado='aprobada'; }
+    if(des==='retorno'){ dp.abierta=false; }
+    const nota=String(d.nota||'').trim();
+    let saved=null;
+    const list=(this.state.casos||[]).map(x=>{ if(x.id!==d.casoId) return x;
+      saved={...x, estado:'cerrado', disputa:dp, msvcIds:((x.msvcIds||[]).concat(msvc?[msvc.id]:[])),
+        timeline:(x.timeline||[]).concat([{estado:'cerrado', fecha:hoy, who:(x.responsable||who), nota:(resumen+(nota?(' · '+nota):''))}]) };
+      return saved; });
+    const patch={casos:list, modal:null, draft:{}};
+    if(msvc) patch.msvc=[msvc].concat(this.state.msvc||[]);
+    if(mov) patch.movimientos=[mov].concat(this.state.movimientos||[]);
+    this.setState(patch,()=>this.persist());
+    if(this.cloudOn()){ if(saved) this.cloudSaveCaso(saved); if(msvc&&this.cloudSaveMsvc) this.cloudSaveMsvc(msvc); if(mov) this.cloudSaveMovimiento(mov); }
+    this.toast(des==='retorno'?'Caso cerrado · producto reintegrado al inventario':(des==='seguro'?'Caso cerrado · ingreso del seguro registrado':'Caso cerrado')); }
   casoCerrar(){ const id=this.state.casoOpenId; let saved=null; const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; const nc={...c, estado:'cerrado', timeline:(c.timeline||[]).concat([{estado:'cerrado', fecha:new Date().toISOString().slice(0,10), who:(c.responsable||''), nota:''}])}; saved=nc; return nc; }); this.setState({casos:list},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); this.toast('Caso cerrado'); }
   casoAbrirDisputa(){ const c=(this.state.casos||[]).find(x=>x.id===this.state.casoOpenId); if(!c) return; const dp=c.disputa||{}; const v=this.casoVentaLink?this.casoVentaLink(c):null; const guiaOrig=(dp.guia)||(v&&v.guia)||c.guia||''; const pedRef=(v?this.ventaRef(v):(c.pedido||c.ov||'')); this.open('disputa', { casoId:c.id, pedidoRef:pedRef, transportadora:(dp.transportadora||(v&&v.metodoPago&&/coordinadora/i.test(v.metodoPago)?'Coordinadora':'')||c.transportadora||'Coordinadora'), guia:guiaOrig, monto:(dp.monto!=null?String(dp.monto):String(Number(c.costo)||'')), estado:(dp.estado||'radicada'), nota:(dp.nota||''), reintegro:(dp.reintegro!=null?String(dp.reintegro):''), reintegroCuenta:(dp.reintegroCuenta||this.primeraCuenta()) }); }
   saveDisputa(){ const d=this.state.draft; const cid=d.casoId; let saved=null, mv=null;
@@ -12232,7 +12339,7 @@ Instrucciones de respuesta:
     }
     // drawer detalle
     const curCaso=casos.find(c=>c.id===st.casoOpenId);
-    out.casoDrawerOpen=!!curCaso; out.closeCasoDrawer=()=>this.closeCasoDrawer(); out.casoAdvanceBtn=()=>this.casoAvanzar(); out.casoCerrarBtn=()=>this.casoCerrar(); out.casoSegText=st.casoSegText||''; out.onCasoSegText=(e)=>this.setState({casoSegText:e.target.value}); out.casoAddSeguimientoBtn=()=>this.casoAddSeguimiento();
+    out.casoDrawerOpen=!!curCaso; out.closeCasoDrawer=()=>this.closeCasoDrawer(); out.casoAdvanceBtn=()=>this.casoAvanzar(); out.casoCerrarBtn=()=>this.abrirCierreCaso(); out.casoSegText=st.casoSegText||''; out.onCasoSegText=(e)=>this.setState({casoSegText:e.target.value}); out.casoAddSeguimientoBtn=()=>this.casoAddSeguimiento();
     if(curCaso){ const cc=curCaso; const tm=this.casoTipoMeta(cc.tipo), em=this.casoEstadoMeta(cc.estado); const applied=(cc.estado==='resuelto'||cc.estado==='cerrado'); const tl=cc.timeline||[];
       out.cd={ folio:cc.folio, tipoL:tm.l, tipoBg:tm.bg, tipoFg:tm.fg, estL:em.l, estBg:em.bg, estFg:em.fg, estDot:em.dot, cliente:cc.cliente, ciudad:cc.ciudad||'—', canal:cc.canal, pedidoTxt:(cc.pedido||cc.ov||'Sin pedido'), ov:(cc.ov||'Caso suelto'), producto:cc.producto||'—', motivoLargo:cc.motivoLargo||cc.motivo||'', resolL:this.casoResolMeta(cc.resolucion), costoFmt:(cc.estado==='resuelto'||cc.estado==='cerrado')?(Number(cc.costo)>0?this.casoCop(cc.costo):'Sin costo'):(this.casoCostoEstimado(cc)>0?('~ '+this.casoCop(this.casoCostoEstimado(cc))+' (estimado)'):'Sin costo'), costoColor:((cc.estado==='resuelto'||cc.estado==='cerrado')?((cc.resolucion==='rechazado'||cc.resolucion==='pendiente')?'var(--text-body)':'var(--oda-sale,#B5503C)'):'var(--text-muted)'), responsable:cc.responsable||'—', venceFmt:cc.vence?this.fmtFecha(cc.vence):'—', telFmt:this.casoTelFmt(cc),
         hasAdjuntos:(cc.adjuntos||[]).length>0, adjuntosCount:(cc.adjuntos||[]).length, adjuntos:(cc.adjuntos||[]).map((a,i)=>({name:a.name,isImg:!!a.isImg,isPdf:!a.isImg,thumb:['#8A9B8A','#A78659','#6596A6','#B58A6A','#627B60'][i%5]})),
@@ -12243,7 +12350,7 @@ Instrucciones de respuesta:
         envioItems:(cc.items||[]).map(it=>({nombre:it.nombre, tipoL:(it.tipo==='producto'?'Producto':(it.tipo==='kit'?'Kit':'Insumo')), unidades:it.unidades})), hasEnvioItems:(cc.items||[]).length>0,
         guia:cc.guia||'', transportadora:cc.transportadora||'', envioShow:((cc.resolucion==='reenvio'||cc.resolucion==='cambio_prod') && !!((cc.items||[]).length || cc.guia || cc.transportadora)),
         timeline:tl.map((e,i)=>{ const m=this.casoEstadoMeta(e.estado); const isEv=!!e.evento; return {label:(e.titulo||m.l), fecha:this.fmtFecha(e.fecha), who:e.who||'', hasWho:!!e.who, nota:e.nota||'', hasNota:!!(e.nota&&e.nota.trim()), dot:(isEv?'#A78659':m.dot), line:i<tl.length-1}; }),
-        canAdvance:cc.estado!=='cerrado', advanceLabel:(cc.estado==='abierto'?'Pasar a en gestión':(cc.estado==='gestion'?'Marcar resuelto':'Cerrar caso')), canClose:cc.estado==='resuelto' };
+        canAdvance:(cc.estado!=='cerrado' && cc.estado!=='resuelto'), advanceLabel:(cc.estado==='abierto'?'Pasar a en gestión':(cc.estado==='gestion'?'Marcar resuelto':'Cerrar caso')), canClose:cc.estado==='resuelto' };
       out.casoAsigneeName=this.casoAsigneeName(cc.asignadoA); out.casoAsigneeId=cc.asignadoA||''; out.casoReasignarOpts=this.casoAsigneeOptions(); out.onCasoReasignar=(e)=>this.casoReasignar(e.target.value);
       const wt=this.casoWaTemplates(cc); const defKey=(cc.estado==='cerrado')?'cierre':((cc.estado==='resuelto')?'solucion':'gestion'); const activeKey=st.casoWaTpl||defKey;
       out.casoWaChips=[{k:'gestion',l:'En gestión'},{k:'solucion',l:'Solución'},{k:'cierre',l:'Cierre'}].map(x=>{ const a=x.k===activeKey; return {l:x.l, onClick:()=>this.setState({casoWaMsg:wt[x.k],casoWaTpl:x.k}), border:a?'#4C6149':'var(--border-subtle)', bg:a?'rgba(98,123,96,0.14)':'var(--surface-card)', fg:a?'#3A4A38':'var(--text-body)'}; });
@@ -12261,6 +12368,20 @@ Instrucciones de respuesta:
       out.casoEliminarBtn=()=>{ if(window.confirm('¿Borrar el caso '+(cc.folio||'')+' de '+(cc.cliente||'')+'? Esta acción no se puede deshacer.')) this.eliminarCaso(cc.id); };
       { const cfg=String(((st.reglasNeg||{}).waAlist)||'').trim(); out.casoAlistDestTxt = cfg? (/chat\.whatsapp\.com/i.test(cfg)?'Se abre el grupo configurado y el mensaje queda copiado para pegar.':'Se envía directo al chat configurado ('+cfg+').') : 'Configura el grupo fijo en Administración → Tablero. Por ahora eliges el grupo en WhatsApp.'; }
     } else { out.cd={folio:'',tipoL:'',tipoBg:'',tipoFg:'',estL:'',estBg:'',estFg:'',estDot:'',cliente:'',ciudad:'',canal:'',pedidoTxt:'',ov:'',producto:'',motivoLargo:'',resolL:'',costoFmt:'',costoColor:'',responsable:'',venceFmt:'',telFmt:'',hasAdjuntos:false,adjuntosCount:0,adjuntos:[],impactosTitle:'',sinImpactos:false,impactos:[],costeoShow:false,costeoTitulo:'',costeoNota:'',destinoShow:false,destinoLabel:'',envioItems:[],hasEnvioItems:false,guia:'',transportadora:'',envioShow:false,timeline:[],canAdvance:false,advanceLabel:'',canClose:false}; out.casoWaChips=[]; out.casoWaMsg=''; out.onCasoWaInput=()=>{}; out.casoWaSendBtn=()=>{}; out.casoAsigneeName='Sin asignar'; out.casoAsigneeId=''; out.casoReasignarOpts=[]; out.onCasoReasignar=()=>{}; }
+    // modal de cierre de caso (desenlace con la transportadora)
+    out.isModalCerrarCaso=st.modal==='cerrarcaso';
+    if(st.modal==='cerrarcaso'){ const d=st.draft||{};
+      out.ccFolio=d.folio||''; out.ccTransp=d.transportadora||'—'; out.ccGuia=d.guia||'—';
+      out.ccEsRetorno=(d.desenlace==='retorno'); out.ccEsSeguro=(d.desenlace==='seguro'); out.ccEsNinguno=(d.desenlace==='ninguno');
+      out.ccNoRetorno=!out.ccEsRetorno; out.ccNoSeguro=!out.ccEsSeguro; out.ccNoNinguno=!out.ccEsNinguno;
+      out.ccPickRetorno=()=>this.setState({draft:{...(this.state.draft||{}), desenlace:'retorno'}});
+      out.ccPickSeguro=()=>this.setState({draft:{...(this.state.draft||{}), desenlace:'seguro'}});
+      out.ccPickNinguno=()=>this.setState({draft:{...(this.state.draft||{}), desenlace:'ninguno'}});
+      out.ccItems=(d._items||[]).filter(it=>it.codigo).map(it=>({nombre:(it.nombre||it.codigo), uds:String(Number(it.unidades)||0)}));
+      out.ccHayItems=out.ccItems.length>0;
+      out.ccCancelar=()=>this.setState({modal:null, draft:{}});
+      out.ccConfirmar=()=>this.confirmarCierreCaso();
+    }
     // modal nuevo caso
     out.casoModalOpen=st.casoModal; out.closeCasoModalBtn=()=>this.cerrarCasoModal();
     out.casoModalTitle=(st.casoDraft&&st.casoDraft._edit)?('Editar caso '+(st.casoDraft.folio||'')):'Registrar caso de servicio';
@@ -12545,9 +12666,9 @@ Instrucciones de respuesta:
     out.onDraftInput=(e)=>this.updateDraft(e.target.name,e.target.value);
     out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     out.onDraftIvaExento=(e)=>this.onDraftIvaExento(e);
-    const titles={cancelorden:'Cancelar orden de compra',fechaentrega:'Corregir fecha de recepción',editmasivo:'Editar productos seleccionados',proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',recibirorden:'Marcar orden como recibida',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),pagargasto:((st.draft._mvId?'Editar pago \u00b7 ':'Registrar pago \u00b7 ')+(st.draft.concepto||'')),pagarsvc:('Pagar servicio \u00b7 '+(st.draft.nombre||'')),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),msvc:(st.draft._new?'Registrar MSVC · muestras sin valor comercial':'Editar MSVC'),traslado:'Traslado entre cuentas',pagartarjeta:('Pagar tarjeta · '+(st.draft._tarjeta||'')),credito:(st.draft._new?(st.draft.direccion==='recibido'?'Registrar crédito recibido':'Registrar préstamo otorgado'):('Editar '+(st.draft.direccion==='recibido'?'crédito':'préstamo'))),abonocred:((st.draft._dir==='otorgado'?'Registrar cobro · ':'Registrar pago · ')+(st.draft._nombre||'')),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
+    const titles={cerrarcaso:'Cerrar caso de servicio',cancelorden:'Cancelar orden de compra',fechaentrega:'Corregir fecha de recepción',editmasivo:'Editar productos seleccionados',proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',recibirorden:'Marcar orden como recibida',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),pagargasto:((st.draft._mvId?'Editar pago \u00b7 ':'Registrar pago \u00b7 ')+(st.draft.concepto||'')),pagarsvc:('Pagar servicio \u00b7 '+(st.draft.nombre||'')),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),msvc:(st.draft._new?'Registrar MSVC · muestras sin valor comercial':'Editar MSVC'),traslado:'Traslado entre cuentas',pagartarjeta:('Pagar tarjeta · '+(st.draft._tarjeta||'')),credito:(st.draft._new?(st.draft.direccion==='recibido'?'Registrar crédito recibido':'Registrar préstamo otorgado'):('Editar '+(st.draft.direccion==='recibido'?'crédito':'préstamo'))),abonocred:((st.draft._dir==='otorgado'?'Registrar cobro · ':'Registrar pago · ')+(st.draft._nombre||'')),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
     out.modalTitle = st.modal ? (st.modal==='dianpago' ? 'Pago de impuestos DIAN' : st.modal==='disputa' ? 'Disputa con transportadora' : st.modal==='basedetalle' ? ('Ventas · '+(st.baseDetLabel||'')) : st.modal==='detalle' ? (st.detalleId? 'Detalle de orden':'Detalle') : st.modal==='cliente' ? 'Ficha de cliente' : st.modal==='wacampaign' ? 'Campaña de WhatsApp' : st.modal==='saldoreal' ? 'Saldo real de la cuenta' : titles[st.modal]) : '';
-    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview' && st.modal!=='cancelorden';
+    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview' && st.modal!=='cancelorden' && st.modal!=='cerrarcaso';
     if(st.modal==='basedetalle'){ const dim=st.baseDetDim, key=st.baseDetKey;
       const all=(st.ventas||[]); const match=(v)=>{ if(dim==='canal') return (v.canal||'')===key; if(dim==='ciudad') return (v.ciudad||'—')===key; if(dim==='periodo'){ return (v.fecha||'').slice(0, key.length)===key; } return false; };
       const sel=all.filter(match);
