@@ -3946,7 +3946,7 @@
                       <h3 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin:0;flex:1;">Transacciones anuladas</h3>
                       <span style="font-size:11.5px;color:var(--text-muted);">{{ fcjAnulN }}</span>
                     </div>
-                    <p style="font-size:11.5px;color:var(--text-muted);margin:0;padding:10px 18px 0;line-height:1.5;text-wrap:pretty;">No cuentan en el saldo ni generan 4×1000. El pedido, la orden o la liquidación que las originó sigue intacta.</p>
+                    <p style="font-size:11.5px;color:var(--text-muted);margin:0;padding:10px 18px 0;line-height:1.5;text-wrap:pretty;">No cuentan en el saldo ni generan 4×1000. Si era el recaudo de un pedido, ese pedido volvió a Cuentas por cobrar con su saldo; las de órdenes y liquidaciones no tocan su documento de origen.</p>
                     <sc-for list="{{ fcjAnulados }}" as="a" hint-placeholder-count="0">
                       <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
                         <div style="flex:1;min-width:180px;">
@@ -5242,6 +5242,41 @@
                   </div>
                 </div>
               </sc-if>
+              <sc-if value="{{ detalle.anulada }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:16px;background:rgba(181,80,60,0.09);border:1px solid rgba(181,80,60,0.32);border-radius:var(--radius-md);padding:12px 14px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#B5503C;font-weight:800;margin-bottom:4px;">Orden cancelada</div>
+                  <div style="font-size:12.5px;color:var(--text-body);line-height:1.5;">{{ detalle.cancelInfo }}</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;line-height:1.5;">No suma inventario, no genera cuenta por pagar y no mueve caja, IVA ni retenciones.</div>
+                </div>
+              </sc-if>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+                <sc-if value="{{ detalle.puedeCancelar }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ detalle.onCancelar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border:1px solid rgba(181,80,60,0.45);border-radius:var(--radius-pill);background:transparent;color:#B5503C;cursor:pointer;" style-hover="background:rgba(181,80,60,0.1)">Cancelar orden</button>
+                </sc-if>
+                <sc-if value="{{ detalle.puedeReactivar }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ detalle.onReactivar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;" style-hover="background:var(--surface-raised)">Reactivar orden</button>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <!-- CANCELAR ORDEN DE COMPRA -->
+            <sc-if value="{{ isModalCancelOrden }}" hint-placeholder-val="{{ false }}">
+              <div style="background:rgba(181,80,60,0.09);border:1px solid rgba(181,80,60,0.32);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;">
+                <div style="font-size:13px;color:var(--text-body);line-height:1.6;">Vas a cancelar la orden <strong>{{ coNumero }}</strong> de <strong>{{ coProveedor }}</strong>.</div>
+                <div style="font-size:12.5px;color:var(--text-muted);margin-top:5px;">Total {{ coTotal }} · Pagado {{ coPagado }}</div>
+              </div>
+              <div style="font-size:12.5px;color:var(--text-body);line-height:1.6;margin-bottom:12px;">La orden queda en el historial con motivo, autor y fecha, pero deja de tener efecto: no suma inventario, no genera cuenta por pagar y no mueve caja, IVA ni retenciones.</div>
+              <sc-if value="{{ coHayEntregas }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:12.5px;font-weight:700;color:#8A6522;margin-bottom:8px;">Ojo: esta orden ya tiene recepciones registradas. Al cancelarla, ese inventario deja de contar.</div>
+              </sc-if>
+              <sc-if value="{{ coHayPagos }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:12.5px;font-weight:700;color:#8A6522;margin-bottom:8px;">Ojo: esta orden ya tiene pagos registrados. Revisa caja y bancos después de cancelar.</div>
+              </sc-if>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Motivo de la cancelación<textarea value="{{ coMotivo }}" onInput="{{ onCoMotivo }}" rows="3" placeholder="Ej.: el proveedor no tenía existencias" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);resize:vertical;"></textarea></label>
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+                <button onClick="{{ coCancelar }}" style="font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 20px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Volver</button>
+                <button onClick="{{ coConfirmar }}" style="font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 20px;border:none;border-radius:var(--radius-pill);background:#B5503C;color:#fff;cursor:pointer;">Cancelar la orden</button>
+              </div>
             </sc-if>
 
             <!-- VENTA FORM -->
@@ -8600,7 +8635,7 @@ Instrucciones de respuesta:
       this.cloudLoadRecordatorios();
     }catch(e){ this.toast('No se pudo guardar la nota'); } }
   // ---- permisos compartidos (nube) ----
-  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=cfg.movAjustes; patch.movAjustes=_ma; try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(_ma)); }catch(e){} } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
+  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes); patch.movAjustes=_ma; try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(_ma)); }catch(e){} } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
   async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const re=(this.state.reglasEmpaque||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), movAjustes:(this.movAjustesGet()||{}), bolsaDefault:(re.bolsaDefault||''), bolsasHist:(re.bolsasHist||[]), mapeoCajas:(re.mapeoCajas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
   cloudSubscribePermisos(){ const sb=this._sbClient(); if(!sb||this._permSub) return; try{ this._permSub=sb.channel('oda-permisos').on('postgres_changes',{event:'*',schema:'public',table:'permisos'},()=>{ this.cloudLoadPermisos(); }).subscribe(); }catch(e){} }
@@ -9203,7 +9238,16 @@ Instrucciones de respuesta:
   mapMetodoCuenta(metodo){ const k=this.normKey(metodo); const list=this.cuentasList(); const find=(re)=>list.find(c=>re.test(this.normKey(c.nombre))); if(/bank deposit|deposito bancario|consignacion|bold/.test(k)){ const c=find(/bold/); if(c) return c.nombre; } if(/efectivo|caja|contado/.test(k)){ const c=find(/efectivo|caja/); if(c) return c.nombre; } if(/nequi|daviplata/.test(k)){ const c=find(/nequi|daviplata/); if(c) return c.nombre; } const banco=list.find(c=>c.tipo==='banco'); return banco?banco.nombre:this.primeraCuenta(); }
 
   // --- ajustes manuales de transacciones (solo Administrador) ---
-  movAjustesGet(){ if(this.state.movAjustes) return this.state.movAjustes; let a=null; try{ a=JSON.parse(localStorage.getItem('oda_hub_movajustes_v1')); }catch(e){} return a||{}; }
+  // Las anulaciones de abonos se guardaban con un número por posición (-rc0). Si la lista de
+  // abonos cambia, esa clave apuntaría a otro pago; se remapean una vez a la clave estable.
+  _migrarClavesAjustes(a){ if(!a) return a; let hubo=false; const out={...a};
+    Object.keys(a).forEach(k=>{ const m=k.match(/^(.+)-rc(\d+)$/); if(!m) return;
+      const rev=a[k]&&a[k].anuladoRev; const cid=rev&&rev.cobro&&rev.cobro.id;
+      if(!cid) return;
+      const nueva=m[1]+'-rc-'+cid; if(out[nueva]) return;
+      out[nueva]=a[k]; delete out[k]; hubo=true; });
+    return hubo? out : a; }
+  movAjustesGet(){ if(this.state.movAjustes) return this._migrarClavesAjustes(this.state.movAjustes); let a=null; try{ a=JSON.parse(localStorage.getItem('oda_hub_movajustes_v1')); }catch(e){} return this._migrarClavesAjustes(a||{}); }
   setMovAjuste(id, patch){ const m={...this.movAjustesGet()}; if(patch) m[id]=patch; else delete m[id]; this.setState({movAjustes:m},()=>this.persist()); if(this.cloudOn()) this.cloudSaveConfig({movAjustes:m}); try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(m)); }catch(e){} }
   // Anular una transacción: la saca de la caja sin borrar el documento que la originó
   // (pedido, orden o liquidación), y siempre se puede revertir.
@@ -9225,7 +9269,7 @@ Instrucciones de respuesta:
     let snap=null;
     const list=(this.state.ventas||[]).map(v=>{ if(v.id!==vid) return v;
       const cob=(Array.isArray(v.cobros)? v.cobros.slice() : []);
-      if(m.cobroId){ const k=cob.findIndex(c=>c.id===m.cobroId); if(k<0) return v;
+      if(m.cobroId){ const k=cob.findIndex(c=>c.id===m.cobroId); if(k<0){ snap=null; return v; }
         snap={ ventaId:vid, cobro:cob[k] }; cob.splice(k,1);
         return {...v, cobros:cob, pagado:Math.max(0,(Number(v.pagado)||0)-(Number(snap.cobro.monto)||0))}; }
       const suma=cob.reduce((a,c)=>a+(Number(c.monto)||0),0);
@@ -9256,7 +9300,7 @@ Instrucciones de respuesta:
       const _cli=(v.cliente?(' \u00b7 '+v.cliente):'');
       const _cob=(Array.isArray(v.cobros)?v.cobros:[]).filter(c=>Number(c.monto)>0);
       // Un movimiento por cada abono, con su propia fecha y cuenta.
-      _cob.forEach((c,i)=>{ out.push({ id:v.id+'-rc'+i, cobroId:(c.id||''), fecha:this.parseFecha(c.fecha||v.fechaCobro||v.fecha), tipo:'ingreso', cuenta:(c.cuenta||v.cuentaRecaudo||this.mapMetodoCuenta(v.metodoPago)), monto:Number(c.monto)||0, categoria:'Recaudo de venta', concepto:'Recaudo '+this.ventaRef(v)+_cli+(_cob.length>1?(' \u00b7 abono '+(i+1)+' de '+_cob.length):''), origen:'venta', editable:false, ventaIds:[v.id] }); });
+      _cob.forEach((c,i)=>{ out.push({ id:v.id+'-rc-'+(c.id||i), cobroId:(c.id||''), fecha:this.parseFecha(c.fecha||v.fechaCobro||v.fecha), tipo:'ingreso', cuenta:(c.cuenta||v.cuentaRecaudo||this.mapMetodoCuenta(v.metodoPago)), monto:Number(c.monto)||0, categoria:'Recaudo de venta', concepto:'Recaudo '+this.ventaRef(v)+_cli+(_cob.length>1?(' \u00b7 abono '+(i+1)+' de '+_cob.length):''), origen:'venta', editable:false, ventaIds:[v.id] }); });
       // Lo cobrado antes de que se guardaran los abonos por separado queda como un solo movimiento.
       const _yaEnCobros=_cob.reduce((a,c)=>a+(Number(c.monto)||0),0);
       const _resto=Math.round(pag-_yaEnCobros);
@@ -12431,9 +12475,9 @@ Instrucciones de respuesta:
     out.onDraftInput=(e)=>this.updateDraft(e.target.name,e.target.value);
     out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     out.onDraftIvaExento=(e)=>this.onDraftIvaExento(e);
-    const titles={fechaentrega:'Corregir fecha de recepción',editmasivo:'Editar productos seleccionados',proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',recibirorden:'Marcar orden como recibida',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),pagargasto:((st.draft._mvId?'Editar pago \u00b7 ':'Registrar pago \u00b7 ')+(st.draft.concepto||'')),pagarsvc:('Pagar servicio \u00b7 '+(st.draft.nombre||'')),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),msvc:(st.draft._new?'Registrar MSVC · muestras sin valor comercial':'Editar MSVC'),traslado:'Traslado entre cuentas',pagartarjeta:('Pagar tarjeta · '+(st.draft._tarjeta||'')),credito:(st.draft._new?(st.draft.direccion==='recibido'?'Registrar crédito recibido':'Registrar préstamo otorgado'):('Editar '+(st.draft.direccion==='recibido'?'crédito':'préstamo'))),abonocred:((st.draft._dir==='otorgado'?'Registrar cobro · ':'Registrar pago · ')+(st.draft._nombre||'')),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
+    const titles={cancelorden:'Cancelar orden de compra',fechaentrega:'Corregir fecha de recepción',editmasivo:'Editar productos seleccionados',proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',recibirorden:'Marcar orden como recibida',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),pagargasto:((st.draft._mvId?'Editar pago \u00b7 ':'Registrar pago \u00b7 ')+(st.draft.concepto||'')),pagarsvc:('Pagar servicio \u00b7 '+(st.draft.nombre||'')),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),msvc:(st.draft._new?'Registrar MSVC · muestras sin valor comercial':'Editar MSVC'),traslado:'Traslado entre cuentas',pagartarjeta:('Pagar tarjeta · '+(st.draft._tarjeta||'')),credito:(st.draft._new?(st.draft.direccion==='recibido'?'Registrar crédito recibido':'Registrar préstamo otorgado'):('Editar '+(st.draft.direccion==='recibido'?'crédito':'préstamo'))),abonocred:((st.draft._dir==='otorgado'?'Registrar cobro · ':'Registrar pago · ')+(st.draft._nombre||'')),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
     out.modalTitle = st.modal ? (st.modal==='dianpago' ? 'Pago de impuestos DIAN' : st.modal==='disputa' ? 'Disputa con transportadora' : st.modal==='basedetalle' ? ('Ventas · '+(st.baseDetLabel||'')) : st.modal==='detalle' ? (st.detalleId? 'Detalle de orden':'Detalle') : st.modal==='cliente' ? 'Ficha de cliente' : st.modal==='wacampaign' ? 'Campaña de WhatsApp' : st.modal==='saldoreal' ? 'Saldo real de la cuenta' : titles[st.modal]) : '';
-    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview';
+    out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview' && st.modal!=='cancelorden';
     if(st.modal==='basedetalle'){ const dim=st.baseDetDim, key=st.baseDetKey;
       const all=(st.ventas||[]); const match=(v)=>{ if(dim==='canal') return (v.canal||'')===key; if(dim==='ciudad') return (v.ciudad||'—')===key; if(dim==='periodo'){ return (v.fecha||'').slice(0, key.length)===key; } return false; };
       const sel=all.filter(match);
@@ -12483,7 +12527,7 @@ Instrucciones de respuesta:
       out.mdPuedeAnular=!!out.isAdmin;
       out.mdOnAnular=()=>{ const _esVenta=(d.origen==='venta');
         const _txt=_esVenta
-          ? '¿Por qué se anula este recaudo?\n\nSale de la caja y el pedido vuelve a quedar con saldo, en Cuentas por cobrar. Lo puedes reactivar cuando quieras.'
+          ? '¿Por qué se anula este recaudo?\n\nSale de la caja y el pedido vuelve a quedar con saldo, en Cuentas por cobrar. Ojo: si ya estaba marcado como pagado en Shopify, allá sigue pagado y hay que revertirlo a mano. Lo puedes reactivar cuando quieras.'
           : '¿Por qué se anula esta transacción?\n\nSale de la caja y deja de sumar al saldo. La orden o la liquidación que la originó NO se toca, y la puedes reactivar cuando quieras.';
         const mot=window.prompt(_txt,''); if(mot===null) return;
         const rev=this.anularMovimiento(d, mot); this.setState({modal:null, draft:{}});
