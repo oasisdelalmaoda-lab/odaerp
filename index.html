@@ -3098,9 +3098,9 @@
             <div>
               <div>
               <div style="display:flex;gap:6px;margin-bottom:20px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;width:max-content;">
-                <button onClick="{{ onBaseTabPanorama }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabPanBg }};color:{{ baseTabPanFg }};transition:background 140ms;">Panorama</button>
+                <button onClick="{{ onBaseTabPanorama }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabPanBg }};color:{{ baseTabPanFg }};transition:background 140ms;">Histórico</button>
                 <button onClick="{{ onBaseTabClientes }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabCliBg }};color:{{ baseTabCliFg }};transition:background 140ms;">Clientes · Inteligencia</button>
-                <button onClick="{{ onBaseTabCamp }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabCampBg }};color:{{ baseTabCampFg }};transition:background 140ms;">Campañas WhatsApp</button>
+                
               </div>
               <sc-if value="{{ baseNotCamp }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
@@ -3313,33 +3313,7 @@
               </div>
               </sc-if>
 
-              <sc-if value="{{ baseTabCamp }}" hint-placeholder-val="{{ false }}">
-            <div style="max-width:1040px;">
-              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:820px;line-height:1.55;text-wrap:pretty;">Campañas de <strong>agradecimiento y calificación</strong>: a quienes ya recibieron su pedido (según las etiquetas de Shopify) les pides una reseña en Google. Apruebas cada mensaje uno a uno; el botón abre WhatsApp con el texto listo. Máx. 1 campaña por cliente cada 30 días.</p>
-              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
-                <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Link de calificación Google<input value="{{ campLinkGoogle }}" onInput="{{ onCampLinkGoogle }}" placeholder="https://g.page/r/…/review" style="display:block;width:320px;max-width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                </div>
-                <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">Las campañas aprobadas a mano salen por tu WhatsApp normal (wa.me), sin restricción de plantilla. La recuperación de carritos se configura en <strong>Carritos abandonados</strong> y las automatizaciones de venta en <strong>Base de datos → Clientes · Inteligencia</strong>.</p>
-              </div>
-              <sc-for list="{{ campGraciasSecc }}" as="cs" hint-placeholder-count="1">
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden;">
-                  <div style="display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border-subtle);">
-                    <div style="flex:1;"><span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;">{{ cs.titulo }}</span><span style="font-size:12px;color:var(--text-muted);margin-left:10px;">{{ cs.desc }}</span></div>
-                    <span style="font-size:11px;font-weight:800;padding:4px 11px;border-radius:99px;background:rgba(167,134,89,0.14);color:var(--brand-ink);">{{ cs.count }}</span>
-                  </div>
-                  <sc-if value="{{ cs.vacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12.5px;">Sin candidatos por ahora.</div></sc-if>
-                  <sc-for list="{{ cs.rows }}" as="r" hint-placeholder-count="2">
-                    <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border-subtle);font-size:13px;">
-                      <div style="flex:1;min-width:0;"><div style="font-weight:700;">{{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.sub }}</div><sc-if value="{{ r.caso }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;font-weight:800;color:#B5503C;margin-top:2px;">{{ r.subWarn }}</div></sc-if></div>
-                      <button onClick="{{ r.onWa }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>Enviar</button>
-                      <button onClick="{{ r.onSkip }}" title="No contactar por 30 días" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;flex-shrink:0;">Omitir</button>
-                    </div>
-                  </sc-for>
-                </div>
-              </sc-for>
-            </div>
-              </sc-if>
+              
               </div>
             </div>
           </sc-if>
@@ -8699,7 +8673,7 @@ Instrucciones de respuesta:
     out.campPlantilla=cfg.campPlantillaCarrito||''; out.onCampPlantilla=(e)=>this.setAgenteCfg('campPlantillaCarrito',e.target.value);
   }
   _buildCampanas(out, st){ const cfg=this.agenteCfgGet(); const cc=this.state.campContactados||{}; const now=Date.now(); const DIA=86400000;
-    out.campLinkGoogle=cfg.campLinkGoogle||''; out.onCampLinkGoogle=(e)=>this.setAgenteCfg('campLinkGoogle',e.target.value);
+    
     const recDias=Number(cfg.campRecompraDias)||45; out.campRecompraDias=recDias; out.onCampRecompraDias=(e)=>this.setAgenteCfg('campRecompraDias',Number(e.target.value)||45);
     // ---- clientes desde el histórico ----
     const vivas=(st.ventas||[]).filter(v=>!v.cancelada && (v.items||[]).length);
@@ -8718,19 +8692,13 @@ Instrucciones de respuesta:
     const bloqueado=(cel)=> Object.entries(cc).some(([k,ts])=> k.endsWith('|'+cel) && (now-ts)<30*DIA);
     const primer=(o)=> (o.nombre||'').split(/\s+/)[0]||'';
     const gastos=clientes.map(c=>c.gasto).sort((a,b)=>a-b); const p80=gastos.length? gastos[Math.floor(gastos.length*0.8)] : Infinity;
-    const usados=new Set(); const cupon=(cfg.campCupon||'').trim(); const link=(cfg.campLinkGoogle||'').trim();
+    const usados=new Set(); const cupon=(cfg.campCupon||'').trim();
     const casosAb=(st.casos||[]).filter(c=>c.estado!=='cerrado' && c.estado!=='resuelto'); const casoTels=new Set();
     casosAb.forEach(c=>{ const t=norm(c.telefono); if(t){ casoTels.add(t); return; } if(c.pedido||c.ov){ const v=(st.ventas||[]).find(x=>(c.ov&&x.ov===c.ov)||(c.pedido&&(String(x.pedido)===String(c.pedido)||('#'+String(x.pedido))===String(c.pedido)))); if(v){ const vt=norm(v.celular); if(vt) casoTels.add(vt); } } });
     const tieneCaso=(cel)=> casoTels.has(cel);
     const mkRow=(tipo,o,sub,msg)=>{ usados.add(o.cel); const full='57'+o.cel; const key=tipo+'|'+o.cel; const _c=tieneCaso(o.cel);
       return { cliente:o.nombre||o.cel, sub, caso:_c, subWarn:(_c?'⚠ Tiene un caso de servicio al cliente abierto':''), onWa:()=>this.setState({modal:'wacompose', waCompose:{titulo:'Campaña · '+tipo, msg, full, campKey:key}}), onSkip:()=>this._marcarCampEnviada(key) }; };
     const cand=(pred)=> clientes.filter(o=>!usados.has(o.cel) && !bloqueado(o.cel) && pred(o));
-    // 1) Agradecimiento + calificación (pedido ya ENTREGADO según las etiquetas de Shopify)
-    const conEntrega=clientes.filter(o=>o.lastEnt).length;
-    const conTags=(st.ventas||[]).filter(v=>String(v.tags||'').trim()).length;
-    const gracias=cand(o=> o.lastEnt && diasDe(o.lastEnt)<=40).sort((a,b)=>diasDe(a.lastEnt)-diasDe(b.lastEnt)).slice(0,40).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
-      const msg=s+' 🤍 ¡gracias por tu compra en Oasis del Alma! ¿Cómo te ha ido con tu pedido? Nos encantaría leerte.'+(link?(' Si nos regalas una calificación nos ayudas muchísimo: '+link):'')+' — Oasis del Alma';
-      return mkRow('gracias',o,'Entregado · pedido de hace '+diasDe(o.lastEnt)+' días · '+this.fmt(Math.round(o.gasto)),msg); });
     // 2) VIP inactivos
     const vips=cand(o=> o.gasto>=p80 && diasSin(o)>=60).sort((a,b)=>b.gasto-a.gasto).slice(0,30).map(o=>{ const s=primer(o)?('Hola '+primer(o)):'Hola';
       const msg=s+' 🤍 eres de nuestros clientes más especiales y te extrañamos en Oasis del Alma. Queremos consentirte'+(cupon?(': usa el cupón '+cupon+' en tu próxima compra en oasisdelalma.co'):' — escríbenos y te damos un beneficio en tu próxima compra')+' 🌿';
@@ -8744,9 +8712,6 @@ Instrucciones de respuesta:
       const sug=p? Object.entries(co[p]||{}).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).find(n=>!o.prods[n]) : '';
       const msg=s+' 🌿'+(p?(' vimos que te llevaste '+p+'.'):'')+(sug?(' Combina perfecto con '+sug+' — muchos clientes los usan juntos.'):' Tenemos novedades que combinan perfecto con tu última compra.')+' ¿Te lo mostramos? oasisdelalma.co — Oasis del Alma';
       return mkRow('crosssell',o,(p?('Última compra: '+p):'Compra reciente')+(sug?(' → sugerir '+sug):''),msg); });
-    out.campGraciasSecc=[
-      { titulo:'Agradecimiento y calificación', desc:(conEntrega? ('pedido entregado · últimos 40 días · '+conEntrega+' cliente(s) con entrega detectada') : (conTags>0 ? ('⚠ '+conTags+' pedidos traen etiquetas, pero ninguna dice «ENTREGADA/Entregado» — revisa el nombre exacto del tag en Shopify') : '⚠ los pedidos llegan SIN etiquetas: la función «shopify» no está devolviendo el campo «tags». Confirma el redeploy y re-sincroniza en Ventas → Ventas')), rows:gracias, count:gracias.length, vacio:gracias.length===0 },
-    ];
     out.campVentasSecc=[
       { titulo:'Clientes VIP inactivos', desc:'top 20% de gasto · 60+ días sin comprar', rows:vips, count:vips.length, vacio:vips.length===0 },
       { titulo:'Recompra', desc:recDias+'+ días sin comprar · recordar su producto habitual', rows:rec, count:rec.length, vacio:rec.length===0 },
@@ -9004,6 +8969,20 @@ Instrucciones de respuesta:
   LEAD_ORIGENES=['Instagram','Página Web','WhatsApp','Ferias','Distribuidor','Referido','Venta Directa','Otro'];
   leadEstadoStyle(e){ const m={ 'Nuevo':{bg:'rgba(167,134,89,0.16)',fg:'#7A5E36'}, 'Contactado':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'En negociación':{bg:'rgba(156,151,162,0.22)',fg:'#615C6B'}, 'Ganado':{bg:'rgba(76,97,73,0.16)',fg:'#4C6149'}, 'Perdido':{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'} }; return m[e]||m['Nuevo']; }
   uName(id){ const u=this.users.find(x=>x.id===id); return u?u.name:''; }
+  // Una misma persona puede quedar con DOS ids: el local heredado ('u3') y el uuid del perfil
+  // de la nube. Sin canonizar, el desplegable mostraba «Carolina Fandiño» dos veces y «Míos»
+  // dejaba de cuadrar según cuál se hubiera elegido.
+  _asigLabel(p){ const n=String((p&&(p.nombre||p.name))||'').trim(); if(n) return n;
+    const e=String((p&&p.email)||'').trim(); if(e) return e.split('@')[0];
+    return 'Usuario '+String((p&&p.id)||'').slice(0,4); }
+  _uidCanon(id){ const v=String(id||'').trim(); if(!v) return '';
+    const profs=this.state.cloudProfiles||[]; if(!profs.length) return v;
+    if(profs.some(p=>p.id===v)) return v;
+    const u=(this.users||[]).find(x=>x.id===v); if(!u) return v;
+    const k=this.normKey(this._asigLabel(u));
+    const p=profs.find(x=>this.normKey(this._asigLabel(x))===k);
+    return p? p.id : v; }
+  _mismoUid(a,b){ if(!a||!b) return false; if(a===b) return true; return this._uidCanon(a)===this._uidCanon(b); }
   uInitials(id){ const u=this.users.find(x=>x.id===id); return u?u.initials:'—'; }
   uColor(id){ const u=this.users.find(x=>x.id===id); return u?u.color:'#9b8e78'; }
   nuevoLead(){ this.open('lead',{ _new:true, fecha:new Date().toISOString().slice(0,10), nombre:'', celular:'', correo:'', ciudad:'', origen:'Instagram', interes:'', estado:'Nuevo', valor:'', nota:'', asignadoA:(this.cloudOn()? (this.state.cloudUser&&this.state.cloudUser.id) : (this.state.userId||'')), comentarios:[], alertas:[] }); }
@@ -9180,7 +9159,7 @@ Instrucciones de respuesta:
   // que siguen abiertas, casos de servicio sin cerrar y leads en curso. Es lo que cuenta el badge
   // de Inicio, igual que el de Conversaciones.
   inicioPendientes(){ const st=this.state; const uid=st.userId; const cuid=(st.cloudUser&&st.cloudUser.id)||uid;
-    const mio=(a)=>!!a && (a===cuid || a===uid);
+    const mio=(a)=>!!a && (a===cuid || a===uid || this._mismoUid(a,cuid));
     const partes=[];
     const rec=this.recSinLeer().length;
     if(rec) partes.push(rec+' recordatorio'+(rec===1?'':'s')+' sin leer');
@@ -10884,7 +10863,7 @@ Instrucciones de respuesta:
       this.setState({convsCloud:list});
     }catch(e){} }
   _convNotify(list){ try{ const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; const prev=this._convSeen; const seen={}; (list||[]).forEach(c=>{ seen[c.id]=(c.mensajes||[]).length; });
-    if(prev && me){ (list||[]).forEach(c=>{ const n=seen[c.id]||0, o=prev[c.id]||0; if(n>o && c.asignadoA===me){ const last=(c.mensajes||[])[n-1]||{}; if(last.de==='cliente'){ this.toast('Nuevo mensaje de '+(c.cliente||'cliente')); this._deskNotify('Nuevo mensaje · '+(c.cliente||'Conversaciones'), String(last.texto||'').slice(0,120)); } } }); }
+    if(prev && me){ (list||[]).forEach(c=>{ const n=seen[c.id]||0, o=prev[c.id]||0; if(n>o && this._mismoUid(c.asignadoA, me)){ const last=(c.mensajes||[])[n-1]||{}; if(last.de==='cliente'){ this.toast('Nuevo mensaje de '+(c.cliente||'cliente')); this._deskNotify('Nuevo mensaje · '+(c.cliente||'Conversaciones'), String(last.texto||'').slice(0,120)); } } }); }
     this._convSeen=seen; }catch(e){} }
   _deskNotify(title, body){ try{ if(!('Notification' in window)) return; if(Notification.permission==='granted'){ new Notification(title,{body}); } else if(Notification.permission==='default'){ Notification.requestPermission().then(p=>{ if(p==='granted') new Notification(title,{body}); }); } }catch(e){} }
   cloudSubscribeConvs(){ const sb=this._sbClient(); if(!sb||this._convSub) return;
@@ -11692,7 +11671,7 @@ Instrucciones de respuesta:
       else if(autoSel!=='todos') base=base.filter(c=>_autos(c).indexOf(autoSel)>=0);
       // «Míos» = las asignadas a mí + las que están esperando respuesta y nadie tomó
       // (son las mismas que anuncia la barra «Te toca responder»).
-      const _esMio=(c)=> c.asignadoA===me || (!c.asignadoA && _esperando(c));
+      const _esMio=(c)=> this._mismoUid(c.asignadoA, me) || (!c.asignadoA && _esperando(c));
       out.convNumMios=base.filter(c=>_esMio(c) && c.estado!=='resuelta').length;
       out.convNumSin=base.filter(c=>!c.asignadoA && c.estado!=='resuelta').length;
       if(tab==='mios') base=base.filter(_esMio); else if(tab==='sin') base=base.filter(c=>!c.asignadoA);
@@ -11717,7 +11696,7 @@ Instrucciones de respuesta:
       if(secAct.length){ feed.push({esHeader:true,label:'El bot está atendiendo',hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secAct.forEach(c=>feed.push(_row(c))); }
       if(secRes.length){ feed.push({esHeader:true,label:'Resueltas · '+secRes.length,hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secRes.slice(0,15).forEach(c=>feed.push(_row(c))); }
       out.convFeed=feed; out.convRowsVacio=feed.length===0;
-      const pend=convs.filter(c=>_esperando(c) && (!c.asignadoA || c.asignadoA===me));
+      const pend=convs.filter(c=>_esperando(c) && (!c.asignadoA || this._mismoUid(c.asignadoA, me)));
       out.convPendN=pend.length; out.convPendHay=pend.length>0;
       // Cada pendiente es un botón: abre la conversación y limpia los filtros para que la fila
       // se vea aunque estés parado en «Míos» o en un canal/automatización distinta.
@@ -11739,20 +11718,21 @@ Instrucciones de respuesta:
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
           mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?'Asesor':cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
-        out.convAsigVal=cc.asignadoA||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
+        out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
         // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
-        const _asigL=(p)=>{ const n=String((p&&(p.nombre||p.name))||'').trim(); if(n) return n;
-          const e=String((p&&p.email)||'').trim(); if(e) return e.split('@')[0];
-          return 'Usuario '+String((p&&p.id)||'').slice(0,4); };
+        const _asigL=(p)=>this._asigLabel(p);
         const _asigSrc=(this.state.cloudProfiles&&this.state.cloudProfiles.length)
           ? this.state.cloudProfiles.map(p=>({v:p.id,l:_asigL(p)}))
           : this.users.map(u=>({v:u.id,l:_asigL(u)}));
-        // Si la conversación ya está asignada a alguien que no está en la lista, se agrega:
-        // sin esto el <select> se veía en «Sin asignar» aunque la ficha mostrara su inicial.
-        if(cc.asignadoA && !_asigSrc.some(o=>o.v===cc.asignadoA)){
-          const u=this.users.find(x=>x.id===cc.asignadoA);
-          _asigSrc.unshift({ v:cc.asignadoA, l:(u? _asigL(u) : this.casoAsigneeName(cc.asignadoA)) });
+        // El responsable puede venir con el id heredado ('u3'): se resuelve al uuid del perfil
+        // por nombre, así el <select> marca a la persona correcta SIN duplicar la opción.
+        const _asigSel=this._uidCanon(cc.asignadoA);
+        if(_asigSel && !_asigSrc.some(o=>o.v===_asigSel)){
+          const u=this.users.find(x=>x.id===_asigSel);
+          const l=(u? _asigL(u) : this.casoAsigneeName(_asigSel));
+          // De-duplicar por nombre visible: nunca dos entradas con el mismo texto.
+          if(!_asigSrc.some(o=>this.normKey(o.l)===this.normKey(l))) _asigSrc.unshift({ v:_asigSel, l });
         }
         out.convAsigOpts=[{v:'',l:'Sin asignar'}].concat(_asigSrc);
         out.convTomarBtn=()=>this.convTomar(cc.id); out.convDevolverBtn=()=>this.convDevolverBot(cc.id); out.convResolverBtn=()=>this.convResolver(cc.id);
@@ -12844,12 +12824,14 @@ Instrucciones de respuesta:
       out.baseCiudades=cArr.map(x=>({ciudad:x.k, totalFmt:this.fmt(Math.round(x.val)), onClick:()=>this.openBaseDetalle('ciudad',x.k,x.k)}));
       out.baseVacio=all.length===0; out.nuevaBaseImport=()=>this.openImport('ventasHist');
       // ---- Pestaña + inteligencia de clientes ----
-      const tab=st.baseTab||'panorama';
-      out.basePanorama=tab==='panorama'; out.baseClientes=tab==='clientes'; out.baseTabCamp=tab==='camp'; out.baseNotCamp=tab!=='camp';
+      // La pestaña «Campañas WhatsApp» se retiró: su único bloque (agradecimiento y
+      // calificación) lo cubre la automatización postventa de Canales, y las campañas
+      // comerciales (VIP, recompra, cross-sell) viven en «Clientes · Inteligencia».
+      let tab=st.baseTab||'panorama'; if(tab==='camp') tab='panorama';
+      out.basePanorama=tab==='panorama'; out.baseClientes=tab==='clientes'; out.baseTabCamp=false; out.baseNotCamp=true;
       out.baseTabPanBg=tab==='panorama'?'var(--brand-ink)':'transparent'; out.baseTabPanFg=tab==='panorama'?'#fff':'var(--text-muted)';
       out.baseTabCliBg=tab==='clientes'?'var(--brand-ink)':'transparent'; out.baseTabCliFg=tab==='clientes'?'#fff':'var(--text-muted)';
-      out.baseTabCampBg=tab==='camp'?'var(--brand-ink)':'transparent'; out.baseTabCampFg=tab==='camp'?'#fff':'var(--text-muted)';
-      out.onBaseTabPanorama=()=>this.setState({baseTab:'panorama'}); out.onBaseTabClientes=()=>this.setState({baseTab:'clientes'}); out.onBaseTabCamp=()=>this.setState({baseTab:'camp'});
+      out.onBaseTabPanorama=()=>this.setState({baseTab:'panorama'}); out.onBaseTabClientes=()=>this.setState({baseTab:'clientes'});
       if(tab==='camp'||tab==='clientes'){ this._buildCampanas(out, st); }
       if(tab==='clientes'){
         const cl=this.clientesData({anio:st.baseCliAnios, mes:st.baseCliMeses, canal:st.baseCliCanales});
