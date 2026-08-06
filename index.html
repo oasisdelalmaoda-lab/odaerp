@@ -1397,6 +1397,12 @@
                         <span style="flex:1;min-width:0;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ op.mezclaNombre }}</span><span style="display:block;font-size:11.5px;color:var(--text-muted);">{{ op.fechaFmt }} · {{ op.costoUnitFmt }}</span></span>
                         <span style="font-size:13px;font-weight:800;width:84px;text-align:right;">{{ op.mlTotal }} ml</span>
                         <span style="font-size:12.5px;font-weight:700;width:104px;text-align:right;color:var(--text-body);">{{ op.totalFmt }}</span>
+                        <sc-if value="{{ op.canEdit }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;gap:6px;flex-shrink:0;">
+                            <button onClick="{{ op.onEdit }}" title="Editar" style="background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;display:inline-flex;padding:6px;border-radius:8px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+                            <button onClick="{{ op.onDelete }}" title="Eliminar" style="background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;display:inline-flex;padding:6px;border-radius:8px;" style-hover="border-color:#B5503C;color:#B5503C;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                          </div>
+                        </sc-if>
                       </div>
                     </sc-for>
                   </div>
@@ -7784,8 +7790,32 @@ class Component extends DCLogic {
   saveProduccionMez(){ const d=this.state.draft; if(!d.mezclaCodigo){ this.toast('Selecciona una mezcla'); return; } const ml=Number(d.ml)||0; if(ml<=0){ this.toast('Indica cuántos ml vas a producir'); return; }
     const mz=(this.state.mezclas||[]).find(x=>x.codigo===d.mezclaCodigo); const rend=mz?this.mezclaRendimiento(mz):0; const lotes=rend>0? ml/rend : 0;
     const list=(this.state.produccionesMezcla||[]).slice(); const num=d._numero||this.nextCodeProduccionMez();
-    list.unshift({ id:'omz'+Date.now(), numero:num, mezclaCodigo:d.mezclaCodigo, ml, lotes, fecha:d.fecha||new Date().toISOString().slice(0,10), formulaSnap:(mz?(mz.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo, cantidad:Number(f.cantidad)||0})):[]), rendimiento:rend, costoLote:(mz?this.mezclaCosto(mz):0) });
+    const snapNuevo={ formulaSnap:(mz?(mz.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo, cantidad:Number(f.cantidad)||0})):[]), rendimiento:rend, costoLote:(mz?this.mezclaCosto(mz):0) };
+    const ix=d._id? list.findIndex(x=>x.id===d._id) : -1;
+    if(ix>=0){
+      if(!this.isAdminUser()){ this.toast('Solo el Administrador puede editar una orden de producción'); return; }
+      const prev=list[ix];
+      // Si sigue siendo la misma mezcla, la orden conserva la fórmula con la que se produjo;
+      // solo se recalculan los lotes contra ese rendimiento. Si le cambian la mezcla, se
+      // vuelve a congelar contra la mezcla nueva.
+      const mismo=(prev.mezclaCodigo===d.mezclaCodigo) && Array.isArray(prev.formulaSnap) && prev.formulaSnap.length;
+      const snap=mismo? {formulaSnap:prev.formulaSnap, rendimiento:this.omRendimiento(prev), costoLote:this.omCostoLote(prev)} : snapNuevo;
+      const rr=Number(snap.rendimiento)||0;
+      const row={...prev, numero:num, mezclaCodigo:d.mezclaCodigo, ml, lotes:(rr>0? ml/rr : 0), fecha:d.fecha||prev.fecha||new Date().toISOString().slice(0,10), ...snap};
+      list[ix]=row;
+      this.setState({produccionesMezcla:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProdMez(row); this.toast('Producción '+num+' actualizada · stock de mezcla recalculado'); return;
+    }
+    list.unshift({ id:'omz'+Date.now(), numero:num, mezclaCodigo:d.mezclaCodigo, ml, lotes, fecha:d.fecha||new Date().toISOString().slice(0,10), ...snapNuevo });
     this.setState({produccionesMezcla:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProdMez(list[0]); this.toast('Producción '+num+' registrada · stock de mezcla actualizado'); }
+  editProduccionMez(op){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede editar una orden de producción'); return; }
+    this.open('produccionmez',{ _id:op.id, _numero:op.numero, mezclaCodigo:op.mezclaCodigo, ml:this.omMl(op), fecha:op.fecha||new Date().toISOString().slice(0,10) }); }
+  borrarProduccionMez(id){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede eliminar una orden de producción'); return; }
+    const op=(this.state.produccionesMezcla||[]).find(x=>x.id===id); if(!op) return;
+    if(!window.confirm('¿Eliminar la orden de producción '+(op.numero||'')+'? Se devuelven los aceites consumidos y baja el stock de la mezcla.')) return;
+    const list=(this.state.produccionesMezcla||[]).filter(x=>x.id!==id);
+    this.setState({produccionesMezcla:list,modal:null,draft:{}},()=>this.persist());
+    if(this.cloudOn()) this._cloudDelOne('producciones_mezcla', id);
+    this.toast('Orden '+(op.numero||'')+' eliminada · stock recalculado'); }
 
   // ---- ventas ----
   ventaItemCosto(it){ const code=it.productoCodigo; const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k); return 0; }
@@ -10348,7 +10378,30 @@ Instrucciones de respuesta:
       {de:'cliente', texto:'Listo, ya lo compré. Gracias!', hora:'11:48'},
       {de:'bot', texto:'¡Gracias por tu compra, Julián! Te llegará en 2-4 días hábiles. Bienestar en cada respiro 🤍', hora:'11:49'}]},
   ];
-  convList(){ if(this.state.convsCloud) return this.state.convsCloud; return this.state.conversaciones || this.DEMO_CONVS; }
+  convList(){ const base=this.state.convsCloud? this.state.convsCloud : (this.state.conversaciones || this.DEMO_CONVS); return this._convNombresReales(base); }
+  // El nombre que manda Meta es el del perfil de WhatsApp y suele ser un alias ("Mac").
+  // Aquí se reemplaza por el nombre REAL del cliente cruzando el celular con las ventas
+  // (y con los leads si no hay venta). El alias queda en clienteAlias.
+  _convNombresReales(list){
+    try{
+      if(!Array.isArray(list) || !list.length) return list;
+      if(this._convNomSrc===list && this._convNomOut) return this._convNomOut;
+      const d10=(s)=>{ const d=String(s||'').replace(/\D/g,''); return d.length>=10? d.slice(-10) : ''; };
+      const vs=this.state.ventas||[], lds=this.state.leads||[];
+      if(!this._convNomIdx || this._convNomN!==(vs.length+lds.length)){
+        const m={};
+        vs.forEach(v=>{ const k=d10(v.celular||v.telefono); const n=String(v.cliente||'').trim();
+          if(k && n.length>=3 && (!m[k] || m[k].length<n.length)) m[k]=n; });
+        lds.forEach(l=>{ const k=d10(l.celular); const n=String(l.nombre||'').trim();
+          if(k && n.length>=3 && !m[k]) m[k]=n; });
+        this._convNomIdx=m; this._convNomN=vs.length+lds.length;
+      }
+      const map=this._convNomIdx;
+      const out=list.map(c=>{ const k=d10(c.telefono||String(c.id||'').replace(/^wa_/,''));
+        const real=k? map[k] : ''; return (real && real!==c.cliente)? {...c, cliente:real, clienteAlias:c.cliente} : c; });
+      this._convNomSrc=list; this._convNomOut=out; return out;
+    }catch(e){ return list; }
+  }
   persistConvs(list){ if(this.state.convsCloud){ this.setState({convsCloud:list}); return; } this.setState({conversaciones:list}); try{ localStorage.setItem('oda_hub_conv_v1', JSON.stringify(list)); }catch(e){} }
   _convHoraDe(ts){ try{ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }catch(e){ return ''; } }
   _convFechaDe(ts){ try{ const d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }catch(e){ return ''; } }
@@ -11590,7 +11643,7 @@ Instrucciones de respuesta:
       out.omMl=Math.round(oms.reduce((a,op)=>a+this.omMl(op),0));
       const costoTot=oms.reduce((a,op)=>a+this.omCostoTotal(op),0);
       out.omCostoTotalFmt=this.fmt(Math.round(costoTot));
-      out.produccionesMezView=oms.slice().sort((a,b)=>{ const fa=a.fecha||'', fb=b.fecha||''; if(fb!==fa) return fb.localeCompare(fa); return String(b.numero||'').localeCompare(String(a.numero||'')); }).map(op=>{ const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); return {...op, mezclaNombre:mz?('Mezcla '+mz.nombre):op.mezclaCodigo, fechaFmt:this.fmtFecha(op.fecha), mlTotal:Math.round(this.omMl(op)), costoUnitFmt:this.fmt(Math.round(this.omCostoMl(op)))+'/ml', totalFmt:this.fmt(Math.round(this.omCostoTotal(op)))}; });
+      out.produccionesMezView=oms.slice().sort((a,b)=>{ const fa=a.fecha||'', fb=b.fecha||''; if(fb!==fa) return fb.localeCompare(fa); return String(b.numero||'').localeCompare(String(a.numero||'')); }).map(op=>{ const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); return {...op, mezclaNombre:mz?('Mezcla '+mz.nombre):op.mezclaCodigo, fechaFmt:this.fmtFecha(op.fecha), mlTotal:Math.round(this.omMl(op)), costoUnitFmt:this.fmt(Math.round(this.omCostoMl(op)))+'/ml', totalFmt:this.fmt(Math.round(this.omCostoTotal(op))), canEdit:out.isAdmin, onEdit:((o)=>()=>this.editProduccionMez(o))(op), onDelete:((id)=>()=>this.borrarProduccionMez(id))(op.id)}; });
       out.stockMezView=(st.mezclas||[]).map(mz=>{ const capas=this.mezclaCapasRestantes(mz.codigo); const vig=this.mezclaCostoMlActual(mz.codigo); const nuevo=this.mezclaCostoUnit(mz); const dif=Math.abs(nuevo-vig)>0.5 && capas.length>0;
         return {codigo:mz.codigo, nombre:mz.nombre, lotes:this.mezclaLotesProducidos(mz.codigo), inicial:(Number(mz.stockInicial)||0), inicialTxt:((Number(mz.stockInicial)||0)>0?('inicial '+(Number(mz.stockInicial)||0)+' ml · '):''), ml:this.mezclaMlStock(mz.codigo), rend:this.mezclaRendimiento(mz),
           costoVigFmt:this.fmt(Math.round(vig))+'/ml', hayDif:dif, difTxt:(dif?('la fórmula nueva costará '+this.fmt(Math.round(nuevo))+'/ml cuando se agoten estos '+this.fmtCant(Math.round(capas.reduce((a,c)=>a+c.ml,0)))+' ml'):'')}; });
@@ -12737,7 +12790,7 @@ Instrucciones de respuesta:
     out.onDraftInput=(e)=>this.updateDraft(e.target.name,e.target.value);
     out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     out.onDraftIvaExento=(e)=>this.onDraftIvaExento(e);
-    const titles={cerrarcaso:'Cerrar caso de servicio',cancelorden:'Cancelar orden de compra',fechaentrega:'Corregir fecha de recepción',editmasivo:'Editar productos seleccionados',proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',recibirorden:'Marcar orden como recibida',produccionmez:'Registrar producción de mezcla',venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),pagargasto:((st.draft._mvId?'Editar pago \u00b7 ':'Registrar pago \u00b7 ')+(st.draft.concepto||'')),pagarsvc:('Pagar servicio \u00b7 '+(st.draft.nombre||'')),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),msvc:(st.draft._new?'Registrar MSVC · muestras sin valor comercial':'Editar MSVC'),traslado:'Traslado entre cuentas',pagartarjeta:('Pagar tarjeta · '+(st.draft._tarjeta||'')),credito:(st.draft._new?(st.draft.direccion==='recibido'?'Registrar crédito recibido':'Registrar préstamo otorgado'):('Editar '+(st.draft.direccion==='recibido'?'crédito':'préstamo'))),abonocred:((st.draft._dir==='otorgado'?'Registrar cobro · ':'Registrar pago · ')+(st.draft._nombre||'')),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
+    const titles={cerrarcaso:'Cerrar caso de servicio',cancelorden:'Cancelar orden de compra',fechaentrega:'Corregir fecha de recepción',editmasivo:'Editar productos seleccionados',proveedor:(st.draft._new?'Nuevo proveedor':'Editar proveedor'),materia:(st.draft._new?'Nueva materia / insumo':'Editar materia / insumo'),orden:(st.draft._id?'Editar orden de compra':'Nueva orden de compra'),factura:'Registrar factura',pago:'Registrar pago',detalle:'Detalle de orden '+(st.draft._numero||''),import:'Importar desde Excel',producto:(st.draft._new?'Nuevo producto':'Editar producto'),kit:(st.draft._new?'Nuevo kit':'Editar kit'),mezcla:(st.draft._new?'Nueva mezcla de aceites':'Editar mezcla'),bulkproducto:'Creación masiva de productos',produccion:'Registrar producción de PT',ajusteinv:'Ajustar inventario',servicio:(st.draft._new?'Nuevo servicio':'Editar servicio'),entrega:'Registrar entrega parcial',recibirorden:'Marcar orden como recibida',produccionmez:(st.draft._id?'Editar producción de mezcla':'Registrar producción de mezcla'),venta:(st.draft._new?'Registrar venta':'Editar venta'),cotizacion:(st.draft._new?'Nueva cotización':'Editar cotización'),detalleventa:'Detalle de venta',movimiento:(st.draft._id?'Editar movimiento':(st.draft.tipo==='ingreso'?'Registrar ingreso':'Registrar egreso')),cuentafin:(st.draft._id?'Editar cuenta':'Nueva cuenta'),cobro:'Registrar cobro',gastofijo:(st.draft._new?'Nuevo gasto fijo':'Editar gasto fijo'),pagargasto:((st.draft._mvId?'Editar pago \u00b7 ':'Registrar pago \u00b7 ')+(st.draft.concepto||'')),pagarsvc:('Pagar servicio \u00b7 '+(st.draft.nombre||'')),retenconfig:'Tasas de retención',liquidacion:'Liquidar recaudos · '+(st.draft.metodo||''),metodofin:(st.draft._new?'Nuevo método de pago':'Editar método de pago'),msvc:(st.draft._new?'Registrar MSVC · muestras sin valor comercial':'Editar MSVC'),traslado:'Traslado entre cuentas',pagartarjeta:('Pagar tarjeta · '+(st.draft._tarjeta||'')),credito:(st.draft._new?(st.draft.direccion==='recibido'?'Registrar crédito recibido':'Registrar préstamo otorgado'):('Editar '+(st.draft.direccion==='recibido'?'crédito':'préstamo'))),abonocred:((st.draft._dir==='otorgado'?'Registrar cobro · ':'Registrar pago · ')+(st.draft._nombre||'')),movdetalle:'Detalle del movimiento',lead:(st.draft._new?'Nuevo lead':'Editar lead'),leadseg:'Seguimiento del lead'};
     out.modalTitle = st.modal ? (st.modal==='dianpago' ? 'Pago de impuestos DIAN' : st.modal==='disputa' ? 'Disputa con transportadora' : st.modal==='basedetalle' ? ('Ventas · '+(st.baseDetLabel||'')) : st.modal==='detalle' ? (st.detalleId? 'Detalle de orden':'Detalle') : st.modal==='cliente' ? 'Ficha de cliente' : st.modal==='wacampaign' ? 'Campaña de WhatsApp' : st.modal==='saldoreal' ? 'Saldo real de la cuenta' : titles[st.modal]) : '';
     out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview' && st.modal!=='cancelorden' && st.modal!=='cerrarcaso';
     if(st.modal==='basedetalle'){ const dim=st.baseDetDim, key=st.baseDetKey;
@@ -12819,7 +12872,7 @@ Instrucciones de respuesta:
     }
     if(st.modal==='abonocred'){ const d=st.draft||{}; out.abEsCobro=(d._dir==='otorgado'); const cap=Math.round(Number(d.abCapital)||0); const intt=Math.round(Number(d.abInteres)||0); out.abTotalFmt=this.fmt(cap+intt); out.abCuotaTxt=(d._cuotaN?('Cuota '+d._cuotaN):'Abono libre'); out.abSaldoFmt=d._saldoFmt||''; out.abMovTxt=(d._dir==='otorgado')?'Entra a la cuenta como ingreso.':'Sale de la cuenta como egreso.'; }
     out.modalMaxW = (st.modal==='cotpreview')? '860px' : (st.modal==='basedetalle')? '1040px' : (st.modal==='orden')? '940px' : (st.modal==='venta'||st.modal==='cotizacion'||st.modal==='wacampaign'||st.modal==='remision'||st.modal==='credito')? '720px' : '560px';
-    const saveLabels={fechaentrega:'Guardar fecha',editmasivo:'Aplicar cambios',proveedor:'Guardar proveedor',materia:'Guardar materia',pagartarjeta:'Registrar pago',orden:(st.draft._id?'Guardar cambios':'Crear orden'),factura:'Registrar factura',pago:'Registrar pago',producto:'Guardar producto',kit:'Guardar kit',mezcla:'Guardar mezcla',bulkproducto:'Generar productos',produccion:'Registrar producción',ajusteinv:'Guardar ajuste',servicio:'Guardar servicio',entrega:'Registrar entrega',recibirorden:'Confirmar recibo',produccionmez:'Registrar producción',venta:'Guardar venta',cotizacion:'Guardar cotización',movimiento:'Guardar movimiento',cuentafin:'Guardar cuenta',cobro:'Registrar cobro',gastofijo:'Guardar gasto fijo',pagargasto:'Registrar pago',pagarsvc:'Registrar pago',retenconfig:'Guardar tasas',liquidacion:'Registrar liquidación',metodofin:'Guardar método',tienda:'Guardar tienda',remision:'Generar remisión',msvc:'Registrar MSVC',traslado:'Registrar traslado',credito:(st.draft._id?'Guardar cambios':'Registrar'),abonocred:(st.draft._dir==='otorgado'?'Registrar cobro':'Registrar pago'),lead:'Guardar lead'};
+    const saveLabels={fechaentrega:'Guardar fecha',editmasivo:'Aplicar cambios',proveedor:'Guardar proveedor',materia:'Guardar materia',pagartarjeta:'Registrar pago',orden:(st.draft._id?'Guardar cambios':'Crear orden'),factura:'Registrar factura',pago:'Registrar pago',producto:'Guardar producto',kit:'Guardar kit',mezcla:'Guardar mezcla',bulkproducto:'Generar productos',produccion:'Registrar producción',ajusteinv:'Guardar ajuste',servicio:'Guardar servicio',entrega:'Registrar entrega',recibirorden:'Confirmar recibo',produccionmez:(st.draft._id?'Guardar cambios':'Registrar producción'),venta:'Guardar venta',cotizacion:'Guardar cotización',movimiento:'Guardar movimiento',cuentafin:'Guardar cuenta',cobro:'Registrar cobro',gastofijo:'Guardar gasto fijo',pagargasto:'Registrar pago',pagarsvc:'Registrar pago',retenconfig:'Guardar tasas',liquidacion:'Registrar liquidación',metodofin:'Guardar método',tienda:'Guardar tienda',remision:'Generar remisión',msvc:'Registrar MSVC',traslado:'Registrar traslado',credito:(st.draft._id?'Guardar cambios':'Registrar'),abonocred:(st.draft._dir==='otorgado'?'Registrar cobro':'Registrar pago'),lead:'Guardar lead'};
     out.saveLabel=saveLabels[st.modal]||'Guardar'; if(st.modal==='pagargasto'&&st.draft._mvId) out.saveLabel='Guardar pago';
     out.provDeleteShow = st.modal==='proveedor' && !st.draft._new; out.onProvDelete=()=>this.askDeleteProveedorEdit();
     out.proveedoresOptions=this.ordenarPorCodigo(st.proveedores.map(p=>({codigo:p.codigo,label:p.codigo+' · '+p.nombre})));
