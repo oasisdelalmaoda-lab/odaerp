@@ -1675,7 +1675,12 @@
               <sc-if value="{{ convPendHay }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 20px;background:#3A3326;color:#FBF8F2;border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-bottom:-1px;">
                 <span style="font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:#B5503C;border-radius:99px;padding:4px 11px;">Te toca responder · {{ convPendN }}</span>
-                <span style="font-size:12.5px;opacity:0.92;">{{ convPendTxt }}</span>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <sc-for list="{{ convPendList }}" as="p" hint-placeholder-count="1">
+                    <button onClick="{{ p.onAbrir }}" title="Abrir esta conversación" style="font-family:inherit;font-size:12.5px;font-weight:700;color:#FBF8F2;background:rgba(251,248,242,0.13);border:1px solid rgba(251,248,242,0.18);border-radius:99px;padding:5px 13px;cursor:pointer;" style-hover="background:rgba(251,248,242,0.26);">{{ p.txt }}</button>
+                  </sc-for>
+                  <sc-if value="{{ convPendMasHay }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;opacity:0.75;">{{ convPendMas }}</span></sc-if>
+                </div>
                 <div style="flex:1;"></div>
                 <button onClick="{{ onConvNotif }}" style="font-family:inherit;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;background:rgba(251,248,242,0.14);border:none;color:#FBF8F2;border-radius:99px;padding:7px 13px;cursor:pointer;">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FBF8F2" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
@@ -11220,9 +11225,12 @@ Instrucciones de respuesta:
       }
       if(autoSel==='ninguna') base=base.filter(c=>_autos(c).length===0);
       else if(autoSel!=='todos') base=base.filter(c=>_autos(c).indexOf(autoSel)>=0);
-      out.convNumMios=base.filter(c=>c.asignadoA===me && c.estado!=='resuelta').length;
+      // «Míos» = las asignadas a mí + las que están esperando respuesta y nadie tomó
+      // (son las mismas que anuncia la barra «Te toca responder»).
+      const _esMio=(c)=> c.asignadoA===me || (!c.asignadoA && _esperando(c));
+      out.convNumMios=base.filter(c=>_esMio(c) && c.estado!=='resuelta').length;
       out.convNumSin=base.filter(c=>!c.asignadoA && c.estado!=='resuelta').length;
-      if(tab==='mios') base=base.filter(c=>c.asignadoA===me); else if(tab==='sin') base=base.filter(c=>!c.asignadoA);
+      if(tab==='mios') base=base.filter(_esMio); else if(tab==='sin') base=base.filter(c=>!c.asignadoA);
       out.onConvTabMios=()=>this.setState({convTab:'mios'}); out.onConvTabSin=()=>this.setState({convTab:'sin'}); out.onConvTabTodos=()=>this.setState({convTab:'todos'});
       const _tbg=(on)=>on?'var(--text-strong)':'transparent', _tfg=(on)=>on?'var(--surface-card)':'var(--text-strong)';
       out.tabMiosBg=_tbg(tab==='mios'); out.tabMiosFg=_tfg(tab==='mios');
@@ -11246,7 +11254,12 @@ Instrucciones de respuesta:
       out.convFeed=feed; out.convRowsVacio=feed.length===0;
       const pend=convs.filter(c=>_esperando(c) && (!c.asignadoA || c.asignadoA===me));
       out.convPendN=pend.length; out.convPendHay=pend.length>0;
-      out.convPendTxt=pend.slice(0,3).map(c=>{ const e=_esperaMin(c); return (c.cliente||'cliente')+(e!=null? (' · '+_minTxt(e)):''); }).join('   ·   ')+(pend.length>3? ('   +'+(pend.length-3)+' más'):'');
+      // Cada pendiente es un botón: abre la conversación y limpia los filtros para que la fila
+      // se vea aunque estés parado en «Míos» o en un canal/automatización distinta.
+      out.convPendList=pend.slice(0,3).map(c=>{ const e=_esperaMin(c);
+        return { key:c.id, txt:(c.cliente||'cliente')+(e!=null? (' · '+_minTxt(e)):''),
+          onAbrir:()=>this.setState({convSelId:c.id, convTab:'todos', convCanalSel:'todos', convAutoSel:'todos'}) }; });
+      out.convPendMasHay=pend.length>3; out.convPendMas='+'+(pend.length-3)+' más';
       const _notifOn=(typeof Notification!=='undefined') && Notification.permission==='granted';
       out.convNotifTxt=_notifOn? 'Avisos del navegador activos' : 'Activar avisos del navegador';
       out.onConvNotif=()=>{ this._deskNotify('Avisos activados · Oasis del Alma','Te avisamos cuando un cliente espere respuesta.'); };
