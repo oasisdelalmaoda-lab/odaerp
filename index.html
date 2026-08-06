@@ -29,6 +29,16 @@
   input:focus,select:focus{outline:none;box-shadow:var(--shadow-focus);border-color:var(--brand-primary)!important;}
   .oda-hamburger{display:none;}
   .oda-backdrop{display:none;}
+  @media print{
+    html,body{height:auto !important;overflow:visible !important;background:#fff !important;}
+    body *{visibility:hidden;}
+    #oda-informe, #oda-informe *{visibility:visible;}
+    #oda-informe{position:absolute;left:0;top:0;width:100%;padding:0 !important;}
+    .oda-noprint{display:none !important;}
+    .oda-break{break-inside:avoid;page-break-inside:avoid;}
+    #oda-informe > div{break-inside:avoid;page-break-inside:avoid;}
+    @page{size:A4 portrait;margin:14mm;}
+  }
   @media (max-width:820px){
     .oda-shell{grid-template-columns:1fr !important;}
     .oda-sidebar{position:fixed !important;top:0 !important;left:0 !important;height:100vh !important;width:248px !important;z-index:60 !important;transform:translateX(-100%);transition:transform .28s ease;}
@@ -110,6 +120,13 @@
             <span style="flex:1;">Inicio</span>
             <sc-if value="{{ recBadgeShow }}" hint-placeholder-val="{{ false }}"><span title="{{ recBadgeTitle }}" style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;flex-shrink:0;">{{ recBadgeCount }}</span></sc-if>
           </div>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+            <div class="oda-navitem" onClick="{{ nav.informes }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;margin-bottom:4px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ informesNavColor }};background:{{ informesNavBg }};">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L21 6"/></svg>
+              <span style="flex:1;">Informes</span>
+              
+            </div>
+          </sc-if>
           <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:6px 10px 8px;">Módulos</div>
 
           <sc-if value="{{ canCompras }}" hint-placeholder-val="{{ true }}">
@@ -359,6 +376,204 @@
                     </div>
                   </div>
                 </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== INFORMES GERENCIALES (solo Administrador) ===== -->
+          <sc-if value="{{ showInformes }}" hint-placeholder-val="{{ false }}">
+            <div id="oda-informe">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
+                <div>
+                  <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Informe gerencial</div>
+                  <div style="font-family:var(--font-display);font-size:30px;font-weight:400;color:var(--text-heading);line-height:1.1;">{{ infMesLabel }}</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">{{ infGenerado }}</div>
+                </div>
+                <div class="oda-noprint" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <div style="display:flex;align-items:center;gap:2px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:99px;padding:3px;">
+                    <button onClick="{{ infPrev }}" title="Mes anterior" style="font-family:inherit;font-size:13px;font-weight:800;color:var(--text-body);background:none;border:none;border-radius:99px;padding:6px 13px;cursor:pointer;" style-hover="background:rgba(167,134,89,0.14);">←</button>
+                    <button onClick="{{ infNext }}" title="Mes siguiente" style="font-family:inherit;font-size:13px;font-weight:800;color:var(--text-body);background:none;border:none;border-radius:99px;padding:6px 13px;cursor:pointer;" style-hover="background:rgba(167,134,89,0.14);">→</button>
+                  </div>
+                  <button onClick="{{ infExcel }}" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-body);background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:99px;padding:8px 16px;cursor:pointer;" style-hover="border-color:var(--brand-primary);">Excel</button>
+                  <button onClick="{{ infPdf }}" style="font-family:inherit;font-size:12px;font-weight:700;color:#FBF8F2;background:var(--brand-primary);border:1px solid var(--brand-primary);border-radius:99px;padding:8px 16px;cursor:pointer;" style-hover="opacity:0.9;">PDF</button>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px;">
+                <sc-for list="{{ infKpis }}" as="k" hint-placeholder-count="4">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                    <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">{{ k.label }}</div>
+                    <div style="font-family:var(--font-display);font-size:25px;font-weight:400;color:var(--text-heading);line-height:1.1;">{{ k.valor }}</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:5px;min-height:14px;">{{ k.nota }}</div>
+                    <div style="display:flex;gap:14px;margin-top:11px;padding-top:10px;border-top:1px solid var(--border-subtle);font-size:11px;white-space:nowrap;">
+                      <div><span style="color:var(--text-muted);">Mes ant. </span><span style="font-weight:800;color:{{ k.dPrevFg }};">{{ k.dPrev }}</span></div>
+                      <div><span style="color:var(--text-muted);">Año ant. </span><span style="font-weight:800;color:{{ k.dYoYFg }};">{{ k.dYoY }}</span></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ infAlertasHay }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px;">
+                  <sc-for list="{{ infAlertas }}" as="a" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:9px;background:{{ a.bg }};border:1px solid {{ a.bd }};border-radius:var(--radius-sm);padding:10px 14px;font-size:12.5px;font-weight:600;color:{{ a.fg }};">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+                      <span>{{ a.txt }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);">Lectura del mes</div>
+                  <button class="oda-noprint" onClick="{{ infIaGenerar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;color:var(--text-body);background:transparent;border:1px solid var(--border-subtle);border-radius:99px;padding:7px 15px;cursor:pointer;" style-hover="border-color:var(--brand-primary);">{{ infIaBtn }}</button>
+                </div>
+                <sc-if value="{{ infIaHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13.5px;line-height:1.65;color:var(--text-body);white-space:pre-wrap;text-wrap:pretty;">{{ infIaTxt }}</div>
+                </sc-if>
+                <sc-if value="{{ infIaHayErr }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:12.5px;color:#B5503C;">{{ infIaErr }}</div>
+                </sc-if>
+                <sc-if value="{{ infIaLoading }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:12.5px;color:var(--text-muted);">Analizando ventas, inventario, caja y pauta del mes…</div>
+                </sc-if>
+              </div>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
+                <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:4px;">Evolución del ingreso</div>
+                <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:18px;">Últimos 12 meses, ingreso neto</div>
+                <div style="display:flex;align-items:flex-end;gap:6px;height:150px;">
+                  <sc-for list="{{ infSerie }}" as="s" hint-placeholder-count="12">
+                    <div title="{{ s.valor }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end;">
+                      <div style="width:100%;max-width:44px;height:{{ s.h }};background:{{ s.bg }};border-radius:4px 4px 0 0;"></div>
+                      <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">{{ s.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Ventas por canal</div>
+                  <sc-if value="{{ infCanalesVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-muted);">Sin ventas en el mes.</div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:13px;">
+                    <sc-for list="{{ infCanales }}" as="c" hint-placeholder-count="3">
+                      <div>
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:5px;">
+                          <div style="font-size:12.5px;font-weight:700;color:var(--text-body);">{{ c.canal }}</div>
+                          <div style="display:flex;align-items:baseline;gap:8px;white-space:nowrap;">
+                            <span style="font-size:12.5px;font-weight:800;color:var(--text-heading);">{{ c.ing }}</span>
+                            <span style="font-size:10.5px;font-weight:800;color:{{ c.deltaFg }};">{{ c.delta }}</span>
+                          </div>
+                        </div>
+                        <div style="height:6px;background:rgba(167,134,89,0.14);border-radius:99px;overflow:hidden;margin-bottom:4px;">
+                          <div style="height:100%;width:{{ c.barra }};background:var(--brand-primary);border-radius:99px;"></div>
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);">{{ c.ped }} · {{ c.part }} del ingreso</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Ventas por ciudad</div>
+                  <sc-if value="{{ infCiudadesVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-muted);">Sin ventas en el mes.</div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:9px;">
+                    <sc-for list="{{ infCiudades }}" as="c" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--border-subtle);">
+                        <div style="font-size:12.5px;font-weight:700;color:var(--text-body);min-width:0;">{{ c.ciudad }}</div>
+                        <div style="display:flex;align-items:baseline;gap:10px;white-space:nowrap;">
+                          <span style="font-size:11px;color:var(--text-muted);">{{ c.ped }}</span>
+                          <span style="font-size:11px;color:var(--text-muted);">{{ c.part }}</span>
+                          <span style="font-size:12.5px;font-weight:800;color:var(--text-heading);">{{ c.ing }}</span>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Clientes</div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;">
+                    <sc-for list="{{ infCli }}" as="c" hint-placeholder-count="6">
+                      <div>
+                        <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">{{ c.label }}</div>
+                        <div style="font-size:18px;font-weight:800;color:var(--text-heading);">{{ c.valor }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ infTopCliVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-muted);margin-top:14px;">Sin clientes en el mes.</div></sc-if>
+                  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle);display:flex;flex-direction:column;gap:8px;">
+                    <sc-for list="{{ infTopCli }}" as="c" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
+                        <div style="min-width:0;">
+                          <div style="font-size:12.5px;font-weight:700;color:var(--text-body);">{{ c.nombre }}</div>
+                          <div style="font-size:10.5px;color:var(--text-muted);">{{ c.ciudad }} · {{ c.ped }}</div>
+                        </div>
+                        <div style="font-size:12.5px;font-weight:800;color:var(--text-heading);white-space:nowrap;">{{ c.total }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Inventario</div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;">
+                    <sc-for list="{{ infInv }}" as="i" hint-placeholder-count="6">
+                      <div>
+                        <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">{{ i.label }}</div>
+                        <div style="font-size:16px;font-weight:800;color:var(--text-heading);">{{ i.valor }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ infInmHay }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle);">
+                      <div style="font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:2px;">Capital sin rotar · {{ infInmTotal }}</div>
+                      <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">{{ infInmN }} productos con stock sin ventas en 90 días</div>
+                      <div style="display:flex;flex-direction:column;gap:7px;">
+                        <sc-for list="{{ infInmRows }}" as="x" hint-placeholder-count="4">
+                          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
+                            <div style="font-size:12px;color:var(--text-body);min-width:0;">{{ x.nombre }}</div>
+                            <div style="display:flex;align-items:baseline;gap:10px;white-space:nowrap;">
+                              <span style="font-size:11px;color:var(--text-muted);">{{ x.stock }} und</span>
+                              <span style="font-size:12px;font-weight:800;color:var(--text-heading);">{{ x.valor }}</span>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Caja y cartera</div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:13px;">
+                    <sc-for list="{{ infCaja }}" as="k" hint-placeholder-count="8">
+                      <div>
+                        <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">{{ k.label }}</div>
+                        <div style="font-size:16px;font-weight:800;color:var(--text-heading);">{{ k.valor }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Marketing</div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:13px;">
+                    <sc-for list="{{ infMkt }}" as="m" hint-placeholder-count="4">
+                      <div>
+                        <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">{{ m.label }}</div>
+                        <div style="font-size:18px;font-weight:800;color:var(--text-heading);">{{ m.valor }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:14px;line-height:1.55;text-wrap:pretty;">{{ infMktNota }}</div>
+                </div>
               </div>
             </div>
           </sc-if>
@@ -7341,7 +7556,7 @@ class Component extends DCLogic {
   toggleSubPerm(uid,mod,subkey){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const subKey=mod+'__'+subkey; const modLevel=base[mod]||'none'; const curr=subKey in base?base[subKey]:modLevel; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[subKey]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
 
   // ---- nav ----
-  goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
+  goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser()){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
   _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','conteos','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],conversaciones:['bandeja','agente','canales','informe'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
@@ -7439,6 +7654,245 @@ class Component extends DCLogic {
     if(!n){ this.toast('No hay pedidos nuevos para proteger'); return; }
     this.setState({ventas:list},()=>this.persist()); if(this.cloudOn()) list.filter(v=>v.itemsLocked).forEach(v=>this.cloudSaveVenta(v));
     this.toast(n+' pedido'+(n===1?'':'s')+' protegido'+(n===1?'':'s')+' de futuros sync de Shopify'); }
+  // ===================== INFORMES GERENCIALES (solo Administrador) =====================
+  // Corte mensual. Todo se calcula con los mismos helpers que usan Ventas, Finanzas e
+  // Inventario, para que ningún número contradiga al módulo de origen.
+  infMes(){ return this.state.infMes || this.mesActual(); }
+  infShift(n){ this.setState({infMes:this.mesShift(this.infMes(), n), infIaTxt:'', infIaErr:''}); }
+  _infKeyCli(v){ return String(v.celular||v.correo||v.cliente||'').trim().toLowerCase(); }
+  // Fecha de la PRIMERA compra de cada cliente (para separar nuevos de recurrentes).
+  _infPrimeras(){ const vs=(this.state.ventas||[]); if(this._infPrim && this._infPrimN===vs.length) return this._infPrim;
+    const m={}; vs.forEach(v=>{ if(v.cancelada) return; const k=this._infKeyCli(v), f=this.parseFecha(v.fecha)||''; if(!k||!f) return; if(!m[k]||f<m[k]) m[k]=f; });
+    this._infPrim=m; this._infPrimN=vs.length; return m; }
+  // Sello de los datos que alimentan el informe. Si no cambia, se reusa lo ya calculado:
+  // sin esto el informe recalcula 12 meses de P&G y de caja en CADA render y traba la app.
+  _infSello(){ const s=this.state;
+    const k=[s.ventas,s.movimientos,s.ordenes,s.materias,s.productos,s.servicios,s.cuentas,s.creditos,s.liquidaciones,s.movAjustes];
+    if(!this._isKey || this._isKey.length!==k.length || !this._isKey.every((x,i)=>x===k[i])){ this._isKey=k; this._isN=(this._isN||0)+1; }
+    return this._isN; }
+  infMesData(ym){
+    const sello=this._infSello();
+    if(this._imdSello!==sello){ this._imdSello=sello; this._imdCache={}; }
+    if(this._imdCache[ym]) return this._imdCache[ym];
+    const res=this._infMesDataCalc(ym); this._imdCache[ym]=res; return res;
+  }
+  _infMesDataCalc(ym){
+    const vs=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym);
+    const ingresos=vs.reduce((a,v)=>a+this.ventaNeta(v),0);
+    const costo=vs.reduce((a,v)=>a+this.ventaCostoVendido(v),0);
+    const unidades=vs.reduce((a,v)=>a+this.ventaUnidades(v),0);
+    const pedidos=vs.length;
+    const prim=this._infPrimeras();
+    const keys=Array.from(new Set(vs.map(v=>this._infKeyCli(v)).filter(Boolean)));
+    const nuevos=keys.filter(k=>String(prim[k]||'').slice(0,7)===ym).length;
+    let pyg={}; try{ pyg=this.finPyG(ym)||{}; }catch(e){ pyg={}; }
+    return { vs, ingresos, costo, bruta:ingresos-costo, margen:(ingresos>0? (ingresos-costo)/ingresos*100 : 0),
+      pedidos, unidades, ticket:(pedidos? ingresos/pedidos : 0),
+      clientes:keys.length, nuevos, recurrentes:Math.max(0, keys.length-nuevos),
+      marketing:Number(pyg.marketing)||0, gastos:Number(pyg.gastos)||0, operacional:Number(pyg.operacional)||0 };
+  }
+  infDelta(act, prev){
+    if(!prev) return { txt:'sin base', fg:'var(--text-muted)' };
+    const p=(act-prev)/Math.abs(prev)*100;
+    if(!isFinite(p)) return { txt:'sin base', fg:'var(--text-muted)' };
+    const up=p>=0; return { txt:(up?'▲ ':'▼ ')+Math.abs(p).toFixed(0)+'%', fg:(up?'#5B7355':'#B5503C') };
+  }
+  infPct(n){ return (Math.round(n*10)/10).toFixed(1)+'%'; }
+  // Productos con stock que no se venden hace 90 días: capital quieto en bodega.
+  infInmovilizado(){
+    const hoy=new Date(); const lim=new Date(hoy.getTime()-90*86400000).toISOString().slice(0,10);
+    const vend={}; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const f=this.parseFecha(v.fecha)||''; if(f<lim) return;
+      (v.items||[]).forEach(it=>{ const c=it.productoCodigo||it.referencia; if(c) vend[c]=(vend[c]||0)+(Number(it.unidades)||0); }); });
+    const rows=(this.state.productos||[]).map(p=>({ nombre:p.nombre||p.codigo, codigo:p.codigo,
+      stock:Math.round(this.productoStockActual(p)), valor:this.productoValor(p), u90:vend[p.codigo]||0 }))
+      .filter(r=>r.stock>0 && r.u90===0).sort((a,b)=>b.valor-a.valor);
+    return { rows, total:rows.reduce((a,r)=>a+r.valor,0) };
+  }
+  infCartera(){
+    let cxc=0, cxcVenc=0, nCxc=0;
+    try{ (this.finPorCobrar()||[]).forEach(v=>{ const s=this.ventaSaldo(v); if(s<=0.5) return; cxc+=s; nCxc++;
+      if(this.diasDesde(v.fecha)>30) cxcVenc+=s; }); }catch(e){}
+    let cxp=0, nCxp=0;
+    try{ (this.finPorPagar()||[]).forEach(o=>{ const s=this.ordenSaldo(o); if(s>0.5){ cxp+=s; nCxp++; } }); }catch(e){}
+    return { cxc, cxcVenc, nCxc, cxp, nCxp };
+  }
+  infAlertas(d, dPrev, inv, cart, caja){
+    const a=[];
+    if(d.ingresos<=0) a.push({ t:'Sin ventas registradas en el mes', s:'alta' });
+    else{
+      if(dPrev.ingresos>0 && d.ingresos < dPrev.ingresos*0.85) a.push({ t:'Los ingresos cayeron '+this.infPct((dPrev.ingresos-d.ingresos)/dPrev.ingresos*100)+' frente al mes anterior', s:'alta' });
+      if(d.margen<35) a.push({ t:'Margen bruto en '+this.infPct(d.margen)+' — por debajo del 35%', s:'alta' });
+      if(d.marketing>0 && d.ingresos/d.marketing<2) a.push({ t:'ROAS de '+(d.ingresos/d.marketing).toFixed(1)+'x — la pauta no se está pagando sola', s:'media' });
+      if(d.nuevos<dPrev.nuevos) a.push({ t:'Entraron '+d.nuevos+' clientes nuevos, menos que los '+dPrev.nuevos+' del mes anterior', s:'media' });
+    }
+    if(cart.cxcVenc>0) a.push({ t:this.fmt(Math.round(cart.cxcVenc))+' en cartera con más de 30 días', s:'alta' });
+    if(caja.saldo>0 && d.gastos>0 && caja.saldo<d.gastos) a.push({ t:'La caja ('+this.fmt(Math.round(caja.saldo))+') no cubre un mes de gastos', s:'alta' });
+    if(inv.total>0 && inv.fin>0 && inv.total>inv.fin*0.2) a.push({ t:this.fmt(Math.round(inv.total))+' en producto sin rotar hace 90 días', s:'media' });
+    return a;
+  }
+  async infGenerarIA(){
+    if(this.state.infIaLoading) return;
+    const r=this._infDatos(this.infMes());
+    this.setState({infIaLoading:true, infIaTxt:'', infIaErr:''});
+    const L=(k,v)=>k+': '+v;
+    const prompt=['Eres el analista financiero de Oasis del Alma (ODA LABS S.A.S.), marca colombiana de aromaterapia.',
+      'Escribe el RESUMEN EJECUTIVO del mes '+this.mesLabel(r.ym)+' para el gerente. Español de Colombia, tono directo y profesional, sin adornos ni emojis.',
+      'Formato: 3 párrafos cortos (qué pasó, por qué, qué hacer) y luego una línea "Prioridades:" con 3 acciones concretas. Máximo 200 palabras. No inventes datos que no estén abajo.',
+      '', 'DATOS DEL MES:',
+      L('Ingreso neto', this.fmt(Math.round(r.d.ingresos))+' (mes anterior '+this.fmt(Math.round(r.dPrev.ingresos))+', mismo mes del año pasado '+this.fmt(Math.round(r.dYoY.ingresos))+')'),
+      L('Pedidos', r.d.pedidos+' (anterior '+r.dPrev.pedidos+')'),
+      L('Ticket promedio', this.fmt(Math.round(r.d.ticket))),
+      L('Margen bruto', this.infPct(r.d.margen)+' — utilidad bruta '+this.fmt(Math.round(r.d.bruta))),
+      L('Resultado operacional', this.fmt(Math.round(r.d.operacional))),
+      L('Clientes', r.d.clientes+' compraron, '+r.d.nuevos+' nuevos y '+r.d.recurrentes+' recurrentes'),
+      L('Ventas por canal', r.canales.map(c=>c.canal+' '+this.fmt(Math.round(c.ing))).join(' · ')||'sin datos'),
+      L('Ciudades top', r.ciudades.slice(0,5).map(c=>c.ciudad+' '+this.fmt(Math.round(c.ing))).join(' · ')||'sin datos'),
+      L('Inversión en pauta', this.fmt(Math.round(r.d.marketing))+(r.d.marketing>0? ' · ROAS '+(r.d.ingresos/r.d.marketing).toFixed(1)+'x · CAC '+this.fmt(Math.round(r.cac)) : '')),
+      L('Inventario al cierre', this.fmt(Math.round(r.inv.fin))+' · rotación '+r.inv.rot.toFixed(2)+' veces · '+this.fmt(Math.round(r.inv.total))+' sin rotar hace 90 días'),
+      L('Caja', this.fmt(Math.round(r.caja.saldo))+' · entradas '+this.fmt(Math.round(r.caja.ing))+' · salidas '+this.fmt(Math.round(r.caja.eg))),
+      L('Cartera', 'por cobrar '+this.fmt(Math.round(r.cart.cxc))+' ('+this.fmt(Math.round(r.cart.cxcVenc))+' vencida) · por pagar '+this.fmt(Math.round(r.cart.cxp))),
+      L('Alertas detectadas', r.alertas.map(a=>a.t).join(' · ')||'ninguna')].join('\n');
+    try{ const txt=await this.aiComplete(prompt); this.setState({infIaTxt:String(txt||'').trim(), infIaLoading:false}); }
+    catch(e){ this.setState({infIaErr:'No se pudo generar la lectura: '+((e&&e.message)||'error'), infIaLoading:false}); }
+  }
+  // Núcleo de datos del informe: lo usan la vista, el Excel y la lectura con IA.
+  _infDatos(ym){
+    const sello=this._infSello()+'@'+ym;
+    if(this._idSello===sello && this._idCache) return this._idCache;
+    const res=this._infDatosCalc(ym); this._idSello=sello; this._idCache=res; return res;
+  }
+  _infDatosCalc(ym){
+    const d=this.infMesData(ym), dPrev=this.infMesData(this.mesShift(ym,-1)), dYoY=this.infMesData(this.mesShift(ym,-12));
+    const grup=(arr, fn)=>{ const m={}; arr.forEach(v=>{ const k=(fn(v)||'—'); if(!m[k]) m[k]={k, ing:0, ped:0}; m[k].ing+=this.ventaNeta(v); m[k].ped++; }); return m; };
+    const cAct=grup(d.vs, v=>this.canonCanal(v.canal)), cPrev=grup(dPrev.vs, v=>this.canonCanal(v.canal));
+    const canales=Object.keys(cAct).map(k=>({ canal:k, ing:cAct[k].ing, ped:cAct[k].ped,
+      part:(d.ingresos>0? cAct[k].ing/d.ingresos*100 : 0), prev:(cPrev[k]? cPrev[k].ing : 0) })).sort((a,b)=>b.ing-a.ing);
+    const ciAct=grup(d.vs, v=>this.canonCiudad? this.canonCiudad(v.ciudad) : v.ciudad);
+    const ciudades=Object.keys(ciAct).map(k=>({ ciudad:k, ing:ciAct[k].ing, ped:ciAct[k].ped,
+      part:(d.ingresos>0? ciAct[k].ing/d.ingresos*100 : 0) })).sort((a,b)=>b.ing-a.ing);
+    const cli={}; d.vs.forEach(v=>{ const k=this._infKeyCli(v); if(!k) return; if(!cli[k]) cli[k]={nombre:v.cliente||'—', ciudad:v.ciudad||'', total:0, ped:0};
+      cli[k].total+=this.ventaTotal(v); cli[k].ped++; if(v.cliente && String(v.cliente).length>String(cli[k].nombre).length) cli[k].nombre=v.cliente; });
+    const topCli=Object.values(cli).sort((a,b)=>b.total-a.total);
+    // Solo ingreso: usar infMesData aquí obligaba a calcular P&G y caja de 12 meses.
+    const ingMes={}; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const m=this.mesDe(v.fecha); if(!m) return; ingMes[m]=(ingMes[m]||0)+this.ventaNeta(v); });
+    const serie=[]; for(let i=11;i>=0;i--){ const m=this.mesShift(ym,-i); serie.push({ ym:m, ing:ingMes[m]||0, label:this.mesLabel(m).slice(0,3) }); }
+    const finDia=this.ultimoDiaMes(ym), iniDia=this.ultimoDiaMes(this.mesShift(ym,-1));
+    const vIni=this.invValorAFecha(iniDia), vFin=this.invValorAFecha(finDia);
+    const ent=this.invEntradasCosto(ym+'-01', finDia), sal=this.invSalidasCosto(ym+'-01', finDia);
+    const prom=(vIni+vFin)/2; const rot=prom>0? sal/prom : 0;
+    const inm=this.infInmovilizado();
+    const inv={ ini:vIni, fin:vFin, ent, sal, rot, dias:(rot>0? 30/rot : 0), total:inm.total, rows:inm.rows };
+    const cart=this.infCartera();
+    let cajaMes={ing:0,eg:0,neto:0}; try{ cajaMes=this.finCajaMes(ym); }catch(e){}
+    let saldo=0; try{ saldo=this.cajaSaldoTotal(); }catch(e){}
+    const caja={ ing:cajaMes.ing, eg:cajaMes.eg, neto:cajaMes.neto, saldo };
+    const cac=d.nuevos>0? d.marketing/d.nuevos : 0;
+    const alertas=this.infAlertas(d, dPrev, inv, cart, caja);
+    return { ym, d, dPrev, dYoY, canales, ciudades, topCli, serie, inv, cart, caja, cac, alertas };
+  }
+  infExportExcel(){
+    if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando, intenta de nuevo'); return; }
+    const r=this._infDatos(this.infMes()); const R=(n)=>Math.round(n);
+    const wb=XLSX.utils.book_new();
+    const add=(nombre, aoa)=>XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), nombre);
+    add('Resumen', [['Informe gerencial', this.mesLabel(r.ym)],[],
+      ['Indicador','Mes','Mes anterior','Año anterior'],
+      ['Ingreso neto', R(r.d.ingresos), R(r.dPrev.ingresos), R(r.dYoY.ingresos)],
+      ['Pedidos', r.d.pedidos, r.dPrev.pedidos, r.dYoY.pedidos],
+      ['Ticket promedio', R(r.d.ticket), R(r.dPrev.ticket), R(r.dYoY.ticket)],
+      ['Unidades', r.d.unidades, r.dPrev.unidades, r.dYoY.unidades],
+      ['Costo de ventas', R(r.d.costo), R(r.dPrev.costo), R(r.dYoY.costo)],
+      ['Utilidad bruta', R(r.d.bruta), R(r.dPrev.bruta), R(r.dYoY.bruta)],
+      ['Margen bruto %', +r.d.margen.toFixed(1), +r.dPrev.margen.toFixed(1), +r.dYoY.margen.toFixed(1)],
+      ['Resultado operacional', R(r.d.operacional), R(r.dPrev.operacional), R(r.dYoY.operacional)],
+      ['Clientes que compraron', r.d.clientes, r.dPrev.clientes, r.dYoY.clientes],
+      ['Clientes nuevos', r.d.nuevos, r.dPrev.nuevos, r.dYoY.nuevos]]);
+    add('Ventas por canal', [['Canal','Ingreso neto','Pedidos','Participación %','Mes anterior'],
+      ...r.canales.map(c=>[c.canal, R(c.ing), c.ped, +c.part.toFixed(1), R(c.prev)])]);
+    add('Ventas por ciudad', [['Ciudad','Ingreso neto','Pedidos','Participación %'],
+      ...r.ciudades.map(c=>[c.ciudad, R(c.ing), c.ped, +c.part.toFixed(1)])]);
+    add('Clientes del mes', [['Cliente','Ciudad','Pedidos','Total'],
+      ...r.topCli.map(c=>[c.nombre, c.ciudad, c.ped, R(c.total)])]);
+    add('Evolución 12 meses', [['Mes','Ingreso neto'], ...r.serie.map(s=>[s.ym, R(s.ing)])]);
+    add('Inventario', [['Concepto','Valor'],['Inventario inicial',R(r.inv.ini)],['Entradas',R(r.inv.ent)],
+      ['Salidas (costo)',R(r.inv.sal)],['Inventario final',R(r.inv.fin)],['Rotación (veces)',+r.inv.rot.toFixed(2)],
+      ['Días de inventario',Math.round(r.inv.dias)],['Capital sin rotar 90 días',R(r.inv.total)],[],
+      ['Producto','Stock','Valor'], ...r.inv.rows.map(x=>[x.nombre, x.stock, R(x.valor)])]);
+    add('Caja y cartera', [['Concepto','Valor'],['Saldo en cuentas',R(r.caja.saldo)],['Entradas del mes',R(r.caja.ing)],
+      ['Salidas del mes',R(r.caja.eg)],['Flujo neto',R(r.caja.neto)],['Cuentas por cobrar',R(r.cart.cxc)],
+      ['Cartera vencida +30 días',R(r.cart.cxcVenc)],['Cuentas por pagar',R(r.cart.cxp)]]);
+    add('Marketing', [['Concepto','Valor'],['Inversión en pauta',R(r.d.marketing)],['Ingreso neto',R(r.d.ingresos)],
+      ['ROAS',(r.d.marketing>0? +(r.d.ingresos/r.d.marketing).toFixed(2):0)],['Clientes nuevos',r.d.nuevos],
+      ['CAC',R(r.cac)],['% del ingreso invertido',(r.d.ingresos>0? +(r.d.marketing/r.d.ingresos*100).toFixed(1):0)]]);
+    XLSX.writeFile(wb, 'informe_gerencial_'+r.ym+'.xlsx');
+    this.toast('Informe de '+this.mesLabel(r.ym)+' descargado');
+  }
+  infExportPDF(){ this.toast('Elige «Guardar como PDF» en el destino de impresión'); setTimeout(()=>{ try{ window.print(); }catch(e){} }, 350); }
+  _buildInformes(out){
+    const st=this.state; const ym=this.infMes(); const r=this._infDatos(ym); const R=(n)=>Math.round(n);
+    out.infMesLabel=this.mesLabel(ym); out.infYm=ym;
+    out.infGenerado='Generado el '+this.fmtFecha(new Date().toISOString().slice(0,10))+' · ODA LABS S.A.S. · NIT 902.063.571-6';
+    out.infPrev=()=>this.infShift(-1); out.infNext=()=>this.infShift(1);
+    out.infEsMesActual = ym>=this.mesActual();
+    out.infPrevLabel=this.mesLabel(this.mesShift(ym,-1)); out.infYoYLabel=this.mesLabel(this.mesShift(ym,-12));
+    out.infExcel=()=>this.infExportExcel(); out.infPdf=()=>this.infExportPDF();
+    const kpi=(label, valor, act, prev, yoy, nota)=>({ label, valor, nota:nota||'',
+      dPrev:this.infDelta(act,prev).txt, dPrevFg:this.infDelta(act,prev).fg,
+      dYoY:this.infDelta(act,yoy).txt, dYoYFg:this.infDelta(act,yoy).fg });
+    out.infKpis=[
+      kpi('Ingreso neto', this.fmt(R(r.d.ingresos)), r.d.ingresos, r.dPrev.ingresos, r.dYoY.ingresos, r.d.unidades+' unidades'),
+      kpi('Pedidos', String(r.d.pedidos), r.d.pedidos, r.dPrev.pedidos, r.dYoY.pedidos, r.d.clientes+' clientes'),
+      kpi('Ticket promedio', this.fmt(R(r.d.ticket)), r.d.ticket, r.dPrev.ticket, r.dYoY.ticket, ''),
+      kpi('Margen bruto', this.infPct(r.d.margen), r.d.margen, r.dPrev.margen, r.dYoY.margen, 'Utilidad '+this.fmt(R(r.d.bruta)))];
+    out.infAlertas=r.alertas.map((a,i)=>({ key:'a'+i, txt:a.t, bg:(a.s==='alta'?'rgba(181,80,60,0.09)':'rgba(167,134,89,0.10)'),
+      bd:(a.s==='alta'?'rgba(181,80,60,0.32)':'rgba(167,134,89,0.32)'), fg:(a.s==='alta'?'#B5503C':'#8A6F49') }));
+    out.infAlertasHay=r.alertas.length>0; out.infAlertasVacio=r.alertas.length===0;
+    out.infIaTxt=st.infIaTxt||''; out.infIaHay=!!st.infIaTxt; out.infIaErr=st.infIaErr||''; out.infIaHayErr=!!st.infIaErr;
+    out.infIaLoading=!!st.infIaLoading; out.infIaBtn=st.infIaLoading? 'Leyendo los números…' : (st.infIaTxt? 'Volver a generar' : 'Generar lectura del mes');
+    out.infIaGenerar=()=>this.infGenerarIA();
+    const maxS=Math.max(1, ...r.serie.map(s=>s.ing));
+    out.infSerie=r.serie.map((s,i)=>({ key:s.ym, label:s.label, h:Math.max(2, Math.round(s.ing/maxS*100))+'%',
+      bg:(s.ym===ym? 'var(--brand-primary)' : 'rgba(167,134,89,0.32)'), valor:this.fmt(R(s.ing)) }));
+    const pedTxt=(n)=>n+(n===1?' pedido':' pedidos');
+    out.infCanales=r.canales.map(c=>({ key:c.canal, canal:c.canal, ing:this.fmt(R(c.ing)), ped:pedTxt(c.ped),
+      part:this.infPct(c.part), barra:Math.max(2,Math.round(c.part))+'%',
+      delta:this.infDelta(c.ing,c.prev).txt, deltaFg:this.infDelta(c.ing,c.prev).fg }));
+    out.infCanalesVacio=r.canales.length===0;
+    out.infCiudades=r.ciudades.slice(0,8).map(c=>({ key:c.ciudad, ciudad:c.ciudad, ing:this.fmt(R(c.ing)), ped:pedTxt(c.ped), part:this.infPct(c.part) }));
+    out.infCiudadesVacio=r.ciudades.length===0;
+    const recPct=r.d.clientes>0? r.d.recurrentes/r.d.clientes*100 : 0;
+    out.infCli=[{ key:'c1', label:'Clientes que compraron', valor:String(r.d.clientes) },
+      { key:'c2', label:'Nuevos', valor:String(r.d.nuevos) },
+      { key:'c3', label:'Recurrentes', valor:String(r.d.recurrentes) },
+      { key:'c4', label:'Tasa de recompra', valor:this.infPct(recPct) },
+      { key:'c5', label:'Ingreso por cliente', valor:this.fmt(R(r.d.clientes>0? r.d.ingresos/r.d.clientes : 0)) },
+      { key:'c6', label:'Pedidos por cliente', valor:(r.d.clientes>0? (r.d.pedidos/r.d.clientes).toFixed(2):'0') }];
+    out.infTopCli=r.topCli.slice(0,6).map((c,i)=>({ key:'tc'+i, nombre:c.nombre, ciudad:c.ciudad||'—', ped:pedTxt(c.ped), total:this.fmt(R(c.total)) }));
+    out.infTopCliVacio=r.topCli.length===0;
+    out.infInv=[{ key:'i1', label:'Inventario inicial', valor:this.fmt(R(r.inv.ini)) },
+      { key:'i2', label:'Entradas', valor:this.fmt(R(r.inv.ent)) },
+      { key:'i3', label:'Salidas (costo)', valor:this.fmt(R(r.inv.sal)) },
+      { key:'i4', label:'Inventario final', valor:this.fmt(R(r.inv.fin)) },
+      { key:'i5', label:'Rotación', valor:r.inv.rot.toFixed(2)+' veces' },
+      { key:'i6', label:'Días de inventario', valor:(r.inv.dias>0? Math.round(r.inv.dias)+' días' : '—') }];
+    out.infInmTotal=this.fmt(R(r.inv.total)); out.infInmHay=r.inv.rows.length>0; out.infInmN=String(r.inv.rows.length);
+    out.infInmRows=r.inv.rows.slice(0,6).map((x,i)=>({ key:'im'+i, nombre:x.nombre, stock:String(x.stock), valor:this.fmt(R(x.valor)) }));
+    out.infCaja=[{ key:'k1', label:'Saldo en cuentas', valor:this.fmt(R(r.caja.saldo)) },
+      { key:'k2', label:'Entradas del mes', valor:this.fmt(R(r.caja.ing)) },
+      { key:'k3', label:'Salidas del mes', valor:this.fmt(R(r.caja.eg)) },
+      { key:'k4', label:'Flujo neto', valor:(r.caja.neto>=0?'':'−')+this.fmt(Math.abs(R(r.caja.neto))) },
+      { key:'k5', label:'Por cobrar ('+r.cart.nCxc+')', valor:this.fmt(R(r.cart.cxc)) },
+      { key:'k6', label:'Vencida +30 días', valor:this.fmt(R(r.cart.cxcVenc)) },
+      { key:'k7', label:'Por pagar ('+r.cart.nCxp+')', valor:this.fmt(R(r.cart.cxp)) },
+      { key:'k8', label:'Posición neta', valor:this.fmt(R(r.caja.saldo+r.cart.cxc-r.cart.cxp)) }];
+    const roas=r.d.marketing>0? r.d.ingresos/r.d.marketing : 0;
+    out.infMkt=[{ key:'m1', label:'Inversión en pauta', valor:this.fmt(R(r.d.marketing)) },
+      { key:'m2', label:'ROAS', valor:(r.d.marketing>0? roas.toFixed(1)+'x' : '—') },
+      { key:'m3', label:'CAC', valor:(r.d.nuevos>0? this.fmt(R(r.cac)) : '—') },
+      { key:'m4', label:'% del ingreso', valor:(r.d.ingresos>0? this.infPct(r.d.marketing/r.d.ingresos*100) : '—') }];
+    out.infMktNota=r.d.marketing>0? 'Inversión tomada de los egresos de categoría Marketing del mes. CAC = inversión ÷ clientes nuevos.'
+      : 'No hay egresos de categoría Marketing registrados en '+this.mesLabel(ym)+'. Regístralos en Finanzas para ver ROAS y CAC.';
+  }
   isAdminUser(){ const a=this.access(); return !!(a&&a.admin); }
   editMateria(m){ this.open('materia',{...m, _orig:m.codigo, marca:(m.marca||''), ivaExento:(Number(m.iva)===0)}); }
   // Renombra el código de una materia en TODAS las transacciones que la referencian.
@@ -9466,7 +9920,13 @@ Instrucciones de respuesta:
     if(this.cloudOn()){ const _cv=list.find(x=>x.id===rev.ventaId); if(_cv) this.cloudSaveVenta(_cv); } }
   movsAnulados(){ const aj=this.movAjustesGet(); return Object.keys(aj).filter(k=>aj[k]&&aj[k].anulado).map(k=>({ id:k, ...(aj[k].anuladoSnap||{}), motivo:aj[k].anuladoMotivo||'', por:aj[k].anuladoPor||'', at:aj[k].anuladoAt||'' })); }
   // --- movimientos de caja unificados ---
-  cajaMovs(){ const out=[];
+  // Memoizado por IDENTIDAD de los arreglos que lee: reconstruir la caja recorre ventas,
+  // órdenes y créditos completos, y el informe la pedía 12+ veces por render.
+  cajaMovs(){ const s=this.state;
+    const k=[s.ordenes,s.ventas,s.movimientos,s.liquidaciones,s.movAjustes,s.proveedores,s.cuentas,s.metodosFin,s.creditos];
+    if(this._cmKey && this._cmKey.length===k.length && this._cmKey.every((x,i)=>x===k[i])) return this._cmOut;
+    const r=this._cajaMovsCalc(); this._cmKey=k; this._cmOut=r; return r; }
+  _cajaMovsCalc(){ const out=[];
     (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.pagos||[]).forEach((p,i)=>{ if(!(Number(p.monto)>0)) return; out.push({ id:o.id+'-pg'+i, fecha:this.parseFecha(p.fecha), tipo:'egreso', cuenta:p.cuenta||'', monto:Number(p.monto)||0, categoria:'Pago a proveedor', concepto:'Pago '+(o.numero||'')+' \u00b7 '+this.provNombre(o.proveedorCodigo), origen:'compra', editable:false, ordenId:o.id }); }); });
     (this.state.ventas||[]).forEach(v=>{ const pag=Number(v.pagado)||0; if(v.origen==='historico' || v.cancelada || pag<=0 || this.metodoTipo(v.metodoPago)==='diferido') return;
       const _cli=(v.cliente?(' \u00b7 '+v.cliente):'');
@@ -10747,6 +11207,11 @@ Instrucciones de respuesta:
     out.showInicio = st.module==='inicio';
     out.inicioNavBg = out.showInicio? 'rgba(167,134,89,0.18)':'transparent';
     out.inicioNavColor = out.showInicio? '#D9BE92':'rgba(251,248,242,0.85)';
+    // ---- Informes gerenciales: visibles solo para el Administrador ----
+    out.showInformes = st.module==='informes' && isAdmin;
+    out.informesNavBg = out.showInformes? 'rgba(167,134,89,0.18)':'transparent';
+    out.informesNavColor = out.showInformes? '#D9BE92':'rgba(251,248,242,0.85)';
+    if(out.showInformes){ try{ this._buildInformes(out); }catch(e){ out.showInformes=false; console.error('informes', e); } }
     // Badge de Inicio: todo lo asignado a esta persona que sigue esperando (recordatorios sin
     // leer, conversaciones, casos por cerrar, leads en curso).
     { const p=this.inicioPendientes(); out.recBadgeShow=p.n>0; out.recBadgeCount=p.n>99?'99+':String(p.n); out.recBadgeTitle=p.detalle; }
@@ -10860,7 +11325,7 @@ Instrucciones de respuesta:
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.shellNavClass=st.sidebarOpen?'oda-nav-open':''; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
-    out.nav={ inicio:()=>this.goModule('inicio'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), conversaciones:()=>this.goModule('conversaciones'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
+    out.nav={ inicio:()=>this.goModule('inicio'), informes:()=>this.goModule('informes'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), conversaciones:()=>this.goModule('conversaciones'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ reorden:()=>this.goSub('reorden'), resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
 
@@ -11275,7 +11740,20 @@ Instrucciones de respuesta:
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
           mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?'Asesor':cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
         out.convAsigVal=cc.asignadoA||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
-        const _asigSrc=(this.state.cloudProfiles&&this.state.cloudProfiles.length)? this.state.cloudProfiles.map(p=>({v:p.id,l:p.nombre})) : this.users.map(u=>({v:u.id,l:u.name}));
+        // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
+        // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
+        const _asigL=(p)=>{ const n=String((p&&(p.nombre||p.name))||'').trim(); if(n) return n;
+          const e=String((p&&p.email)||'').trim(); if(e) return e.split('@')[0];
+          return 'Usuario '+String((p&&p.id)||'').slice(0,4); };
+        const _asigSrc=(this.state.cloudProfiles&&this.state.cloudProfiles.length)
+          ? this.state.cloudProfiles.map(p=>({v:p.id,l:_asigL(p)}))
+          : this.users.map(u=>({v:u.id,l:_asigL(u)}));
+        // Si la conversación ya está asignada a alguien que no está en la lista, se agrega:
+        // sin esto el <select> se veía en «Sin asignar» aunque la ficha mostrara su inicial.
+        if(cc.asignadoA && !_asigSrc.some(o=>o.v===cc.asignadoA)){
+          const u=this.users.find(x=>x.id===cc.asignadoA);
+          _asigSrc.unshift({ v:cc.asignadoA, l:(u? _asigL(u) : this.casoAsigneeName(cc.asignadoA)) });
+        }
         out.convAsigOpts=[{v:'',l:'Sin asignar'}].concat(_asigSrc);
         out.convTomarBtn=()=>this.convTomar(cc.id); out.convDevolverBtn=()=>this.convDevolverBot(cc.id); out.convResolverBtn=()=>this.convResolver(cc.id);
         out.convCasoBtn=()=>this.convCrearCaso(cc); out.convLeadBtn=()=>this.convCrearLead(cc);
@@ -11289,17 +11767,35 @@ Instrucciones de respuesta:
           {l:'Envíos y tiempos', txt:'Enviamos a todo Colombia: 2 a 4 días hábiles, y el envío es gratis desde $150.000.'},
           {l:'Link de pago', txt:'Te dejo el link para completar tu compra: oasisdelalma.co — cualquier duda me escribes por acá 💛'}
         ].map(ch=>({ l:ch.l, bg:(ch.destacado?'rgba(167,134,89,0.14)':'transparent'), fg:(ch.destacado?'#7A5E36':'var(--text-strong)'), bd:(ch.destacado?'none':'1px solid var(--border-subtle)'), onUse:()=>_setDraft(ch.txt) }));
-        const _t10=String(cc.telefono||'').replace(/\D/g,'').slice(-10);
-        const _mt=(o)=>{ const t=String((o&&(o.celular||o.telefono))||'').replace(/\D/g,'').slice(-10); return !!_t10 && t===_t10; };
-        const _vts=(this.state.ventas||[]).filter(_mt);
+        const _d10=(x)=>{ const d=String(x||'').replace(/\D/g,''); return d.length>=10? d.slice(-10) : ''; };
+        const _t10=_d10(cc.telefono || String(cc.id||'').replace(/^wa_/,''));
+        const _cmail=String(cc.correo||'').trim().toLowerCase();
+        // Cruce por celular (con o sin 57) o por correo: el pedido de la tienda no siempre trae
+        // el celular con el mismo formato que el número de WhatsApp.
+        const _mt=(o)=>{ if(!o) return false;
+          const t=_d10(o.celular||o.telefono); if(_t10 && t && t===_t10) return true;
+          const e=String(o.correo||'').trim().toLowerCase(); return !!_cmail && !!e && e===_cmail; };
+        const _vts=(this.state.ventas||[]).filter(v=>!v.cancelada && _mt(v))
+          .slice().sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
         const _lead=(this.state.leads||[]).find(_mt)||{};
         const _casos=(this.state.casos||[]).filter(_mt);
+        const _vUlt=_vts[0]||{};
         const _campo=(k,v)=>({ k, v:(v||'falta · pídeselo'), fw:(v?'700':'800'), fg:(v?'var(--text-strong)':'#B5503C'), ok:!!v });
-        out.cvFichaCampos=[ _campo('Nombre', (cc.cliente && !/^visitante/i.test(cc.cliente))? cc.cliente : ''), _campo('WhatsApp', cc.telefono||''), _campo('Correo', _lead.correo||''), _campo('Ciudad', _lead.ciudad||'') ];
+        out.cvFichaCampos=[
+          _campo('Nombre', (cc.cliente && !/^visitante/i.test(cc.cliente))? cc.cliente : (_vUlt.cliente||_lead.nombre||'')),
+          _campo('WhatsApp', cc.telefono||_vUlt.celular||_lead.celular||''),
+          _campo('Correo', _vUlt.correo||_lead.correo||''),
+          _campo('Ciudad', _vUlt.ciudad||_lead.ciudad||'') ];
         const _nOk=out.cvFichaCampos.filter(f=>f.ok).length;
         out.cvFichaN=_nOk; out.cvFichaPct=Math.round(_nOk/4*100)+'%'; out.cvFichaFalta=_nOk<4;
-        const _tot=_vts.reduce((a,v)=>a+(Number(v.total)||Number(v.valorTotal)||0),0);
-        out.cvHistorial=[ {k:'Pedidos', v:String(_vts.length)}, {k:'Total comprado', v:'$'+Math.round(_tot).toLocaleString('es-CO')}, {k:'Casos de servicio', v:String(_casos.length)}, {k:'Primer contacto', v:(cc.inicio? this.fmtFecha(cc.inicio) : '—')} ];
+        // Mismo total que muestra Ventas (ventaTotal), no un campo suelto que no existe.
+        const _tot=_vts.reduce((a,v)=>{ try{ return a+this.ventaTotal(v); }catch(e){ return a; } }, 0);
+        const _pedRefs=_vts.slice(0,3).map(v=>v.pedido||v.ov||'').filter(Boolean).join(', ');
+        const _fPrim=_vts.length? String(_vts[_vts.length-1].fecha||'') : '';
+        out.cvHistorial=[ {k:'Pedidos', v:String(_vts.length)+(_pedRefs?(' · '+_pedRefs):'')},
+          {k:'Total comprado', v:'$'+Math.round(_tot).toLocaleString('es-CO')},
+          {k:'Casos de servicio', v:String(_casos.length)},
+          {k:'Primer contacto', v:(this.fmtFecha(_fPrim||cc.inicio||'')||'—')} ];
       }
     }
     if(out.showConvAgente){ const ag=this.agenteCfgGet();
@@ -11380,8 +11876,9 @@ Instrucciones de respuesta:
     out.showMktCreativos = onMkt && st.sub==='mktcreativos';
     out.showMktPublicos = onMkt && st.sub==='mktpublicos';
     out.showMktConexion = onMkt && st.sub==='mktconexion';
-    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio';
+    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes';
     if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
+    else if(st.module==='informes'){ out.crumb='Dirección'; out.pageTitle='Informes gerenciales'; }
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
