@@ -7183,7 +7183,7 @@ class Component extends DCLogic {
       this.setState({ mktLiveCampanas:norm, mktLiveCreativos:(creNorm.length?creNorm:null), mktLivePublicos:(pubNorm.length?pubNorm:null), mktLiveTendencia:(tendRaw.length>1?tendRaw:null), mktUsingLive:true, mktConectado:true, mktLiveLoading:false, mktLiveTs:_ts });
       try{ localStorage.setItem('oda_hub_meta_acct_v1', acct); }catch(e){}
       try{ const _rn={...(this.state.reglasNeg||{}), mktAcct:acct}; this.setState({reglasNeg:_rn}); if(this.cloudOn()) this.cloudSaveConfig({mktAcct:acct}); }catch(e){}
-      try{ localStorage.setItem('oda_hub_meta_live_v1', JSON.stringify({ campanas:norm, creativos:(creNorm.length?creNorm:null), publicos:(pubNorm.length?pubNorm:null), tendencia:(tendRaw.length>1?tendRaw:null), ts:_ts, rango:this.state.mktRango||'mes' })); }catch(e){}
+      try{ this._lsSet('oda_hub_meta_live_v1', JSON.stringify({ campanas:norm, creativos:(creNorm.length?creNorm:null), publicos:(pubNorm.length?pubNorm:null), tendencia:(tendRaw.length>1?tendRaw:null), ts:_ts, rango:this.state.mktRango||'mes' })); }catch(e){}
       this.toast('Datos reales de Meta cargados · '+norm.length+' campañas');
     }catch(e){ this.setState({ mktLiveLoading:false, mktLiveError:(e&&e.message)||'No se pudo traer los datos de Meta.' }); }
   }
@@ -7364,7 +7364,7 @@ class Component extends DCLogic {
     try{ const _pd=(window.__resources&&window.__resources.propuestaDoc)||'./propuesta-doc.js'; import(_pd).then(m=>{ this._buildPropDoc=m.buildPropuestaDoc; }).catch(()=>{}); }catch(e){}
   }
 
-  save(d){ try{ localStorage.setItem(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos,conteos:d.conteos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
+  save(d){ try{ this._lsSet(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos,conteos:d.conteos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
   persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
   respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_conv_v1','oda_hub_agente_v1','oda_hub_movajustes_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
@@ -9068,7 +9068,30 @@ Instrucciones de respuesta:
     return (data.content||[]).map(b=>(b&&b.text)||'').join('').trim();
   }
   cloudUploadArchivo(file, folder, cb){ const sb=this._sbClient(); if(!this.cloudOn()||!sb){ const r=new FileReader(); r.onload=(ev)=>cb(ev.target.result,file.name); r.readAsDataURL(file); return; } const path=folder+'/'+Date.now()+'_'+Math.floor(Math.random()*99999)+'_'+String(file.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_'); sb.storage.from('adjuntos').upload(path,file,{cacheControl:'3600',upsert:false}).then(({error})=>{ if(error){ const r=new FileReader(); r.onload=(ev)=>cb(ev.target.result,file.name); r.readAsDataURL(file); return; } const {data}=sb.storage.from('adjuntos').getPublicUrl(path); cb(data.publicUrl, file.name); }).catch(()=>{ const r=new FileReader(); r.onload=(ev)=>cb(ev.target.result,file.name); r.readAsDataURL(file); }); }
-  _sbClient(){ if(this._sb) return this._sb; try{ if(window.supabase&&window.supabase.createClient){ this._sb=window.supabase.createClient(this.CLOUD_URL,this.CLOUD_KEY,{auth:{persistSession:true,storageKey:'oda_cloud_auth_v1'}}); } }catch(e){} return this._sb; }
+  // Cachés locales que se pueden borrar sin perder nada: se rearman solos desde la nube.
+  _lsPurgables(){ const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!k) continue;
+    if(k==='oda_hub_meta_live_v1' || /^oda_hub_(cache|snap|informe|bak|backup)/.test(k)) out.push(k); } }catch(e){} return out; }
+  // Libera espacio: primero los cachés desechables; si no alcanza, el dataset local
+  // (en modo nube se vuelve a bajar de Supabase al entrar).
+  _lsLiberar(agresivo){ let libero=false;
+    this._lsPurgables().forEach(k=>{ try{ localStorage.removeItem(k); libero=true; }catch(e){} });
+    if(!libero && agresivo){ try{ localStorage.removeItem(this.STORAGE); libero=true; }catch(e){} }
+    return libero; }
+  // setItem que no revienta cuando el navegador se queda sin cuota.
+  _lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){
+      if(!/quota|exceeded/i.test(String((e&&e.name)||'')+String((e&&e.message)||''))) return false;
+      if(this._lsLiberar(false)){ try{ localStorage.setItem(k,v); return true; }catch(e2){} }
+      if(this._lsLiberar(true)){ try{ localStorage.setItem(k,v); return true; }catch(e3){} }
+      return false; } }
+  // Almacenamiento de la sesión de Supabase: si localStorage está lleno, purga cachés y
+  // reintenta; como último recurso guarda en memoria para que el login no falle.
+  _authStorage(){ if(this._authSt) return this._authSt; const self=this; const mem={};
+    this._authSt={
+      getItem:(k)=>{ try{ const v=localStorage.getItem(k); if(v!=null) return v; }catch(e){} return (k in mem)? mem[k] : null; },
+      setItem:(k,v)=>{ if(!self._lsSet(k,v)) mem[k]=v; else delete mem[k]; },
+      removeItem:(k)=>{ try{ localStorage.removeItem(k); }catch(e){} delete mem[k]; } };
+    return this._authSt; }
+  _sbClient(){ if(this._sb) return this._sb; try{ if(window.supabase&&window.supabase.createClient){ this._sb=window.supabase.createClient(this.CLOUD_URL,this.CLOUD_KEY,{auth:{persistSession:true,storageKey:'oda_cloud_auth_v1',storage:this._authStorage()}}); } }catch(e){} return this._sb; }
   cloudInit(){ const sb=this._sbClient(); if(!sb){ // librería aún no cargó: reintenta
       if((this._cloudTries=(this._cloudTries||0)+1)<40){ setTimeout(()=>this.cloudInit(),250); } return; }
     this.setState({cloudReady:true});
