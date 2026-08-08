@@ -10856,8 +10856,14 @@ Instrucciones de respuesta:
       const dup=out.some(x=>{ if(String(x.texto||'').trim()!==t || x.de!==m.de) return false; const xs=x.at? new Date(x.at).getTime() : 0; if(!ms||!xs) return true; return Math.abs(ms-xs)<180000; });
       if(!dup) out.push(m); }); return out; }
   async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb) return; try{
-      const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(200); if(error) throw error;
-      const {data:msgs}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').order('creado_at',{ascending:true}).limit(2000);
+      const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(1000); if(error) throw error;
+      const ids=(convs||[]).map(c=>c.id);
+      let msgs=[];
+      for(let i=0;i<ids.length;i+=200){
+        const chunk=ids.slice(i,i+200);
+        const {data:part}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).limit(10000);
+        if(part&&part.length) msgs=msgs.concat(part);
+      }
       const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
       const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(byConv[r.id]||[]) }));      this._convNotify(list);
       this.setState({convsCloud:list});
