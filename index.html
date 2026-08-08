@@ -1985,7 +1985,7 @@
                     <sc-if value="{{ cv.online }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:rgba(63,164,91,0.16);color:#2E7D46;"><span style="width:6px;height:6px;border-radius:99px;background:#3FA45B;"></span>En vivo</span></sc-if>
                     <span style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ cv.estadoBg }};color:{{ cv.estadoFg }};"><span style="width:6px;height:6px;border-radius:99px;background:{{ cv.estadoDot }};"></span>{{ cv.estadoL }}</span>
                     <div style="flex:1;"></div>
-                    <sc-if value="{{ cv.promosOff }}" hint-placeholder-val="{{ false }}"><span title="El cliente pidió no recibir promociones" style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:rgba(181,80,60,0.14);color:#8E3F2F;">Promos off</span></sc-if>
+                    <sc-if value="{{ cv.promosOff }}" hint-placeholder-val="{{ false }}"><button onClick="{{ convPromosOnBtn }}" title="El cliente pidió no recibir promociones · clic para volver a activarlas" style="font-family:inherit;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(181,80,60,0.3);border-radius:99px;background:rgba(181,80,60,0.14);color:#8E3F2F;cursor:pointer;" style-hover="background:rgba(181,80,60,0.22);">Promos off · reactivar</button></sc-if>
                     <select value="{{ convAsigVal }}" onChange="{{ onConvAsignar }}" style="font-family:inherit;font-size:12px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);cursor:pointer;"><sc-for list="{{ convAsigOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
                     <button onClick="{{ onConvFichaToggle }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">{{ convFichaBtnL }}</button>
                     <sc-if value="{{ cv.esBot }}" hint-placeholder-val="{{ false }}"><button onClick="{{ convTomarBtn }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:8px 15px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Tomar</button></sc-if>
@@ -2023,7 +2023,10 @@
                 <sc-if value="{{ convFichaOpen }}" hint-placeholder-val="{{ false }}">
                   <div style="position:absolute;top:0;right:0;bottom:0;width:280px;max-width:70%;border-left:1px solid var(--border-subtle);background:var(--surface-card);box-shadow:-14px 0 34px rgba(90,74,51,0.14);padding:18px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;z-index:3;" class="oda-scroll">
                     <div>
-                      <div style="font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:9px;">Datos del cliente</div>
+                      <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">
+                        <div style="flex:1;min-width:0;font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Datos del cliente</div>
+                        <button onClick="{{ onConvFichaToggle }}" title="Cerrar la ficha" style="font-family:inherit;flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-subtle);border-radius:99px;background:transparent;color:var(--text-muted);font-size:15px;line-height:1;cursor:pointer;" style-hover="background:var(--surface-raised);color:var(--text-strong);">×</button>
+                      </div>
                       <div style="display:flex;flex-direction:column;gap:7px;font-size:12.5px;">
                         <sc-for list="{{ cvFichaCampos }}" as="f" hint-placeholder-count="4">
                           <div style="display:flex;gap:8px;"><span style="color:var(--text-muted);width:74px;flex-shrink:0;">{{ f.k }}</span><span style="font-weight:{{ f.fw }};color:{{ f.fg }};min-width:0;overflow-wrap:anywhere;">{{ f.v }}</span></div>
@@ -10942,6 +10945,18 @@ Instrucciones de respuesta:
   convAsignar(id, uid){ this.convUpdate(id, c=>({...c, asignadoA:uid, estado:(uid? (c.estado==='resuelta'?'resuelta':'humano') : c.estado)})); this.cloudSaveConv(id,{asignado_a:uid, ...(uid?{estado:'humano'}:{})}); if(uid) this.toast('Conversación asignada a '+((this.users.find(u=>u.id===uid)||{}).name||this.leadUName(uid)||'asesor')); }
   convTomar(id){ const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; this.convUpdate(id, c=>({...c, asignadoA:me, estado:'humano', noLeidos:0})); this.cloudSaveConv(id,{asignado_a:me, estado:'humano', no_leidos:0}); this.toast('Tomaste la conversación · el bot queda en pausa'); }
   convDevolverBot(id){ this.convUpdate(id, c=>({...c, estado:'bot'})); this.cloudSaveConv(id,{estado:'bot'}); this.toast('El agente IA retoma la conversación'); }
+  // El cliente pidió volver a recibir promociones: quita la marca de la conversación
+  // y lo saca de la lista de opt-out (wa_optout), que es la que consultan las campañas.
+  async convPromosOn(id){ const c=this.convList().find(x=>x.id===id); if(!c) return;
+    this.convUpdate(id, x=>({...x, promosOff:false}));
+    this.cloudSaveConv(id,{promos_off:false});
+    const sb=this._sbClient();
+    if(sb){ try{ const cel=String(c.telefono||'').replace(/\D/g,''); const c10=cel.replace(/^57/,'');
+      const claves=[]; if(cel) claves.push(cel); if(c10&&c10!==cel){ claves.push(c10); claves.push('57'+c10); }
+      claves.push(String(id).replace(/^wa_/,'')); claves.push(String(id));
+      await sb.from('wa_optout').delete().in('contacto', Array.from(new Set(claves.filter(Boolean))));
+    }catch(e){} }
+    this.toast('Promociones reactivadas para '+(c.cliente||'este cliente')); }
   convResolver(id){ this.convUpdate(id, c=>({...c, estado:'resuelta', noLeidos:0})); this.cloudSaveConv(id,{estado:'resuelta', no_leidos:0}); this.toast('Conversación marcada como resuelta'); }
   convResponder(id){ const txt=String(this.state.convMsgDraft||'').trim(); if(!txt) return; const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId;
     this.convUpdate(id, c=>{ const _now=new Date().toISOString(); c.mensajes.push({de:'asesor', texto:txt, at:_now, fecha:this._convFechaDe(_now), hora:this.convHoraTxt()}); return {...c, estado:'humano', asignadoA:c.asignadoA||me, noLeidos:0}; });
@@ -11740,6 +11755,7 @@ Instrucciones de respuesta:
       out.convNumNecesita=convs.filter(c=>c.estado==='necesita').length;
       out.convNumBot=convs.filter(c=>c.estado==='bot').length;
       out.convFichaOpen=!!st.convFicha; out.onConvFichaToggle=()=>this.setState({convFicha:!st.convFicha});
+      out.convPromosOnBtn=()=>this.convPromosOn(selId);
       out.convFichaBtnL=st.convFicha? 'Ocultar ficha' : 'Ficha del cliente';
       const cc=convs.find(c=>c.id===selId);
       out.convSelOpen=!!cc;
