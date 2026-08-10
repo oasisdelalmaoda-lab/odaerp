@@ -7317,7 +7317,7 @@ class Component extends DCLogic {
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
-    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, igNomLoading:false, envLog:null, waEnvios:null, autoCorriendo:false,
+    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, igNomLoading:false, igNomDetalle:'', envLog:null, waEnvios:null, autoCorriendo:false,
     boldPagos:null, boldRefs:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
     recordatorios:null, recVerId:null, recFiltro:'pendientes',
     conteos:[], fConteoEstado:'pendiente',
@@ -8621,9 +8621,11 @@ Instrucciones de respuesta:
       const { data, error } = await sb.functions.invoke('meta-inbound', { body:{ mode:'nombres' } });
       if(error){ let d=''; try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) d=' · '+j.error; } }catch(_e){} throw new Error('No respondió meta-inbound'+d); }
       if(data && data.error) throw new Error(String(data.error).slice(0,180));
-      const ok=((data&&data.arreglados)||[]).length, no=((data&&data.sinNombre)||[]).length;
-      this.setState({igNomLoading:false});
-      this.toast(ok? (ok+' nombre(s) actualizado(s)'+(no?' · '+no+' sin perfil disponible':'')) : (no? 'Meta no entregó el perfil de '+no+' conversación(es) · revisa permisos del token' : 'No hay nombres por corregir'));
+      const ok=((data&&data.arreglados)||[]).length, sin=((data&&data.sinNombre)||[]); const no=sin.length;
+      const detalle=(sin[0]&&sin[0].error)||'';
+      this.setState({igNomLoading:false, igNomDetalle:detalle});
+      if(detalle) console.log('meta-inbound · nombres sin resolver:', sin);
+      this.toast(ok? (ok+' nombre(s) actualizado(s)'+(no?' · '+no+' sin perfil':'')) : (no? ('Meta no entregó el perfil de '+no+' conversación(es)'+(detalle?' · '+String(detalle).slice(0,120):'')) : 'No hay nombres por corregir'));
       this.cloudLoadConvs();
     }catch(e){ this.setState({igNomLoading:false}); this.toast((e&&e.message)||'No se pudieron actualizar los nombres'); }
   }
