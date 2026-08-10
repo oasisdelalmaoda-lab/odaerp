@@ -2239,6 +2239,10 @@
                   <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.5;max-width:520px;text-wrap:pretty;">Estado real de la conexión con Meta, consultado en vivo. Revisa acá antes de lanzar una campaña o cuando un canal deje de responder.</p>
                   <sc-if value="{{ canalesTsShow }}" hint-placeholder-val="{{ false }}"><p style="font-size:11.5px;color:var(--text-muted);margin:6px 0 0;">Última verificación {{ canalesTs }}</p></sc-if>
                 </div>
+                <button onClick="{{ igNomAhora }}" title="Vuelve a pedirle a Meta el nombre de las conversaciones de Instagram y Messenger que quedaron con un número" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);cursor:pointer;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  {{ igNomBtnTxt }}
+                </button>
                 <button onClick="{{ canalesVerificar }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;flex-shrink:0;" style-hover="background:#8A6F49;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
                   {{ canalesBtnTxt }}
@@ -7313,7 +7317,7 @@ class Component extends DCLogic {
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
     shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
-    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, envLog:null, waEnvios:null, autoCorriendo:false,
+    canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, igNomLoading:false, envLog:null, waEnvios:null, autoCorriendo:false,
     boldPagos:null, boldRefs:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
     recordatorios:null, recVerId:null, recFiltro:'pendientes',
     conteos:[], fConteoEstado:'pendiente',
@@ -8606,6 +8610,22 @@ Instrucciones de respuesta:
       this.setState({canDiag:data||null, canDiagLoading:false, canDiagTs:Date.now()});
     }catch(e){ this.setState({canDiagLoading:false, canDiagErr:(e&&e.message)||'No se pudo verificar los canales'}); }
     this.cargarEnvLog();
+  }
+  // Nombres de Instagram/Messenger: pide a meta-inbound que vuelva a resolver los perfiles de
+  // las conversaciones que quedaron con el marcador numérico («Instagram · 794476»).
+  async igNombresAhora(){
+    if(this.state.igNomLoading) return;
+    this.setState({igNomLoading:true});
+    try{
+      const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
+      const { data, error } = await sb.functions.invoke('meta-inbound', { body:{ mode:'nombres' } });
+      if(error){ let d=''; try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) d=' · '+j.error; } }catch(_e){} throw new Error('No respondió meta-inbound'+d); }
+      if(data && data.error) throw new Error(String(data.error).slice(0,180));
+      const ok=((data&&data.arreglados)||[]).length, no=((data&&data.sinNombre)||[]).length;
+      this.setState({igNomLoading:false});
+      this.toast(ok? (ok+' nombre(s) actualizado(s)'+(no?' · '+no+' sin perfil disponible':'')) : (no? 'Meta no entregó el perfil de '+no+' conversación(es) · revisa permisos del token' : 'No hay nombres por corregir'));
+      this.cloudLoadConvs();
+    }catch(e){ this.setState({igNomLoading:false}); this.toast((e&&e.message)||'No se pudieron actualizar los nombres'); }
   }
   async autoCorrerAhora(){
     if(this.state.autoCorriendo) return;
@@ -11515,6 +11535,8 @@ Instrucciones de respuesta:
       out.canalesErr=st.canDiagErr||''; out.canalesErrShow=!!st.canDiagErr;
       out.canalesBtnTxt=st.canDiagLoading? 'Verificando…' : 'Verificar canales';
       out.canalesVerificar=()=>this.cargarCanales();
+      out.igNomBtnTxt=st.igNomLoading? 'Actualizando…' : 'Actualizar nombres de IG';
+      out.igNomAhora=()=>this.igNombresAhora();
       out.canalesTsShow=!!st.canDiagTs;
       out.canalesTs=st.canDiagTs? new Date(st.canDiagTs).toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
       if(st.envLog===null && !st.canDiagLoading){ setTimeout(()=>{ if(this.state.sub==='canales' && this.state.envLog===null) this.cargarEnvLog(); },0); }
