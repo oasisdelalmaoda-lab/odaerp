@@ -8904,6 +8904,10 @@ Instrucciones de respuesta:
     this.toast(count+' materia'+(count===1?'':'s')+' ajustada'+(count===1?'':'s')+' · stock y costo desde órdenes');
   }
   saveVenta(){ const d=this.state.draft; if(!d.cliente){ this.toast('Escribe el cliente'); return; } if(!(d.items||[]).length){ this.toast('Agrega al menos un producto'); return; } if((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && !d.consignTienda){ this.toast('Elige la tienda o vendedor del que se descuenta la consignación'); return; }
+    // BLOQUEO: no registrar dos ventas con el mismo número de pedido.
+    { const _pn=this.pedidoNum({pedido:d.pedido||''});
+      if(_pn){ const _dup=(this.state.ventas||[]).find(v=>v.id!==d.id && !v.cancelada && v.origen!=='historico' && this.pedidoNum(v)===_pn);
+        if(_dup){ this.toast('Bloqueado: el pedido '+d.pedido+' ya existe ('+this.titleCase(_dup.cliente||'')+', '+this.fmtFecha(_dup.fecha)+', '+(_dup.ov||'')+'). Edita esa venta en lugar de crear una repetida.'); return; } } }
     const _fecha=d.fecha||new Date().toISOString().slice(0,10); const _canal=d.canal||'Página Web'; const _conIva=this.ventaConIva({fecha:_fecha, canal:_canal});
     // El valor unitario que se digita es el valor FULL (IVA incluido); se guarda tal cual, igual que las ventas de Shopify. El sistema discrimina el IVA a partir de ese total.
     const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true)}; });
@@ -9209,8 +9213,9 @@ Instrucciones de respuesta:
       return s; };
     return ventas.map(v=>({v, s:puntua(v)})).filter(x=>x.s>=45).sort((a,b)=>b.s-a.s).slice(0,4).map(x=>({ exacta:false, v:x.v, s:x.s })); }
   async boldConciliar(paymentId, pedido){ const sb=this._sbClient(); if(!sb) return;
+    // BLOQUEO: un pedido no se puede cruzar con dos pagos Bold (cobro doble).
     if(pedido){ const _num=String(pedido).replace(/\D/g,''); const _ya=(this.state.boldPagos||[]).find(p=>p.payment_id!==paymentId && p.conciliado && p.pedido && (String(p.pedido)===String(pedido) || (_num && String(p.pedido).replace(/\D/g,'')===_num)));
-      if(_ya && !window.confirm('OJO: el pedido '+pedido+' YA está cruzado con otro pago Bold ('+this.fmt(Math.round(Number(_ya.monto)||0))+' del '+this.fmtFecha(String(_ya.creado_at||'').slice(0,10))+'). Si continúas quedaría cobrado DOS VECES. ¿Cruzarlo de todas formas?')) return; }
+      if(_ya){ this.toast('Bloqueado: el pedido '+pedido+' YA está cruzado con otro pago Bold ('+this.fmt(Math.round(Number(_ya.monto)||0))+' del '+this.fmtFecha(String(_ya.creado_at||'').slice(0,10))+'). Si ese cruce está mal, deshazlo primero en la pestaña «Cruzados».'); return; } }
     try{ await sb.from('bold_pagos').update({ pedido:pedido||null, conciliado:!!pedido, conciliado_por:this.recMeNombre(), conciliado_at:new Date().toISOString() }).eq('payment_id',paymentId);
       this.cloudLoadBold(); this.toast(pedido? ('Pago cruzado con '+pedido) : 'Cruce deshecho');
     }catch(e){ this.toast('No se pudo guardar el cruce'); } }
@@ -10151,7 +10156,14 @@ Instrucciones de respuesta:
     if(ok) this.toast(ok+' pedido(s) marcado(s) como pagado(s) en Shopify ✓');
     if(ya && !ok && !fail.length) this.toast('Esos pedidos ya estaban pagados en Shopify');
     if(fail.length) this.toast('Shopify no se pudo actualizar para: '+fail.join(', ')+' — márcalo manual en Shopify'); }
-  saveCobro(){ const d=this.state.draft; const monto=Number(d.monto)||0; if(monto<=0){ this.toast('Ingresa un monto v\u00e1lido'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta'); return; } const list=(this.state.ventas||[]).map(v=>{ if(v.id!==d._id) return v; const saldo=this.ventaSaldo(v); const m=Math.min(saldo,monto);
+  saveCobro(){ const d=this.state.draft; const monto=Number(d.monto)||0; if(monto<=0){ this.toast('Ingresa un monto v\u00e1lido'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta'); return; }
+    // BLOQUEOS: no cobrar una venta ya saldada, ni registrar dos veces el mismo abono (doble clic o repetición).
+    { const _v=(this.state.ventas||[]).find(x=>x.id===d._id);
+      if(_v){ if(this.ventaSaldo(_v)<=0){ this.toast('Bloqueado: esta venta ya está pagada por completo. Si el cobro anterior está mal, anúlalo primero en Caja y bancos.'); return; }
+        const _fc0=(d.fecha||new Date().toISOString().slice(0,10));
+        const _dup=(_v.cobros||[]).find(c=>Math.round(Number(c.monto)||0)===Math.round(monto) && String(c.fecha||'')===_fc0 && String(c.cuenta||'')===String(d.cuenta||''));
+        if(_dup){ this.toast('Bloqueado: ya existe un abono idéntico ('+this.fmt(Math.round(monto))+' el '+this.fmtFecha(_fc0)+' a '+d.cuenta+'). Si de verdad hubo dos pagos iguales el mismo día, cambia la fecha o deja una nota en la venta.'); return; } } }
+    const list=(this.state.ventas||[]).map(v=>{ if(v.id!==d._id) return v; const saldo=this.ventaSaldo(v); const m=Math.min(saldo,monto);
       const _fc=(d.fecha||new Date().toISOString().slice(0,10));
       // Cada abono queda como un registro propio: su fecha, su monto y su cuenta. Antes solo se
       // guardaba el último, y el movimiento de banco terminaba mostrando el total de la venta.
@@ -10386,7 +10398,8 @@ Instrucciones de respuesta:
   toggleLiqVenta(id){ const d=this.state.draft; let sel=(d.sel||[]).slice(); const i=sel.indexOf(id); if(i>=0) sel.splice(i,1); else sel.push(id); const ded= d._auto!==false? this.liqDeduccionSel(d.metodo,sel):(Number(d.deduccion)||0); this.setState({draft:{...d, sel, deduccion:ded}}); }
   onLiqDeduccion(val){ this.setState(s=>({draft:{...s.draft, deduccion:(val===''?0:Number(val)||0), _auto:false}})); }
   saveLiquidacion(){ const d=this.state.draft; const sel=d.sel||[]; if(!sel.length){ this.toast('Selecciona al menos una venta'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta'); return; }
-    { const _ya=this.liqYaLiquidadas(sel); if(_ya.length && !window.confirm('OJO: '+_ya.length+' pedido(s) de esta selección YA están en otra liquidación: '+_ya.slice(0,6).join(', ')+(_ya.length>6?'…':'')+'. Si continúas quedarían liquidados DOS VECES (dinero contado doble). ¿Continuar de todas formas?')) return; }
+    // BLOQUEO: un pedido no se puede liquidar dos veces (dinero contado doble).
+    { const _ya=this.liqYaLiquidadas(sel); if(_ya.length){ this.toast('Bloqueado: '+_ya.length+' pedido(s) YA están en otra liquidación: '+_ya.slice(0,6).join(', ')+(_ya.length>6?'…':'')+'. Quítalos de la selección; si la liquidación anterior está mal, cancélala primero en «Liquidaciones registradas».'); return; } }
     const bruto=this.liqBrutoDe(sel); const ded=Number(d.deduccion)||0; const neto=bruto-ded; const prevPagado={}; (this.state.ventas||[]).forEach(v=>{ if(sel.includes(v.id)) prevPagado[v.id]=Number(v.pagado)||0; }); const liq={ id:'liq'+Date.now(), numero:this.nextLiqNumero(), metodo:d.metodo, fecha:d.fecha||new Date().toISOString().slice(0,10), cuenta:d.cuenta, bruto, deduccion:ded, neto, ventaIds:sel.slice(), prevPagado, nota:d.nota||'' }; const liqs=(this.state.liquidaciones||[]).slice(); liqs.unshift(liq); const ventas=(this.state.ventas||[]).map(v=> sel.includes(v.id)? {...v, liquidada:true, liquidacionId:liq.id, pagado:this.ventaTotal(v)} : v ); this.setState({liquidaciones:liqs, ventas, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudSaveLiquidacion(liq); this.cloudBulkVentas(ventas.filter(v=>sel.includes(v.id))); } this.shopifyMarkPaid(ventas.filter(v=>sel.includes(v.id))); this.toast('Liquidación registrada · '+sel.length+' ventas cruzadas'); }
   _metodoFormasDraft(){ const d=this.state.draft||{}; return Array.isArray(d.formas)? d.formas : []; }
   addMetodoForma(){ const f=this._metodoFormasDraft().slice(); f.push({nombre:'', comisionPct:'', comisionFijo:'', comisionIva:true, retenBruto:true, reteRenta:'', reteIca:'', reteIva:''}); this.setState(s=>({draft:{...s.draft, formas:f}})); }
