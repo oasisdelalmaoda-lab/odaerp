@@ -3974,6 +3974,18 @@
                 <input value="{{ qBoldVal }}" onInput="{{ onQBold }}" placeholder="Buscar por referencia, pedido o monto…" style="flex:1;min-width:220px;max-width:340px;box-sizing:border-box;font-family:inherit;font-size:12.5px;padding:8px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);" />
                 <button onClick="{{ boldRecargar }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:8px 16px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;">Actualizar</button>
               </div>
+              <sc-if value="{{ boldDupShow }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px 16px;margin-bottom:14px;background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.35);border-radius:var(--radius-md);">
+                  <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#8E3F2F;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>{{ boldDupN }} pedido(s) cruzados con más de un pago Bold — posible cobro doble</div>
+                  <sc-for list="{{ boldDupRows }}" as="d" hint-placeholder-count="1">
+                    <div style="margin-top:9px;padding-top:9px;border-top:1px dashed rgba(181,80,60,0.3);font-size:12.5px;line-height:1.5;">
+                      <div><strong>Pedido {{ d.pedido }}</strong> — cruzado con {{ d.n }} pagos</div>
+                      <div style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">{{ d.det }}</div>
+                    </div>
+                  </sc-for>
+                  <p style="font-size:11.5px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">Para corregirlo: abre el pago equivocado en la pestaña «Cruzados» y deshaz el cruce; el pago vuelve a «Sin cruzar» para asignarle su pedido correcto.</p>
+                </div>
+              </sc-if>
               <sc-if value="{{ boldRefsFalla }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 16px;margin-bottom:14px;background:rgba(212,150,80,0.12);border:1px solid rgba(212,150,80,0.4);border-radius:var(--radius-md);font-size:12.5px;color:#9A6B2E;line-height:1.55;text-wrap:pretty;"><strong>El cruce automático no está disponible.</strong> No se pudieron traer los IDs de pago de Shopify: {{ boldRefsErrTxt }}. Los pagos hay que cruzarlos a mano mientras tanto.</div></sc-if>
               <sc-if value="{{ boldHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 16px;margin-bottom:14px;background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-md);font-size:12.5px;color:#8E3F2F;">{{ boldErrTxt }} — ¿ya corriste el SQL de Bold?</div></sc-if>
               <sc-if value="{{ boldSinConectar }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;margin-bottom:14px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);text-align:center;font-size:12.5px;color:var(--text-muted);line-height:1.6;text-wrap:pretty;">Todavía no ha llegado ningún pago. Revisá que el webhook esté registrado en panel.bold.co → Integraciones → Webhooks, y que las llaves de integración estén activas.</div></sc-if>
@@ -4018,6 +4030,18 @@
           <sc-if value="{{ showFinRecaudos }}" hint-placeholder-val="{{ false }}">
             <div>
               <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 18px;max-width:680px;line-height:1.55;text-wrap:pretty;">Ventas con pago diferido: el dinero llega después (Addi, contraentrega por courier, pasarela) y con deducciones. Aquí ves lo pendiente por método y registras la <strong>liquidación</strong> cuando el operador te desembolsa, cruzándola con las ventas y separando la comisión.</p>
+              <sc-if value="{{ recDupShow }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px 16px;margin-bottom:18px;background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.35);border-radius:var(--radius-md);">
+                  <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#8E3F2F;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>{{ recDupN }} pedido(s) liquidados más de una vez — dinero contado doble</div>
+                  <sc-for list="{{ recDupRows }}" as="d" hint-placeholder-count="1">
+                    <div style="margin-top:9px;padding-top:9px;border-top:1px dashed rgba(181,80,60,0.3);font-size:12.5px;line-height:1.5;">
+                      <div><strong>{{ d.pedido }}</strong> · {{ d.cliente }} — <span style="color:#8E3F2F;">{{ d.comoTxt }}</span></div>
+                      <div style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">{{ d.det }}</div>
+                    </div>
+                  </sc-for>
+                  <p style="font-size:11.5px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">Para corregirlo: en «Liquidaciones registradas» elimina la liquidación repetida (el Administrador ve el botón de borrar) — las ventas vuelven a quedar pendientes y el saldo se recuadra.</p>
+                </div>
+              </sc-if>
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">
                 <div style="background:#2A2419;color:var(--text-inverse);border-radius:var(--radius-lg);padding:18px 20px;"><div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-primary);">Bruto pendiente por liquidar</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;margin-top:7px;">{{ recTotalBruto }}</div><div style="font-size:11.5px;color:rgba(251,248,242,0.6);margin-top:5px;">{{ recN }} ventas</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;border-top:3px solid var(--oda-sale);"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Deducción estimada</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;margin-top:7px;color:var(--oda-sale);">{{ recTotalDed }}</div></div>
@@ -9185,6 +9209,8 @@ Instrucciones de respuesta:
       return s; };
     return ventas.map(v=>({v, s:puntua(v)})).filter(x=>x.s>=45).sort((a,b)=>b.s-a.s).slice(0,4).map(x=>({ exacta:false, v:x.v, s:x.s })); }
   async boldConciliar(paymentId, pedido){ const sb=this._sbClient(); if(!sb) return;
+    if(pedido){ const _num=String(pedido).replace(/\D/g,''); const _ya=(this.state.boldPagos||[]).find(p=>p.payment_id!==paymentId && p.conciliado && p.pedido && (String(p.pedido)===String(pedido) || (_num && String(p.pedido).replace(/\D/g,'')===_num)));
+      if(_ya && !window.confirm('OJO: el pedido '+pedido+' YA está cruzado con otro pago Bold ('+this.fmt(Math.round(Number(_ya.monto)||0))+' del '+this.fmtFecha(String(_ya.creado_at||'').slice(0,10))+'). Si continúas quedaría cobrado DOS VECES. ¿Cruzarlo de todas formas?')) return; }
     try{ await sb.from('bold_pagos').update({ pedido:pedido||null, conciliado:!!pedido, conciliado_por:this.recMeNombre(), conciliado_at:new Date().toISOString() }).eq('payment_id',paymentId);
       this.cloudLoadBold(); this.toast(pedido? ('Pago cruzado con '+pedido) : 'Cruce deshecho');
     }catch(e){ this.toast('No se pudo guardar el cruce'); } }
@@ -9276,7 +9302,14 @@ Instrucciones de respuesta:
       this.cloudLoadRecordatorios();
     }catch(e){ this.toast('No se pudo guardar la nota'); } }
   // ---- permisos compartidos (nube) ----
-  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes); patch.movAjustes=_ma; try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(_ma)); }catch(e){} } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
+  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else { m[r.user_key]=r.perms||{}; } }); const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes);
+      // Fusión por sello de tiempo: la nube puede venir vieja (eco del realtime o config
+      // guardada por otro equipo con sus ajustes desactualizados). El ajuste más nuevo gana
+      // y una eliminación local reciente no resucita desde la nube.
+      const _loc=this.movAjustesGet()||{}; const _del=this._movAjDel||{}; const _out={..._ma};
+      Object.keys(_loc).forEach(k=>{ const l=_loc[k], c=_out[k]; if(l && (Number(l._ts)||0) > (c?(Number(c._ts)||0):0)) _out[k]=l; });
+      Object.keys(_del).forEach(k=>{ const c=_out[k]; if(c && (Number(_del[k])||0) >= (Number(c._ts)||0)) delete _out[k]; });
+      patch.movAjustes=_out; try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(_out)); }catch(e){} } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
   async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const re=(this.state.reglasEmpaque||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), movAjustes:(this.movAjustesGet()||{}), bolsaDefault:(re.bolsaDefault||''), bolsasHist:(re.bolsasHist||[]), mapeoCajas:(re.mapeoCajas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
   cloudSubscribePermisos(){ const sb=this._sbClient(); if(!sb||this._permSub) return; try{ this._permSub=sb.channel('oda-permisos').on('postgres_changes',{event:'*',schema:'public',table:'permisos'},()=>{ this.cloudLoadPermisos(); }).subscribe(); }catch(e){} }
@@ -9905,7 +9938,12 @@ Instrucciones de respuesta:
       out[nueva]=a[k]; delete out[k]; hubo=true; });
     return hubo? out : a; }
   movAjustesGet(){ if(this.state.movAjustes) return this._migrarClavesAjustes(this.state.movAjustes); let a=null; try{ a=JSON.parse(localStorage.getItem('oda_hub_movajustes_v1')); }catch(e){} return this._migrarClavesAjustes(a||{}); }
-  setMovAjuste(id, patch){ const m={...this.movAjustesGet()}; if(patch) m[id]=patch; else delete m[id]; this.setState({movAjustes:m},()=>this.persist()); if(this.cloudOn()) this.cloudSaveConfig({movAjustes:m}); try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(m)); }catch(e){} }
+  setMovAjuste(id, patch){ const m={...this.movAjustesGet()};
+    // Cada ajuste lleva sello de tiempo (_ts): así, cuando la config llega de la nube
+    // (eco realtime o guardado de otro equipo), el más nuevo gana y el cambio no se pierde.
+    if(patch) m[id]={...patch, _ts:Date.now()};
+    else { delete m[id]; this._movAjDel={...(this._movAjDel||{}), [id]:Date.now()}; }
+    this.setState({movAjustes:m},()=>this.persist()); if(this.cloudOn()) this.cloudSaveConfig({movAjustes:m}); try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(m)); }catch(e){} }
   // Anular una transacción: la saca de la caja sin borrar el documento que la originó
   // (pedido, orden o liquidación), y siempre se puede revertir.
   anularMovimiento(m, motivo){ if(!m||!m.id) return;
@@ -9919,7 +9957,7 @@ Instrucciones de respuesta:
     return rev; }
   reactivarMovimiento(id){ const a={...(this.movAjustesGet()[id]||{})};
     if(a.anuladoRev) this._restaurarCobroVenta(a.anuladoRev);
-    delete a.anulado; delete a.anuladoMotivo; delete a.anuladoPor; delete a.anuladoAt; delete a.anuladoSnap; delete a.anuladoRev;
+    delete a.anulado; delete a.anuladoMotivo; delete a.anuladoPor; delete a.anuladoAt; delete a.anuladoSnap; delete a.anuladoRev; delete a._ts;
     this.setMovAjuste(id, Object.keys(a).length? a : null); }
   // Quita el cobro que generó ese movimiento y baja el pagado de la venta.
   _revertirCobroVenta(m){ const vid=(m.ventaIds||[])[0]; if(!vid) return null;
@@ -10306,6 +10344,24 @@ Instrucciones de respuesta:
   metodoNombreNorm(nombre){ const m=this.metodoMatch(nombre); return m? m.nombre : (nombre||'Sin método'); }
   recaudosPendientes(){ return (this.state.ventas||[]).filter(v=>!v.cancelada && !v.liquidada && this.metodoTipo(v.metodoPago)==='diferido' && this.ventaRecaudoBruto(v)>0); }
   recaudosPorMetodo(){ const map={}; this.recaudosPendientes().forEach(v=>{ const nom=this.metodoNombreNorm(v.metodoPago); if(!map[nom]) map[nom]={metodo:nom, ventas:[], bruto:0}; map[nom].ventas.push(v); map[nom].bruto+=this.ventaRecaudoBruto(v); }); return Object.keys(map).map(k=>map[k]).sort((a,b)=>b.bruto-a.bruto); }
+  // Pedidos liquidados MÁS DE UNA VEZ: la misma venta en 2+ liquidaciones, o el mismo
+  // número de pedido liquidado por filas de venta duplicadas. Alimenta la alerta de Recaudos.
+  liqDuplicados(){ const liqs=this.state.liquidaciones||[]; const ventas=this.state.ventas||[];
+    const k=[liqs,ventas]; if(this._dupKey && this._dupKey.length===k.length && this._dupKey.every((x,i)=>x===k[i])) return this._dupOut;
+    const vMap={}; liqs.forEach(l=>(l.ventaIds||[]).forEach(id=>{ (vMap[id]=vMap[id]||[]).push(l); }));
+    const byId={}; ventas.forEach(v=>{ byId[v.id]=v; });
+    const liqTxt=(ls)=>ls.map(l=>this.fmtFecha(l.fecha)+' · '+(l.metodo||'')+' · neto '+this.fmt(Math.round(Number(l.neto)||0))).join('   |   ');
+    const out=[];
+    Object.keys(vMap).forEach(id=>{ if(vMap[id].length<2) return; const v=byId[id]; out.push({ ids:[id], pedido:String((v&&(v.pedido||v.ov))||id), cliente:(v&&v.cliente)||'', n:vMap[id].length, det:liqTxt(vMap[id]) }); });
+    const porPed={}; Object.keys(vMap).forEach(id=>{ const v=byId[id]; if(!v) return; const num=this.pedidoNum(v); if(!num) return; (porPed[num]=porPed[num]||[]).push(id); });
+    Object.keys(porPed).forEach(num=>{ const ids=porPed[num]; if(ids.length<2) return; if(out.some(o=>o.ids.some(i=>ids.includes(i)))) return; const v=byId[ids[0]]; const ls=[]; ids.forEach(i=>(vMap[i]||[]).forEach(l=>{ if(ls.indexOf(l)<0) ls.push(l); })); out.push({ ids, pedido:String(v.pedido||v.ov||num), cliente:v.cliente||'', n:ls.length, dupFilas:true, det:liqTxt(ls) }); });
+    this._dupKey=k; this._dupOut=out; return out; }
+  // ¿Cuáles de las ventas seleccionadas ya están en alguna liquidación (misma fila o mismo número de pedido)?
+  liqYaLiquidadas(sel){ const byId={}; (this.state.ventas||[]).forEach(v=>{ byId[v.id]=v; });
+    const enLiq=new Set(); const pedEnLiq=new Set();
+    (this.state.liquidaciones||[]).forEach(l=>(l.ventaIds||[]).forEach(id=>{ enLiq.add(id); const v=byId[id]; const n=v?this.pedidoNum(v):0; if(n) pedEnLiq.add(n); }));
+    const out=[]; (sel||[]).forEach(id=>{ const v=byId[id]; const num=v?this.pedidoNum(v):0; if(enLiq.has(id) || (num && pedEnLiq.has(num))) out.push(String((v&&(v.pedido||v.ov))||id)); });
+    return out; }
   // Al liquidar, la plata siempre entra a la cuenta Bold; la única alternativa es Bold AFS.
   cuentasBold(){ const l=this.cuentasList().filter(c=>{ const n=String(c.nombre||''); return /bold/i.test(n) && !/bolsillo/i.test(n); }); return l.length? l : this.cuentasList(); }
   cuentaLiqDefault(){ const l=this.cuentasBold(); const pref=l.find(c=>!/afs/i.test(String(c.nombre||''))); return (pref||l[0]||{}).nombre || this.primeraCuenta(); }
@@ -10320,7 +10376,9 @@ Instrucciones de respuesta:
   fechaDesembolso(v){ const m=this.metodoMatch(v.metodoPago); const n=m?(Number(m.diasLiq)||0):0; const hab=m?(m.diasHabiles!==false):false; const base=this.parseFecha(v.fecha)||new Date().toISOString().slice(0,10); return this.addDias(base, n, hab); }
   toggleLiqVenta(id){ const d=this.state.draft; let sel=(d.sel||[]).slice(); const i=sel.indexOf(id); if(i>=0) sel.splice(i,1); else sel.push(id); const ded= d._auto!==false? this.liqDeduccionSel(d.metodo,sel):(Number(d.deduccion)||0); this.setState({draft:{...d, sel, deduccion:ded}}); }
   onLiqDeduccion(val){ this.setState(s=>({draft:{...s.draft, deduccion:(val===''?0:Number(val)||0), _auto:false}})); }
-  saveLiquidacion(){ const d=this.state.draft; const sel=d.sel||[]; if(!sel.length){ this.toast('Selecciona al menos una venta'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta'); return; } const bruto=this.liqBrutoDe(sel); const ded=Number(d.deduccion)||0; const neto=bruto-ded; const prevPagado={}; (this.state.ventas||[]).forEach(v=>{ if(sel.includes(v.id)) prevPagado[v.id]=Number(v.pagado)||0; }); const liq={ id:'liq'+Date.now(), metodo:d.metodo, fecha:d.fecha||new Date().toISOString().slice(0,10), cuenta:d.cuenta, bruto, deduccion:ded, neto, ventaIds:sel.slice(), prevPagado, nota:d.nota||'' }; const liqs=(this.state.liquidaciones||[]).slice(); liqs.unshift(liq); const ventas=(this.state.ventas||[]).map(v=> sel.includes(v.id)? {...v, liquidada:true, liquidacionId:liq.id, pagado:this.ventaTotal(v)} : v ); this.setState({liquidaciones:liqs, ventas, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudSaveLiquidacion(liq); this.cloudBulkVentas(ventas.filter(v=>sel.includes(v.id))); } this.shopifyMarkPaid(ventas.filter(v=>sel.includes(v.id))); this.toast('Liquidación registrada · '+sel.length+' ventas cruzadas'); }
+  saveLiquidacion(){ const d=this.state.draft; const sel=d.sel||[]; if(!sel.length){ this.toast('Selecciona al menos una venta'); return; } if(!d.cuenta){ this.toast('Selecciona la cuenta'); return; }
+    { const _ya=this.liqYaLiquidadas(sel); if(_ya.length && !window.confirm('OJO: '+_ya.length+' pedido(s) de esta selección YA están en otra liquidación: '+_ya.slice(0,6).join(', ')+(_ya.length>6?'…':'')+'. Si continúas quedarían liquidados DOS VECES (dinero contado doble). ¿Continuar de todas formas?')) return; }
+    const bruto=this.liqBrutoDe(sel); const ded=Number(d.deduccion)||0; const neto=bruto-ded; const prevPagado={}; (this.state.ventas||[]).forEach(v=>{ if(sel.includes(v.id)) prevPagado[v.id]=Number(v.pagado)||0; }); const liq={ id:'liq'+Date.now(), metodo:d.metodo, fecha:d.fecha||new Date().toISOString().slice(0,10), cuenta:d.cuenta, bruto, deduccion:ded, neto, ventaIds:sel.slice(), prevPagado, nota:d.nota||'' }; const liqs=(this.state.liquidaciones||[]).slice(); liqs.unshift(liq); const ventas=(this.state.ventas||[]).map(v=> sel.includes(v.id)? {...v, liquidada:true, liquidacionId:liq.id, pagado:this.ventaTotal(v)} : v ); this.setState({liquidaciones:liqs, ventas, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudSaveLiquidacion(liq); this.cloudBulkVentas(ventas.filter(v=>sel.includes(v.id))); } this.shopifyMarkPaid(ventas.filter(v=>sel.includes(v.id))); this.toast('Liquidación registrada · '+sel.length+' ventas cruzadas'); }
   _metodoFormasDraft(){ const d=this.state.draft||{}; return Array.isArray(d.formas)? d.formas : []; }
   addMetodoForma(){ const f=this._metodoFormasDraft().slice(); f.push({nombre:'', comisionPct:'', comisionFijo:'', comisionIva:true, retenBruto:true, reteRenta:'', reteIca:'', reteIva:''}); this.setState(s=>({draft:{...s.draft, formas:f}})); }
   removeMetodoForma(i){ const f=this._metodoFormasDraft().slice(); f.splice(i,1); this.setState(s=>({draft:{...s.draft, formas:f}})); }
@@ -12565,6 +12623,10 @@ Instrucciones de respuesta:
       out.boldRefsOk=!st.boldRefsErr && !!st.boldRefs; out.boldRefsN=st.boldRefsN||0;
       const aprob=pagos.filter(p=>p.aprobado && !p.anulado);
       const pend=aprob.filter(p=>!p.conciliado);
+      { const _pc={}; aprob.forEach(p=>{ if(p.conciliado && p.pedido){ const k=String(p.pedido).replace(/\D/g,'')||String(p.pedido); (_pc[k]=_pc[k]||[]).push(p); } });
+        const _bd=Object.keys(_pc).filter(k=>_pc[k].length>1).map(k=>({ pedido:String(_pc[k][0].pedido), n:_pc[k].length,
+          det:_pc[k].map(p=>this.fmtFecha(String(p.creado_at||'').slice(0,10))+' · '+this.fmt(Math.round(Number(p.monto)||0))+' · '+(p.referencia||p.payment_id)).join('   |   ') }));
+        out.boldDupShow=_bd.length>0; out.boldDupN=_bd.length; out.boldDupRows=_bd; }
       out.boldTotalMes=this.fmt(Math.round(aprob.filter(p=>String(p.creado_at||'').slice(0,7)===this.mesActual()).reduce((a,p)=>a+(Number(p.monto)||0),0)));
       out.boldPendN=pend.length;
       out.boldPendMonto=this.fmt(Math.round(pend.reduce((a,p)=>a+(Number(p.monto)||0),0)));
@@ -12607,6 +12669,9 @@ Instrucciones de respuesta:
       out.recReintentarMetodos=()=>{ this.cloudLoadMetodos(); this.cloudLoadLiquidaciones(); this.toast('Recargando métodos de pago…'); };
       const grupos=this.recaudosPorMetodo().map(g=>{ const ded=g.ventas.reduce((a,v)=>a+this.ventaDeduccionEst(v),0); const m=this.metodoMatch(g.metodo); return {metodo:g.metodo, n:g.ventas.length, brutoFmt:this.fmt(Math.round(g.bruto)), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(g.bruto-ded)), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m&&m.diasLiq?this.diasLiqTxt(m):''), onLiquidar:()=>this.nuevaLiquidacion(g.metodo, true)}; });
       out.recGrupos=grupos; out.recVacio=grupos.length===0;
+      { const _dup=this.liqDuplicados(); out.recDupShow=_dup.length>0; out.recDupN=_dup.length;
+        out.recDupRows=_dup.map(d=>({ key:d.ids.join('-'), pedido:d.pedido, cliente:this.titleCase(d.cliente||''), det:d.det,
+          comoTxt:(d.dupFilas? ('El mismo número de pedido está en '+d.ids.length+' filas de venta distintas, cada una liquidada.') : ('La misma venta aparece en '+d.n+' liquidaciones.')) })); }
       const totBruto=this.recaudosPendientes().reduce((a,v)=>a+this.ventaRecaudoBruto(v),0);
       const totNeto=this.recaudosPendientes().reduce((a,v)=>a+(this.ventaRecaudoBruto(v)-this.ventaDeduccionEst(v)),0);
       out.recTotalBruto=this.fmt(Math.round(totBruto)); out.recTotalNeto=this.fmt(Math.round(totNeto)); out.recTotalDed=this.fmt(Math.round(totBruto-totNeto)); out.recN=this.recaudosPendientes().length;
