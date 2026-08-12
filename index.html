@@ -2115,6 +2115,14 @@
                 </sc-if>
                 <div style="display:flex;flex-direction:column;gap:12px;">
                   <sc-for list="{{ agUsos }}" as="u" hint-placeholder-count="0">
+                    <sc-if value="{{ u.locked }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:10px 14px;display:flex;gap:12px;align-items:center;background:var(--surface-raised);">
+                        <sc-if value="{{ u.hayImg }}" hint-placeholder-val="{{ true }}"><span style="width:40px;height:40px;border-radius:8px;border:1px solid var(--border-subtle);flex-shrink:0;background-size:cover;background-position:center;background-image:{{ u.bgUrl }};"></span></sc-if>
+                        <span style="flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ u.prodLabel }}</span>
+                        <button onClick="{{ u.onLock }}" title="Desbloquear para editar" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></button>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ u.open }}" hint-placeholder-val="{{ true }}">
                     <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:14px;display:flex;gap:12px;align-items:center;background:var(--surface-page);">
                       <sc-if value="{{ u.hayImg }}" hint-placeholder-val="{{ false }}">
                         <span style="width:64px;height:64px;border-radius:10px;border:1px solid var(--border-subtle);flex-shrink:0;background-size:cover;background-position:center;background-image:{{ u.bgUrl }};"></span>
@@ -2129,8 +2137,10 @@
                       <sc-if value="{{ u.hayImg }}" hint-placeholder-val="{{ false }}">
                         <button onClick="{{ u.onSubir }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-strong);cursor:pointer;flex-shrink:0;">Cambiar</button>
                       </sc-if>
+                      <button onClick="{{ u.onLock }}" title="Cerrar con candado (protege la pieza)" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:99px;background:var(--surface-card);color:var(--text-muted);cursor:pointer;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0"></path></svg></button>
                       <button onClick="{{ u.onDel }}" title="Eliminar pieza" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);border:1px solid rgba(181,80,60,0.32);background:transparent;color:#B5503C;cursor:pointer;flex-shrink:0;">Quitar</button>
                     </div>
+                    </sc-if>
                   </sc-for>
                 </div>
               </div>
@@ -12148,9 +12158,10 @@ Instrucciones de respuesta:
       out.agFaqs=(ag.faqs||[]).map((f,i)=>{ const lk=_faqLocked(f); return { p:f.p||'', r:f.r||'', hayR:!!(f.r&&String(f.r).trim()), locked:lk, open:!lk, onP:((ix)=>(e)=>this.agFaqSet(ix,'p',e.target.value))(i), onR:((ix)=>(e)=>this.agFaqSet(ix,'r',e.target.value))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().faqs||[])[ix]||{}); this.agFaqSet(ix,'lock', !_faqLocked(cur)); })(i), onDel:((ix)=>()=>this.agFaqDel(ix))(i) }; });
       out.agFaqsVacio=(ag.faqs||[]).length===0;
       out.agFaqAdd=()=>this.agFaqAdd();
-      out.agUsos=(ag.modosUso||[]).map((u,i)=>({ prod:u.prod||'', hayImg:!!u.img, sinImg:!u.img, bgUrl:u.img?('url("'+u.img+'")'):'none',
-        estado: (st.agUsoSubiendo===i)?'Subiendo imagen…':(u.img?'Imagen lista — se envía cuando pregunten por este producto':'Falta la imagen: súbela con el botón +'),
+      out.agUsos=(ag.modosUso||[]).map((u,i)=>({ prod:u.prod||'', prodLabel:(u.prod||'Sin producto asignado'), hayImg:!!u.img, sinImg:!u.img, bgUrl:u.img?('url("'+u.img+'")'):'none', locked:!!u.lock, open:!u.lock,
+        estado: (st.agUsoSubiendo===i)?'Subiendo imagen…':(u.img?'Imagen lista — ciérrala con el candado para protegerla':'Falta la imagen: súbela con el botón +'),
         onProd:((ix)=>(e)=>this.agUsoSet(ix,'prod',e.target.value))(i), onSubir:((ix)=>()=>this.agUsoPickImg(ix))(i),
+        onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().modosUso||[])[ix]||{}); this.agUsoSet(ix,'lock',!cur.lock); })(i),
         onDel:((ix)=>()=>{ if(window.confirm('¿Eliminar esta pieza de modo de uso?')) this.agUsoDel(ix); })(i) }));
       out.agUsosVacio=(ag.modosUso||[]).length===0;
       out.agUsoAdd=()=>this.agUsoAdd();
