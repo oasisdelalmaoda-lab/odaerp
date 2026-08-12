@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="typography.css">
 <link rel="stylesheet" href="spacing.css">
 <link rel="stylesheet" href="base.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="_ds_bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -265,6 +266,10 @@
               <span style="flex:1;">Usuarios y permisos</span>
             </div>
           </sc-if>
+          <div class="oda-navitem" onClick="{{ nav.soporte }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;margin-top:14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ soporteNavColor }};background:{{ soporteNavBg }};">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <span style="flex:1;">Soporte ODA</span>
+          </div>
         </nav>
 
         <div style="padding:14px;border-top:1px solid rgba(251,248,242,0.08);display:flex;align-items:center;gap:11px;">
@@ -4764,6 +4769,72 @@
             </div>
           </sc-if>
 
+          <!-- ===== SOPORTE ODA ===== -->
+          <sc-if value="{{ showSoporte }}" hint-placeholder-val="{{ false }}">
+            <div style="--sop-ok:#1F9D6B;--sop-ok-soft:rgba(31,157,107,0.12);--sop-warn:#C98A1F;--sop-warn-soft:rgba(201,138,31,0.12);--sop-danger:#D64545;--sop-danger-soft:rgba(214,69,69,0.1);--sop-paper:var(--surface-page);--sop-accent-soft:rgba(167,134,89,0.28);">
+              <div style="display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap;">
+                <div style="width:500px;max-width:100%;background:var(--surface-card);border:1px solid rgba(20,20,30,0.10);border-radius:22px;box-shadow:0 18px 40px -30px rgba(20,20,30,0.5);padding:28px;flex-shrink:0;">
+                  <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;margin:0 0 4px;color:var(--brand-ink);">Reportar un problema o pedir un cambio</h2>
+                  <p style="font-size:13px;color:var(--text-muted);margin:0 0 22px;line-height:1.5;">Cuéntanos qué pasó o qué necesitas y el equipo de soporte lo revisa.</p>
+                  <div style="display:flex;flex-direction:column;gap:18px;">
+                    <div>
+                      <label style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;">Asunto</label>
+                      <input value="{{ sopAsunto }}" onInput="{{ onSopAsunto }}" placeholder="Ej: La tabla de ventas no carga" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid {{ sopAsuntoBorde }};border-radius:10px;background:var(--sop-paper);color:var(--text-body);outline:none;" style-focus="background:#fff;box-shadow:0 0 0 3px var(--sop-accent-soft);border-color:var(--brand-primary);">
+                      <sc-if value="{{ sopAsuntoError }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--sop-danger);margin-top:5px;">Escribe un asunto para poder enviarlo.</div></sc-if>
+                    </div>
+                    <div>
+                      <label style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;">Prioridad</label>
+                      <div style="display:flex;gap:8px;">
+                        <sc-for list="{{ sopPrioridades }}" as="pr" hint-placeholder-count="3">
+                          <button onClick="{{ pr.onPick }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 18px;border-radius:var(--radius-pill);border:1px solid {{ pr.borde }};background:{{ pr.bg }};color:{{ pr.fg }};cursor:pointer;">{{ pr.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div>
+                      <label style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;">Cuéntanos más (opcional)</label>
+                      <textarea value="{{ sopDetalle }}" onInput="{{ onSopDetalle }}" rows="3" placeholder="Pasos, pantalla donde ocurre, desde cuándo…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid rgba(20,20,30,0.10);border-radius:10px;background:var(--sop-paper);color:var(--text-body);outline:none;resize:vertical;" style-focus="background:#fff;box-shadow:0 0 0 3px var(--sop-accent-soft);border-color:var(--brand-primary);"></textarea>
+                    </div>
+                    <div>
+                      <label style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;">Fotos o pantallazos</label>
+                      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <sc-for list="{{ sopFotos }}" as="f" hint-placeholder-count="0">
+                          <span onClick="{{ f.onQuitar }}" title="Clic para quitar" style="width:52px;height:52px;border-radius:10px;border:1px solid rgba(20,20,30,0.10);cursor:pointer;flex-shrink:0;background-size:cover;background-position:center;background-image:{{ f.bgUrl }};"></span>
+                        </sc-for>
+                        <sc-if value="{{ sopPuedeMasFotos }}" hint-placeholder-val="{{ true }}">
+                          <button onClick="{{ sopAgregarFoto }}" title="Agregar foto" style="width:52px;height:52px;border-radius:10px;border:1.5px dashed rgba(20,20,30,0.25);background:var(--sop-paper);color:var(--text-muted);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">+</button>
+                        </sc-if>
+                      </div>
+                      <div style="font-family:'Space Mono',monospace;font-size:10.5px;color:var(--text-muted);margin-top:7px;">Máx. 4 fotos</div>
+                    </div>
+                    <button onClick="{{ sopEnviar }}" style="align-self:flex-start;font-family:inherit;font-size:14px;font-weight:700;padding:12px 26px;border-radius:var(--radius-pill);border:none;background:var(--brand-ink);color:var(--text-on-brand);cursor:pointer;">Enviar a soporte</button>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:300px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0 0 14px;color:var(--brand-ink);">Mis solicitudes</h3>
+                  <sc-if value="{{ sopVacio }}" hint-placeholder-val="{{ true }}">
+                    <div style="padding:34px 22px;text-align:center;border:1px dashed var(--border-strong);border-radius:16px;color:var(--text-muted);font-size:13.5px;background:var(--surface-card);">Aún no has enviado solicitudes. Cuando reportes algo, aparecerá aquí con su estado.</div>
+                  </sc-if>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ sopTickets }}" as="t" hint-placeholder-count="0">
+                      <div style="background:var(--surface-card);border:1px solid rgba(20,20,30,0.10);border-radius:16px;padding:15px 18px;display:flex;align-items:center;gap:14px;">
+                        <span style="flex:1;min-width:0;">
+                          <span style="display:block;font-size:14px;font-weight:700;color:var(--text-body);">{{ t.asunto }}</span>
+                          <span style="display:block;font-size:12px;color:var(--text-muted);margin-top:2px;">{{ t.fechaFmt }} · Prioridad {{ t.prioridad }}</span>
+                          <sc-if value="{{ t.hayFotos }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:flex;gap:6px;margin-top:8px;">
+                              <sc-for list="{{ t.fotos }}" as="ft" hint-placeholder-count="0"><span style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(20,20,30,0.10);flex-shrink:0;background-size:cover;background-position:center;background-image:{{ ft.bgUrl }};"></span></sc-for>
+                            </span>
+                          </sc-if>
+                        </span>
+                        <span style="font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:var(--radius-pill);background:{{ t.chipBg }};color:{{ t.chipFg }};white-space:nowrap;flex-shrink:0;">{{ t.estado }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
           <!-- ===== PRONTO ===== -->
           <sc-if value="{{ showPronto }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 20px;background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);">
@@ -4774,6 +4845,13 @@
             </div>
           </sc-if>
 
+          <div style="margin-top:44px;padding:20px 4px 6px;border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;">
+            <span style="display:inline-flex;align-items:center;gap:7px;">
+              <span style="font-family:'Sora',sans-serif;font-size:11.5px;color:var(--text-muted);">Desarrollado por</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3F3A4E" stroke-width="3.4" stroke-linecap="butt"><path d="M12 2.5a9.5 9.5 0 0 1 8.2 4.7"/><path d="M21.5 12a9.5 9.5 0 0 1-4.7 8.2"/><path d="M12 21.5a9.5 9.5 0 0 1-8.2-4.7"/><path d="M2.5 12a9.5 9.5 0 0 1 4.7-8.2"/></svg>
+              <span style="font-family:'Sora',sans-serif;font-size:11.5px;font-weight:800;color:#3F3A4E;">ODA Labs</span>
+            </span>
+          </div>
         </div>
       </main>
     </div>
@@ -7568,6 +7646,16 @@ class Component extends DCLogic {
   toggleAdmin(uid){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const updated={...perms,[uid]:{...base,admin:!base.admin}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
   toggleSubPerm(uid,mod,subkey){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const subKey=mod+'__'+subkey; const modLevel=base[mod]||'none'; const curr=subKey in base?base[subKey]:modLevel; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[subKey]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
 
+  // ---- Soporte ODA ----
+  sopTickets(){ try{ return JSON.parse(localStorage.getItem('oda_soporte_tickets')||'[]'); }catch(e){ return []; } }
+  sopPickFoto(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ this.setState(s=>{ const dd=s.sopDraft||{asunto:'',detalle:'',prioridad:'Media',fotos:[]}; const fs=(dd.fotos||[]).slice(); if(fs.length<4) fs.push(String(r.result)); return {sopDraft:{...dd,fotos:fs}}; }); }; r.readAsDataURL(f); }; inp.click(); }
+  sopEnviar(){ const d=this.state.sopDraft||{}; const asunto=String(d.asunto||'').trim(); if(!asunto){ this.setState({sopAsuntoError:true}); return; }
+    const t={ id:'sop'+Date.now(), asunto, detalle:String(d.detalle||'').trim(), prioridad:d.prioridad||'Media', fotos:(d.fotos||[]).slice(0,4), estado:'Abierto', fecha:new Date().toISOString().slice(0,10),
+      cliente:'Oasis del Alma', plan:'Soporte ODA Labs', origen:'Desde su app', usuario:this.curUserName?this.curUserName():'' };
+    const tks=[t].concat(this.sopTickets()); try{ localStorage.setItem('oda_soporte_tickets',JSON.stringify(tks)); }catch(e){}
+    // Envío a la bandeja central de ODA Labs (mejor esfuerzo; el ticket queda guardado localmente)
+    try{ const sb=this._sbClient&&this._sbClient(); if(sb) sb.from('soporte_tickets').insert({ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, detalle:t.detalle, prioridad:t.prioridad, fotos:t.fotos, estado:t.estado, usuario:t.usuario }).then(()=>{},()=>{}); }catch(e){}
+    this.setState({sopDraft:{asunto:'',detalle:'',prioridad:'Media',fotos:[]}, sopAsuntoError:false}); this.toast('Enviado a soporte. Te contactaremos pronto.'); }
   // ---- nav ----
   goModule(m){ if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser()){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
@@ -11357,6 +11445,27 @@ Instrucciones de respuesta:
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
 
     // ===== INICIO (resumen personal de pendientes) =====
+    // ===== SOPORTE ODA (módulo estándar ODA Labs) =====
+    out.showSoporte = st.module==='soporte';
+    out.soporteNavBg = out.showSoporte? 'rgba(167,134,89,0.18)':'transparent';
+    out.soporteNavColor = out.showSoporte? '#D9BE92':'rgba(251,248,242,0.85)';
+    if(out.showSoporte){
+      const d=st.sopDraft||{asunto:'',detalle:'',prioridad:'Media',fotos:[]};
+      out.sopAsunto=d.asunto; out.onSopAsunto=(e)=>{ const v=e.target.value; this.setState(s=>({sopDraft:{...(s.sopDraft||d),asunto:v}, sopAsuntoError:false})); };
+      out.sopDetalle=d.detalle; out.onSopDetalle=(e)=>{ const v=e.target.value; this.setState(s=>({sopDraft:{...(s.sopDraft||d),detalle:v}})); };
+      out.sopAsuntoError=!!st.sopAsuntoError;
+      out.sopAsuntoBorde=st.sopAsuntoError?'var(--sop-danger)':'rgba(20,20,30,0.10)';
+      out.sopPrioridades=['Baja','Media','Alta'].map(pl=>({ label:pl, onPick:()=>this.setState(s=>({sopDraft:{...(s.sopDraft||d),prioridad:pl}})),
+        bg: d.prioridad===pl?'var(--brand-ink)':'var(--sop-paper)', fg: d.prioridad===pl?'var(--text-on-brand)':'var(--text-muted)', borde: d.prioridad===pl?'var(--brand-ink)':'rgba(20,20,30,0.10)' }));
+      out.sopFotos=(d.fotos||[]).map((u,i)=>({bgUrl:'url("'+u+'")', onQuitar:()=>this.setState(s=>{ const dd=s.sopDraft||d; const fs=(dd.fotos||[]).slice(); fs.splice(i,1); return {sopDraft:{...dd,fotos:fs}}; })}));
+      out.sopPuedeMasFotos=(d.fotos||[]).length<4;
+      out.sopAgregarFoto=()=>this.sopPickFoto();
+      out.sopEnviar=()=>this.sopEnviar();
+      const est={'Abierto':{bg:'var(--sop-warn-soft)',fg:'var(--sop-warn)'},'En curso':{bg:'rgba(90,75,255,0.1)',fg:'#5A4BFF'},'Resuelto':{bg:'var(--sop-ok-soft)',fg:'var(--sop-ok)'}};
+      const tks=this.sopTickets();
+      out.sopVacio=!tks.length;
+      out.sopTickets=tks.map(t=>({ asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(t.fecha), fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:t.estado, chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg }));
+    }
     out.showInicio = st.module==='inicio';
     out.inicioNavBg = out.showInicio? 'rgba(167,134,89,0.18)':'transparent';
     out.inicioNavColor = out.showInicio? '#D9BE92':'rgba(251,248,242,0.85)';
@@ -11478,7 +11587,7 @@ Instrucciones de respuesta:
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.shellNavClass=st.sidebarOpen?'oda-nav-open':''; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
-    out.nav={ inicio:()=>this.goModule('inicio'), informes:()=>this.goModule('informes'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), conversaciones:()=>this.goModule('conversaciones'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
+    out.nav={ inicio:()=>this.goModule('inicio'), informes:()=>this.goModule('informes'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), conversaciones:()=>this.goModule('conversaciones'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), soporte:()=>this.goModule('soporte'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ reorden:()=>this.goSub('reorden'), resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
 
@@ -12038,8 +12147,9 @@ Instrucciones de respuesta:
     out.showMktCreativos = onMkt && st.sub==='mktcreativos';
     out.showMktPublicos = onMkt && st.sub==='mktpublicos';
     out.showMktConexion = onMkt && st.sub==='mktconexion';
-    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes';
-    if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
+    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
+    if(st.module==='soporte'){ out.crumb='ODA Labs'; out.pageTitle='Soporte ODA'; }
+    else if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
     else if(st.module==='informes'){ out.crumb='Dirección'; out.pageTitle='Informes gerenciales'; }
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
