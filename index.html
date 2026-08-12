@@ -11007,7 +11007,7 @@ Instrucciones de respuesta:
         const {data:part}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).limit(10000);
         if(part&&part.length) msgs=msgs.concat(part);
       }
-      const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+      const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), asesor:((m.meta&&m.meta.asesor)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
       const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, cerradaAuto:!!r.cerrada_auto, sinRespuesta:!!r.sin_respuesta, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(byConv[r.id]||[]) }));      this._convNotify(list);
       this.setState({convsCloud:list});
     }catch(e){} }
@@ -11853,12 +11853,13 @@ Instrucciones de respuesta:
           autoL:(_autos(c).map(k=>AUTOL[k]||k).join(' · ')), hayAuto:_autos(c).length>0,
           op:(c.estado==='resuelta'?'0.7':'1'), selBg:(c.id===selId?'var(--surface-page)':'transparent'), selBd:(c.id===selId?'3px solid var(--brand-primary)':'3px solid transparent'),
           onSel:()=>this.setState({convSelId:c.id}) }; };
-      const secEsp=base.filter(c=>_esperando(c)), secAct=base.filter(c=>!_esperando(c)&&c.estado!=='resuelta');
+      const secEsp=base.filter(c=>_esperando(c)), secHum=base.filter(c=>!_esperando(c)&&c.estado==='humano'), secAct=base.filter(c=>!_esperando(c)&&c.estado!=='resuelta'&&c.estado!=='humano');
       // «Sin respuesta»: envíos donde el cliente nunca escribió (campañas huérfanas). Van en su
       // propia sección para no ensuciar el histórico de conversaciones que sí se atendieron.
       const secRes=base.filter(c=>c.estado==='resuelta'&&!c.sinRespuesta), secSin=base.filter(c=>c.estado==='resuelta'&&c.sinRespuesta);
       const feed=[];
       if(secEsp.length){ feed.push({esHeader:true,label:'Esperando respuesta',hdFg:'#B5503C',hdBg:'rgba(181,80,60,0.07)'}); secEsp.forEach(c=>feed.push(_row(c))); }
+      if(secHum.length){ feed.push({esHeader:true,label:'Un asesor está atendiendo',hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secHum.forEach(c=>feed.push(_row(c))); }
       if(secAct.length){ feed.push({esHeader:true,label:'El bot está atendiendo',hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secAct.forEach(c=>feed.push(_row(c))); }
       if(secRes.length){ feed.push({esHeader:true,label:'Resueltas · '+secRes.length,hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secRes.slice(0,15).forEach(c=>feed.push(_row(c))); }
       if(secSin.length){ feed.push({esHeader:true,label:'Sin respuesta · '+secSin.length,hdFg:'var(--text-muted)',hdBg:'var(--surface-page)'}); secSin.slice(0,15).forEach(c=>feed.push(_row(c))); }
@@ -11885,7 +11886,7 @@ Instrucciones de respuesta:
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, cerrAuto:!!cc.cerradaAuto, sinResp:!!cc.sinRespuesta, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
-          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?'Asesor':cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
+          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
         out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
         // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
