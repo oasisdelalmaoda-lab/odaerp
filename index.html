@@ -2105,9 +2105,11 @@
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Modos de uso (piezas para enviar)</h3>
+                  <button onClick="{{ agUsoBulk }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-page);color:var(--text-strong);cursor:pointer;">{{ agUsoBulkLabel }}</button>
                   <button onClick="{{ agUsoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">+ Agregar pieza</button>
                 </div>
-                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Sube la pieza gráfica del modo de uso de cada producto. Cuando un cliente pregunte cómo se usa, el agente le envía esa imagen por el chat.</p>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Sube la pieza gráfica del modo de uso de cada producto. Cuando un cliente pregunte cómo se usa, el agente le envía esa imagen por el chat. Con «Subir varias imágenes» se crea una pieza por foto y luego eliges el producto o grupo de cada una.</p>
+                <datalist id="dlAgUsoProds"><sc-for list="{{ agUsoProdOpts }}" as="op" hint-placeholder-count="0"><option value="{{ op.v }}"></option></sc-for></datalist>
                 <sc-if value="{{ agUsosVacio }}" hint-placeholder-val="{{ true }}">
                   <div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);color:var(--text-muted);font-size:12.5px;text-align:center;">Aún no hay piezas. Agrega la primera con el botón de arriba.</div>
                 </sc-if>
@@ -2121,7 +2123,7 @@
                         <button onClick="{{ u.onSubir }}" title="Subir imagen" style="width:64px;height:64px;border-radius:10px;border:1.5px dashed var(--border-strong);background:var(--surface-card);color:var(--text-muted);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">+</button>
                       </sc-if>
                       <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;">
-                        <input value="{{ u.prod }}" onInput="{{ u.onProd }}" placeholder="Producto o tema (ej: Roll-on Calma)" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--text-body);outline:none;">
+                        <input list="dlAgUsoProds" value="{{ u.prod }}" onInput="{{ u.onProd }}" placeholder="Elige un producto o grupo, o escribe uno…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--text-body);outline:none;">
                         <span style="font-size:11.5px;color:var(--text-muted);">{{ u.estado }}</span>
                       </span>
                       <sc-if value="{{ u.hayImg }}" hint-placeholder-val="{{ false }}">
@@ -11180,17 +11182,28 @@ Instrucciones de respuesta:
   agLecSet(i,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, t:v}; })); }
   agLecLock(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, lock:!o.lock}; })); }
   agUsoAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', [...(cfg.modosUso||[]), {prod:'', img:''}]); }
+  // Sube la imagen a través de la función `agente` (service role) — el Storage tiene RLS y el
+  // cliente anónimo no puede escribir directo ("new row violates row-level security policy").
+  async agUsoUploadFile(f){ const b64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]||''); r.onerror=rej; r.readAsDataURL(f); });
+    const resp=await fetch(this.CLOUD_URL+'/functions/v1/agente',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({mode:'subirPieza', imagenB64:b64, imagenMime:f.type||'image/jpeg'})});
+    const j=await resp.json().catch(()=>({}));
+    if(!resp.ok||!j.url) throw new Error(j.error||('HTTP '+resp.status)+' — ¿ya redesplegaste la función agente?');
+    return j.url; }
   agUsoPickImg(i){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=async()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
-    const sb=this._sbClient&&this._sbClient(); if(!sb){ this.toast('Sin conexión al servidor: intenta de nuevo en unos segundos'); return; }
     this.setState({agUsoSubiendo:i});
-    try{ const ext=(f.name.split('.').pop()||'jpg').toLowerCase(); const path='modos-uso/'+Date.now()+'.'+ext;
-      let up=await sb.storage.from('chat-adjuntos').upload(path,f,{contentType:f.type||'image/jpeg'});
-      if(up.error){ try{ await sb.storage.createBucket('chat-adjuntos',{public:true}); }catch(e){} up=await sb.storage.from('chat-adjuntos').upload(path,f,{contentType:f.type||'image/jpeg'}); }
-      if(up.error) throw new Error(up.error.message);
-      const pub=sb.storage.from('chat-adjuntos').getPublicUrl(path).data.publicUrl;
-      this.agUsoSet(i,'img',pub); this.toast('Imagen subida');
-    }catch(e){ this.toast('No se pudo subir la imagen: '+(e.message||e)); }
+    try{ const url=await this.agUsoUploadFile(f); this.agUsoSet(i,'img',url); this.toast('Imagen subida'); }
+    catch(e){ this.toast('No se pudo subir la imagen: '+(e.message||e)); }
     this.setState({agUsoSubiendo:null}); };
+    inp.click(); }
+  agUsoBulk(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.multiple=true; inp.onchange=async()=>{ const files=Array.from(inp.files||[]); if(!files.length) return;
+    this.setState({agUsoSubiendoBulk:files.length});
+    let ok=0;
+    for(const f of files){ try{ const url=await this.agUsoUploadFile(f);
+        const prod=String(f.name||'').replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').trim();
+        const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', [...(cfg.modosUso||[]), {prod, img:url}]); ok++;
+      }catch(e){ this.toast('No se pudo subir '+f.name+': '+(e.message||e)); } }
+    this.setState({agUsoSubiendoBulk:null});
+    if(ok) this.toast(ok+' pieza(s) creada(s) — revisa el nombre del producto de cada una'); };
     inp.click(); }
   agUsoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', (cfg.modosUso||[]).filter((_,x)=>x!==i)); }
   agUsoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', (cfg.modosUso||[]).map((u,x)=> x===i? {...u,[k]:v} : u)); }
@@ -12141,6 +12154,11 @@ Instrucciones de respuesta:
         onDel:((ix)=>()=>{ if(window.confirm('¿Eliminar esta pieza de modo de uso?')) this.agUsoDel(ix); })(i) }));
       out.agUsosVacio=(ag.modosUso||[]).length===0;
       out.agUsoAdd=()=>this.agUsoAdd();
+      out.agUsoBulk=()=>this.agUsoBulk();
+      out.agUsoBulkLabel=st.agUsoSubiendoBulk?('Subiendo '+st.agUsoSubiendoBulk+' imagen(es)…'):'Subir varias imágenes';
+      { const opts=[]; (st.kits||[]).forEach(k=>{ if(k.nombre) opts.push('Grupo · '+k.nombre); });
+        (st.productos||[]).forEach(p=>{ if(p.nombre) opts.push(p.nombre); });
+        out.agUsoProdOpts=opts.map(o=>({v:o})); }
       const _cat=ag.catalogoDoc||null;
       out.agCatalogoHay=!!(_cat&&_cat.txt); out.agCatalogoNombre=_cat?(_cat.nombre||'catálogo'):'';
       out.agCatalogoInfo=_cat? (Math.round((Number(_cat.chars)||String(_cat.txt||'').length)/1000)+' mil caracteres · '+this.fmtFecha(String(_cat.at||'').slice(0,10))) : '';
