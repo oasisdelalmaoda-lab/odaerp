@@ -2104,6 +2104,28 @@
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Modos de uso (piezas para enviar)</h3>
+                  <button onClick="{{ agUsoAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">+ Agregar pieza</button>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Cuando un cliente pregunte cómo usar un producto, el agente envía la pieza tal cual: el texto del modo de uso y su imagen (si le pones el link de una foto, por ejemplo la de la tienda).</p>
+                <sc-if value="{{ agUsosVacio }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);color:var(--text-muted);font-size:12.5px;text-align:center;">Aún no hay piezas. Agrega la primera con el botón de arriba.</div>
+                </sc-if>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                  <sc-for list="{{ agUsos }}" as="u" hint-placeholder-count="0">
+                    <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:9px;background:var(--surface-page);">
+                      <div style="display:flex;gap:9px;align-items:center;">
+                        <input value="{{ u.prod }}" onInput="{{ u.onProd }}" placeholder="Producto o tema (ej: Roll-on Calma)" style="flex:1;font-family:inherit;font-size:13px;font-weight:700;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--text-body);outline:none;">
+                        <button onClick="{{ u.onDel }}" title="Eliminar pieza" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);border:1px solid rgba(181,80,60,0.32);background:transparent;color:#B5503C;cursor:pointer;flex-shrink:0;">Quitar</button>
+                      </div>
+                      <textarea value="{{ u.txt }}" onInput="{{ u.onTxt }}" rows="3" placeholder="Modo de uso, tal como se le enviará al cliente…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--text-body);outline:none;resize:vertical;line-height:1.5;"></textarea>
+                      <input value="{{ u.img }}" onInput="{{ u.onImg }}" placeholder="Link de imagen (opcional) — https://…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:12.5px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--text-muted);outline:none;">
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Preguntas frecuentes (entrenamiento)</h3>
                   <button onClick="{{ agFaqAdd }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">+ Agregar pregunta</button>
                 </div>
@@ -11149,6 +11171,9 @@ Instrucciones de respuesta:
   agLecDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).filter((_,x)=>x!==i)); }
   agLecSet(i,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, t:v}; })); }
   agLecLock(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('lecciones', (cfg.lecciones||[]).map((l,x)=>{ if(x!==i) return l; const o=(typeof l==='string')?{t:l,lock:false}:(l||{t:'',lock:false}); return {...o, lock:!o.lock}; })); }
+  agUsoAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', [...(cfg.modosUso||[]), {prod:'', txt:'', img:''}]); }
+  agUsoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', (cfg.modosUso||[]).filter((_,x)=>x!==i)); }
+  agUsoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('modosUso', (cfg.modosUso||[]).map((u,x)=> x===i? {...u,[k]:v} : u)); }
   agFaqAdd(){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', [...(cfg.faqs||[]), {p:'', r:'', lock:false}]); }
   agFaqDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('faqs', (cfg.faqs||[]).filter((_,x)=>x!==i)); }
   agFaqSet(i,k,v){ const cfg=this.agenteCfgGet(); const list=(cfg.faqs||[]).map((f,x)=> x===i? {...f,[k]:v} : f); this.setAgenteCfg('faqs', list); }
@@ -12090,6 +12115,11 @@ Instrucciones de respuesta:
       out.agFaqs=(ag.faqs||[]).map((f,i)=>{ const lk=_faqLocked(f); return { p:f.p||'', r:f.r||'', hayR:!!(f.r&&String(f.r).trim()), locked:lk, open:!lk, onP:((ix)=>(e)=>this.agFaqSet(ix,'p',e.target.value))(i), onR:((ix)=>(e)=>this.agFaqSet(ix,'r',e.target.value))(i), onLock:((ix)=>()=>{ const cur=((this.agenteCfgGet().faqs||[])[ix]||{}); this.agFaqSet(ix,'lock', !_faqLocked(cur)); })(i), onDel:((ix)=>()=>this.agFaqDel(ix))(i) }; });
       out.agFaqsVacio=(ag.faqs||[]).length===0;
       out.agFaqAdd=()=>this.agFaqAdd();
+      out.agUsos=(ag.modosUso||[]).map((u,i)=>({ prod:u.prod||'', txt:u.txt||'', img:u.img||'',
+        onProd:((ix)=>(e)=>this.agUsoSet(ix,'prod',e.target.value))(i), onTxt:((ix)=>(e)=>this.agUsoSet(ix,'txt',e.target.value))(i), onImg:((ix)=>(e)=>this.agUsoSet(ix,'img',e.target.value))(i),
+        onDel:((ix)=>()=>{ if(window.confirm('¿Eliminar esta pieza de modo de uso?')) this.agUsoDel(ix); })(i) }));
+      out.agUsosVacio=(ag.modosUso||[]).length===0;
+      out.agUsoAdd=()=>this.agUsoAdd();
       const _cat=ag.catalogoDoc||null;
       out.agCatalogoHay=!!(_cat&&_cat.txt); out.agCatalogoNombre=_cat?(_cat.nombre||'catálogo'):'';
       out.agCatalogoInfo=_cat? (Math.round((Number(_cat.chars)||String(_cat.txt||'').length)/1000)+' mil caracteres · '+this.fmtFecha(String(_cat.at||'').slice(0,10))) : '';
