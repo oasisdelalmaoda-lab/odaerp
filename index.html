@@ -8487,7 +8487,7 @@ Instrucciones de respuesta:
       const idxByShop=new Map(); const idxByPed=new Map();
       list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const pn=this.pedidoNum(v); if(pn) idxByPed.set(pn,i); });
       const reindex=()=>{ idxByShop.clear(); idxByPed.clear(); list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const p=this.pedidoNum(v); if(p) idxByPed.set(p,i); }); };
-      let added=0, updated=0, cancelados=0, saltadosFecha=0; const despachados=[];
+      let added=0, updated=0, cancelados=0, saltadosFecha=0; const despachados=[]; const touched=new Set();
       incoming.forEach(o=>{
         if(!o.fecha || o.fecha < CUTOFF){ saltadosFecha++; return; } // piso de fecha
         const pn=this.pedidoNum(o);
@@ -8506,6 +8506,7 @@ Instrucciones de respuesta:
             guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), id:ex.id };
           if(o.cancelado){ merged.pagado=0; merged.envio=0; }
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
+          touched.add(list[exI].id);
           if(o.cancelado) cancelados++; else { updated++; if(guiaNueva && !o.cancelado) despachados.push(list[exI].id); }
         } else {
           // REGLAS DE INGRESO (blindaje): la sincronización nunca crea movimiento de banco por sí sola.
@@ -8520,7 +8521,7 @@ Instrucciones de respuesta:
           const _tot=Math.round(this.ventaTotal({items:bruto0.items, envio:bruto0.envio}));
           const row0={ ...bruto0, id:'v'+Date.now()+'_'+Math.floor(Math.random()*100000), ov:'', guia:o.guia||'', pagado:(o.cancelado?0:(_dif?_tot:0)), cuentaRecaudo:_ctaRec };
           const row=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(row0):row0;
-          list.unshift(row); if(o.cancelado) cancelados++; else { added++; if(row.guia) despachados.push(row.id); } reindex();
+          list.unshift(row); touched.add(row.id); if(o.cancelado) cancelados++; else { added++; if(row.guia) despachados.push(row.id); } reindex();
         }
       });
       // asignar consecutivo OV a los pedidos nuevos (sin desplazar los existentes) — autocorregible
@@ -8528,11 +8529,14 @@ Instrucciones de respuesta:
       const usedOV=new Set(); list.forEach(v=>{ if(v.origen!=='historico'){ const n=this.ovNum(v); if(n>0) usedOV.add(n); } });
       let nextOVn=1; const takeNextOV=()=>{ while(usedOV.has(nextOVn)) nextOVn++; usedOV.add(nextOVn); return nextOVn++; };
       const sinOV=list.filter(v=>v.origen!=='historico' && !this.ovNum(v)).sort((a,b)=>this.pedidoNum(a)-this.pedidoNum(b));
-      sinOV.forEach((v)=>{ v.ov='ODA-'+String(takeNextOV()).padStart(5,'0'); });
+      sinOV.forEach((v)=>{ v.ov='ODA-'+String(takeNextOV()).padStart(5,'0'); touched.add(v.id); });
       const _dd=this._ventasAutoDedupe(list); list=_dd.list;
       if(_dd.removed.length && this.cloudOn()) _dd.removed.forEach(id=>this._cloudDelOne('ventas', id));
       this.setState({ventas:list, shopifySyncing:false, shopifyLastTs:Date.now()},()=>this.persist());
-      if(this.cloudOn()) this.cloudBulkVentas(list);
+      // Solo se suben a la nube las ventas que ESTE sync tocó. Antes se re-subía la lista
+      // completa: si esta pestaña tenía datos viejos, pisaba marcas recién puestas por otra
+      // (liquidada, cobros) — así se "desliquidaban" pedidos de Bold.
+      if(this.cloudOn()) this.cloudBulkVentas(list.filter(v=>touched.has(v.id)));
       const partes=[]; if(added) partes.push(added+' nuevo(s)'); if(updated) partes.push(updated+' actualizado(s)'); if(cancelados) partes.push(cancelados+' cancelado(s)');
       this.toast(partes.length? ('Shopify: '+partes.join(' · ')) : 'Shopify: todo al día');
       // Auto-WhatsApp "despachado" para pedidos que estrenaron guía (solo si WhatsApp está activado).
@@ -10363,7 +10367,15 @@ Instrucciones de respuesta:
   // (IVA real de la venta, no un 19% supuesto) y respetando su forma de liquidación.
   ventaDeduccionEst(v){ if(!v) return 0; return Math.round(this.liqDesglose([v.id], this.metodoNombreNorm(v.metodoPago)).ded); }
   metodoNombreNorm(nombre){ const m=this.metodoMatch(nombre); return m? m.nombre : (nombre||'Sin método'); }
-  recaudosPendientes(){ return (this.state.ventas||[]).filter(v=>!v.cancelada && !v.liquidada && this.metodoTipo(v.metodoPago)==='diferido' && this.ventaRecaudoBruto(v)>0); }
+  // Blindaje: aunque la marca v.liquidada se pierda (p. ej. un sync de Shopify reescribe la
+  // venta), lo que ya está en una liquidación (por id o por número de pedido) NO vuelve a
+  // aparecer como pendiente ni se cuenta doble.
+  _liqExcl(){ const liqs=this.state.liquidaciones||[], ventas=this.state.ventas||[]; const k=[liqs,ventas];
+    if(this._liqExclKey && this._liqExclKey.every((x,i)=>x===k[i])) return this._liqExclOut;
+    const byId={}; ventas.forEach(v=>{ byId[v.id]=v; }); const ids=new Set(), peds=new Set();
+    liqs.forEach(l=>(l.ventaIds||[]).forEach(id=>{ ids.add(id); const v=byId[id]; const n=v?this.pedidoNum(v):0; if(n) peds.add(n); }));
+    this._liqExclKey=k; this._liqExclOut={ids,peds}; return this._liqExclOut; }
+  recaudosPendientes(){ const ex=this._liqExcl(); return (this.state.ventas||[]).filter(v=>{ if(v.cancelada||v.liquidada) return false; if(this.metodoTipo(v.metodoPago)!=='diferido' || this.ventaRecaudoBruto(v)<=0) return false; if(ex.ids.has(v.id)) return false; const n=this.pedidoNum(v); if(n && ex.peds.has(n)) return false; return true; }); }
   recaudosPorMetodo(){ const map={}; this.recaudosPendientes().forEach(v=>{ const nom=this.metodoNombreNorm(v.metodoPago); if(!map[nom]) map[nom]={metodo:nom, ventas:[], bruto:0}; map[nom].ventas.push(v); map[nom].bruto+=this.ventaRecaudoBruto(v); }); return Object.keys(map).map(k=>map[k]).sort((a,b)=>b.bruto-a.bruto); }
   // Consecutivo de liquidaciones (LQ-001, LQ-002…): las nuevas lo guardan al crearse; las
   // viejas lo reciben por orden de creación (timestamp del id), estable en todos los equipos.
