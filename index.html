@@ -5908,10 +5908,10 @@
                 </div>
               </sc-if>
               <div style="margin-top:16px;margin-left:auto;width:300px;max-width:100%;font-size:13px;">
-                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">Subtotal (sin IVA)</span><span>{{ cotSubtotalFmt }}</span></div>
+                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">Subtotal (IVA incl.)</span><span>{{ cotSubtotalFmt }}</span></div>
                 <sc-if value="{{ cotDescShow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--brand-primary);font-weight:700;"><span>Descuento {{ cotDescPctTxt }}</span><span>{{ cotDescMontoFmt }}</span></div></sc-if>
                 <sc-if value="{{ cotEnvioShow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">Envío</span><span>{{ cotEnvioFmt }}</span></div></sc-if>
-                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-muted);font-size:12px;"><span>IVA (19%)</span><span>{{ cotIvaFmt }}</span></div>
+                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-muted);font-size:12px;"><span>IVA (19%) incluido</span><span>{{ cotIvaFmt }}</span></div>
                 <div style="display:flex;justify-content:space-between;padding:11px 0 0;border-top:2px solid var(--brand-primary);margin-top:6px;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;"><span>Total</span><span>{{ cotTotalFinalFmt }}</span></div>
               </div>
             </sc-if>
@@ -9079,7 +9079,7 @@ Instrucciones de respuesta:
   askDeleteVenta(v){ this.setState({confirmDel:{tipo:'venta', codigo:v.id, nombre:('la venta '+(v.ov||v.pedido||''))}}); }
 
   // ---- cotizaciones ----
-  cotTotal(c){ const items=c.items||[]; let merc=0, ivaBase=0; items.forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0); merc+=line; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const descPct=Math.max(0,Math.min(100,Number(c.descuentoPct)||0)); const baseDesc=merc-Math.round(merc*descPct/100); const factor=merc>0?baseDesc/merc:1; const iva=Math.round(ivaBase*factor*0.19); return baseDesc+iva+(Number(c.envio)||0); }
+  cotTotal(c){ const items=c.items||[]; let merc=0, ivaBase=0; items.forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0); merc+=line; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const descPct=Math.max(0,Math.min(100,Number(c.descuentoPct)||0)); const baseDesc=merc-Math.round(merc*descPct/100); return baseDesc+(Number(c.envio)||0); }
   cotItemOptions(){ return [
     ...(this.state.productos||[]).map(p=>({codigo:p.codigo, nombre:p.nombre, precio:Number(p.precio)||0, tipo:'producto', costo:this.productoCosto(p)})),
     ...(this.state.kits||[]).map(k=>({codigo:k.codigo, nombre:k.nombre, precio:Number(k.precio)||0, tipo:'kit', costo:this.kitCosto(k)})),
@@ -9102,7 +9102,7 @@ Instrucciones de respuesta:
     const filas=(c.items||[]).map(it=>{ const u=Number(it.unidades)||0; const neto=Number(it.valorUnit)||0; const bruto=Number(it.valorBruto!=null?it.valorBruto:neto)||0; const sub=u*neto; const dpct=bruto>0?Math.round((1-neto/bruto)*100):0;
       return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+(it.producto||it.referencia)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td>'+(hayDesc?('<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;color:#8A8073;">'+(dpct>0?this.fmt(bruto):'—')+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;color:#B5503C;font-weight:700;">'+(dpct>0?('-'+dpct+'%'):'—')+'</td>'):'')+'<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(neto)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(sub)+'</td></tr>'; }).join('');
     const total=this.cotTotal(c);
-    const merc=(c.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0); const descPctG=Number(c.descuentoPct)||0; const descMonto=Math.round(merc*descPctG/100); const baseDesc=merc-descMonto; const factor=merc>0?baseDesc/merc:1; let ivaBase=0; (c.items||[]).forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const ivaInc=Math.round(ivaBase*0.19);
+    const merc=(c.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0); const descPctG=Number(c.descuentoPct)||0; const descMonto=Math.round(merc*descPctG/100); const baseDesc=merc-descMonto; const factor=merc>0?baseDesc/merc:1; let ivaBase=0; (c.items||[]).forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const ivaInc=Math.round(ivaBase*19/119);
     const ths='<tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:11px 14px;font-weight:600;">Producto</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Unid.</th>'+(hayDesc?'<th style="padding:11px 14px;text-align:right;font-weight:600;">Precio</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Desc.</th>':'')+'<th style="padding:11px 14px;text-align:right;font-weight:600;">Valor unit.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Subtotal</th></tr>';
     const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.numero+'</title></head>'
       +'<body style="font-family:Georgia,serif;color:#3A3326;max-width:760px;margin:0 auto;padding:40px 36px;background:#FBF8F2;">'
@@ -9113,10 +9113,10 @@ Instrucciones de respuesta:
       +'<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:22px;line-height:1.6;"><div><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Para</span><br><strong style="font-size:15px;">'+c.cliente+'</strong><br>'+[c.ciudad,c.celular].filter(Boolean).join(' · ')+(c.correo?('<br>'+c.correo):'')+'</div><div style="text-align:right;"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Detalles</span><br><strong>Fecha:</strong> '+this.fmtFecha(c.fecha)+'<br><strong>Válida por:</strong> '+c.validez+' días</div></div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead>'+ths+'</thead><tbody>'+filas+'</tbody></table>'
       +'<div style="margin-top:18px;margin-left:auto;width:300px;font-size:13px;">'
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Subtotal (sin IVA)</span><span>'+this.fmt(Math.round(merc))+'</span></div>'
+        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Subtotal (IVA incl.)</span><span>'+this.fmt(Math.round(merc))+'</span></div>'
         +(descMonto>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Descuento ('+descPctG+'%)</span><span>−'+this.fmt(descMonto)+'</span></div>'):'')
         +((Number(c.envio)||0)>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Envío</span><span>'+this.fmt(c.envio||0)+'</span></div>'):'')
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#8A8073;font-size:12px;"><span>IVA (19%)</span><span>'+this.fmt(Math.round(ivaInc))+'</span></div>'
+        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#8A8073;font-size:12px;"><span>IVA (19%) incluido</span><span>'+this.fmt(Math.round(ivaInc))+'</span></div>'
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
@@ -13489,7 +13489,7 @@ Instrucciones de respuesta:
       const descMonto=Math.round(mercancia*descPctG/100); const baseDesc=mercancia-descMonto; const envio=Number(d2.envio)||0;
       const factor=mercancia>0?baseDesc/mercancia:1; let ivaBase=0;
       items2.forEach(it=>{ const line=(Number(it.valorUnit)||0)*(Number(it.unidades)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; });
-      const ivaInc=Math.round(ivaBase*0.19); const totalFinal=baseDesc+ivaInc+envio;
+      const ivaInc=Math.round(ivaBase*19/119); const totalFinal=baseDesc+envio;
       const margenIni=mercancia-costoTot, margenDesc=baseDesc-costoTot;
       out.cotMargenShow=items2.length>0;
       out.cotMargenIniFmt=this.fmt(Math.round(margenIni)); out.cotMargenIniPct=(mercancia>0?(margenIni/mercancia*100):0).toFixed(1);
