@@ -4098,6 +4098,27 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;border-top:3px solid #4C6149;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Neto esperado</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;margin-top:7px;color:#4C6149;">{{ recTotalNeto }}</div></div>
               </div>
 
+              <sc-if value="{{ recBoldMapShow }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-bottom:16px;">
+                  <button onClick="{{ recBoldMapToggle }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>Liquidación por canal Bold{{ recBoldMapResumen }}</button>
+                  <sc-if value="{{ recBoldMapOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:9px;margin-top:10px;padding:14px 16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);max-width:520px;">
+                      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Forma de liquidación por canal</div>
+                      <sc-for list="{{ recBoldMap }}" as="bm" hint-placeholder-count="1">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                          <span style="font-size:12.5px;font-weight:600;color:var(--text-body);flex:1;">{{ bm.canal }}</span>
+                          <select value="{{ bm.val }}" onChange="{{ bm.onChange }}" style="font-family:inherit;font-size:12px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:250px;">
+                            <option value="">— elegir forma —</option>
+                            <sc-for list="{{ bm.opts }}" as="o" hint-placeholder-count="2"><option value="{{ o.key }}">{{ o.label }}</option></sc-for>
+                          </select>
+                        </div>
+                      </sc-for>
+                      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">El canal viene de la API de Bold en cada pago. Con esto las ventas cruzadas marcan su forma de liquidación solas.</div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
                 <div style="display:flex;flex-direction:column;gap:16px;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
@@ -4156,6 +4177,15 @@
                         <div style="display:flex;align-items:baseline;gap:8px;"><span onClick="{{ d.onCheck }}" title="Seleccionar para legalizar varios" style="display:inline-flex;flex-shrink:0;width:16px;height:16px;border-radius:4px;border:1.5px solid {{ d.chkBd }};background:{{ d.chkBg }};cursor:pointer;align-self:center;"></span><span style="font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ d.cliente }}</span><span style="font-weight:700;white-space:nowrap;">{{ d.brutoFmt }}</span></div>
                         <div style="display:flex;align-items:center;gap:8px;margin-top:3px;"><span style="flex:1;min-width:0;font-size:11px;color:var(--text-muted);">{{ d.ov }} · Shopify {{ d.pedido }} · {{ d.fechaFmt }}</span><span style="font-size:11px;color:#4C6149;white-space:nowrap;">neto {{ d.netoFmt }}</span></div>
                         <sc-if value="{{ d.hayAbono }}" hint-placeholder-val="{{ false }}"><div style="margin-top:4px;font-size:10.5px;color:#3F6A7A;background:rgba(101,150,166,0.1);border:1px solid rgba(101,150,166,0.22);border-radius:6px;padding:3px 8px;display:inline-block;">Abono ya recibido {{ d.abonoFmt }} · total venta {{ d.totalFmt }}</div></sc-if><sc-if value="{{ d.hayLiqNota }}" hint-placeholder-val="{{ false }}"><div style="margin-top:4px;font-size:10.5px;color:#8E3F2F;background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.3);border-radius:6px;padding:4px 8px;line-height:1.45;"><strong>Posible liquidación previa:</strong> {{ d.liqNota }} — verifica antes de legalizar.</div></sc-if>
+                        <sc-if value="{{ d.boldSinCruce }}" hint-placeholder-val="{{ false }}"><div style="margin-top:5px;font-size:10.5px;color:#9A6B2E;background:rgba(212,150,80,0.1);border:1px solid rgba(212,150,80,0.3);border-radius:6px;padding:3px 8px;display:inline-block;">Sin pago Bold cruzado · crúzalo en la pestaña Bold para validar el canal y la forma de liquidación</div></sc-if>
+                        <sc-if value="{{ d.hayBold }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:10.5px;">
+                            <span style="display:inline-flex;align-items:center;gap:5px;color:#4C6149;background:rgba(98,123,96,0.1);border:1px solid rgba(98,123,96,0.3);border-radius:6px;padding:3px 8px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Pago Bold verificado: <strong>{{ d.boldTxt }}</strong></span>
+                            <sc-if value="{{ d.boldOk }}" hint-placeholder-val="{{ false }}"><span style="color:#4C6149;font-weight:700;">✓ liquidación «{{ d.boldFormaNombre }}» marcada</span></sc-if>
+                            <sc-if value="{{ d.boldAplica }}" hint-placeholder-val="{{ false }}"><button onClick="{{ d.onBoldAplicar }}" style="font-family:inherit;font-size:10.5px;font-weight:800;padding:4px 11px;border-radius:99px;border:1px solid #9A6B2E;background:rgba(212,150,80,0.14);color:#9A6B2E;cursor:pointer;">Marcar liquidación «{{ d.boldFormaNombre }}»</button></sc-if>
+                            <sc-if value="{{ d.boldSinMapa }}" hint-placeholder-val="{{ false }}"><span style="color:#9A6B2E;">canal «{{ d.boldCanal }}» sin forma asignada · asígnala en la barra de arriba</span></sc-if>
+                          </div>
+                        </sc-if>
                         <sc-if value="{{ recEsAdmin }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:7px;margin-top:8px;align-items:center;flex-wrap:wrap;"><button onClick="{{ d.onLegalizar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 13px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">Legalizar</button><button onClick="{{ d.onEdit }}" title="Editar pedido (requiere admin)" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">Editar</button><sc-if value="{{ d.hayFormas }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;"><span style="font-size:10.5px;color:var(--text-muted);">Liq:</span><sc-for list="{{ d.formas }}" as="fo" hint-placeholder-count="0"><button onClick="{{ fo.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;cursor:pointer;border:1px solid {{ fo.bd }};background:{{ fo.bg }};color:{{ fo.fg }};">{{ fo.nombre }}</button></sc-for></div></sc-if></div></sc-if>
                       </div>
                     </sc-for>
@@ -7803,6 +7833,8 @@ class Component extends DCLogic {
     catch(e){ const m=(e&&e.message)||''; let es='No se pudo cambiar la contraseña.'; if(/different from the old/i.test(m)) es='La nueva contraseña debe ser distinta a la actual.'; else if(/weak|at least/i.test(m)) es='La contraseña es muy débil. Usa al menos 6 caracteres.'; else if(/session|JWT|expired/i.test(m)) es='Tu sesión expiró. Vuelve a iniciar sesión e inténtalo.'; this.setState({pwdBusy:false, pwdError:es}); }
   }
   access(){ const u=this.users.find(x=>x.id===this.state.userId); if(!u) return null; const p=(this.state.userPerms||{})[u.id]; return p||this.roles[u.role]||null; }
+  // Nivel efectivo de un módulo: el máximo entre sus submódulos (override sub > nivel del módulo)
+  _modLevel(p,mod){ if(!p) return 'none'; if(p.admin) return 'write'; const subs=(this.subModDef[mod]||[]).map(s=>s.key); const ml=p[mod]||'none'; if(!subs.length) return ml; const rank={none:0,read:1,write:2}; let best='none'; subs.forEach(s=>{ const k=mod+'__'+s; const eff=(k in p)?p[k]:ml; if((rank[eff]||0)>(rank[best]||0)) best=eff; }); return best; }
   togglePerm(uid,mod){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const curr=base[mod]||'none'; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[mod]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
   toggleAdmin(uid){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const updated={...perms,[uid]:{...base,admin:!base.admin}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
   toggleSubPerm(uid,mod,subkey){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const subKey=mod+'__'+subkey; const modLevel=base[mod]||'none'; const curr=subKey in base?base[subKey]:modLevel; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[subKey]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
@@ -7844,7 +7876,7 @@ class Component extends DCLogic {
   // ---- nav ----
   goModule(m){ if(m==='soporte'){ this.sopCargar(); } if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser()){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
-  _modHasAccess(p,mod){ if(p.admin) return true; const subsByMod={compras:['resumen','proveedores','materias','servicios','ordenes','reorden'],desarrollo:['mezclas','productos','kits'],produccion:['prodmez','prodpt'],inventario:['resumen','mp','insumos','pt','consig','conteos','kardex'],ventas:['registro','base','cotizador','carritos','servicio'],conversaciones:['bandeja','agente','canales','informe'],finanzas:['finresumen','finpagar','fincobrar','finrecaudos','fincaja','gastos','pyg','impuestos'],marketing:['mktresumen','mktcampanas','mktrecom','mktcreativos','mktpublicos','mktconexion']}; const subs=subsByMod[mod]||[]; const ml=p[mod]||'none'; return subs.some(s=>{ const k=mod+'__'+s; const v=(p[k]!==undefined)?p[k]:ml; return v!=='none'; }); }
+  _modHasAccess(p,mod){ if(p.admin) return true; return this._modLevel(p,mod)!=='none'; }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -8804,7 +8836,7 @@ Instrucciones de respuesta:
       let nextOVn=1; const takeNextOV=()=>{ while(usedOV.has(nextOVn)) nextOVn++; usedOV.add(nextOVn); return nextOVn++; };
       const sinOV=list.filter(v=>v.origen!=='historico' && !this.ovNum(v)).sort((a,b)=>this.pedidoNum(a)-this.pedidoNum(b));
       sinOV.forEach((v)=>{ v.ov='ODA-'+String(takeNextOV()).padStart(5,'0'); touched.add(v.id); });
-      const _dd=this._ventasAutoDedupe(list); list=_dd.list;
+      const _dd=this._ventasAutoDedupe(list); list=_dd.list; (_dd.changed||[]).forEach(v=>touched.add(v.id));
       if(_dd.removed.length && this.cloudOn()) _dd.removed.forEach(id=>this._cloudDelOne('ventas', id));
       this.setState({ventas:list, shopifySyncing:false, shopifyLastTs:Date.now()},()=>this.persist());
       // Solo se suben a la nube las ventas que ESTE sync tocó. Antes se re-subía la lista
@@ -9595,7 +9627,7 @@ Instrucciones de respuesta:
       this.cloudLoadRecordatorios();
     }catch(e){ this.toast('No se pudo guardar la nota'); } }
   // ---- permisos compartidos (nube) ----
-  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null, ucfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else if(r.user_key==='__usuarios__'){ ucfg=r.perms||null; } else { m[r.user_key]=r.perms||{}; } }); if(ucfg){ const loc=this._usersCfgGet(); if((Number(ucfg._ts)||0) > (Number(loc._ts)||0)){ this._usersCfgCache={ overrides:(ucfg.overrides||{}), custom:(ucfg.custom||[]), _ts:(Number(ucfg._ts)||0) }; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(this._usersCfgCache)); }catch(e){} } } const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes);
+  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null, ucfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else if(r.user_key==='__usuarios__'){ ucfg=r.perms||null; } else { m[r.user_key]=r.perms||{}; } }); if(ucfg){ const loc=this._usersCfgGet(); if((Number(ucfg._ts)||0) > (Number(loc._ts)||0)){ this._usersCfgCache={ overrides:(ucfg.overrides||{}), custom:(ucfg.custom||[]), _ts:(Number(ucfg._ts)||0) }; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(this._usersCfgCache)); }catch(e){} } } const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.boldLiqMap && typeof cfg.boldLiqMap==='object' && Object.keys(cfg.boldLiqMap).length){ const _lm={...cfg.boldLiqMap, ...this.boldLiqMapGet()}; this._boldLiqMapCache=_lm; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(_lm)); }catch(e){} } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes);
       // Fusión por sello de tiempo: la nube puede venir vieja (eco del realtime o config
       // guardada por otro equipo con sus ajustes desactualizados). El ajuste más nuevo gana
       // y una eliminación local reciente no resucita desde la nube.
@@ -9604,7 +9636,7 @@ Instrucciones de respuesta:
       Object.keys(_del).forEach(k=>{ const c=_out[k]; if(c && (Number(_del[k])||0) >= (Number(c._ts)||0)) delete _out[k]; });
       patch.movAjustes=_out; try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(_out)); }catch(e){} } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
-  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const re=(this.state.reglasEmpaque||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), movAjustes:(this.movAjustesGet()||{}), bolsaDefault:(re.bolsaDefault||''), bolsasHist:(re.bolsasHist||[]), mapeoCajas:(re.mapeoCajas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
+  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const re=(this.state.reglasEmpaque||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), movAjustes:(this.movAjustesGet()||{}), boldLiqMap:(this.boldLiqMapGet()||{}), bolsaDefault:(re.bolsaDefault||''), bolsasHist:(re.bolsasHist||[]), mapeoCajas:(re.mapeoCajas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
   cloudSubscribePermisos(){ const sb=this._sbClient(); if(!sb||this._permSub) return; try{ this._permSub=sb.channel('oda-permisos').on('postgres_changes',{event:'*',schema:'public',table:'permisos'},()=>{ this.cloudLoadPermisos(); }).subscribe(); }catch(e){} }
   // ---- proveedores compartidos (nube) ----
   _provToDb(p){ return { codigo:p.codigo, nombre:p.nombre||'', nit:p.nit||'', contacto_nombre:p.contactoNombre||'', telefonos:(Array.isArray(p.telefonos)?p.telefonos:[]), email:p.email||'', ciudad:p.ciudad||'', condiciones_pago:p.condicionesPago||'', calificacion:Number(p.calificacion)||0, autorretenedor:/s[ií]/i.test(String(p.autorretenedor||'')), actualizado:new Date().toISOString() }; }
@@ -9664,7 +9696,11 @@ Instrucciones de respuesta:
         if(data.length<page) break;
         from+=page;
       }
-      if(all.length){ this.setState({ventas:all.map(r=>{ const d=r.data||{}; return {...d, canal:this.canonCanal(d.canal), id:r.id}; }), ventasCargando:false}); }
+      if(all.length){ let vlist=all.map(r=>{ const d=r.data||{}; return {...d, canal:this.canonCanal(d.canal), id:r.id}; });
+        // Fusión de duplicados también AL CARGAR de la nube (antes solo al sincronizar Shopify):
+        // limpia pares como ODA-00249/ODA-00478 del mismo pedido sin esperar otro sync.
+        const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
+        this.setState({ventas:vlist, ventasCargando:false},()=>{ if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
       else { this.setState({ventasCargando:false}); const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } }
     }catch(e){ this.setState({ventasCargando:false}); this.toast('Reintentando cargar ventas…'); setTimeout(()=>{ this._venLoading=false; this.cloudLoadVentas(); }, 1500); return; }
     this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
@@ -9680,7 +9716,7 @@ Instrucciones de respuesta:
     if(!window.confirm('Se corregirán y reescribirán en la nube '+changed.length+' ventas con canales con variantes (ej. «Pagina Web» → «Página Web»). ¿Continuar?')) return;
     this.setState({ventas:out},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(changed); this.toast(changed.length+' canales unificados y guardados en la nube'); }
   // Cuánto "tocada" está una venta (conciliada) — nunca se borra/renumera la más tocada.
-  _ventaTocada(v){ return (v.liquidada?1:0)+((Number(v.pagado)>0)?1:0)+(v.guia?1:0); }
+  _ventaTocada(v){ return (v.liquidada?1:0)+((Number(v.pagado)>0)?1:0)+(v.guia?1:0)+(v.itemsLocked?1:0); }
   // Fusiona filas duplicadas del MISMO pedido (mismo número, escrito distinto ej. "#4807" vs
   // "4807"), y luego corrige consecutivos internos (ODA-#####) repetidos entre pedidos
   // DISTINTOS. En ambos casos se conserva: 1) la venta manual (nunca se toca su consecutivo
@@ -9691,10 +9727,21 @@ Instrucciones de respuesta:
   // pasa cuando dos dispositivos sincronizan Shopify casi a la vez. Conserva la fila más
   // trabajada (manual > tocada > antigua) y borra las repetidas. No toca montos ni pagos.
   _ventasAutoDedupe(list){ const rank=(a,b)=>{ if(a.origen==='manual'&&b.origen!=='manual') return -1; if(b.origen==='manual'&&a.origen!=='manual') return 1; const t=this._ventaTocada(b)-this._ventaTocada(a); if(t!==0) return t; return String(a.fecha||'').localeCompare(String(b.fecha||'')); };
-    const byKey={}; list.forEach(v=>{ if(v.origen==='historico') return; const k=v.shopifyId? ('s'+v.shopifyId) : (this.pedidoNum(v)? ('p'+this.pedidoNum(v)) : ''); if(!k) return; (byKey[k]=byKey[k]||[]).push(v); });
-    const remove=new Set(); Object.values(byKey).forEach(rows=>{ if(rows.length<2) return; const best=rows.slice().sort(rank)[0]; rows.forEach(r=>{ if(r!==best) remove.add(r.id); }); });
-    if(!remove.size) return {list, removed:[]};
-    return {list:list.filter(v=>!remove.has(v.id)), removed:[...remove]}; }
+    // Clave por NÚMERO de pedido primero (dos filas del mismo pedido siempre lo comparten,
+    // aunque una no tenga shopifyId o lo tenga en otro formato); shopifyId solo como respaldo.
+    const byKey={}; list.forEach(v=>{ if(v.origen==='historico') return; const pn=this.pedidoNum(v); const k=pn? ('p'+pn) : (v.shopifyId? ('s'+v.shopifyId) : ''); if(!k) return; (byKey[k]=byKey[k]||[]).push(v); });
+    const remove=new Set(); const fixed={};
+    Object.values(byKey).forEach(rows=>{ if(rows.length<2) return; const best=rows.slice().sort(rank)[0]; let b=best;
+      rows.forEach(r=>{ if(r===best) return; remove.add(r.id);
+        // Antes de borrar la repetida, rescata lo que la ganadora no tenga: shopifyId,
+        // ítems corregidos protegidos (itemsLocked) y guía. Montos y pagos no se tocan.
+        if(!b.shopifyId && r.shopifyId) b={...b, shopifyId:r.shopifyId};
+        if(!b.itemsLocked && r.itemsLocked) b={...b, items:r.items, itemsLocked:true};
+        if(!b.guia && r.guia) b={...b, guia:r.guia}; });
+      if(b!==best) fixed[best.id]=b; });
+    if(!remove.size) return {list, removed:[], changed:[]};
+    const out=list.filter(v=>!remove.has(v.id)).map(v=>fixed[v.id]||v);
+    return {list:out, removed:[...remove], changed:Object.values(fixed)}; }
   fusionarPedidosDuplicados(){
     let list=(this.state.ventas||[]).slice();
     const rank=(a,b)=>{ if(a.origen==='manual'&&b.origen!=='manual') return -1; if(b.origen==='manual'&&a.origen!=='manual') return 1;
@@ -10663,6 +10710,16 @@ Instrucciones de respuesta:
     if(m.alt2Activo && m.alt2) out.push({...m.alt2, retenBruto:(m.alt2.retenBruto!==false), key:'alt2', nombre:(m.alt2.nombre||'Tercera forma')});
     return out; }
   metodoFormas(nombre){ const m=this.metodoMatch(nombre); const base={key:'def', nombre:'Predeterminada'}; return [base, ...this.metodoFormasExtra(m)]; }
+  // Valida el pago Bold cruzado de una venta y sugiere la forma de liquidación que aplica según el método real del pago (datáfono, link, Nequi…)
+  // Mapa canal Bold (de la API) → forma de liquidación. Se configura una vez en Recaudos y se comparte por la nube.
+  boldLiqMapGet(){ if(!this._boldLiqMapCache){ let c=null; try{ c=JSON.parse(localStorage.getItem('oda_hub_boldliqmap_v1')); }catch(e){} this._boldLiqMapCache=(c&&typeof c==='object')?c:{}; } return this._boldLiqMapCache; }
+  boldLiqMapSet(canal, formaKey){ const m={...this.boldLiqMapGet()}; if(formaKey) m[canal]=formaKey; else delete m[canal]; this._boldLiqMapCache=m; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({boldLiqMap:m}); this.forceUpdate(); }
+  boldCanalDe(p){ const i=String(p.integracion||''); const key=i||String(p.metodo||'')||'OTRO'; const label=i?this.boldIntegracionL(i):this.boldMetodoL(p.metodo); return {key,label}; }
+  boldPagoDeVenta(v){ if(!/bold/i.test(String(v.metodoPago||''))) return null; const ped=String(v.pedido||'').replace(/\D/g,''); const ov=String(v.ov||'').trim(); return (this.state.boldPagos||[]).find(p=>p.conciliado && p.aprobado && !p.anulado && p.pedido && (String(p.pedido).replace(/\D/g,'')===ped && ped || String(p.pedido)===ov && ov))||null; }
+  boldFormaSugerida(v){ const p=this.boldPagoDeVenta(v); if(!p) return null; const c=this.boldCanalDe(p); const etiqueta=this.boldMetodoL(p.metodo)+' · '+this.boldIntegracionL(p.integracion);
+    const fk=this.boldLiqMapGet()[c.key]; if(!fk) return { pago:p, etiqueta, canal:c.label, sinMapa:true, formaKey:null, formaNombre:'' };
+    const f=this.metodoFormas(v.metodoPago).find(x=>x.key===fk); if(!f) return { pago:p, etiqueta, canal:c.label, sinMapa:true, formaKey:null, formaNombre:'' };
+    return { pago:p, etiqueta, formaKey:f.key, formaNombre:f.nombre }; }
   metodoPerfil(nombre, forma){ const m=this.metodoMatch(nombre); if(!m) return {comisionPct:0,comisionFijo:0,comisionIva:false,reteRenta:0,reteIca:0,reteIva:0}; const f=(forma===true?'alt':(forma||'def'));
     if(f!=='def'){ const ext=this.metodoFormasExtra(m);
       let ex=ext.find(x=>x.key===f);
@@ -11674,7 +11731,7 @@ Instrucciones de respuesta:
     const u=this.users.find(x=>x.id===st.userId);
     const acc=this.access();
     const isAdmin = !!(acc&&acc.admin);
-    const comprasAcc = acc? acc.compras : 'none';
+    const comprasAcc = this._modLevel(acc,'compras');
     const canWrite = comprasAcc==='write';
     const out = {
       isLogin: st.view==='login', isApp: st.view==='app',
@@ -11896,7 +11953,7 @@ Instrucciones de respuesta:
     const subStyD=(k)=>{ const a=onDes&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
     out.subMez=subStyD('mezclas'); out.subProd=subStyD('productos'); out.subKits=subStyD('kits');
     out.subnavDes={ mezclas:()=>this.setState({module:'desarrollo',sub:'mezclas'}), productos:()=>this.setState({module:'desarrollo',sub:'productos'}), kits:()=>this.setState({module:'desarrollo',sub:'kits'}) };
-    const desAcc = acc? (acc.admin?'write':(acc.desarrollo||'none')) : 'none';
+    const desAcc = this._modLevel(acc,'desarrollo');
     out.canWriteDes = desAcc==='write';
 
     const onProd = st.module==='produccion';
@@ -11906,7 +11963,7 @@ Instrucciones de respuesta:
     const subStyP=(k)=>{ const a=onProd&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
     out.subProdMez=subStyP('prodmez'); out.subPT=subStyP('pt');
     out.subnavProd={ mez:()=>this.setState({module:'produccion',sub:'prodmez'}), pt:()=>this.setState({module:'produccion',sub:'pt'}) };
-    const prodAcc = acc? (acc.admin?'write':(acc.produccion||'none')) : 'none';
+    const prodAcc = this._modLevel(acc,'produccion');
     out.canWriteProd = prodAcc==='write';
 
     const onInv = st.module==='inventario';
@@ -11916,7 +11973,7 @@ Instrucciones de respuesta:
     const subStyI=(k)=>{ const a=onInv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
     out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvConteos=subStyI('conteos'); out.subInvKardex=subStyI('kardex');
     out.subnavInv={ conteos:()=>this.setState({module:'inventario',sub:'conteos'}), resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
-    const invAcc = acc? (acc.admin?'write':(acc.inventario||'none')) : 'none';
+    const invAcc = this._modLevel(acc,'inventario');
     out.canWriteInv = invAcc==='write';
 
     const onVen = st.module==='ventas';
@@ -11926,7 +11983,7 @@ Instrucciones de respuesta:
     const subStyV=(k)=>{ const a=onVen&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
     out.subVenReg=subStyV('registro'); out.subVenBase=subStyV('base'); out.subVenListado=subStyV('listado'); out.subVenPed=subStyV('pedidos'); out.subVenCot=subStyV('cotizador'); out.subVenCarritos=subStyV('carritos'); out.subVenAutoWa=subStyV('autowa'); out.subVenSvc=subStyV('servicio');
     out.subnavVen={ registro:()=>this.setState({module:'ventas',sub:'registro'}), base:()=>this.setState({module:'ventas',sub:'base'}), listado:()=>this.setState({module:'ventas',sub:'listado'}), carritos:()=>this.setState({module:'ventas',sub:'carritos'}), pedidos:()=>this.setState({module:'ventas',sub:'pedidos'}), cotizador:()=>this.setState({module:'ventas',sub:'cotizador'}), autowa:()=>this.setState({module:'ventas',sub:'autowa'}), servicio:()=>this.setState({module:'ventas',sub:'servicio'}) };
-    const venAcc = acc? (acc.admin?'write':(acc.ventas||'none')) : 'none';
+    const venAcc = this._modLevel(acc,'ventas');
     out.canWriteVentas = venAcc==='write';
 
     const onFin = st.module==='finanzas';
@@ -11936,7 +11993,7 @@ Instrucciones de respuesta:
     const subStyF=(k)=>{ const a=onFin&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
     out.subFinResumen=subStyF('finresumen'); out.subFinPagar=subStyF('finpagar'); out.subFinCobrar=subStyF('fincobrar'); out.subFinRecaudos=subStyF('finrecaudos'); out.subFinBold=subStyF('finbold'); out.subFinCaja=subStyF('fincaja'); out.subFinGastos=subStyF('fingastos'); out.subFinPyg=subStyF('finpyg'); out.subFinImp=subStyF('finimpuestos');
     out.subnavFin={ resumen:()=>this.setState({module:'finanzas',sub:'finresumen'}), pagar:()=>this.setState({module:'finanzas',sub:'finpagar'}), cobrar:()=>this.setState({module:'finanzas',sub:'fincobrar'}), recaudos:()=>this.setState({module:'finanzas',sub:'finrecaudos'}), bold:()=>{ this.setState({module:'finanzas',sub:'finbold'}); this.cloudLoadBold(); }, caja:()=>this.setState({module:'finanzas',sub:'fincaja'}), gastos:()=>this.setState({module:'finanzas',sub:'fingastos'}), pyg:()=>this.setState({module:'finanzas',sub:'finpyg'}), impuestos:()=>this.setState({module:'finanzas',sub:'finimpuestos'}) };
-    const finAcc = acc? (acc.admin?'write':(acc.finanzas||'none')) : 'none';
+    const finAcc = this._modLevel(acc,'finanzas');
     out.canWriteFin = finAcc==='write';
 
     const onMkt = st.module==='marketing';
@@ -11946,7 +12003,7 @@ Instrucciones de respuesta:
     const subStyM=(k)=>{ const a=onMkt&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
     out.subMktResumen=subStyM('mktresumen'); out.subMktCamp=subStyM('mktcampanas'); out.subMktRecom=subStyM('mktrecom'); out.subMktCreativos=subStyM('mktcreativos'); out.subMktPublicos=subStyM('mktpublicos'); out.subMktConexion=subStyM('mktconexion');
     out.subnavMkt={ resumen:()=>this.setState({module:'marketing',sub:'mktresumen'}), campanas:()=>this.setState({module:'marketing',sub:'mktcampanas'}), recom:()=>this.setState({module:'marketing',sub:'mktrecom'}), creativos:()=>this.setState({module:'marketing',sub:'mktcreativos'}), publicos:()=>this.setState({module:'marketing',sub:'mktpublicos'}), conexion:()=>this.setState({module:'marketing',sub:'mktconexion'}) };
-    const mktAcc = acc? (acc.admin?'write':(acc.marketing||'none')) : 'none';
+    const mktAcc = this._modLevel(acc,'marketing');
     out.canWriteMkt = mktAcc==='write';
 
     const porAprobar = st.ordenes.filter(o=>o.estado==='pendiente').length;
@@ -11954,7 +12011,7 @@ Instrucciones de respuesta:
 
     // access label (según el módulo actual)
     const curMod = onInv?'inventario':(onProd?'produccion':(onDes?'desarrollo':(onComp?'compras':(onFin?'finanzas':st.module))));
-    const curAcc = acc? (acc.admin?'write':(acc[curMod]||'none')) : 'none';
+    const curAcc = this._modLevel(acc,curMod);
     let al,abg,afg;
     if(isAdmin){ al='Administrador'; abg='rgba(167,134,89,0.18)'; afg='#7A5E36'; }
     else if(curAcc==='write'){ al='Acceso de escritura'; abg='rgba(98,123,96,0.16)'; afg='#4C6149'; }
@@ -13119,8 +13176,10 @@ Instrucciones de respuesta:
       // Si los métodos de pago no cargaron (conexión o permisos de la nube), ninguna venta se
       // clasifica como diferida y la lista sale vacía — se avisa y se puede reintentar.
       out.recSinMetodos=(this.metodosFinList().length===0);
+      if(st.boldPagos===null && !st.boldLoading && this.cloudOn()){ this.cloudLoadBold(); }
       out.recMetodosErr=String(((this.state.cloudLoadErrs||{}).metodos_fin)||'');
       out.recReintentarMetodos=()=>{ this.cloudLoadMetodos(); this.cloudLoadLiquidaciones(); this.toast('Recargando métodos de pago…'); };
+      out.recBoldMapShow=false;
       const grupos=this.recaudosPorMetodo().map(g=>{ const ded=g.ventas.reduce((a,v)=>a+this.ventaDeduccionEst(v),0); const m=this.metodoMatch(g.metodo); return {metodo:g.metodo, n:g.ventas.length, brutoFmt:this.fmt(Math.round(g.bruto)), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(g.bruto-ded)), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m&&m.diasLiq?this.diasLiqTxt(m):''), onLiquidar:()=>this.nuevaLiquidacion(g.metodo, true)}; });
       out.recGrupos=grupos; out.recVacio=grupos.length===0;
       { const _dup=this.liqDuplicados(); out.recDupShow=_dup.length>0; out.recDupN=_dup.length;
@@ -13138,11 +13197,18 @@ Instrucciones de respuesta:
       out.recFiltroChips=metodosPend.map(mname=>({nombre:mname, active:(mname===sel), bg:(mname===sel?'var(--brand-ink)':'var(--surface-card)'), fg:(mname===sel?'#fff':'var(--text-body)'), bd:(mname===sel?'var(--brand-ink)':'var(--border-strong)'), onClick:()=>this.setState({recFiltroMetodo:mname})}));
       out.recEsAdmin=isAdmin;
       const pendSel=this.recaudosPendientes().filter(v=>this.metodoNombreNorm(v.metodoPago)===sel);
+      if(isAdmin && /bold/i.test(sel||'')){ const canales={}; (st.boldPagos||[]).filter(p=>p.aprobado&&!p.anulado).forEach(p=>{ const c=this.boldCanalDe(p); canales[c.key]=c.label; }); pendSel.forEach(v=>{ const p=this.boldPagoDeVenta(v); if(p){ const c=this.boldCanalDe(p); canales[c.key]=c.label; } });
+        const formasSel=this.metodoFormas(sel); const mapa=this.boldLiqMapGet();
+        const optLbl=(f)=>{ const pf=this.metodoPerfil(sel,f.key); const pct=Number(pf.comisionPct)||0, fij=Number(pf.comisionFijo)||0; const parts=[]; if(pct) parts.push(pct+'%'); if(fij) parts.push(this.fmt(fij)); let t=parts.join(' + '); if(t&&pf.comisionIva) t+=' +IVA'; return f.nombre+(t?(' · '+t):''); };
+        out.recBoldMap=Object.keys(canales).map(k=>({ canal:canales[k], val:mapa[k]||'', opts:formasSel.map(f=>({key:f.key, label:optLbl(f)})), onChange:((ck)=>(e)=>this.boldLiqMapSet(ck, e.target.value))(k) }));
+        out.recBoldMapShow=out.recBoldMap.length>0;
+        out.recBoldMapOpen=!!st.recBoldMapOpen; out.recBoldMapToggle=()=>this.setState({recBoldMapOpen:!this.state.recBoldMapOpen});
+        const _asig=out.recBoldMap.filter(x=>x.val).length; out.recBoldMapResumen=' · '+_asig+'/'+out.recBoldMap.length+' canales asignados'; }
       const qrec=(st.recBuscar||'').toLowerCase().trim(); const fDesde=st.recDesde||''; const fHasta=st.recHasta||'';
       const selMet=this.metodoMatch(sel);
       const filtrados=pendSel.filter(v=>{ const f=this.parseFecha(v.fecha)||''; if(fDesde&&f<fDesde) return false; if(fHasta&&f>fHasta) return false; if(qrec&&!((this.fixTxt(v.cliente)+' '+(v.ov||'')+' '+(v.pedido||'')+' '+(v.ciudad||'')).toLowerCase().includes(qrec))) return false; return true; });
       const recSelIds=st.recSeleccion||[];
-      out.recDetalle=filtrados.map(v=>{ const bruto=this.ventaRecaudoBruto(v); const _ab=this.ventaAbono(v); const _ln=this.liqPosibleDe(v); const forma=this.ventaLiqForma(v); const ded=this.ventaDeduccionEst(v); const chk=recSelIds.includes(v.id); const _sw=(on)=>({bg:(on?'var(--brand-ink)':'var(--surface-card)'),fg:(on?'#fff':'var(--text-body)'),bd:(on?'var(--brand-ink)':'var(--border-strong)')}); const _formasV=this.metodoFormas(v.metodoPago); return {ov:v.ov||'—', pedido:v.pedido||'—', cliente:this.fixTxt(v.cliente)||'—', fechaFmt:this.fmtFecha(v.fecha), brutoFmt:this.fmt(Math.round(bruto)), hayAbono:(_ab>0), abonoFmt:this.fmt(Math.round(_ab)), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), hayLiqNota:(!!_ln), liqNota:(_ln||''), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(bruto-ded)), chk, chkBg:(chk?'var(--brand-ink)':'var(--surface-card)'), chkBd:(chk?'var(--brand-ink)':'var(--border-strong)'), onCheck:((id)=>()=>this.toggleRecSel(id))(v.id), hayFormas:(_formasV.length>1), formas:_formasV.map(fo=>{ const on=(forma===fo.key); const st2=_sw(on); return { nombre:fo.nombre, bg:st2.bg, fg:st2.fg, bd:st2.bd, on:((id,k)=>()=>this.setVentaLiqForma(id,k))(v.id, fo.key) }; }), onEdit:()=>this.editVenta(v), onLegalizar:()=>this.legalizarVenta(v), pedidoNum:this.pedidoNum(v) }; }).sort((a,b)=>{ if(b.pedidoNum!==a.pedidoNum) return b.pedidoNum-a.pedidoNum; return (b.fechaFmt||'').localeCompare(a.fechaFmt||''); });
+      out.recDetalle=filtrados.map(v=>{ const bruto=this.ventaRecaudoBruto(v); const _ab=this.ventaAbono(v); const _ln=this.liqPosibleDe(v); const forma=this.ventaLiqForma(v); const _bs=this.boldFormaSugerida(v); const ded=this.ventaDeduccionEst(v); const chk=recSelIds.includes(v.id); const _sw=(on)=>({bg:(on?'var(--brand-ink)':'var(--surface-card)'),fg:(on?'#fff':'var(--text-body)'),bd:(on?'var(--brand-ink)':'var(--border-strong)')}); const _formasV=this.metodoFormas(v.metodoPago); return {ov:v.ov||'—', pedido:v.pedido||'—', cliente:this.fixTxt(v.cliente)||'—', fechaFmt:this.fmtFecha(v.fecha), brutoFmt:this.fmt(Math.round(bruto)), hayAbono:(_ab>0), abonoFmt:this.fmt(Math.round(_ab)), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), hayLiqNota:(!!_ln), liqNota:(_ln||''), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(bruto-ded)), chk, chkBg:(chk?'var(--brand-ink)':'var(--surface-card)'), chkBd:(chk?'var(--brand-ink)':'var(--border-strong)'), onCheck:((id)=>()=>this.toggleRecSel(id))(v.id), hayFormas:(_formasV.length>1), formas:_formasV.map(fo=>{ const on=(forma===fo.key); const st2=_sw(on); return { nombre:fo.nombre, bg:st2.bg, fg:st2.fg, bd:st2.bd, on:((id,k)=>()=>this.setVentaLiqForma(id,k))(v.id, fo.key) }; }), boldSinCruce:(!_bs && /bold/i.test(String(v.metodoPago||''))), hayBold:!!_bs, boldTxt:(_bs?_bs.etiqueta:''), boldFormaNombre:(_bs?_bs.formaNombre:''), boldOk:!!(_bs&&_bs.formaKey&&_bs.formaKey===forma), boldAplica:!!(_bs&&_bs.formaKey&&_bs.formaKey!==forma), boldSinMapa:!!(_bs&&_bs.sinMapa), boldCanal:(_bs&&_bs.canal)||'', onBoldAplicar:((id,k)=>()=>{ this.setVentaLiqForma(id,k); this.toast('Forma de liquidación marcada según el canal del pago Bold'); })(v.id, _bs&&_bs.formaKey), onEdit:()=>this.editVenta(v), onLegalizar:()=>this.legalizarVenta(v), pedidoNum:this.pedidoNum(v) }; }).sort((a,b)=>{ if(b.pedidoNum!==a.pedidoNum) return b.pedidoNum-a.pedidoNum; return (b.fechaFmt||'').localeCompare(a.fechaFmt||''); });
       const selEnFiltro=filtrados.filter(v=>recSelIds.includes(v.id)); out.recSelN=selEnFiltro.length; out.recHaySel=selEnFiltro.length>0; out.recLegalizarSeleccion=()=>this.legalizarSeleccion(sel, recSelIds);
       out.recDetalleVacio=out.recDetalle.length===0; out.recDetalleN=filtrados.length;
       out.recBuscar=st.recBuscar||''; out.onRecBuscar=(e)=>this.setState({recBuscar:e.target.value});
