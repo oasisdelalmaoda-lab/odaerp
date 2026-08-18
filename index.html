@@ -10811,11 +10811,29 @@ Instrucciones de respuesta:
   // viejas lo reciben por orden de creación (timestamp del id), estable en todos los equipos.
   _liqTs(l){ const m=/^liq(\d+)/.exec(String(l.id||'')); return m?Number(m[1]):(new Date(String(l.fecha||'1970-01-01')+'T00:00:00').getTime()); }
   liqNumMap(){ const liqs=this.state.liquidaciones||[]; if(this._liqNumKey===liqs && this._liqNumMap) return this._liqNumMap;
-    const map={}; let max=0; liqs.forEach(l=>{ const n=Number(l.numero)||0; if(n){ map[l.id]=n; if(n>max) max=n; } });
-    liqs.filter(l=>!map[l.id]).slice().sort((a,b)=>this._liqTs(a)-this._liqTs(b)).forEach(l=>{ map[l.id]=++max; });
+    const map={}; liqs.forEach(l=>{ const n=Number(l.numero)||0; if(n){ map[l.id]=n; } });
+    // Las sin número reciben el hueco MÁS BAJO libre (no por encima del máximo: eso inflaba
+    // el consecutivo en cada sesión — saltos de ~93 por liquidación, caso LQ-1113 con 103 liqs).
+    const usados={}; Object.keys(map).forEach(k=>{ usados[map[k]]=1; }); let cand=1;
+    liqs.filter(l=>!map[l.id]).slice().sort((a,b)=>this._liqTs(a)-this._liqTs(b)).forEach(l=>{ while(usados[cand]) cand++; map[l.id]=cand; usados[cand]=1; });
     this._liqNumKey=liqs; this._liqNumMap=map; return map; }
   liqNumero(l){ if(!l) return ''; const n=this.liqNumMap()[l.id]; return n? ('LQ-'+String(n).padStart(3,'0')) : ''; }
   nextLiqNumero(){ const m=this.liqNumMap(); return Object.keys(m).reduce((a,k)=>Math.max(a,m[k]),0)+1; }
+  // REPARACIÓN ÚNICA de consecutivos: renumera TODO por orden de creación (1..N) y lo guarda
+  // en la nube, para que el número quede fijo, pequeño y estable en todos los equipos.
+  liqRenumerar(){ if(this._liqRenumerando) return; const liqs=this.state.liquidaciones||[]; if(!liqs.length) return;
+    const acc=this.access(); if(!acc || this._modLevel(acc,'finanzas')!=='write' || !this.cloudOn()) return;
+    const hayViejas=liqs.some(l=>!Number(l.numero)); const maxN=liqs.reduce((a,l)=>Math.max(a,Number(l.numero)||0),0);
+    if(!hayViejas && maxN<=liqs.length*3+100) return;   // sano: nada que reparar
+    this._liqRenumerando=true;
+    try{ const orden=liqs.slice().sort((a,b)=>this._liqTs(a)-this._liqTs(b));
+      const nuevo={}; orden.forEach((l,i)=>{ nuevo[l.id]=i+1; });
+      const list=liqs.map(l=>({...l, numero:nuevo[l.id]}));
+      this._liqNumKey=null; this._liqNumMap=null;
+      this.setState({liquidaciones:list},()=>this.persist());
+      list.forEach(l=>this.cloudSaveLiquidacion(l));
+      this.toast('Consecutivos corregidos: las liquidaciones ahora van de LQ-001 a LQ-'+String(list.length).padStart(3,'0'));
+    }finally{ this._liqRenumerando=false; } }
   // Nota preventiva por venta pendiente: los cruces exactos (mismo id o mismo número de pedido)
   // ya se excluyen de pendientes; esto detecta el caso restante — una liquidación registrada que
   // incluye una venta del MISMO cliente por el MISMO valor (posible fila duplicada con otro número).
@@ -13253,6 +13271,7 @@ Instrucciones de respuesta:
       if(st.boldPagos===null && !st.boldLoading && this.cloudOn()){ this.cloudLoadBold(); }
       out.recMetodosErr=String(((this.state.cloudLoadErrs||{}).metodos_fin)||'');
       out.recReintentarMetodos=()=>{ this.cloudLoadMetodos(); this.cloudLoadLiquidaciones(); this.toast('Recargando métodos de pago…'); };
+      if(!this._liqRenumT || Date.now()-this._liqRenumT>5000){ this._liqRenumT=Date.now(); setTimeout(()=>this.liqRenumerar(),400); }
       out.recBoldMapShow=false;
       const grupos=this.recaudosPorMetodo().map(g=>{ const ded=g.ventas.reduce((a,v)=>a+this.ventaDeduccionEst(v),0); const m=this.metodoMatch(g.metodo); return {metodo:g.metodo, n:g.ventas.length, brutoFmt:this.fmt(Math.round(g.bruto)), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(g.bruto-ded)), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m&&m.diasLiq?this.diasLiqTxt(m):''), onLiquidar:()=>this.nuevaLiquidacion(g.metodo, true)}; });
       out.recGrupos=grupos; out.recVacio=grupos.length===0;
