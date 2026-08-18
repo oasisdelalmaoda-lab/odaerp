@@ -9534,12 +9534,12 @@ Instrucciones de respuesta:
     // REPARACIÓN ÚNICA: el mapa viejo usaba como clave solo la integración (BUTTON, LINK…),
     // que agrupa métodos distintos — Botón Bancolombia, Nequi, PSE y tarjeta web caían juntas.
     // Se desmarcan las ventas pendientes que quedaron con esa forma "gorda" y se limpia el mapa.
-    const viejas=Object.keys(mapa).filter(k=>k.indexOf('|')<0 && k!=='OTRO');
+    const viejas=Object.keys(mapa).filter(k=>k.split('|').length<3);
     if(viejas.length){
       const pendIds={}; this.recaudosPendientes().forEach(v=>{ pendIds[v.id]=1; });
       const reset={};
-      (this.state.ventas||[]).forEach(v=>{ if(!pendIds[v.id]||!v.liqForma||!/bold/i.test(String(v.metodoPago||''))) return; const p=this.boldPagoDeVenta(v); if(!p) return; const ok=String(p.integracion||'')||String(p.metodo||'')||'OTRO'; if(mapa[ok]===v.liqForma) reset[v.id]=1; });
-      const m2={}; Object.keys(mapa).forEach(k=>{ if(k.indexOf('|')>=0||k==='OTRO') m2[k]=mapa[k]; });
+      (this.state.ventas||[]).forEach(v=>{ if(!pendIds[v.id]||!v.liqForma||!/bold/i.test(String(v.metodoPago||''))) return; const p=this.boldPagoDeVenta(v); if(!p) return; const m=String(p.metodo||''), i=String(p.integracion||''); const ok1=i||m||'OTRO'; const ok2=(m||i)?(m+'|'+i):'OTRO'; if(mapa[ok1]===v.liqForma||mapa[ok2]===v.liqForma) reset[v.id]=1; });
+      const m2={}; Object.keys(mapa).forEach(k=>{ if(k.split('|').length>=3) m2[k]=mapa[k]; });
       this._boldLiqMapCache=m2; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(m2)); }catch(e){}
       if(this.cloudOn()) this.cloudSaveConfig({boldLiqMap:m2});
       mapa=m2;
@@ -10769,7 +10769,10 @@ Instrucciones de respuesta:
   boldLiqMapSet(canal, formaKey){ const m={...this.boldLiqMapGet()}; if(formaKey) m[canal]=formaKey; else delete m[canal]; this._boldLiqMapCache=m; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({boldLiqMap:m}); this.forceUpdate(); this.boldAutoMarcarFormas(); }
   // Clave del canal: método + integración. NO solo la integración: Bold agrupa todos los pagos
   // web bajo BUTTON/LINK y una sola clave marcaba Nequi, PSE y Botón Bancolombia por igual.
-  boldCanalDe(p){ const m=String(p.metodo||''); const i=String(p.integracion||''); const key=(m||i)?(m+'|'+i):'OTRO'; const parts=[]; if(m) parts.push(this.boldMetodoL(m)); if(i) parts.push(this.boldIntegracionL(i)); return {key, label:(parts.join(' · ')||'Otro')}; }
+  // ...y además separa por IVA: Bold aplica ReteIVA (15%) solo sobre el IVA de la transacción,
+  // así que el mismo pago con tarjeta liquida distinto si la venta va con o sin IVA. El IVA
+  // real de cada pago llega en el webhook (amount.taxes), así que la variante se sabe sola.
+  boldCanalDe(p){ const m=String(p.metodo||''); const i=String(p.integracion||''); const conIva=(Number(p.iva)||0)>0; const key=((m||i)?(m+'|'+i):'OTRO')+'|'+(conIva?'CONIVA':'SINIVA'); const parts=[]; if(m) parts.push(this.boldMetodoL(m)); if(i) parts.push(this.boldIntegracionL(i)); parts.push(conIva?'venta con IVA':'venta sin IVA'); return {key, label:parts.join(' · ')}; }
   boldPagoDeVenta(v){ if(!/bold/i.test(String(v.metodoPago||''))) return null; const ped=String(v.pedido||'').replace(/\D/g,''); const ov=String(v.ov||'').trim(); return (this.state.boldPagos||[]).find(p=>p.conciliado && p.aprobado && !p.anulado && p.pedido && (String(p.pedido).replace(/\D/g,'')===ped && ped || String(p.pedido)===ov && ov))||null; }
   boldFormaSugerida(v){ const p=this.boldPagoDeVenta(v); if(!p) return null; const c=this.boldCanalDe(p); const etiqueta=this.boldMetodoL(p.metodo)+' · '+this.boldIntegracionL(p.integracion);
     const fk=this.boldLiqMapGet()[c.key]; if(!fk) return { pago:p, etiqueta, canal:c.label, sinMapa:true, formaKey:null, formaNombre:'' };
@@ -13208,7 +13211,10 @@ Instrucciones de respuesta:
       const _formasB=_mBold?this.metodoFormas(_mBold):[]; const _mapaB=this.boldLiqMapGet();
       const _tarifaB=(fk)=>{ const pf=this.metodoPerfil(_mBold,fk); const pct=Number(pf.comisionPct)||0, fij=Number(pf.comisionFijo)||0; const parts=[]; if(pct) parts.push(pct+'%'); if(fij) parts.push(this.fmt(fij)); let t=parts.join(' + '); if(t&&pf.comisionIva) t+=' +IVA'; return t; };
       const _liqB=(p)=>{ const okB=!!(p.aprobado&&!p.anulado&&_mBold); if(!okB) return {liqTiene:false,liqSinMapa:false};
-        const cB=this.boldCanalDe(p); const fkB=_mapaB[cB.key]||''; const fB=fkB?_formasB.find(x=>x.key===fkB):null; const montoB=Math.round(Number(p.monto)||0); const dedB=fB?this.metodoDeduccionEst(_mBold,montoB,1,fB.key):0; const tar=fB?_tarifaB(fkB):'';
+        const cB=this.boldCanalDe(p); const fkB=_mapaB[cB.key]||''; const fB=fkB?_formasB.find(x=>x.key===fkB):null; const montoB=Math.round(Number(p.monto)||0);
+        // Deducción con el IVA REAL del pago (no un 19% supuesto) — cuadra con el panel de Bold
+        let dedB=0; if(fB){ const pf=this.metodoPerfil(_mBold,fB.key); const ivaR=Math.min(Math.round(Number(p.iva)||0),montoB); const cb=Math.round(montoB*(Number(pf.comisionPct)||0)/100)+(Number(pf.comisionFijo)||0); const ci=pf.comisionIva?Math.round(cb*0.19):0; const bg=(pf.retenBruto===true)?montoB:(montoB-ivaR); dedB=cb+ci+Math.round(bg*(Number(pf.reteRenta)||0)/100)+Math.round(bg*(Number(pf.reteIca)||0)/100)+Math.round(ivaR*(Number(pf.reteIva)||0)/100); }
+        const tar=fB?_tarifaB(fkB):'';
         return { liqTiene:!!fB, liqFormaNombre:(fB?fB.nombre:''), liqTarifaTxt:tar, liqHayTarifa:!!tar, liqDedFmt:this.fmt(dedB), liqNetoFmt:this.fmt(montoB-dedB),
           liqSinMapa:!!(!fB&&_formasB.length&&out.canWriteFin), liqCanal:cB.label, liqVal:fkB, liqOpts:_formasB.map(fo=>({key:fo.key,label:fo.nombre+(_tarifaB(fo.key)?(' · '+_tarifaB(fo.key)):'')})),
           onLiqForma:((ck)=>(e)=>this.boldLiqMapSet(ck,e.target.value))(cB.key) }; };
