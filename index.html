@@ -4070,6 +4070,25 @@
                       </sc-if>
                       <button onClick="{{ p.onManual }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px dashed var(--border-strong);border-radius:99px;background:transparent;color:var(--text-strong);cursor:pointer;">Escribir el pedido</button>
                     </div>
+                    <sc-if value="{{ p.liqTiene }}" hint-placeholder-val="{{ false }}">
+                      <div style="width:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-left:92px;font-size:11.5px;">
+                        <span style="display:inline-flex;align-items:center;gap:5px;color:#4C6149;background:rgba(98,123,96,0.1);border:1px solid rgba(98,123,96,0.3);border-radius:6px;padding:3px 9px;font-weight:700;">Liquida como {{ p.liqFormaNombre }}</span>
+                        <sc-if value="{{ p.liqHayTarifa }}" hint-placeholder-val="{{ false }}"><span style="color:var(--text-muted);">{{ p.liqTarifaTxt }}</span></sc-if>
+                        <span style="color:var(--oda-sale);font-weight:700;">Deducción −{{ p.liqDedFmt }}</span>
+                        <span style="color:#4C6149;font-weight:700;">Neto {{ p.liqNetoFmt }}</span>
+                        <sc-if value="{{ p.liqVentaOk }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:800;color:#4C6149;">✓ Marcada en la venta</span></sc-if>
+                        <sc-if value="{{ p.liqVentaPend }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.onMarcarVenta }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid #4C6149;border-radius:99px;background:rgba(98,123,96,0.14);color:#4C6149;cursor:pointer;">Marcar en la venta</button></sc-if>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ p.liqSinMapa }}" hint-placeholder-val="{{ false }}">
+                      <div style="width:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:92px;font-size:11.5px;color:#9A6B2E;">
+                        <span>Canal <strong>{{ p.liqCanal }}</strong> sin forma de liquidación asignada —</span>
+                        <select value="{{ p.liqVal }}" onChange="{{ p.onLiqForma }}" style="font-family:inherit;font-size:11.5px;padding:6px 9px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);max-width:300px;">
+                          <option value="">— elegir forma —</option>
+                          <sc-for list="{{ p.liqOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.key }}">{{ o.label }}</option></sc-for>
+                        </select>
+                      </div>
+                    </sc-if>
                   </div>
                 </sc-for>
               </div>
@@ -4177,7 +4196,7 @@
                         <div style="display:flex;align-items:baseline;gap:8px;"><span onClick="{{ d.onCheck }}" title="Seleccionar para legalizar varios" style="display:inline-flex;flex-shrink:0;width:16px;height:16px;border-radius:4px;border:1.5px solid {{ d.chkBd }};background:{{ d.chkBg }};cursor:pointer;align-self:center;"></span><span style="font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ d.cliente }}</span><span style="font-weight:700;white-space:nowrap;">{{ d.brutoFmt }}</span></div>
                         <div style="display:flex;align-items:center;gap:8px;margin-top:3px;"><span style="flex:1;min-width:0;font-size:11px;color:var(--text-muted);">{{ d.ov }} · Shopify {{ d.pedido }} · {{ d.fechaFmt }}</span><span style="font-size:11px;color:#4C6149;white-space:nowrap;">neto {{ d.netoFmt }}</span></div>
                         <sc-if value="{{ d.hayAbono }}" hint-placeholder-val="{{ false }}"><div style="margin-top:4px;font-size:10.5px;color:#3F6A7A;background:rgba(101,150,166,0.1);border:1px solid rgba(101,150,166,0.22);border-radius:6px;padding:3px 8px;display:inline-block;">Abono ya recibido {{ d.abonoFmt }} · total venta {{ d.totalFmt }}</div></sc-if><sc-if value="{{ d.hayLiqNota }}" hint-placeholder-val="{{ false }}"><div style="margin-top:4px;font-size:10.5px;color:#8E3F2F;background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.3);border-radius:6px;padding:4px 8px;line-height:1.45;"><strong>Posible liquidación previa:</strong> {{ d.liqNota }} — verifica antes de legalizar.</div></sc-if>
-                        <sc-if value="{{ d.boldSinCruce }}" hint-placeholder-val="{{ false }}"><div style="margin-top:5px;font-size:10.5px;color:#9A6B2E;background:rgba(212,150,80,0.1);border:1px solid rgba(212,150,80,0.3);border-radius:6px;padding:3px 8px;display:inline-block;">Sin pago Bold cruzado · crúzalo en la pestaña Bold para validar el canal y la forma de liquidación</div></sc-if>
+                        <sc-if value="{{ d.boldSinCruce }}" hint-placeholder-val="{{ false }}"><div style="margin-top:5px;font-size:10.5px;color:#9A6B2E;background:rgba(212,150,80,0.1);border:1px solid rgba(212,150,80,0.3);border-radius:6px;padding:3px 8px;display:inline-block;">Sin pago Bold cruzado · en la pestaña Bold crúzalo con su pedido: ahí verás la deducción y la forma de liquidación se marca sola</div></sc-if>
                         <sc-if value="{{ d.hayBold }}" hint-placeholder-val="{{ false }}">
                           <div style="margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:10.5px;">
                             <span style="display:inline-flex;align-items:center;gap:5px;color:#4C6149;background:rgba(98,123,96,0.1);border:1px solid rgba(98,123,96,0.3);border-radius:6px;padding:3px 8px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Pago Bold verificado: <strong>{{ d.boldTxt }}</strong></span>
@@ -9496,7 +9515,7 @@ Instrucciones de respuesta:
     this.setState({boldLoading:true});
     try{ const {data,error}=await sb.from('bold_pagos').select('*').order('creado_at',{ascending:false}).limit(600);
       if(error) throw error;
-      this.setState({boldPagos:(data||[]), boldLoading:false, boldErr:''});
+      this.setState({boldPagos:(data||[]), boldLoading:false, boldErr:''}, ()=>this.boldAutoMarcarFormas());
     }catch(e){ this.setState({boldPagos:(this.state.boldPagos||[]), boldLoading:false, boldErr:(e&&e.message)||'No se pudo cargar'}); }
     // Referencias de pago de Shopify: la «Referencia de la orden» que muestra Bold es el mismo
     // ID de pago que Shopify guarda en la transacción, así que el cruce sale exacto.
@@ -9508,6 +9527,20 @@ Instrucciones de respuesta:
       const m={}; ((data&&data.refs)||[]).forEach(r=>{ if(r.ref) m[String(r.ref).trim()]=r; });
       this.setState({boldRefs:m, boldRefsErr:'', boldRefsN:Object.keys(m).length});
     }catch(e){ this.setState({boldRefs:null, boldRefsErr:(e&&e.message)||'No se pudieron traer los IDs de pago de Shopify'}); } }
+  // Marca SOLA la forma de liquidación de las ventas Bold cruzadas, según el mapa canal→forma.
+  // Corre al cargar los pagos y al cambiar el mapa. Solo toca ventas pendientes de liquidar y
+  // SIN forma elegida por un humano (liqForma vacía) — una elección manual nunca se pisa.
+  boldAutoMarcarFormas(){ try{
+    const acc=this.access(); if(!acc || this._modLevel(acc,'finanzas')!=='write') return;
+    const mapa=this.boldLiqMapGet(); if(!Object.keys(mapa).length) return;
+    const cambios={};
+    this.recaudosPendientes().forEach(v=>{ if(!/bold/i.test(String(v.metodoPago||''))) return; if(v.liqForma||v.liqAlt) return; const s=this.boldFormaSugerida(v); if(s&&s.formaKey&&s.formaKey!=='def') cambios[v.id]=s.formaKey; });
+    const n=Object.keys(cambios).length; if(!n) return;
+    const list=(this.state.ventas||[]).map(v=> cambios[v.id]? {...v, liqForma:cambios[v.id], liqAlt:(cambios[v.id]==='alt')} : v);
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()) Object.keys(cambios).forEach(id=>{ const _cv=list.find(x=>x.id===id); if(_cv) this.cloudSaveVenta(_cv); });
+    this.toast(n===1? '1 venta Bold marcó su forma de liquidación según el canal del pago' : (n+' ventas Bold marcaron su forma de liquidación según el canal del pago'));
+  }catch(e){} }
   boldMetodoL(m){ const t={CARD:'Datáfono',BOLD_TAP:'Datáfono móvil',CARD_WEB:'Tarjeta web',NEQUI:'Nequi',PSE:'PSE',BOTON_BANCOLOMBIA:'Botón Bancolombia',QR:'QR Bold'}; return t[m]||m||'—'; }
   boldIntegracionL(i){ const t={POS:'Presencial',LINK:'Link de pago',BUTTON:'Botón de la tienda',API_INTEGRATIONS:'API',BOLD_TAP:'Datáfono móvil'}; return t[i]||i||'—'; }
   // Los links de pago se generan a mano con el NOMBRE DEL CLIENTE como referencia, así que el
@@ -9537,7 +9570,10 @@ Instrucciones de respuesta:
     if(pedido){ const _num=String(pedido).replace(/\D/g,''); const _ya=(this.state.boldPagos||[]).find(p=>p.payment_id!==paymentId && p.conciliado && p.pedido && (String(p.pedido)===String(pedido) || (_num && String(p.pedido).replace(/\D/g,'')===_num)));
       if(_ya){ this.toast('Bloqueado: el pedido '+pedido+' YA está cruzado con otro pago Bold ('+this.fmt(Math.round(Number(_ya.monto)||0))+' del '+this.fmtFecha(String(_ya.creado_at||'').slice(0,10))+'). Si ese cruce está mal, deshazlo primero en la pestaña «Cruzados».'); return; } }
     try{ await sb.from('bold_pagos').update({ pedido:pedido||null, conciliado:!!pedido, conciliado_por:this.recMeNombre(), conciliado_at:new Date().toISOString() }).eq('payment_id',paymentId);
-      this.cloudLoadBold(); this.toast(pedido? ('Pago cruzado con '+pedido) : 'Cruce deshecho');
+      // Al cruzar, si el canal del pago ya tiene forma de liquidación asignada, se marca en la venta de una vez.
+      let _marcada=false;
+      if(pedido){ try{ const pk=String(pedido).replace(/\D/g,''); const v=(this.state.ventas||[]).find(x=>!x.cancelada&&/bold/i.test(String(x.metodoPago||''))&&((pk&&String(x.pedido||'').replace(/\D/g,'')===pk)||(String(x.ov||'').trim()&&String(x.ov||'').trim()===String(pedido)))); if(v){ const p=(this.state.boldPagos||[]).find(x=>x.payment_id===paymentId); const fk=p?(this.boldLiqMapGet()[this.boldCanalDe(p).key]||''):''; if(fk && this.ventaLiqForma(v)!==fk && this.metodoFormas(v.metodoPago).some(f=>f.key===fk)){ this.setVentaLiqForma(v.id, fk); _marcada=true; } } }catch(e){} }
+      this.cloudLoadBold(); this.toast(pedido? ('Pago cruzado con '+pedido+(_marcada?' · forma de liquidación marcada según el canal':'')) : 'Cruce deshecho');
     }catch(e){ this.toast('No se pudo guardar el cruce'); } }
   async boldNota(paymentId, nota){ const sb=this._sbClient(); if(!sb) return;
     try{ await sb.from('bold_pagos').update({nota}).eq('payment_id',paymentId); this.cloudLoadBold(); }catch(e){} }
@@ -10713,7 +10749,7 @@ Instrucciones de respuesta:
   // Valida el pago Bold cruzado de una venta y sugiere la forma de liquidación que aplica según el método real del pago (datáfono, link, Nequi…)
   // Mapa canal Bold (de la API) → forma de liquidación. Se configura una vez en Recaudos y se comparte por la nube.
   boldLiqMapGet(){ if(!this._boldLiqMapCache){ let c=null; try{ c=JSON.parse(localStorage.getItem('oda_hub_boldliqmap_v1')); }catch(e){} this._boldLiqMapCache=(c&&typeof c==='object')?c:{}; } return this._boldLiqMapCache; }
-  boldLiqMapSet(canal, formaKey){ const m={...this.boldLiqMapGet()}; if(formaKey) m[canal]=formaKey; else delete m[canal]; this._boldLiqMapCache=m; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({boldLiqMap:m}); this.forceUpdate(); }
+  boldLiqMapSet(canal, formaKey){ const m={...this.boldLiqMapGet()}; if(formaKey) m[canal]=formaKey; else delete m[canal]; this._boldLiqMapCache=m; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({boldLiqMap:m}); this.forceUpdate(); this.boldAutoMarcarFormas(); }
   boldCanalDe(p){ const i=String(p.integracion||''); const key=i||String(p.metodo||'')||'OTRO'; const label=i?this.boldIntegracionL(i):this.boldMetodoL(p.metodo); return {key,label}; }
   boldPagoDeVenta(v){ if(!/bold/i.test(String(v.metodoPago||''))) return null; const ped=String(v.pedido||'').replace(/\D/g,''); const ov=String(v.ov||'').trim(); return (this.state.boldPagos||[]).find(p=>p.conciliado && p.aprobado && !p.anulado && p.pedido && (String(p.pedido).replace(/\D/g,'')===ped && ped || String(p.pedido)===ov && ov))||null; }
   boldFormaSugerida(v){ const p=this.boldPagoDeVenta(v); if(!p) return null; const c=this.boldCanalDe(p); const etiqueta=this.boldMetodoL(p.metodo)+' · '+this.boldIntegracionL(p.integracion);
@@ -13148,6 +13184,19 @@ Instrucciones de respuesta:
       out.onQBold=(e)=>this.setState({qBold:e.target.value}); out.qBoldVal=st.qBold||'';
       let vis = f==='pendientes'? pend : (f==='cruzados'? aprob.filter(p=>p.conciliado) : (f==='rechazados'? pagos.filter(p=>!p.aprobado||p.anulado) : pagos));
       if(q) vis=vis.filter(p=>this._boldNorm((p.referencia||'')+' '+(p.pedido||'')+' '+(p.correo_pagador||'')+' '+(p.vendedor||'')+' '+Math.round(Number(p.monto)||0)).indexOf(q)>=0);
+      // Deducción y forma de liquidación por pago, según el canal Bold (mapa canal → forma)
+      const _mBold=((this.metodosFinList().find(m=>/bold/i.test(m.nombre||'')))||{}).nombre||'';
+      const _formasB=_mBold?this.metodoFormas(_mBold):[]; const _mapaB=this.boldLiqMapGet();
+      const _tarifaB=(fk)=>{ const pf=this.metodoPerfil(_mBold,fk); const pct=Number(pf.comisionPct)||0, fij=Number(pf.comisionFijo)||0; const parts=[]; if(pct) parts.push(pct+'%'); if(fij) parts.push(this.fmt(fij)); let t=parts.join(' + '); if(t&&pf.comisionIva) t+=' +IVA'; return t; };
+      const _ventaDeBold=(pedido)=>{ const pk=String(pedido||'').replace(/\D/g,''); return (st.ventas||[]).find(x=>!x.cancelada&&/bold/i.test(String(x.metodoPago||''))&&((pk&&String(x.pedido||'').replace(/\D/g,'')===pk)||(String(x.ov||'').trim()&&String(x.ov||'').trim()===String(pedido))))||null; };
+      const _liqB=(p)=>{ const okB=!!(p.aprobado&&!p.anulado&&_mBold); if(!okB) return {liqTiene:false,liqSinMapa:false,liqVentaOk:false,liqVentaPend:false};
+        const cB=this.boldCanalDe(p); const fkB=_mapaB[cB.key]||''; const fB=fkB?_formasB.find(x=>x.key===fkB):null; const montoB=Math.round(Number(p.monto)||0); const dedB=fB?this.metodoDeduccionEst(_mBold,montoB,1,fB.key):0;
+        const vB=(p.conciliado&&p.pedido)?_ventaDeBold(p.pedido):null; const tar=fB?_tarifaB(fkB):'';
+        return { liqTiene:!!fB, liqFormaNombre:(fB?fB.nombre:''), liqTarifaTxt:tar, liqHayTarifa:!!tar, liqDedFmt:this.fmt(dedB), liqNetoFmt:this.fmt(montoB-dedB),
+          liqSinMapa:!!(!fB&&_formasB.length&&out.canWriteFin), liqCanal:cB.label, liqVal:fkB, liqOpts:_formasB.map(fo=>({key:fo.key,label:fo.nombre+(_tarifaB(fo.key)?(' · '+_tarifaB(fo.key)):'')})),
+          onLiqForma:((ck)=>(e)=>this.boldLiqMapSet(ck,e.target.value))(cB.key),
+          liqVentaOk:!!(vB&&fB&&this.ventaLiqForma(vB)===fB.key), liqVentaPend:!!(vB&&fB&&this.ventaLiqForma(vB)!==fB.key&&out.canWriteFin),
+          onMarcarVenta:((vB&&fB)?(((vid,fk)=>()=>{ this.setVentaLiqForma(vid,fk); this.toast('Forma de liquidación marcada en la venta según el canal Bold'); })(vB.id,fB.key)):(()=>{})) }; };
       out.boldRows=vis.slice(0,300).map(p=>{
         const sug=(!p.conciliado && p.aprobado)? this.boldSugerencias(p) : [];
         const est = p.anulado? {l:'Anulada',bg:'rgba(181,80,60,0.14)',fg:'#8E3F2F'} : (!p.aprobado? {l:'Rechazada',bg:'rgba(181,80,60,0.1)',fg:'#9B3E2C'} : (p.conciliado? {l:'Cruzado',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} : {l:'Sin cruzar',bg:'rgba(212,150,80,0.18)',fg:'#9A6B2E'}));
@@ -13161,6 +13210,7 @@ Instrucciones de respuesta:
           hayDetalle:!!(p.franquicia||p.tarjeta||p.vendedor),
           estado:est.l, estBg:est.bg, estFg:est.fg,
           pedido:(p.pedido||''), hayPedido:!!p.pedido,
+          ..._liqB(p),
           sinFirma:!p.verificado,
           sugerencias:sug.map(x=> x.exacta
             ? ({ label:x.pedido+' · '+(x.cliente||'')+' · '+this.fmt(Math.round(x.total||0)), exacta:true, borde:'#4C6149', bg:'rgba(98,123,96,0.14)', fg:'#4C6149', on:()=>this.boldConciliar(p.payment_id, x.pedido) })
