@@ -9843,7 +9843,7 @@ Instrucciones de respuesta:
   cloudSubscribeVentas(){ const sb=this._sbClient(); if(!sb||this._venSub) return; try{ this._venSub=sb.channel('oda-ventas').on('postgres_changes',{event:'*',schema:'public',table:'ventas'},(payload)=>{ if(payload.eventType==='DELETE'){ const rid=payload.old&&payload.old.id; if(rid==null) return; const list=(this.state.ventas||[]).filter(v=>v.id!==rid); this.setState({ventas:list},()=>this.persist()); return; } const row=payload.new; if(!row||!row.data) return; const d=row.data; const obj={...d, canal:this.canonCanal(d.canal), id:row.id}; const list=(this.state.ventas||[]).slice(); const idx=list.findIndex(v=>v.id===obj.id); if(idx>=0) list[idx]=obj; else list.unshift(obj); this.setState({ventas:list},()=>this.persist()); }).subscribe(); }catch(e){} }
   // ---- cotizaciones compartidas (nube) ----
   _cotToDb(c){ return { id:c.id, data:c, actualizado:new Date().toISOString() }; }
-  async cloudLoadCotizaciones(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('cotizaciones').select('id,data'); if(error) throw error; if(data && data.length){ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){} }
+  async cloudLoadCotizaciones(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('cotizaciones').select('id,data'); if(error) throw error; if(data && data.length){ const _sig=JSON.stringify(data); if(_sig===this._cotSig){ return; } this._cotSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){} }
   async cloudSaveCotizacion(c){ const sb=this._sbClient(); if(!sb||!c) return; try{ await sb.from('cotizaciones').upsert(this._cotToDb(c)); }catch(e){} }
   async cloudDeleteCotizacion(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('cotizaciones').delete().eq('id',id); }catch(e){} }
   cloudSubscribeCotizaciones(){ const sb=this._sbClient(); if(!sb||this._cotSub) return; try{ this._cotSub=sb.channel('oda-cotizaciones').on('postgres_changes',{event:'*',schema:'public',table:'cotizaciones'},()=>{ this.cloudLoadCotizaciones(); }).subscribe(); }catch(e){} }
@@ -9928,7 +9928,7 @@ Instrucciones de respuesta:
   _dbToLead(r){ return { id:r.id, fecha:(r.creado||'').slice(0,10), nombre:r.nombre||'', celular:r.celular||'', correo:r.correo||'', ciudad:r.ciudad||'', origen:r.origen||'Otro', interes:r.interes||'', estado:r.estado||'Nuevo', valor:Number(r.valor)||0, nota:r.nota||'', asignadoA:r.asignado_a||'', creadoPor:r.creado_por||'', creadoFecha:(r.creado||'').slice(0,10), comentarios:Array.isArray(r.comentarios)?r.comentarios:[], alertas:Array.isArray(r.alertas)?r.alertas:[] }; }
   _leadToDb(l){ const d={ nombre:l.nombre||'', celular:l.celular||'', correo:l.correo||'', ciudad:l.ciudad||'', origen:l.origen||'Otro', interes:l.interes||'', estado:l.estado||'Nuevo', valor:Number(l.valor)||0, nota:l.nota||'', comentarios:(l.comentarios||[]), alertas:(l.alertas||[]), actualizado:new Date().toISOString() }; d.asignado_a=l.asignadoA||null; return d; }
   _isUuid(v){ return typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v); }
-  async cloudLoadLeads(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('leads').select('*').order('creado',{ascending:false}); if(error) throw error; this.setState({cloudLeads:(data||[]).map(r=>this._dbToLead(r)), cloudLeadsErr:''}); }catch(e){ this.setState({cloudLeadsErr:(e&&e.message)||'Error al cargar leads'}); } }
+  async cloudLoadLeads(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('leads').select('*').order('creado',{ascending:false}); if(error) throw error; const _sig=JSON.stringify(data||[]); if(_sig===this._leadsSig && !this.state.cloudLeadsErr){ return; } this._leadsSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cloudLeads:(data||[]).map(r=>this._dbToLead(r)), cloudLeadsErr:''}); }catch(e){ this.setState({cloudLeadsErr:(e&&e.message)||'Error al cargar leads'}); } }
   async cloudSubscribe(){ const sb=this._sbClient(); if(!sb||this._sbSub) return; try{ const {data}=await sb.auth.getSession(); const tok=data&&data.session&&data.session.access_token; if(tok&&sb.realtime&&sb.realtime.setAuth){ try{ sb.realtime.setAuth(tok); }catch(e){} } this._sbSub=sb.channel('oda-leads').on('postgres_changes',{event:'*',schema:'public',table:'leads'},()=>{ this.cloudLoadLeads(); }).subscribe(); }catch(e){} }
   // resolutores de nombre/iniciales/color que funcionan con perfiles de nube (uuid) o usuarios locales
   _initialsFrom(n){ const p=String(n||'').trim().split(/\s+/); return ((p[0]||'')[0]||'').toUpperCase()+((p[1]||'')[0]||'').toUpperCase()||'—'; }
@@ -11480,25 +11480,36 @@ Instrucciones de respuesta:
   _convDedupMsgs(arr){ const out=[]; (arr||[]).forEach(m=>{ const t=String(m.texto||'').trim(); const ms=m.at? new Date(m.at).getTime() : 0;
       const dup=out.some(x=>{ if(String(x.texto||'').trim()!==t || x.de!==m.de) return false; const xs=x.at? new Date(x.at).getTime() : 0; if(!ms||!xs) return true; return Math.abs(ms-xs)<180000; });
       if(!dup) out.push(m); }); return out; }
-  async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb) return; try{
+  // OPTIMIZACIÓN DE VELOCIDAD (no quitar): antes cada recarga bajaba TODAS las conversaciones
+  // con TODOS sus mensajes cada 10 s y hacía setState siempre → re-render completo de la app.
+  // Ahora: (1) si la firma de las conversaciones no cambió, no se baja nada más ni se re-renderiza;
+  // (2) los mensajes se cachean por conversación (_convMsgCache) y solo se re-bajan los de las
+  // conversaciones cuyo ultimo_at cambió; (3) _convLoading evita recargas encimadas.
+  async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb||this._convLoading) return; this._convLoading=true; try{
       const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(1000); if(error) throw error;
-      const ids=(convs||[]).map(c=>c.id);
-      let msgs=[];
-      for(let i=0;i<ids.length;i+=200){
-        const chunk=ids.slice(i,i+200);
+      const sig=(convs||[]).map(r=>r.id+'|'+(r.ultimo_at||'')+'|'+(r.estado||'')+'|'+(r.asignado_a||'')+'|'+(r.no_leidos||0)+'|'+(r.promos_off?1:0)+'|'+(r.cliente||'')).join('~');
+      if(sig===this._convSig && this.state.convsCloud){ this._convLoading=false; return; }
+      const cache=this._convMsgCache=this._convMsgCache||{};
+      const need=(convs||[]).filter(r=>{ const c=cache[r.id]; return !c || c.ts!==(r.ultimo_at||''); }).map(r=>r.id);
+      for(let i=0;i<need.length;i+=200){
+        const chunk=need.slice(i,i+200);
         const {data:part}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).limit(10000);
-        if(part&&part.length) msgs=msgs.concat(part);
+        const by={}; (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), asesor:((m.meta&&m.meta.asesor)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+        chunk.forEach(id=>{ cache[id]={ts:'', msgs:by[id]||[]}; });
       }
-      const byConv={}; (msgs||[]).forEach(m=>{ (byConv[m.conversacion_id]=byConv[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), asesor:((m.meta&&m.meta.asesor)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
-      const list=(convs||[]).map(r=>({ id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, cerradaAuto:!!r.cerrada_auto, sinRespuesta:!!r.sin_respuesta, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(byConv[r.id]||[]) }));      this._convNotify(list);
+      const list=(convs||[]).map(r=>{ const c=cache[r.id]||(cache[r.id]={msgs:[]}); c.ts=(r.ultimo_at||''); return { id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, cerradaAuto:!!r.cerrada_auto, sinRespuesta:!!r.sin_respuesta, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(c.msgs||[]) }; });
+      this._convSig=sig;
+      this._convNotify(list);
       this.setState({convsCloud:list});
-    }catch(e){} }
+    }catch(e){} this._convLoading=false; }
   _convNotify(list){ try{ const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; const prev=this._convSeen; const seen={}; (list||[]).forEach(c=>{ seen[c.id]=(c.mensajes||[]).length; });
     if(prev && me){ (list||[]).forEach(c=>{ const n=seen[c.id]||0, o=prev[c.id]||0; if(n>o && this._mismoUid(c.asignadoA, me)){ const last=(c.mensajes||[])[n-1]||{}; if(last.de==='cliente'){ this.toast('Nuevo mensaje de '+(c.cliente||'cliente')); this._deskNotify('Nuevo mensaje · '+(c.cliente||'Conversaciones'), String(last.texto||'').slice(0,120)); } } }); }
     this._convSeen=seen; }catch(e){} }
   _deskNotify(title, body){ try{ if(!('Notification' in window)) return; if(Notification.permission==='granted'){ new Notification(title,{body}); } else if(Notification.permission==='default'){ Notification.requestPermission().then(p=>{ if(p==='granted') new Notification(title,{body}); }); } }catch(e){} }
   cloudSubscribeConvs(){ const sb=this._sbClient(); if(!sb||this._convSub) return;
-    if(!this._convPoll) this._convPoll=setInterval(()=>{ if(this.state.convsCloud) this.cloudLoadConvs(); }, 10000);
+    // Poll de respaldo: 10 s solo con la pestaña visible Y el módulo Conversaciones abierto;
+    // en el resto de la app baja a 60 s (el realtime de Supabase sigue avisando al instante).
+    if(!this._convPoll) this._convPoll=setInterval(()=>{ if(!this.state.convsCloud || document.visibilityState!=='visible') return; const enConvs=(this.state.module==='conversaciones'); const t=Date.now(); if(!enConvs && (t-(this._convLastPoll||0))<55000) return; this._convLastPoll=t; this.cloudLoadConvs(); }, 10000);
     try{
       const reload=()=>{ clearTimeout(this._convRT); this._convRT=setTimeout(()=>this.cloudLoadConvs(), 400); };
       this._convSub=sb.channel('oda-convs').on('postgres_changes',{event:'*',schema:'public',table:'conversaciones'},reload).on('postgres_changes',{event:'*',schema:'public',table:'mensajes'},reload).subscribe();
