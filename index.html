@@ -7767,7 +7767,7 @@ class Component extends DCLogic {
   //  - Importada o con valor fijo (costoFijo): usa el valor registrado en el documento.
   //  - Manual: queda AMARRADA a la materia, así el valor sigue el precio actual si cambia.
   itemCostoUnit(it){ if(!it) return 0; if(it.costoFijo && it.costo!=null && it.costo!=='') return Number(it.costo)||0; const c=this.refCostoUnit(it.materiaCodigo); return c||(Number(it.costo)||0); }
-  itemIvaPct(it){ if(!it) return 19; if(it.costoFijo) return (it.iva===undefined||it.iva===''?19:Number(it.iva)); const m=this.state.materias.find(x=>x.codigo===it.materiaCodigo); if(m) return (m.iva===undefined?19:Number(m.iva)); return (it.iva===undefined||it.iva===''?19:Number(it.iva)); }
+  itemIvaPct(it){ if(!it) return 19; const m=this.state.materias.find(x=>x.codigo===it.materiaCodigo); if(m && Number(m.iva)===0) return 0; /* materia exenta de IVA: prevalece siempre, aunque la orden traiga IVA o el ítem tenga valor fijo */ if(it.costoFijo) return (it.iva===undefined||it.iva===''?19:Number(it.iva)); if(m) return (m.iva===undefined?19:Number(m.iva)); return (it.iva===undefined||it.iva===''?19:Number(it.iva)); }
   ordenBase(o){ return (o.items||[]).reduce((a,it)=>a+(Number(it.cantidad)||0)*this.itemCostoUnit(it),0); }
   ordenIva(o){ if(o&&o.sinIva) return 0; return (o.items||[]).reduce((a,it)=>a+(Number(it.cantidad)||0)*this.itemCostoUnit(it)*(this.itemIvaPct(it)/100),0) + this.ordenFleteIva(o); }
   // Flete: rubro de transporte de la orden. Se suma al total y por tanto al gasto / saldo por pagar.
