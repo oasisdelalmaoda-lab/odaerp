@@ -8614,7 +8614,33 @@ class Component extends DCLogic {
     this.toast('Orden '+(op.numero||'')+' eliminada · stock recalculado'); }
 
   // ---- ventas ----
-  ventaItemCosto(it){ const code=it.productoCodigo; const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k); return 0; }
+  // El costo de un ítem vendido queda CONGELADO al momento de la venta (costoUnit): cambiar
+  // la estructura de un producto o kit solo afecta las ventas posteriores. Si el ítem no tiene
+  // snapshot (venta vieja, o costo 0 cuando se creó), se calcula con la estructura actual.
+  ventaItemCostoVivo(code){ const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k); return 0; }
+  // Congela en las ventas YA existentes el costo que tienen hoy, para que un cambio futuro de
+  // estructura solo afecte lo posterior. Corre una vez por sesión, solo sobre ítems sin snapshot
+  // y con costo actual > 0, y sube a la nube SOLO las ventas que tocó.
+  congelarCostosVentas(){
+    if(this._congelaDone) return 0;
+    const vs=this.state.ventas||[]; if(!vs.length) return 0;
+    if(!(this.state.productos||[]).length && !(this.state.kits||[]).length) return 0;
+    const cache={}; const costoDe=(code)=>{ if(cache[code]===undefined) cache[code]=Math.round(this.ventaItemCostoVivo(code)||0); return cache[code]; };
+    const tocadas=[]; let nItems=0;
+    const list=vs.map(v=>{ const items=v.items||[]; let cambio=false;
+      const nuevos=items.map(it=>{ if((Number(it.costoUnit)||0)>0) return it; const c=costoDe(it.productoCodigo||''); if(c<=0) return it; cambio=true; nItems++; return {...it, costoUnit:c}; });
+      if(!cambio) return v; const nv={...v, items:nuevos}; tocadas.push(nv); return nv; });
+    this._congelaDone=true;
+    if(!tocadas.length) return 0;
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkVentas(tocadas);
+    return nItems;
+  }
+  _congelarCostosSoon(){ clearTimeout(this._ccTo); this._ccTo=setTimeout(()=>{ try{ this.congelarCostosVentas(); }catch(e){} }, 6000); }
+  ventaItemCosto(it){ const snap=Number(it&&it.costoUnit)||0; if(snap>0) return snap; return this.ventaItemCostoVivo(it&&it.productoCodigo); }
+  // Congela el costo actual en un ítem nuevo. Nunca pisa un snapshot ya guardado y no guarda
+  // ceros (una materia sin costo cargado sigue calculándose en vivo hasta que tenga costo).
+  _itemConCosto(it, code){ const prev=Number(it&&it.costoUnit)||0; if(prev>0) return prev; const c=Math.round(this.ventaItemCostoVivo(code)||0); return c>0? c : undefined; }
   // Diagnóstico de referencias vendidas: producto/kit inexistente, sin estructura o sin costo.
   refDiagnostico(code){ const c=String(code||'').trim(); if(!c) return 'Sin referencia';
     const p=(this.state.productos||[]).find(x=>x.codigo===c);
@@ -8811,7 +8837,7 @@ Instrucciones de respuesta:
         if(!o.fecha || o.fecha < CUTOFF){ saltadosFecha++; return; } // piso de fecha
         const pn=this.pedidoNum(o);
         const exI = (o.shopifyId&&idxByShop.has(String(o.shopifyId))) ? idxByShop.get(String(o.shopifyId)) : (pn&&idxByPed.has(pn)? idxByPed.get(pn) : -1);
-        const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0 }; });
+        const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0, costoUnit:this._itemConCosto(it, code) }; });
         const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanal(o.canal||'Página Web'), bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'' };
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
@@ -9243,7 +9269,7 @@ Instrucciones de respuesta:
         if(_dup){ this.toast('Bloqueado: el pedido '+d.pedido+' ya existe ('+this.titleCase(_dup.cliente||'')+', '+this.fmtFecha(_dup.fecha)+', '+(_dup.ov||'')+'). Edita esa venta en lugar de crear una repetida.'); return; } } }
     const _fecha=d.fecha||new Date().toISOString().slice(0,10); const _canal=d.canal||'Página Web'; const _conIva=this.ventaConIva({fecha:_fecha, canal:_canal});
     // El valor unitario que se digita es el valor FULL (IVA incluido); se guarda tal cual, igual que las ventas de Shopify. El sistema discrimina el IVA a partir de ese total.
-    const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true)}; });
+    const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true), costoUnit:this._itemConCosto(it, it.productoCodigo||'')}; });
     // Consecutivo OV: para pedidos nuevos (o si el OV mostrado quedó viejo por sincronización de nube y ahora choca con otro), se recalcula el siguiente libre AL GUARDAR.
     const _ovNumDraft=this.ovNum({ov:d._ov}); const _ovDup=(this.state.ventas||[]).some(v=>v.id!==d.id && v.origen!=='historico' && this.ovNum(v)===_ovNumDraft && _ovNumDraft>0); const _ov=(d._new || _ovDup || !_ovNumDraft)? this.nextOV() : d._ov;
     const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', direccion:d.direccion||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || this.metodoAutoPagado(d.metodoPago))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true) };
@@ -9786,7 +9812,7 @@ Instrucciones de respuesta:
         // Fusión de duplicados también AL CARGAR de la nube (antes solo al sincronizar Shopify):
         // limpia pares como ODA-00249/ODA-00478 del mismo pedido sin esperar otro sync.
         const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
-        this.setState({ventas:vlist, ventasCargando:false},()=>{ if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
+        this.setState({ventas:vlist, ventasCargando:false},()=>{ this._congelarCostosSoon(); if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
       else { this.setState({ventasCargando:false}); const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } }
     }catch(e){ this.setState({ventasCargando:false}); this.toast('Reintentando cargar ventas…'); setTimeout(()=>{ this._venLoading=false; this.cloudLoadVentas(); }, 1500); return; }
     this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
