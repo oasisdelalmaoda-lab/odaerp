@@ -9710,7 +9710,31 @@ Instrucciones de respuesta:
   // ---- materias compartidas (nube) ----
   _matToDb(m){ return { codigo:m.codigo, nombre:m.nombre||'', tipo:m.tipo||'insumo', unidad:m.unidad||'und', costo:Number(m.costo)||0, iva:(m.iva===''||m.iva===undefined?19:Number(m.iva)), proveedor_codigo:m.proveedorCodigo||'', marca:m.marca||'', stock_actual:Number(m.stockActual)||0, stock_minimo:Number(m.stockMinimo)||0, actualizado:new Date().toISOString() }; }
   _matFromDb(r){ return { codigo:r.codigo, nombre:r.nombre||'', tipo:r.tipo||'insumo', unidad:r.unidad||'und', costo:Number(r.costo)||0, iva:(r.iva===null||r.iva===undefined?19:Number(r.iva)), proveedorCodigo:r.proveedor_codigo||'', marca:r.marca||'', stockActual:Number(r.stock_actual)||0, stockMinimo:Number(r.stock_minimo)||0 }; }
-  async cloudLoadMaterias(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('materias').select('*'); if(error) throw error; if(data && data.length){ this.setState({materias:data.map(r=>this._matFromDb(r))},()=>this.persist()); } else { const cur=this.state.materias||[]; if(cur.length){ try{ await sb.from('materias').upsert(cur.map(m=>this._matToDb(m))); }catch(e){} } } }catch(e){} }
+  async cloudLoadMaterias(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('materias').select('*'); if(error) throw error; if(data && data.length){ this.setState({materias:data.map(r=>this._matFromDb(r))},()=>{ this.persist(); this._autoCostoSoon(); }); } else { const cur=this.state.materias||[]; if(cur.length){ try{ await sb.from('materias').upsert(cur.map(m=>this._matToDb(m))); }catch(e){} } } }catch(e){} }
+  // Una materia sin costo unitario cargado adopta el costo de las órdenes de compra ya
+  // RECIBIDAS (promedio ponderado por lo recibido). Solo llena ceros: un costo ya cargado
+  // nunca se pisa. Es idempotente y corre tras cargar materias u órdenes de la nube, así
+  // el costo sobrevive aunque el upsert del momento de la recepción se haya perdido.
+  autoCostoMateriasDesdeOrdenes(){
+    const mats=this.state.materias||[]; const ords=this.state.ordenes||[];
+    if(!mats.length||!ords.length) return 0;
+    const ceros={}; mats.forEach(m=>{ if((Number(m.costo)||0)<=0) ceros[m.codigo]=true; });
+    if(!Object.keys(ceros).length) return 0;
+    const acc={};
+    ords.forEach(o=>{ if(o.estado==='rechazada'||this.ordenAnulada(o)) return;
+      (o.items||[]).forEach(it=>{ const c=it.materiaCodigo; if(!c||!ceros[c]) return;
+        const cu=Number(it.costo)||0; if(cu<=0) return;
+        const rec=this.ordenRecibido(o,c); if(rec<=0) return;
+        if(!acc[c]) acc[c]={v:0,q:0}; acc[c].v+=rec*cu; acc[c].q+=rec; }); });
+    const codes=Object.keys(acc); if(!codes.length) return 0;
+    let n=0; const list=mats.map(m=>{ const a=acc[m.codigo]; if(!a||a.q<=0) return m;
+      const avg=Math.round(a.v/a.q); if(avg<=0) return m; n++; return {...m, costo:avg}; });
+    if(!n) return 0;
+    this.setState({materias:list},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkMaterias(list.filter(m=>acc[m.codigo]));
+    return n;
+  }
+  _autoCostoSoon(){ clearTimeout(this._acTo); this._acTo=setTimeout(()=>{ try{ this.autoCostoMateriasDesdeOrdenes(); }catch(e){} }, 2500); }
   async cloudSaveMateria(m){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('materias').upsert(this._matToDb(m)); }catch(e){} }
   async cloudDeleteMateria(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('materias').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkMaterias(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('materias').upsert(list.map(m=>this._matToDb(m))); }catch(e){} }
@@ -9893,7 +9917,7 @@ Instrucciones de respuesta:
   async cloudDeleteServicio(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('servicios').delete().eq('id',id); }catch(e){} }
   async cloudBulkServicios(l){ const sb=this._sbClient(); if(!sb||!l||!l.length) return; try{ await sb.from('servicios').upsert(l.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} }
   cloudSubscribeServicios(){ this._cloudSubTable('servicios','_svcSub','servicios','codigo'); }
-  cloudLoadOrdenes(){ this._cloudLoadList('ordenes','ordenes', this.state.ordenes); }
+  cloudLoadOrdenes(){ this._cloudLoadList('ordenes','ordenes', this.state.ordenes); this._autoCostoSoon(); }
   cloudSaveOrden(o){ this._cloudSaveOne('ordenes', o); }
   cloudBulkOrdenes(l){ this._cloudBulk('ordenes', l); }
   cloudDeleteOrden(id){ this._cloudDelOne('ordenes', id); }
