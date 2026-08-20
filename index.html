@@ -4915,7 +4915,7 @@
                       <div style="background:var(--surface-card);border:1px solid rgba(20,20,30,0.10);border-radius:16px;padding:15px 18px;display:flex;align-items:center;gap:14px;">
                         <span style="flex:1;min-width:0;">
                           <span style="display:block;font-size:14px;font-weight:700;color:var(--text-body);">{{ t.asunto }}</span>
-                          <span style="display:block;font-size:12px;color:var(--text-muted);margin-top:2px;">{{ t.fechaFmt }} · Prioridad {{ t.prioridad }}</span>
+                          <span style="display:block;font-size:12px;color:var(--text-muted);margin-top:2px;">{{ t.fechaFmt }} · Prioridad {{ t.prioridad }}<sc-if value="{{ t.hayCreador }}" hint-placeholder-val="{{ false }}"> · Creado por {{ t.creador }}</sc-if></span>
                           <sc-if value="{{ t.hayFotos }}" hint-placeholder-val="{{ false }}">
                             <span style="display:flex;gap:6px;margin-top:8px;">
                               <sc-for list="{{ t.fotos }}" as="ft" hint-placeholder-count="0"><span style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(20,20,30,0.10);flex-shrink:0;background-size:cover;background-position:center;background-image:{{ ft.bgUrl }};"></span></sc-for>
@@ -7866,6 +7866,10 @@ class Component extends DCLogic {
     window.Cal.ns.soporte("inline", { elementOrSelector:"#cal-soporte", calLink: "oda-labs/soporte-o-actualizacion", layout: "month_view", config: this._calPrefill() }); }
   _calPrefill(){ const u=(this.users||[]).find(x=>x.id===this.state.userId); return u? { name:u.name, email:u.email } : {}; }
   sopCargar(){ this.setState({sopCargando:true}); fetch(this.SOP_URL+'/rest/v1/tickets?cliente=eq.'+encodeURIComponent(this.SOP_CLIENTE)+'&order=creado.desc',{headers:this.sopHeaders()}).then(r=>{ if(!r.ok) throw new Error('load'); return r.json(); }).then(rows=>this.setState({sopRemote:Array.isArray(rows)?rows:[], sopCargando:false})).catch(()=>this.setState({sopCargando:false})); }
+  // Privacidad de tickets: cada uno solo lo ve quien lo creó. El creador viaja en "[Creado por: X]" al inicio de descripcion (y en usuario si la tabla lo tiene). Tickets viejos sin marca los ve solo el admin.
+  _sopCreadorDe(t){ if(t.usuario) return String(t.usuario); const m=/^\[Creado por: ([^\]]+)\]/.exec(String(t.descripcion||'')); return m?m[1]:''; }
+  _sopYo(){ const u=(this.users||[]).find(x=>x.id===this.state.userId); return u?u.name:''; }
+  _sopMios(tks){ const yo=this._sopYo(); const esAdmin=this.isAdminUser(); return (tks||[]).filter(t=>{ const c=this._sopCreadorDe(t); if(!c) return esAdmin; return c===yo || esAdmin; }); }
   async _sopSubirFoto(dataUrl,i){ const blob=await (await fetch(dataUrl)).blob(); const ext=String(blob.type.split('/')[1]||'png').replace('jpeg','jpg'); const name=Date.now()+'-'+i+'.'+ext;
     const r=await fetch(this.SOP_URL+'/storage/v1/object/ticket-fotos/'+name,{method:'POST',headers:{apikey:this.SOP_KEY,Authorization:'Bearer '+this.SOP_KEY,'Content-Type':(blob.type||'application/octet-stream')},body:blob});
     if(!r.ok) throw new Error('foto'); return this.SOP_URL+'/storage/v1/object/public/ticket-fotos/'+name; }
@@ -7873,13 +7877,15 @@ class Component extends DCLogic {
   sopPickFoto(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ this.setState(s=>{ const dd=s.sopDraft||{asunto:'',detalle:'',prioridad:'Media',fotos:[]}; const fs=(dd.fotos||[]).slice(); if(fs.length<4) fs.push(String(r.result)); return {sopDraft:{...dd,fotos:fs}}; }); }; r.readAsDataURL(f); }; inp.click(); }
   sopEnviar(){ const d=this.state.sopDraft||{}; const asunto=String(d.asunto||'').trim(); if(!asunto){ this.setState({sopAsuntoError:true}); return; }
     const t={ id:'sop'+Date.now(), asunto, detalle:String(d.detalle||'').trim(), prioridad:d.prioridad||'Media', fotos:(d.fotos||[]).slice(0,4), estado:'Abierto', fecha:new Date().toISOString().slice(0,10),
-      cliente:this.SOP_CLIENTE, plan:this.SOP_PLAN, origen:'Desde su app', usuario:this.curUserName?this.curUserName():'' };
+      cliente:this.SOP_CLIENTE, plan:this.SOP_PLAN, origen:'Desde su app', usuario:this._sopYo() };
     if(this.state.sopEnviando) return;
     this.setState({sopEnviando:true, sopError:''});
     (async()=>{ try{
       const fotos=[]; for(let i=0;i<t.fotos.length;i++){ fotos.push(await this._sopSubirFoto(t.fotos[i],i)); }
-      const body={ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, descripcion:t.detalle, prioridad:t.prioridad, fotos };
-      const r=await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify(body)});
+      // El nombre del creador viaja en la columna usuario si existe; si la tabla no la tiene (PGRST204), se reintenta con la marca "[Creado por: X]" dentro de descripcion.
+      let body={ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, descripcion:t.detalle, prioridad:t.prioridad, fotos, usuario:t.usuario };
+      let r=await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify(body)});
+      if(!r.ok){ body={ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, descripcion:((t.usuario?('[Creado por: '+t.usuario+']\n'):'')+t.detalle), prioridad:t.prioridad, fotos }; r=await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify(body)}); }
       if(!r.ok) throw new Error('insert '+r.status);
       this.setState({sopDraft:{asunto:'',detalle:'',prioridad:'Media',fotos:[]}, sopAsuntoError:false, sopEnviando:false, sopError:''});
       this.toast('Enviado a soporte. Te contactaremos pronto.');
@@ -11902,9 +11908,9 @@ Instrucciones de respuesta:
       out.sopError=st.sopError||''; out.sopHayError=!!st.sopError;
       out.sopCargandoShow=!!st.sopCargando && !(st.sopRemote||[]).length;
       const est={'Abierto':{bg:'var(--sop-warn-soft)',fg:'var(--sop-warn)'},'En curso':{bg:'rgba(90,75,255,0.1)',fg:'#5A4BFF'},'Resuelto':{bg:'var(--sop-ok-soft)',fg:'var(--sop-ok)'}};
-      const tks=st.sopRemote||[];
+      const tks=this._sopMios(st.sopRemote||[]);
       out.sopVacio=!tks.length && !st.sopCargando;
-      out.sopTickets=tks.map(t=>({ asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(String(t.creado||t.fecha||'').slice(0,10)), fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:(t.estado||'Abierto'), chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg }));
+      out.sopTickets=tks.map(t=>{ const cr=this._sopCreadorDe(t); return { asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(String(t.creado||t.fecha||'').slice(0,10)), creador:cr, hayCreador:!!cr, fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:(t.estado||'Abierto'), chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg }; });
       if(st.sopRemote===undefined && !st.sopCargando){ this.sopCargar(); }
     }
     out.showInicio = st.module==='inicio';
@@ -12449,7 +12455,7 @@ Instrucciones de respuesta:
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, cerrAuto:!!cc.cerradaAuto, sinResp:!!cc.sinRespuesta, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
-          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente)), align:esCliente?'flex-start':'flex-end', bg:esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)'), fg:esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)'), bd:esCliente?'1px solid var(--border-subtle)':'none' }; }) };
+          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?'#8A4A3C':(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?'1px dashed rgba(181,80,60,0.45)':(esCliente?'1px solid var(--border-subtle)':'none') }; }) };
         out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
         // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
