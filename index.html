@@ -2007,6 +2007,12 @@
                         <sc-if value="{{ m.nuevoDia }}" hint-placeholder-val="{{ false }}"><div style="align-self:center;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:99px;padding:4px 12px;margin:2px 0 8px;">{{ m.fechaL }}</div></sc-if>
                         <sc-if value="{{ m.esImg }}" hint-placeholder-val="{{ false }}"><div style="width:220px;height:220px;border-radius:14px;border:1px solid var(--border-subtle);background-image:url({{ m.img }});background-size:cover;background-position:center;background-color:var(--surface-raised);"></div></sc-if>
                         <sc-if value="{{ m.texto }}" hint-placeholder-val="{{ true }}"><div title="{{ m.sello }}" style="max-width:72%;padding:10px 14px;border-radius:14px;background:{{ m.bg }};color:{{ m.fg }};border:{{ m.bd }};font-size:13px;line-height:1.5;">{{ m.texto }}</div></sc-if>
+                        <sc-if value="{{ m.noEntregado }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;gap:7px;margin-top:7px;align-items:center;justify-content:center;">
+                            <a href="{{ m.nativoUrl }}" target="_blank" rel="noopener" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;background:var(--brand-primary);color:var(--text-on-brand);text-decoration:none;">Responder en {{ m.canalL }}</a>
+                            <button onClick="{{ m.onManual }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border:1px solid var(--border-subtle);border-radius:99px;background:var(--surface-card);color:var(--text-muted);cursor:pointer;">Ya respondí a mano</button>
+                          </div>
+                        </sc-if>
                         <span style="font-size:10.5px;color:var(--text-muted);margin-top:3px;">{{ m.quien }} · {{ m.sello }}</span>
                       </div>
                     </sc-for>
@@ -11545,7 +11551,7 @@ Instrucciones de respuesta:
       for(let i=0;i<need.length;i+=200){
         const chunk=need.slice(i,i+200);
         const {data:part}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).limit(10000);
-        const by={}; (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), asesor:((m.meta&&m.meta.asesor)||''), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+        const by={}; (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
         chunk.forEach(id=>{ cache[id]={ts:'', msgs:by[id]||[]}; });
       }
       const list=(convs||[]).map(r=>{ const c=cache[r.id]||(cache[r.id]={msgs:[]}); c.ts=(r.ultimo_at||''); return { id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, cerradaAuto:!!r.cerrada_auto, sinRespuesta:!!r.sin_respuesta, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(c.msgs||[]) }; });
@@ -11673,9 +11679,44 @@ Instrucciones de respuesta:
         else fetch(this.CLOUD_URL+'/functions/v1/whatsapp',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({to:c.telefono, text:txt})}).then(r=>r.json()).then(d=>{ if(d&&d.error) this.toast('WhatsApp no envió: '+d.error); else this.toast('Enviado por WhatsApp'); }).catch(()=>this.toast('Sin conexión: el mensaje no salió a WhatsApp'));
       } else if(c && (c.canal==='instagram'||c.canal==='messenger')){
         const _cl=(c.canal==='instagram'?'Instagram':'Messenger');
-        fetch(this.CLOUD_URL+'/functions/v1/meta-send',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({conversacionId:id, canal:c.canal, texto:txt})}).then(r=>r.json()).then(d=>{ if(d&&d.error) this.toast(_cl+' no envió: '+d.error); else this.toast('Enviado por '+_cl); }).catch(()=>this.toast('Sin conexión: el mensaje no salió a '+_cl));
+        fetch(this.CLOUD_URL+'/functions/v1/meta-send',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({conversacionId:id, canal:c.canal, texto:txt})}).then(r=>r.json()).then(d=>{ if(d&&d.error){ this.toast(_cl+' no envió: '+d.error); this.convAvisoNoEntregado(id, _cl, d.error); } else this.toast('Enviado por '+_cl); }).catch(()=>{ this.toast('Sin conexión: el mensaje no salió a '+_cl); this.convAvisoNoEntregado(id, _cl, 'sin conexión con el servidor'); });
       } else if(c && c.canal==='web'){ this.toast('Enviado al chat de la web · el visitante lo ve en unos segundos'); }
     } }
+  // Invariante 16 (mismo criterio que meta-inbound para el bot): si Meta rechaza el envío
+  // de un asesor, el mensaje NO llegó al cliente aunque el Hub lo muestre en el hilo.
+  // Se deja un aviso permanente en la conversación (de:'sistema') y se marca «necesita»,
+  // en vez de un toast que se desvanece y hace creer que el chat funcionó.
+  convAvisoNoEntregado(id, canalL, motivo){
+    const texto='⚠ No se entregó en '+canalL+': '+String(motivo||'Meta rechazó el envío')+' — el cliente NO recibió el último mensaje.';
+    const _now=new Date().toISOString();
+    this.convUpdate(id, c=>{ c.mensajes.push({de:'sistema', texto, at:_now, fecha:this._convFechaDe(_now), hora:this.convHoraTxt(), noEntregado:true}); return {...c, estado:'necesita'}; });
+    const sb=this._sbClient();
+    if(sb && this.state.convsCloud){
+      sb.from('mensajes').insert({conversacion_id:id, de:'sistema', texto, meta:{noEntregado:true}}).then(()=>{});
+      sb.from('conversaciones').update({estado:'necesita', ultimo_mensaje:texto, ultimo_at:_now}).eq('id',id).then(()=>{});
+    }
+  }
+  // La ventana de mensajería de Meta solo aplica a la API: en la app de Instagram o en
+  // Meta Business Suite un humano sí puede responder un hilo viejo. Cuando el envío se
+  // rechaza, el aviso ofrece abrir esa bandeja y volver a marcar que ya se respondió.
+  _convCanalNativo(canal){
+    if(canal==='instagram') return {l:'Instagram', url:'https://business.facebook.com/latest/inbox/instagram'};
+    if(canal==='messenger') return {l:'Messenger', url:'https://business.facebook.com/latest/inbox/messenger'};
+    return {l:'el canal', url:'https://business.facebook.com/latest/inbox'};
+  }
+  convMarcarManual(id){ const c=this.convList().find(x=>x.id===id); if(!c) return;
+    const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId;
+    const quien=this.leadUName(me)||'un asesor';
+    const texto='✓ Respondido a mano en '+this._convCanalNativo(c.canal).l+' por '+quien+'.';
+    const _now=new Date().toISOString();
+    this.convUpdate(id, x=>{ x.mensajes.push({de:'sistema', texto, at:_now, fecha:this._convFechaDe(_now), hora:this.convHoraTxt()}); return {...x, estado:'humano', asignadoA:x.asignadoA||me, noLeidos:0}; });
+    const sb=this._sbClient();
+    if(sb && this.state.convsCloud){
+      sb.from('mensajes').insert({conversacion_id:id, de:'sistema', texto, meta:{manual:true, asesor:me}}).then(()=>{});
+      sb.from('conversaciones').update({estado:'humano', asignado_a:(c&&c.asignadoA)||me, no_leidos:0, ultimo_mensaje:texto, ultimo_at:_now}).eq('id',id).then(()=>{});
+    }
+    this.toast('Marcado como respondido a mano');
+  }
   convCrearCaso(c){ this.nuevoCaso(); const canalL=this.convCanalMeta(c.canal).l; setTimeout(()=>{ this.setState(s=>({casoDraft:{...(s.casoDraft||{}), canal:(canalL==='Web'?'Página web':canalL), cliente:(c.cliente||'').replace('Visitante · ',''), celular:c.telefono||'', descripcion:'Creado desde la conversación '+c.id+' ('+canalL+').'}})); },0); }
   convCrearLead(c){ const canalL=this.convCanalMeta(c.canal).l; this.open('lead',{ _new:true, fecha:new Date().toISOString().slice(0,10), nombre:(c.cliente||'').replace('Visitante · ',''), celular:c.telefono||'', correo:'', ciudad:'', origen:canalL, interes:'', estado:'Nuevo', valor:'', nota:'Creado desde la conversación '+c.id+' del canal '+canalL+'.' }); }
   convPendientes(){ return this.convList().filter(c=>c.estado==='necesita' || (c.estado!=='resuelta' && !c.asignadoA && c.noLeidos>0)).length; }
@@ -12500,7 +12541,7 @@ Instrucciones de respuesta:
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, cerrAuto:!!cc.cerradaAuto, sinResp:!!cc.sinRespuesta, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
-          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?'#8A4A3C':(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?'1px dashed rgba(181,80,60,0.45)':(esCliente?'1px solid var(--border-subtle)':'none') }; }) };
+          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?'#8A4A3C':(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?'1px dashed rgba(181,80,60,0.45)':(esCliente?'1px solid var(--border-subtle)':'none'), noEntregado:!!(esSys&&m.noEntregado), canalL:this._convCanalNativo(cc.canal).l, nativoUrl:this._convCanalNativo(cc.canal).url, onManual:()=>this.convMarcarManual(cc.id) }; }) };
         out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
         // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
