@@ -1141,6 +1141,10 @@
                   <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;color:#B5503C;">Restaurar desde un archivo</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Reemplaza <strong>toda</strong> la información actual por la del archivo de respaldo. Útil al cambiar de computador o recuperar datos. Esta acción sobreescribe lo que haya ahora.</div></div>
                   <label style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Subir respaldo<input type="file" accept="application/json,.json" onChange="{{ onRestaurarRespaldo }}" style="display:none;"></label>
                 </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+                  <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Volver a descargar todo de la nube</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Normalmente la app solo baja lo nuevo o corregido desde la última vez. Usa esto si sospechas que a este equipo le falta información.</div></div>
+                  <button onClick="{{ onResyncTodo }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;flex-shrink:0;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg>Descargar todo otra vez</button>
+                </div>
                 <div style="padding:13px 20px;background:var(--surface-raised);border-top:1px solid var(--border-subtle);font-size:11.5px;color:var(--text-muted);line-height:1.5;">Hoy los datos viven en este equipo. Cuando la app pase a estar en línea (en la nube), el respaldo será continuo y automático en el servidor, y todos los usuarios compartirán la misma información en tiempo real.</div>
               </div>
               </sc-if>
@@ -9754,14 +9758,28 @@ Instrucciones de respuesta:
   // ---- proveedores compartidos (nube) ----
   _provToDb(p){ return { codigo:p.codigo, nombre:p.nombre||'', nit:p.nit||'', contacto_nombre:p.contactoNombre||'', telefonos:(Array.isArray(p.telefonos)?p.telefonos:[]), email:p.email||'', ciudad:p.ciudad||'', condiciones_pago:p.condicionesPago||'', calificacion:Number(p.calificacion)||0, autorretenedor:/s[ií]/i.test(String(p.autorretenedor||'')), actualizado:new Date().toISOString() }; }
   _provFromDb(r){ return { codigo:r.codigo, nombre:r.nombre||'', nit:r.nit||'', contactoNombre:r.contacto_nombre||'', telefonos:(Array.isArray(r.telefonos)?r.telefonos:[]), email:r.email||'', ciudad:r.ciudad||'', condicionesPago:r.condiciones_pago||'', calificacion:Number(r.calificacion)||0, autorretenedor:(r.autorretenedor?'si':'no') }; }
-  async cloudLoadProveedores(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('proveedores').select('*'); if(error) throw error; if(data && data.length){ this.setState({proveedores:data.map(r=>this._provFromDb(r))},()=>this.persist()); } else { const cur=this.state.proveedores||[]; if(cur.length){ try{ await sb.from('proveedores').upsert(cur.map(p=>this._provToDb(p))); }catch(e){} } } }catch(e){} }
+  async cloudLoadProveedores(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.proveedores||[];
+    if(_cur.length && this._syncGet('proveedores')){ const _d=await this._cloudSince('proveedores','*');
+      if(_d){ this._syncSweepSoon('proveedores','proveedores','codigo'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(x=>this._provFromDb(x)), 'codigo');
+        this._syncSet('proveedores', this._maxAct(_d));
+        this.setState({proveedores:_rows},()=>this.persist()); return; } }
+    try{ const {data,error}=await sb.from('proveedores').select('*'); if(error) throw error; if(data) this._syncSet('proveedores', this._maxAct(data)); if(data && data.length){ this.setState({proveedores:data.map(r=>this._provFromDb(r))},()=>this.persist()); } else { const cur=this.state.proveedores||[]; if(cur.length){ try{ await sb.from('proveedores').upsert(cur.map(p=>this._provToDb(p))); }catch(e){} } } }catch(e){} }
   async cloudSaveProveedor(p){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('proveedores').upsert(this._provToDb(p)); }catch(e){} }
   async cloudBulkProveedores(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('proveedores').upsert(list.map(p=>this._provToDb(p))); }catch(e){} }
   cloudSubscribeProveedores(){ const sb=this._sbClient(); if(!sb||this._provSub) return; try{ this._provSub=sb.channel('oda-proveedores').on('postgres_changes',{event:'*',schema:'public',table:'proveedores'},()=>{ this.cloudLoadProveedores(); }).subscribe(); }catch(e){} }
   // ---- materias compartidas (nube) ----
   _matToDb(m){ return { codigo:m.codigo, nombre:m.nombre||'', tipo:m.tipo||'insumo', unidad:m.unidad||'und', costo:Number(m.costo)||0, iva:(m.iva===''||m.iva===undefined?19:Number(m.iva)), proveedor_codigo:m.proveedorCodigo||'', marca:m.marca||'', stock_actual:Number(m.stockActual)||0, stock_minimo:Number(m.stockMinimo)||0, actualizado:new Date().toISOString() }; }
   _matFromDb(r){ return { codigo:r.codigo, nombre:r.nombre||'', tipo:r.tipo||'insumo', unidad:r.unidad||'und', costo:Number(r.costo)||0, iva:(r.iva===null||r.iva===undefined?19:Number(r.iva)), proveedorCodigo:r.proveedor_codigo||'', marca:r.marca||'', stockActual:Number(r.stock_actual)||0, stockMinimo:Number(r.stock_minimo)||0 }; }
-  async cloudLoadMaterias(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('materias').select('*'); if(error) throw error; if(data && data.length){ this.setState({materias:data.map(r=>this._matFromDb(r))},()=>{ this.persist(); this._autoCostoSoon(); }); } else { const cur=this.state.materias||[]; if(cur.length){ try{ await sb.from('materias').upsert(cur.map(m=>this._matToDb(m))); }catch(e){} } } }catch(e){} }
+  async cloudLoadMaterias(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.materias||[];
+    if(_cur.length && this._syncGet('materias')){ const _d=await this._cloudSince('materias','*');
+      if(_d){ this._syncSweepSoon('materias','materias','codigo'); this._autoCostoSoon(); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(x=>this._matFromDb(x)), 'codigo');
+        this._syncSet('materias', this._maxAct(_d));
+        this.setState({materias:_rows},()=>{ this.persist(); this._autoCostoSoon(); }); return; } }
+    try{ const {data,error}=await sb.from('materias').select('*'); if(error) throw error; if(data) this._syncSet('materias', this._maxAct(data)); if(data && data.length){ this.setState({materias:data.map(r=>this._matFromDb(r))},()=>{ this.persist(); this._autoCostoSoon(); }); } else { const cur=this.state.materias||[]; if(cur.length){ try{ await sb.from('materias').upsert(cur.map(m=>this._matToDb(m))); }catch(e){} } } }catch(e){} }
   // Una materia sin costo unitario cargado adopta el costo de las órdenes de compra ya
   // RECIBIDAS (promedio ponderado por lo recibido). Solo llena ceros: un costo ya cargado
   // nunca se pisa. Es idempotente y corre tras cargar materias u órdenes de la nube, así
@@ -9792,48 +9810,98 @@ Instrucciones de respuesta:
   cloudSubscribeMaterias(){ const sb=this._sbClient(); if(!sb||this._matSub) return; try{ this._matSub=sb.channel('oda-materias').on('postgres_changes',{event:'*',schema:'public',table:'materias'},()=>{ this.cloudLoadMaterias(); }).subscribe(); }catch(e){} }
   // ---- productos compartidos (nube) ----
   _prodToDb(p){ return { codigo:p.codigo, data:p, actualizado:new Date().toISOString() }; }
-  async cloudLoadProductos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('productos').select('codigo,data'); if(error) throw error; if(data && data.length){ this.setState({productos:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.productos||[]; if(cur.length){ try{ await sb.from('productos').upsert(cur.map(p=>this._prodToDb(p))); }catch(e){} } } }catch(e){} }
+  async cloudLoadProductos(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.productos||[];
+    if(_cur.length && this._syncGet('productos')){ const _d=await this._cloudSince('productos','codigo,data');
+      if(_d){ this._syncSweepSoon('productos','productos','codigo'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
+        this._syncSet('productos', this._maxAct(_d));
+        this.setState({productos:_rows},()=>{ this.persist();  }); return; } }
+    try{ let _r=await sb.from('productos').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('productos').select('codigo,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('productos', this._maxAct(data)); if(data && data.length){ this.setState({productos:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.productos||[]; if(cur.length){ try{ await sb.from('productos').upsert(cur.map(p=>this._prodToDb(p))); }catch(e){} } } }catch(e){} }
   async cloudSaveProducto(p){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('productos').upsert(this._prodToDb(p)); }catch(e){} }
   async cloudDeleteProducto(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('productos').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkProductos(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('productos').upsert(list.map(p=>this._prodToDb(p))); }catch(e){} }
   cloudSubscribeProductos(){ const sb=this._sbClient(); if(!sb||this._prodSub) return; try{ this._prodSub=sb.channel('oda-productos').on('postgres_changes',{event:'*',schema:'public',table:'productos'},()=>{ this.cloudLoadProductos(); }).subscribe(); }catch(e){} }
   // ---- kits compartidos (nube) ----
   _kitToDb(k){ return { codigo:k.codigo, data:k, actualizado:new Date().toISOString() }; }
-  async cloudLoadKits(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('kits').select('codigo,data'); if(error) throw error; if(data && data.length){ this.setState({kits:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.kits||[]; if(cur.length){ try{ await sb.from('kits').upsert(cur.map(k=>this._kitToDb(k))); }catch(e){} } } }catch(e){} }
+  async cloudLoadKits(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.kits||[];
+    if(_cur.length && this._syncGet('kits')){ const _d=await this._cloudSince('kits','codigo,data');
+      if(_d){ this._syncSweepSoon('kits','kits','codigo'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
+        this._syncSet('kits', this._maxAct(_d));
+        this.setState({kits:_rows},()=>{ this.persist();  }); return; } }
+    try{ let _r=await sb.from('kits').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('kits').select('codigo,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('kits', this._maxAct(data)); if(data && data.length){ this.setState({kits:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.kits||[]; if(cur.length){ try{ await sb.from('kits').upsert(cur.map(k=>this._kitToDb(k))); }catch(e){} } } }catch(e){} }
   async cloudSaveKit(k){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('kits').upsert(this._kitToDb(k)); }catch(e){} }
   async cloudDeleteKit(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('kits').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkKits(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('kits').upsert(list.map(k=>this._kitToDb(k))); }catch(e){} }
   cloudSubscribeKits(){ const sb=this._sbClient(); if(!sb||this._kitSub) return; try{ this._kitSub=sb.channel('oda-kits').on('postgres_changes',{event:'*',schema:'public',table:'kits'},()=>{ this.cloudLoadKits(); }).subscribe(); }catch(e){} }
   // ---- mezclas compartidas (nube) ----
   _mezToDb(m){ return { codigo:m.codigo, data:m, actualizado:new Date().toISOString() }; }
-  async cloudLoadMezclas(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('mezclas').select('codigo,data'); if(error) throw error; if(data && data.length){ this.setState({mezclas:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.mezclas||[]; if(cur.length){ try{ await sb.from('mezclas').upsert(cur.map(m=>this._mezToDb(m))); }catch(e){} } } }catch(e){} }
+  async cloudLoadMezclas(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.mezclas||[];
+    if(_cur.length && this._syncGet('mezclas')){ const _d=await this._cloudSince('mezclas','codigo,data');
+      if(_d){ this._syncSweepSoon('mezclas','mezclas','codigo'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
+        this._syncSet('mezclas', this._maxAct(_d));
+        this.setState({mezclas:_rows},()=>{ this.persist();  }); return; } }
+    try{ let _r=await sb.from('mezclas').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('mezclas').select('codigo,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('mezclas', this._maxAct(data)); if(data && data.length){ this.setState({mezclas:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.mezclas||[]; if(cur.length){ try{ await sb.from('mezclas').upsert(cur.map(m=>this._mezToDb(m))); }catch(e){} } } }catch(e){} }
   async cloudSaveMezcla(m){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('mezclas').upsert(this._mezToDb(m)); }catch(e){} }
   async cloudDeleteMezcla(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('mezclas').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkMezclas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('mezclas').upsert(list.map(m=>this._mezToDb(m))); }catch(e){} }
   cloudSubscribeMezclas(){ const sb=this._sbClient(); if(!sb||this._mezSub) return; try{ this._mezSub=sb.channel('oda-mezclas').on('postgres_changes',{event:'*',schema:'public',table:'mezclas'},()=>{ this.cloudLoadMezclas(); }).subscribe(); }catch(e){} }
   // ---- producción compartida (nube) ----
   _opToDb(o){ return { id:o.id, data:o, actualizado:new Date().toISOString() }; }
-  async cloudLoadProducciones(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('producciones').select('id,data'); if(error) throw error; if(data && data.length){ this.setState({producciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.producciones||[]; if(cur.length){ try{ await sb.from('producciones').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
+  async cloudLoadProducciones(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.producciones||[];
+    if(_cur.length && this._syncGet('producciones')){ const _d=await this._cloudSince('producciones','id,data');
+      if(_d){ this._syncSweepSoon('producciones','producciones','id'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
+        this._syncSet('producciones', this._maxAct(_d));
+        this.setState({producciones:_rows},()=>{ this.persist();  }); return; } }
+    try{ let _r=await sb.from('producciones').select('id,data,actualizado'); if(_r.error) _r=await sb.from('producciones').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('producciones', this._maxAct(data)); if(data && data.length){ this.setState({producciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.producciones||[]; if(cur.length){ try{ await sb.from('producciones').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
   async cloudSaveProduccion(o){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('producciones').upsert(this._opToDb(o)); }catch(e){} }
   async cloudBulkProducciones(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('producciones').upsert(list.map(o=>this._opToDb(o))); }catch(e){} }
   cloudSubscribeProducciones(){ const sb=this._sbClient(); if(!sb||this._popSub) return; try{ this._popSub=sb.channel('oda-producciones').on('postgres_changes',{event:'*',schema:'public',table:'producciones'},()=>{ this.cloudLoadProducciones(); }).subscribe(); }catch(e){} }
-  async cloudLoadProdMez(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('producciones_mezcla').select('id,data'); if(error) throw error; if(data && data.length){ this.setState({produccionesMezcla:data.map(r=>({...(r.data||{}), id:r.id}))},()=>{ this.persist(); this._backfillOMSnaps(); }); } else { const cur=this.state.produccionesMezcla||[]; if(cur.length){ try{ await sb.from('producciones_mezcla').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
+  async cloudLoadProdMez(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.produccionesMezcla||[];
+    if(_cur.length && this._syncGet('producciones_mezcla')){ const _d=await this._cloudSince('producciones_mezcla','id,data');
+      if(_d){ this._syncSweepSoon('producciones_mezcla','produccionesMezcla','id'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
+        this._syncSet('producciones_mezcla', this._maxAct(_d));
+        this.setState({produccionesMezcla:_rows},()=>{ this.persist(); this._backfillOMSnaps(); }); return; } }
+    try{ let _r=await sb.from('producciones_mezcla').select('id,data,actualizado'); if(_r.error) _r=await sb.from('producciones_mezcla').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('producciones_mezcla', this._maxAct(data)); if(data && data.length){ this.setState({produccionesMezcla:data.map(r=>({...(r.data||{}), id:r.id}))},()=>{ this.persist(); this._backfillOMSnaps(); }); } else { const cur=this.state.produccionesMezcla||[]; if(cur.length){ try{ await sb.from('producciones_mezcla').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
   async cloudSaveProdMez(o){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('producciones_mezcla').upsert(this._opToDb(o)); }catch(e){} }
   async cloudBulkProdMez(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('producciones_mezcla').upsert(list.map(o=>this._opToDb(o))); }catch(e){} }
   cloudSubscribeProdMez(){ const sb=this._sbClient(); if(!sb||this._pomSub) return; try{ this._pomSub=sb.channel('oda-prodmez').on('postgres_changes',{event:'*',schema:'public',table:'producciones_mezcla'},()=>{ this.cloudLoadProdMez(); }).subscribe(); }catch(e){} }
   // ---- ventas compartidas (nube) ----
   _ventaToDb(v){ return { id:v.id, data:v, actualizado:new Date().toISOString() }; }
-  async cloudLoadVentas(){ const sb=this._sbClient(); if(!sb) return; if(this._venLoading){ this._venLoadAgain=true; return; } this._venLoading=true; this.setState({ventasCargando:true});
+  async cloudLoadVentas(){ const sb=this._sbClient(); if(!sb) return; if(this._venLoading){ this._venLoadAgain=true; return; } this._venLoading=true;
+    // Incremental (invariante 22): con copia local + marca de agua solo se piden las ventas
+    // nuevas o corregidas. La dedupe (invariante 1) corre sobre la lista fusionada.
+    const _cur=this.state.ventas||[];
+    if(_cur.length && this._syncGet('ventas')){
+      const _d=await this._cloudSince('ventas','id,data');
+      if(_d){ this._syncSweepSoon('ventas','ventas','id'); this._venLoading=false; this._congelarCostosSoon();
+        if(!_d.length) return; // nada nuevo → sin re-render
+        let _rows=this._mergeRows(_cur, _d.map(x=>{ const dd=x.data||{}; return {...dd, canal:this.canonCanal(dd.canal), id:x.id}; }), 'id');
+        const _dd=this._ventasAutoDedupe(_rows); _rows=_dd.list;
+        this._syncSet('ventas', this._maxAct(_d));
+        this.setState({ventas:_rows},()=>{ this.persist(); this._congelarCostosSoon();
+          if(_dd.removed.length){ _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } });
+        return; }
+    }
+    this.setState({ventasCargando:true});
     try{ let all=[]; let from=0; const page=500; let guard=0;
       while(guard++<400){ let data=null, lastErr=null;
-        for(let att=0; att<4; att++){ const res=await sb.from('ventas').select('id,data').order('id',{ascending:true}).range(from,from+page-1); if(!res.error){ data=res.data; lastErr=null; break; } lastErr=res.error; await new Promise(r=>setTimeout(r, 400*(att+1))); }
+        for(let att=0; att<4; att++){ const res=await sb.from('ventas').select(this.__venNoAct?'id,data':'id,data,actualizado').order('id',{ascending:true}).range(from,from+page-1); if(res.error && !this.__venNoAct && /actualizado/i.test(String(res.error.message||''))){ this.__venNoAct=true; att--; continue; } if(!res.error){ data=res.data; lastErr=null; break; } lastErr=res.error; await new Promise(r=>setTimeout(r, 400*(att+1))); }
         if(lastErr) throw lastErr;
         if(!data||!data.length) break;
         all=all.concat(data);
         if(data.length<page) break;
         from+=page;
       }
-      if(all.length){ let vlist=all.map(r=>{ const d=r.data||{}; return {...d, canal:this.canonCanal(d.canal), id:r.id}; });
+      if(all.length){ this._syncSet('ventas', this._maxAct(all)); let vlist=all.map(r=>{ const d=r.data||{}; return {...d, canal:this.canonCanal(d.canal), id:r.id}; });
         // Fusión de duplicados también AL CARGAR de la nube (antes solo al sincronizar Shopify):
         // limpia pares como ODA-00249/ODA-00478 del mismo pedido sin esperar otro sync.
         const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
@@ -9919,13 +9987,71 @@ Instrucciones de respuesta:
   cloudSubscribeVentas(){ const sb=this._sbClient(); if(!sb||this._venSub) return; try{ this._venSub=sb.channel('oda-ventas').on('postgres_changes',{event:'*',schema:'public',table:'ventas'},(payload)=>{ if(payload.eventType==='DELETE'){ const rid=payload.old&&payload.old.id; if(rid==null) return; const list=(this.state.ventas||[]).filter(v=>v.id!==rid); this.setState({ventas:list},()=>this.persist()); return; } const row=payload.new; if(!row||!row.data) return; const d=row.data; const obj={...d, canal:this.canonCanal(d.canal), id:row.id}; const list=(this.state.ventas||[]).slice(); const idx=list.findIndex(v=>v.id===obj.id); if(idx>=0) list[idx]=obj; else list.unshift(obj); this.setState({ventas:list},()=>this.persist()); }).subscribe(); }catch(e){} }
   // ---- cotizaciones compartidas (nube) ----
   _cotToDb(c){ return { id:c.id, data:c, actualizado:new Date().toISOString() }; }
-  async cloudLoadCotizaciones(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('cotizaciones').select('id,data'); if(error) throw error; if(data && data.length){ const _sig=JSON.stringify(data); if(_sig===this._cotSig){ return; } this._cotSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){} }
+  async cloudLoadCotizaciones(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=this.state.cotizaciones||[];
+    if(_cur.length && this._syncGet('cotizaciones')){ const _d=await this._cloudSince('cotizaciones','id,data');
+      if(_d){ this._syncSweepSoon('cotizaciones','cotizaciones','id'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
+        this._syncSet('cotizaciones', this._maxAct(_d));
+        this.setState({cotizaciones:_rows},()=>{ this.persist();  }); return; } }
+    try{ let _r=await sb.from('cotizaciones').select('id,data,actualizado'); if(_r.error) _r=await sb.from('cotizaciones').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('cotizaciones', this._maxAct(data)); if(data && data.length){ const _sig=JSON.stringify(data); if(_sig===this._cotSig){ return; } this._cotSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){} }
   async cloudSaveCotizacion(c){ const sb=this._sbClient(); if(!sb||!c) return; try{ await sb.from('cotizaciones').upsert(this._cotToDb(c)); }catch(e){} }
   async cloudDeleteCotizacion(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('cotizaciones').delete().eq('id',id); }catch(e){} }
   cloudSubscribeCotizaciones(){ const sb=this._sbClient(); if(!sb||this._cotSub) return; try{ this._cotSub=sb.channel('oda-cotizaciones').on('postgres_changes',{event:'*',schema:'public',table:'cotizaciones'},()=>{ this.cloudLoadCotizaciones(); }).subscribe(); }catch(e){} }
   // ---- finanzas compartidas (nube) ----
   _finToDb(o){ return { id:o.id, data:o, actualizado:new Date().toISOString() }; }
-  async _cloudLoadList(table, key, seedList, _retry){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from(table).select('id,data'); if(error) throw error; if(data && data.length){ let rows=data.map(r=>({...(r.data||{}), id:r.id})); if(key==='ventas'){ const d=this._ventasAutoDedupe(rows); if(d.removed.length){ rows=d.list; d.removed.forEach(id=>this._cloudDelOne(table, id)); } } this._cloudLoaded=this._cloudLoaded||{}; this._cloudLoaded[table]=true; this.setState({[key]:rows},()=>this.persist()); } else { this._cloudLoaded=this._cloudLoaded||{}; this._cloudLoaded[table]=true; const cur=seedList||[]; if(cur.length){ try{ await sb.from(table).upsert(cur.map(o=>this._finToDb(o))); }catch(e){} } } }catch(e){ if(!_retry){ setTimeout(()=>this._cloudLoadList(table,key,seedList,true), 2500); } else { const errs={...(this.state.cloudLoadErrs||{})}; errs[table]=String((e&&e.message)||e); this.setState({cloudLoadErrs:errs}); } } }
+  // ===== SINCRONIZACIÓN INCREMENTAL =====
+  // La primera vez que se abre la app se descarga TODO y se guarda local; de ahí en adelante
+  // cada carga solo pide las filas con 'actualizado' mayor a la marca de agua guardada
+  // (lo nuevo o corregido) y las fusiona sobre la copia local. Si nada cambió no hay
+  // setState, así que no hay re-render. El realtime sigue avisando al instante.
+  // Los borrados se detectan con un barrido liviano de ids (solo la primera vez por sesión).
+  _syncMap(){ if(!this.__syncMap){ let m=null; try{ m=JSON.parse(localStorage.getItem('oda_hub_sync_v1')); }catch(e){} this.__syncMap=(m&&typeof m==='object')?m:{}; } return this.__syncMap; }
+  _syncGet(t){ return this._syncMap()[t]||''; }
+  _syncSet(t, iso){ if(!t||!iso) return; const m=this._syncMap(); if(!(String(iso)>String(m[t]||''))) return; m[t]=String(iso); try{ localStorage.setItem('oda_hub_sync_v1', JSON.stringify(m)); }catch(e){} }
+  _syncReset(){ this.__syncMap={}; try{ localStorage.removeItem('oda_hub_sync_v1'); }catch(e){} }
+  _maxAct(rows){ let mx=''; (rows||[]).forEach(r=>{ const a=r&&r.actualizado; if(a && String(a)>mx) mx=String(a); }); return mx; }
+  _mergeRows(cur, rows, idField){ const f=idField||'id'; const map=new Map(); (cur||[]).forEach(o=>{ if(o) map.set(String(o[f]), o); }); (rows||[]).forEach(o=>{ if(o) map.set(String(o[f]), o); }); return Array.from(map.values()); }
+  // Trae solo lo cambiado. Devuelve null si la tabla no soporta delta (sin columna 'actualizado')
+  // o si todavía no hay copia local: en ese caso el llamador hace la carga completa.
+  async _cloudSince(table, sel){ const sb=this._sbClient(); if(!sb) return null;
+    const since=this._syncGet(table); if(!since) return null;
+    try{ const _sel=(sel==='*'?'*':((sel||'id,data')+',actualizado'));
+      const {data,error}=await sb.from(table).select(_sel).gt('actualizado', since).order('actualizado',{ascending:true}).limit(5000);
+      if(error) throw error; return data||[];
+    }catch(e){ return null; } }
+  // Barrido de borrados: pide SOLO los ids (una vez por sesión y por tabla) y quita de la copia
+  // local lo que ya no existe en la nube.
+  _syncSweepSoon(table, key, idField, colName){ this.__swept=this.__swept||{}; if(this.__swept[table]) return; this.__swept[table]=true;
+    setTimeout(async()=>{ const sb=this._sbClient(); if(!sb) return;
+      try{ const f=idField||'id'; const col=colName||(f==='codigo'?'codigo':'id');
+        const {data,error}=await sb.from(table).select(col).limit(20000); if(error||!data) return;
+        const vivos=new Set(data.map(r=>String(r[col])));
+        const cur=this.state[key]||[]; const out=cur.filter(o=>vivos.has(String(o&&o[f])));
+        if(out.length!==cur.length) this.setState({[key]:out},()=>this.persist());
+      }catch(e){}
+    }, 7000); }
+  // Reparación manual: olvida las marcas de agua y vuelve a descargar todo.
+  resyncTodo(){ this._syncReset(); this.__swept={};
+    this.toast('Volviendo a descargar todo desde la nube…');
+    this.cloudLoadProveedores(); this.cloudLoadMaterias(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas();
+    this.cloudLoadProducciones(); this.cloudLoadProdMez(); this.cloudLoadVentas(); this.cloudLoadCotizaciones(); this.cloudLoadServicios();
+    this.cloudLoadOrdenes(); this.cloudLoadRemisiones(); this.cloudLoadMovimientos(); this.cloudLoadGastos(); this.cloudLoadLiquidaciones();
+    this.cloudLoadCasos(); this.cloudLoadCreditos(); this.cloudLoadMsvc(); this.cloudLoadTiendas(); this.cloudLoadCuentas(); this.cloudLoadMetodos(); }
+  async _cloudLoadList(table, key, seedList, _retry){ const sb=this._sbClient(); if(!sb) return;
+    // Incremental: si ya hay copia local y marca de agua, solo lo cambiado.
+    const _cur=this.state[key]||[];
+    if(_cur.length && this._syncGet(table)){
+      const _d=await this._cloudSince(table);
+      if(_d){ this._cloudLoaded=this._cloudLoaded||{}; this._cloudLoaded[table]=true; this._syncSweepSoon(table, key);
+        if(!_d.length) return; // nada nuevo → ni setState ni re-render
+        let rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
+        if(key==='ventas'){ const dd=this._ventasAutoDedupe(rows); if(dd.removed.length){ rows=dd.list; dd.removed.forEach(id=>this._cloudDelOne(table, id)); } }
+        this._syncSet(table, this._maxAct(_d));
+        this.setState({[key]:rows},()=>this.persist());
+        return; }
+    }
+    try{ let _r=await sb.from(table).select('id,data,actualizado'); if(_r.error) _r=await sb.from(table).select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet(table, this._maxAct(data)); if(data && data.length){ let rows=data.map(r=>({...(r.data||{}), id:r.id})); if(key==='ventas'){ const d=this._ventasAutoDedupe(rows); if(d.removed.length){ rows=d.list; d.removed.forEach(id=>this._cloudDelOne(table, id)); } } this._cloudLoaded=this._cloudLoaded||{}; this._cloudLoaded[table]=true; this.setState({[key]:rows},()=>this.persist()); } else { this._cloudLoaded=this._cloudLoaded||{}; this._cloudLoaded[table]=true; const cur=seedList||[]; if(cur.length){ try{ await sb.from(table).upsert(cur.map(o=>this._finToDb(o))); }catch(e){} } } }catch(e){ if(!_retry){ setTimeout(()=>this._cloudLoadList(table,key,seedList,true), 2500); } else { const errs={...(this.state.cloudLoadErrs||{})}; errs[table]=String((e&&e.message)||e); this.setState({cloudLoadErrs:errs}); } } }
   async _cloudBulk(table, list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from(table).upsert(list.slice(i,i+200).map(o=>this._finToDb(o))); } }catch(e){} }
   async _cloudSaveOne(table, o){ const sb=this._sbClient(); if(!sb||!o) return; try{ await sb.from(table).upsert(this._finToDb(o)); }catch(e){} }
   async _cloudDelOne(table, id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from(table).delete().eq('id',id); }catch(e){} }
@@ -9963,7 +10089,14 @@ Instrucciones de respuesta:
   cloudDeleteCaso(id){ this._cloudDelOne('casos', id); }
   cloudSubscribeCasos(){ this._cloudSubTable('casos','_casSub','casos'); }
   // ---- servicios / ordenes / tiendas / remisiones (nube) ----
-  async cloudLoadServicios(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('servicios').select('id,data'); if(error) return; if(data && data.length){ this.setState({servicios:data.map(r=>r.data||{}).filter(s=>s&&s.codigo)},()=>this.persist()); } else { const cur=(this.state.servicios||[]).filter(s=>s&&s.codigo); if(cur.length){ try{ await sb.from('servicios').upsert(cur.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} } } }catch(e){} }
+  async cloudLoadServicios(){ const sb=this._sbClient(); if(!sb) return;
+    const _cur=(this.state.servicios||[]).filter(x=>x&&x.codigo);
+    if(_cur.length && this._syncGet('servicios')){ const _d=await this._cloudSince('servicios','id,data');
+      if(_d){ this._syncSweepSoon('servicios','servicios','codigo','id'); if(!_d.length) return;
+        const _rows=this._mergeRows(_cur, _d.map(r=>r.data||{}).filter(x=>x&&x.codigo), 'codigo');
+        this._syncSet('servicios', this._maxAct(_d));
+        this.setState({servicios:_rows},()=>this.persist()); return; } }
+    try{ let _r=await sb.from('servicios').select('id,data,actualizado'); if(_r.error) _r=await sb.from('servicios').select('id,data'); const {data,error}=_r; if(error) return; if(data) this._syncSet('servicios', this._maxAct(data)); if(data && data.length){ this.setState({servicios:data.map(r=>r.data||{}).filter(s=>s&&s.codigo)},()=>this.persist()); } else { const cur=(this.state.servicios||[]).filter(s=>s&&s.codigo); if(cur.length){ try{ await sb.from('servicios').upsert(cur.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} } } }catch(e){} }
   async cloudSaveServicio(s){ const sb=this._sbClient(); if(!sb||!s) return; try{ await sb.from('servicios').upsert({id:s.codigo, data:s, actualizado:new Date().toISOString()}); }catch(e){} }
   async cloudDeleteServicio(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('servicios').delete().eq('id',id); }catch(e){} }
   async cloudBulkServicios(l){ const sb=this._sbClient(); if(!sb||!l||!l.length) return; try{ await sb.from('servicios').upsert(l.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} }
@@ -9984,7 +10117,11 @@ Instrucciones de respuesta:
   cloudDeleteRemision(id){ this._cloudDelOne('remisiones', id); }
   cloudSubscribeRemisiones(){ this._cloudSubTable('remisiones','_remSub','remisiones'); }
   cloudStartAutoRefresh(){ if(this._cloudAutoSet) return; this._cloudAutoSet=true;
-    this._cloudFocus=()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles(); } };
+    // Red de seguridad del "en vivo": al volver a la pestaña se pide el delta de las tablas
+    // de trabajo (barato: si nada cambió no trae filas ni re-renderiza). Cubre el caso de que
+    // el realtime se haya caído mientras la pestaña estaba en segundo plano.
+    this._cloudFocus=()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles();
+      this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); } };
     try{ document.addEventListener('visibilitychange',this._cloudFocus); window.addEventListener('focus',this._cloudFocus); }catch(e){}
     this._cloudPoll=setInterval(()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); } },15000);
   }
@@ -14192,6 +14329,7 @@ Instrucciones de respuesta:
     if(st.modal==='saldodetalle' && st.draft && st.draft.nombre){ const dd=this.saldoDetalleRows(st.draft.nombre); out.sdNombre=st.draft.nombre; out.sdIniFmt=dd.iniFmt; out.sdRows=dd.rows; out.sdFinalFmt=dd.finalFmt; out.sdFinalColor=(dd.finalNeg?'var(--oda-sale)':'var(--text-strong)'); out.sdN=dd.n; out.sdExport=()=>this.exportSaldoDetalle(st.draft.nombre); out.sdCerrar=()=>this.setState({modal:null,draft:{}}); }
     out.isModalSaldoDetalle=st.modal==='saldodetalle';
     out.draftConArchivo=!!(st.draft&&st.draft._archivo); out.draftSinArchivo=!(st.draft&&st.draft._archivo); out.onDraftArchivo=(e)=>this.onDraftArchivo(e); out.quitarDraftArchivo=()=>this.quitarDraftArchivo();
+    out.onResyncTodo=()=>this.resyncTodo();
     out.onDraftInput=(e)=>this.updateDraft(e.target.name,e.target.value);
     out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     out.onDraftIvaExento=(e)=>this.onDraftIvaExento(e);
