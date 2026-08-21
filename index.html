@@ -10091,18 +10091,37 @@ Instrucciones de respuesta:
   async _cloudSince(table, sel){ const sb=this._sbClient(); if(!sb) return null;
     const since=this._syncGet(table); if(!since) return null;
     try{ const _sel=(sel==='*'?'*':((sel||'id,data')+',actualizado'));
-      const {data,error}=await sb.from(table).select(_sel).gt('actualizado', since).order('actualizado',{ascending:true}).limit(5000);
-      if(error) throw error; return data||[];
+      const page=500; let from=0, guard=0, out=[];
+      while(guard++<40){
+        const {data,error}=await sb.from(table).select(_sel).gt('actualizado', since).order('actualizado',{ascending:true}).range(from, from+page-1);
+        if(error) throw error;
+        if(!data||!data.length) break;
+        out=out.concat(data);
+        if(data.length<page) break;
+        from+=page;
+      }
+      return out;
     }catch(e){ return null; } }
   // Barrido de borrados: pide SOLO los ids (una vez por sesión y por tabla) y quita de la copia
   // local lo que ya no existe en la nube.
+  // OJO: la API corta los selects en ~1000 filas, así que el barrido PAGINA y solo poda si la
+  // lista de ids vino COMPLETA; sin eso desaparecían de la vista todas las filas más allá de
+  // las primeras 1000 (21-ago: «solo veo ventas hasta el 30 de junio»).
   _syncSweepSoon(table, key, idField, colName){ this.__swept=this.__swept||{}; if(this.__swept[table]) return; this.__swept[table]=true;
     setTimeout(async()=>{ const sb=this._sbClient(); if(!sb) return;
       try{ const f=idField||'id'; const col=colName||(f==='codigo'?'codigo':'id');
-        const {data,error}=await sb.from(table).select(col).limit(20000); if(error||!data) return;
-        const vivos=new Set(data.map(r=>String(r[col])));
+        const page=1000; let from=0, guard=0, completa=false; const vivos=new Set();
+        while(guard++<200){
+          const {data,error}=await sb.from(table).select(col).order(col,{ascending:true}).range(from, from+page-1);
+          if(error||!data) return; // ante cualquier duda no se poda nada
+          data.forEach(x=>vivos.add(String(x[col])));
+          if(data.length<page){ completa=true; break; }
+          from+=page;
+        }
+        if(!completa || !vivos.size) return;
         const cur=this.state[key]||[]; const out=cur.filter(o=>vivos.has(String(o&&o[f])));
-        if(out.length!==cur.length) this.setState({[key]:out},()=>this.persist());
+        // Salvaguarda: si el barrido pretende borrar más de la mitad, algo está mal.
+        if(out.length!==cur.length && out.length >= cur.length*0.5) this.setState({[key]:out},()=>this.persist());
       }catch(e){}
     }, 7000); }
   // Reparación manual: olvida las marcas de agua y vuelve a descargar todo.
