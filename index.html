@@ -1913,7 +1913,7 @@
                 </button>
               </div>
               </sc-if>
-              <div style="display:grid;grid-template-columns:64px minmax(280px,330px) minmax(320px,1fr);position:relative;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;min-height:600px;">
+              <div style="display:grid;grid-template-columns:64px minmax(280px,330px) minmax(320px,1fr);position:relative;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;height:calc(100vh - 232px);min-height:520px;">
 
                 <!-- riel de canales -->
                 <div style="border-right:1px solid var(--border-subtle);padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:10px;">
@@ -2004,6 +2004,7 @@
                     <button onClick="{{ onConvFichaToggle }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;" style-hover="background:var(--surface-raised);">{{ convFichaBtnL }}</button>
                     <sc-if value="{{ cv.esBot }}" hint-placeholder-val="{{ false }}"><button onClick="{{ convTomarBtn }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:8px 15px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">Tomar</button></sc-if>
                     <sc-if value="{{ cv.noResuelta }}" hint-placeholder-val="{{ true }}"><button onClick="{{ convResolverBtn }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:8px 15px;border:none;border-radius:var(--radius-pill);background:rgba(98,123,96,0.16);color:#4C6149;cursor:pointer;">Marcar resuelta</button></sc-if>
+                    <sc-if value="{{ convBorrarShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ convBorrarBtn }}" title="Borra la conversación y su historial · el próximo mensaje del cliente entra como conversación nueva" style="font-family:inherit;font-size:12px;font-weight:800;padding:8px 13px;border:1px solid rgba(181,80,60,0.35);border-radius:var(--radius-pill);background:transparent;color:#8E3F2F;cursor:pointer;" style-hover="background:rgba(181,80,60,0.08);">Borrar historial</button></sc-if>
                   </div>
                   <div style="flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background:var(--surface-page);">
                     <sc-for list="{{ cv.mensajes }}" as="m" hint-placeholder-count="3">
@@ -11915,6 +11916,23 @@ Instrucciones de respuesta:
       await sb.from('wa_optout').delete().in('contacto', Array.from(new Set(claves.filter(Boolean))));
     }catch(e){} }
     this.toast('Promociones reactivadas para '+(c.cliente||'este cliente')); }
+  // Borra la conversación y sus mensajes (nube + local). El próximo mensaje del cliente
+  // entra como conversación nueva, con el saludo del bot desde cero: sirve para probar el
+  // flujo completo y para limpiar hilos de prueba.
+  async convBorrar(id){ const c=this.convList().find(x=>x.id===id); if(!c) return;
+    if(!window.confirm('¿Borrar la conversación con '+(c.cliente||id)+' y todo su historial? El próximo mensaje del cliente entrará como conversación nueva. Esta acción no se puede deshacer.')) return;
+    const sb=this._sbClient();
+    if(sb && this.state.convsCloud){
+      try{ await sb.from('mensajes').delete().eq('conversacion_id', id); }catch(e){}
+      try{ await sb.from('conversaciones').delete().eq('id', id); }catch(e){}
+    }
+    if(this._convMsgCache) delete this._convMsgCache[id];
+    this._convSig=null;
+    const list=this.convList().filter(x=>x.id!==id);
+    this.persistConvs(list);
+    this.setState({convSel:null, convMsgDraft:''});
+    this.toast('Conversación borrada · el próximo mensaje entra como nueva');
+  }
   convResolver(id){ this.convUpdate(id, c=>({...c, estado:'resuelta', noLeidos:0})); this.cloudSaveConv(id,{estado:'resuelta', no_leidos:0}); this.toast('Conversación marcada como resuelta'); }
   convResponder(id){ const txt=String(this.state.convMsgDraft||'').trim(); if(!txt) return; const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId;
     this.convUpdate(id, c=>{ const _now=new Date().toISOString(); c.mensajes.push({de:'asesor', texto:txt, at:_now, fecha:this._convFechaDe(_now), hora:this.convHoraTxt()}); return {...c, estado:'humano', asignadoA:c.asignadoA||me, noLeidos:0}; });
@@ -12820,6 +12838,8 @@ Instrucciones de respuesta:
         out.convTomarBtn=()=>this.convTomar(cc.id); out.convDevolverBtn=()=>this.convDevolverBot(cc.id); out.convResolverBtn=()=>this.convResolver(cc.id);
         out.convCasoBtn=()=>this.convCrearCaso(cc); out.convLeadBtn=()=>this.convCrearLead(cc);
         out.convMsgDraft=st.convMsgDraft||''; out.onConvMsgDraft=(e)=>this.setState({convMsgDraft:e.target.value});
+        out.convBorrarShow=this.isAdminUser();
+        out.convBorrarBtn=()=>this.convBorrar(cc.id);
         out.convEnviarBtn=()=>this.convResponder(cc.id);
         out.onConvMsgKey=(e)=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.convResponder(cc.id); } };
         const _setDraft=(t)=>this.setState({convMsgDraft:t});
