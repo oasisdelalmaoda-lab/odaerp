@@ -2301,12 +2301,31 @@
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   {{ igNomBtnTxt }}
                 </button>
+                <button onClick="{{ igDiagRun }}" title="Consulta qué permisos trae el token con el que la app envía DMs de Instagram" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);cursor:pointer;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V8a5 5 0 0 1 10 0v3"></path></svg>
+                  {{ igDiagBtnTxt }}
+                </button>
                 <button onClick="{{ canalesVerificar }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;flex-shrink:0;" style-hover="background:#8A6F49;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"></path><path d="M21 3v6h-6"></path></svg>
                   {{ canalesBtnTxt }}
                 </button>
               </div>
 
+              <sc-if value="{{ igDiagShow }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid {{ igDiagBorde }};border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:99px;background:{{ igDiagDot }};"></span><h3 style="font-family:var(--font-display);font-size:17px;font-weight:600;margin:0;">Permisos del token de Instagram</h3></div>
+                  <p style="font-size:12.5px;color:var(--text-body);margin:0 0 14px;line-height:1.55;text-wrap:pretty;">{{ igDiagVeredicto }}</p>
+                  <div style="display:grid;grid-template-columns:auto 1fr;gap:7px 18px;">
+                    <sc-for list="{{ igDiagFilas }}" as="f" hint-placeholder-count="4">
+                      <div style="font-size:11.5px;font-weight:700;color:var(--text-muted);white-space:nowrap;">{{ f.k }}</div>
+                      <div style="font-size:12px;color:{{ f.color }};word-break:break-word;">{{ f.v }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ igDiagErrShow }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;font-size:12.5px;color:#8E3F2F;">{{ igDiagErr }}</div>
+              </sc-if>
               <sc-if value="{{ canalesSinDatos }}" hint-placeholder-val="{{ true }}">
                 <div style="background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:34px 24px;text-align:center;">
                   <p style="font-size:13.5px;color:var(--text-body);margin:0 0 4px;font-weight:700;">Aún no has verificado los canales</p>
@@ -9022,6 +9041,49 @@ Instrucciones de respuesta:
     }catch(e){ this.setState({canDiagLoading:false, canDiagErr:(e&&e.message)||'No se pudo verificar los canales'}); }
     this.cargarEnvLog();
   }
+  // Diagnóstico de permisos de Instagram/Messenger: le pregunta a 'meta-send' qué tokens
+  // tiene el servidor, a qué app y cuenta pertenecen y con qué permisos (scopes) fueron
+  // emitidos. Sirve para ver si el App Review aprobado corresponde al permiso que la API
+  // exige en el error #200 y si el token en uso es el de la app aprobada.
+  async igPermisosDiag(){
+    if(this.state.igDiagLoading) return;
+    this.setState({igDiagLoading:true, igDiagErr:'', igDiag:null});
+    try{
+      const r=await fetch(this.CLOUD_URL+'/functions/v1/meta-send',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({mode:'diag'})});
+      const d=await r.json().catch(()=>({}));
+      if(d && d.error) throw new Error(d.error);
+      this.setState({igDiag:d||{}, igDiagLoading:false});
+    }catch(e){ this.setState({igDiagLoading:false, igDiagErr:(e&&e.message)||'No respondió el diagnóstico'}); }
+  }
+  // Traduce el diagnóstico crudo a filas legibles + veredicto sobre el permiso de mensajería.
+  igPermisosFilas(){
+    const d=this.state.igDiag; if(!d) return null;
+    const scopes=(x)=>{ const dd=x&&x.data; return (dd&&Array.isArray(dd.scopes))? dd.scopes : []; };
+    const pS=scopes(d.page_debug), iS=scopes(d.ig_debug);
+    const todos=pS.concat(iS);
+    const tiene=(n)=>todos.some(s=>String(s)===n);
+    const msgIg=tiene('instagram_manage_messages')||tiene('instagram_business_manage_messages');
+    const filas=[];
+    const F=(k,v,ok)=>filas.push({k, v:(v===''||v===null||v===undefined)?'—':String(v), color:(ok===true?'#4C6149':(ok===false?'#8E3F2F':'var(--text-strong)'))});
+    F('Token de página', d.tienePageToken?'configurado':'FALTA', !!d.tienePageToken);
+    F('Token de Instagram', d.tieneIgToken?'configurado':'no hay (usa el de la página)', undefined);
+    const pMe=d.page_me||{}, iMe=d.ig_me||{};
+    F('Página de Facebook', pMe.name? (pMe.name+' · '+(pMe.id||'')) : ((pMe.error&&pMe.error.message)||'—'), !!pMe.name);
+    const igAcc=(d.page_ig&&(d.page_ig.instagram_business_account||d.page_ig.connected_instagram_account))||null;
+    F('Instagram de la página', igAcc? ('@'+(igAcc.username||'')+' · '+(igAcc.id||'')) : '—', !!igAcc);
+    if(d.tieneIgToken) F('Cuenta del token de IG', iMe.username? ('@'+iMe.username+' · '+(iMe.account_type||'')) : ((iMe.error&&iMe.error.message)||'—'), !!iMe.username);
+    const dbg=(d.page_debug&&d.page_debug.data)||{};
+    F('App del token', (dbg.app_id||'—')+(dbg.application?(' · '+dbg.application):''), !!dbg.app_id);
+    F('Tipo de token', dbg.type||'—', undefined);
+    F('Vence', dbg.expires_at? new Date(dbg.expires_at*1000).toLocaleDateString('es-CO') : 'no vence', undefined);
+    F('Permiso de mensajería de IG', msgIg? 'presente en el token' : 'NO está en el token', msgIg);
+    F('pages_messaging', tiene('pages_messaging')? 'sí' : 'no', tiene('pages_messaging'));
+    F('Permisos del token', todos.length? todos.join(', ') : '—', undefined);
+    return { filas, msgIg,
+      veredicto: msgIg
+        ? 'El token trae el permiso de mensajería. Si Meta sigue devolviendo el error #200, lo que falta es el ACCESO AVANZADO de ese permiso (App Review aprobado pero en acceso estándar) o la app está en modo Development: revisa en el panel de la app, en Permisos y funciones, que la columna diga «Acceso avanzado» y que la app esté en modo Live.'
+        : 'El token NO trae el permiso de mensajería de Instagram. Aunque el App Review esté aprobado, este token se emitió sin ese permiso: hay que volver a generarlo aceptando todos los permisos (y si migraste a Instagram Login, guardar el token de Instagram en META_IG_TOKEN).' };
+  }
   // Nombres de Instagram/Messenger: pide a meta-inbound que vuelva a resolver los perfiles de
   // las conversaciones que quedaron con el marcador numérico («Instagram · 794476»).
   async igNombresAhora(){
@@ -12439,6 +12501,14 @@ Instrucciones de respuesta:
       out.canalesErr=st.canDiagErr||''; out.canalesErrShow=!!st.canDiagErr;
       out.canalesBtnTxt=st.canDiagLoading? 'Verificando…' : 'Verificar canales';
       out.canalesVerificar=()=>this.cargarCanales();
+      out.igDiagRun=()=>this.igPermisosDiag();
+      out.igDiagBtnTxt=st.igDiagLoading? 'Revisando permisos…' : 'Revisar permisos de IG';
+      out.igDiagErr=st.igDiagErr||''; out.igDiagErrShow=!!st.igDiagErr;
+      { const _pd=this.igPermisosFilas();
+        out.igDiagShow=!!_pd; out.igDiagFilas=(_pd&&_pd.filas)||[];
+        out.igDiagVeredicto=(_pd&&_pd.veredicto)||'';
+        out.igDiagDot=(_pd&&_pd.msgIg)?'#627B60':'#B5503C';
+        out.igDiagBorde=(_pd&&_pd.msgIg)?'var(--border-subtle)':'rgba(181,80,60,0.35)'; }
       out.igNomBtnTxt=st.igNomLoading? 'Actualizando…' : 'Actualizar nombres de IG';
       out.igNomAhora=()=>this.igNombresAhora();
       out.canalesTsShow=!!st.canDiagTs;
