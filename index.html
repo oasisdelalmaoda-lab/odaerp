@@ -7849,7 +7849,19 @@ class Component extends DCLogic {
     try{ const {data,error}=await sb.auth.signInWithPassword({email,password:pwd}); if(error) throw error; this._enterAppFromCloud(data.user); }
     catch(e){ this.setState({loginBusy:false,loginError:this._cloudErrEs((e&&e.message)||'No se pudo iniciar sesión')}); }
   }
-  _enterAppFromCloud(user){ const email=(user.email||'').toLowerCase(); const lu=this.users.find(x=>(x.email||'').toLowerCase()===email);
+  // Equipo nuevo / ventana de incógnito: la lista de usuarios creados a mano vive en la nube
+  // (permisos.__usuarios__), pero localStorage está vacío la primera vez, así que antes de
+  // rechazar el ingreso se baja esa lista y se vuelve a buscar el correo. Sin esto, un usuario
+  // recién creado no podía entrar desde otro equipo («no está vinculada a un usuario»).
+  async _enterAppFromCloud(user){ const email=(user.email||'').toLowerCase(); let lu=this.users.find(x=>(x.email||'').toLowerCase()===email);
+    if(!lu){ try{ const sb=this._sbClient();
+      if(sb){ const {data}=await sb.from('permisos').select('user_key,perms').eq('user_key','__usuarios__').limit(1);
+        const ucfg=(data&&data[0]&&data[0].perms)||null;
+        if(ucfg){ const loc=this._usersCfgGet();
+          if((Number(ucfg._ts)||0) >= (Number(loc._ts)||0)){ this._usersCfgCache={ overrides:(ucfg.overrides||{}), custom:(ucfg.custom||[]), _ts:(Number(ucfg._ts)||0) };
+            try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(this._usersCfgCache)); }catch(e){} }
+          lu=this.users.find(x=>(x.email||'').toLowerCase()===email); } }
+    }catch(e){} }
     if(!lu){ this.setState({loginBusy:false,loginError:'Tu cuenta de nube no está vinculada a un usuario del sistema. Avísale al administrador.'}); try{ if(this._sb) this._sb.auth.signOut(); }catch(e){} return; }
     this._afterCloudLogin(user);
     const fm=this._firstModuleFor(lu);
