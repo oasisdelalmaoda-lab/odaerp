@@ -5052,6 +5052,14 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Costo unitario base sin IVA (COP)<input name="costo" type="number" value="{{ draft.costo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">IVA (%)<input name="iva" type="number" min="0" max="100" value="{{ draft.iva }}" onInput="{{ onDraftInput }}" placeholder="19" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="grid-column:1/3;display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--text-body);cursor:pointer;"><input name="ivaExento" type="checkbox" checked="{{ draft.ivaExento }}" onChange="{{ onDraftIvaExento }}" style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;">Exenta de IVA (ej. agua) — el IVA queda en 0%</label>
+                <sc-if value="{{ matPtNo }}" hint-placeholder-val="{{ false }}">
+                  <label style="grid-column:1/3;display:flex;align-items:flex-start;gap:9px;font-size:12.5px;font-weight:700;color:var(--text-body);cursor:pointer;background:rgba(167,134,89,0.08);border:1px solid rgba(167,134,89,0.28);border-radius:var(--radius-sm);padding:10px 12px;"><input name="crearPT" type="checkbox" checked="{{ draft.crearPT }}" onChange="{{ onDraftCheck }}" style="width:16px;height:16px;margin-top:1px;accent-color:var(--brand-primary);cursor:pointer;">
+                    <span>Crear también el producto terminado con este mismo código<span style="display:block;font-weight:400;font-size:10.5px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Se agrega a Desarrollo de producto con estructura de 1 {{ matPtUnidad }} de esta materia. Ponle precio de venta después.</span></span>
+                  </label>
+                </sc-if>
+                <sc-if value="{{ matPtExiste }}" hint-placeholder-val="{{ false }}">
+                  <div style="grid-column:1/3;font-size:11.5px;font-weight:600;color:var(--text-muted);background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:9px 12px;">Ya existe el producto terminado {{ draft.codigo }} con este mismo código.</div>
+                </sc-if>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Proveedor<input list="dlProvPick" value="{{ provPickText }}" onChange="{{ onprovPick }}" onInput="{{ onprovPick }}" placeholder="Escribe o elige un proveedor…" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><datalist id="dlProvPick"><sc-for list="{{ proveedoresOptions }}" as="p" hint-placeholder-count="0"><option value="{{ p.label }}"></option></sc-for></datalist></label>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Marca del producto<input name="marca" value="{{ draft.marca }}" onInput="{{ onDraftInput }}" placeholder="Marca o fabricante del insumo" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
@@ -8276,7 +8284,18 @@ class Component extends DCLogic {
       }
       this.toast('Código '+oldC+' → '+newC+(tocadas.length?(' · actualizado en '+tocadas.join(', ')):' · sin transacciones relacionadas'));
       return; }
-    this.setState({materias:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveMateria(row); this.toast('Materia guardada'); }
+    const _crearPT=!!d.crearPT;
+    this.setState({materias:list,modal:null,draft:{}},()=>{ this.persist(); if(_crearPT) this.crearPTDesdeMateria(row); }); if(this.cloudOn()) this.cloudSaveMateria(row); this.toast('Materia guardada'); }
+  // Materia que además se vende tal cual: crea el producto terminado con EL MISMO código y
+  // una estructura de 1 unidad de la materia, así el costo y el consumo de inventario salen
+  // de ella. El precio de venta queda en 0 para que se cargue después.
+  crearPTDesdeMateria(m){ if(!m||!m.codigo) return;
+    if((this.state.productos||[]).some(p=>p.codigo===m.codigo)){ this.toast('Ya existe el producto terminado '+m.codigo); return; }
+    const row={codigo:m.codigo, nombre:m.nombre, formato:(m.tipo==='producto terminado'?'unidad':(m.tipo||'unidad')), tamano:'', precio:0, cobraIva:(Number(m.iva)>0), iva:19, stockInicial:0, esReventa:false, costoCompra:0, foto:'', formula:[{materiaCodigo:m.codigo, cantidad:1}]};
+    const list=(this.state.productos||[]).concat([row]);
+    this.setState({productos:list},()=>this.persist());
+    if(this.cloudOn()) this.cloudSaveProducto(row);
+    this.toast('Producto terminado '+m.codigo+' creado · ponle precio de venta en Desarrollo de producto'); }
 
   // ---- servicios ----
   categoriaServStyle(c){ const m={ 'Maquila':{bg:'rgba(167,134,89,0.2)',fg:'#7A5E36'}, 'Logística':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Marketing':{bg:'rgba(156,151,162,0.24)',fg:'#615C6B'}, 'IA':{bg:'rgba(76,97,73,0.16)',fg:'#4C6149'}, 'Página web':{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'}, 'Servicios profesionales':{bg:'rgba(122,147,121,0.18)',fg:'#4C6149'}, 'Mantenimiento':{bg:'rgba(193,170,129,0.28)',fg:'#7A6035'}, 'Arriendo':{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
@@ -14124,6 +14143,10 @@ Instrucciones de respuesta:
       out.matCodFg=out.matCodLock?'var(--text-muted)':'var(--text-strong)';
       out.matCodTitle=out.matCodLock?'Solo el Administrador puede cambiar el código':'';
       out.matCodHint=!_edit?'':(out.matCodLock?'Solo el Administrador puede cambiarlo':'Al cambiarlo se actualizan todas las transacciones relacionadas');
+      const _cod=String(st.draft.codigo||'').trim();
+      out.matPtExiste=!!(_cod && (st.productos||[]).some(p=>p.codigo===_cod));
+      out.matPtNo=!out.matPtExiste;
+      out.matPtUnidad=st.draft.unidad||'und';
     }
     out.isModalEditMasivo=st.modal==='editmasivo'; out.isModalCliente=st.modal==='cliente'; out.isModalWaCampaign=st.modal==='wacampaign'; out.isModalProveedor=st.modal==='proveedor'; out.isModalMateria=st.modal==='materia'; out.isModalOrden=st.modal==='orden'; out.isModalFactura=st.modal==='factura'; out.isModalPago=st.modal==='pago'; out.isModalImport=st.modal==='import'; out.isModalDetalle=st.modal==='detalle'; out.isModalProducto=st.modal==='producto'; out.isModalKit=st.modal==='kit'; out.isModalMezcla=st.modal==='mezcla'; out.isModalBulk=st.modal==='bulkproducto'; out.isModalProduccion=st.modal==='produccion'; out.isModalAjuste=st.modal==='ajusteinv'; out.isModalServicio=st.modal==='servicio'; out.isModalEntrega=st.modal==='entrega'; out.isModalRecibir=st.modal==='recibirorden'; out.recibirSinPendientes=(st.modal==='recibirorden' && !((st.draft._pendientes||[]).length)); out.isModalProduccionMez=st.modal==='produccionmez'; out.isModalVenta=st.modal==='venta'; out.isModalCotizacion=st.modal==='cotizacion'; out.isModalDetalleVenta=st.modal==='detalleventa'; out.isModalMovimiento=st.modal==='movimiento'; out.isModalCuentaFin=st.modal==='cuentafin'; out.isModalCobro=st.modal==='cobro';
     if(st.modal==='cobro'){ const _v=(st.ventas||[]).find(x=>x.id===st.draft._id); const _ab=((_v&&_v.cobros)||[]).filter(c=>Number(c.monto)>0);
