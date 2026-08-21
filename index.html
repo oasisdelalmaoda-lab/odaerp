@@ -7862,7 +7862,8 @@ class Component extends DCLogic {
             try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(this._usersCfgCache)); }catch(e){} }
           lu=this.users.find(x=>(x.email||'').toLowerCase()===email); } }
     }catch(e){} }
-    if(!lu){ this.setState({loginBusy:false,loginError:'Tu cuenta de nube no está vinculada a un usuario del sistema. Avísale al administrador.'}); try{ if(this._sb) this._sb.auth.signOut(); }catch(e){} return; }
+    if(!lu){ const _n=(this.users||[]).length; const _sample=(this.users||[]).map(x=>(x.email||'').toLowerCase()).filter(Boolean).slice(0,6).join(', ');
+      this.setState({loginBusy:false,loginError:'Tu cuenta de nube ('+email+') no está vinculada a un usuario del sistema. La app encontró '+_n+' usuarios registrados'+(_sample?' ('+_sample+')':'')+'. Avísale al administrador.'}); try{ if(this._sb) this._sb.auth.signOut(); }catch(e){} return; }
     this._afterCloudLogin(user);
     const fm=this._firstModuleFor(lu);
     this.setState({userId:lu.id, view:'app', loginPwd:'', loginEmail:'', loginError:'', loginBusy:false}, ()=>this.goModule(fm));
