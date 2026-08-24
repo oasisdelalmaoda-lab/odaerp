@@ -8880,6 +8880,8 @@ Instrucciones de respuesta:
   nextOVFrom(list){ let mx=0; (list||[]).forEach(v=>{ if(v.origen==='historico') return; const n=this.ovNum(v); if(n>mx) mx=n; }); return 'ODA-'+String(mx+1).padStart(5,'0'); }
   async shopifySyncReal(){
     if(this._syncLock || this.state.shopifySyncing) return;
+    // Con la lista de ventas incompleta (la carga de nube falló) el sync repartiría OVs ya usados.
+    if(this.cloudOn() && this._venFail){ this.toast('No se pudo cargar la lista de ventas. Recarga la página antes de descargar pedidos.'); return; }
     this._syncLock=true;
     this.setState({shopifySyncing:true});
     try{
@@ -8933,8 +8935,12 @@ Instrucciones de respuesta:
       });
       // asignar consecutivo OV a los pedidos nuevos (sin desplazar los existentes) — autocorregible
       // contra números YA en uso, para no colisionar con una importación corriendo casi a la vez.
-      const usedOV=new Set(); list.forEach(v=>{ if(v.origen!=='historico'){ const n=this.ovNum(v); if(n>0) usedOV.add(n); } });
-      let nextOVn=1; const takeNextOV=()=>{ while(usedOV.has(nextOVn)) nextOVn++; usedOV.add(nextOVn); return nextOVn++; };
+      // Los históricos TAMBIÉN reservan su número (antes se excluían y el sync repartía otra vez su OV),
+      // y el consecutivo arranca en el MÁXIMO+1: rellenar huecos le ponía a un pedido nuevo un OV viejo
+      // (24-ago: ODA-00250 quedó en tres ventas y el listado se desordenó).
+      const usedOV=new Set(); list.forEach(v=>{ const n=this.ovNum(v); if(n>0) usedOV.add(n); });
+      let _mxOV=0; usedOV.forEach(n=>{ if(n>_mxOV) _mxOV=n; });
+      let nextOVn=_mxOV+1; const takeNextOV=()=>{ while(usedOV.has(nextOVn)) nextOVn++; usedOV.add(nextOVn); return nextOVn++; };
       const sinOV=list.filter(v=>v.origen!=='historico' && !this.ovNum(v)).sort((a,b)=>this.pedidoNum(a)-this.pedidoNum(b));
       sinOV.forEach((v)=>{ v.ov='ODA-'+String(takeNextOV()).padStart(5,'0'); touched.add(v.id); });
       const _dd=this._ventasAutoDedupe(list); list=_dd.list; (_dd.changed||[]).forEach(v=>touched.add(v.id));
@@ -9271,17 +9277,39 @@ Instrucciones de respuesta:
   // Referencia combinada de una venta: OV interna + nº de pedido Shopify (ambos siempre que existan).
   ventaRef(v){ const ov=(v&&v.ov)?String(v.ov):''; const ped=(v&&v.pedido)?String(v.pedido):''; if(ov&&ped) return ov+' · '+ped; return ov||ped||'—'; }
   ovNum(v){ const m=String(v&&v.ov||'').match(/(\d+)/); return m? parseInt(m[1],10) : 0; }
+  // Reparación: si dos o más ventas quedaron con el MISMO OV (pasó el 24-ago, el sync repartió
+  // números ya usados), la más antigua conserva el número y las otras se mandan al final del
+  // consecutivo. Corre una vez por sesión tras cargar ventas; solo sube a la nube las que tocó.
+  _ovDupSoon(){ clearTimeout(this._ovDupT); this._ovDupT=setTimeout(()=>this.repararOVDuplicados(), 8000); }
+  repararOVDuplicados(){
+    if(this._ovDupDone || this._venFail) return;
+    const acc=this.access(); if(!acc || this._modLevel(acc,'ventas')!=='write') return;
+    this._ovDupDone=true;
+    const list=(this.state.ventas||[]).slice();
+    const byN={}; list.forEach(v=>{ const n=this.ovNum(v); if(n>0){ (byN[n]=byN[n]||[]).push(v); } });
+    const used=new Set(Object.keys(byN).map(Number)); let mx=0; used.forEach(n=>{ if(n>mx) mx=n; });
+    const fix={};
+    Object.keys(byN).forEach(k=>{ const arr=byN[k]; if(arr.length<2) return;
+      arr.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||'')) || String(a.id||'').localeCompare(String(b.id||'')));
+      arr.slice(1).forEach(v=>{ let n=mx+1; while(used.has(n)) n++; used.add(n); if(n>mx) mx=n; fix[v.id]='ODA-'+String(n).padStart(5,'0'); }); });
+    const ids=Object.keys(fix); if(!ids.length) return;
+    const out=list.map(v=>fix[v.id]?{...v, ov:fix[v.id]}:v);
+    const touched=out.filter(v=>fix[v.id]);
+    this.setState({ventas:out},()=>{ this.persist(); if(this.cloudOn()) this.cloudBulkVentas(touched); });
+    this.toast('Se corrigieron '+ids.length+' referencias OV repetidas');
+  }
   // Consecutivo interno ESTABLE: solo asigna ODA-xxxxx a pedidos que aún no lo tengan,
   // tomando el siguiente número libre (máximo existente + 1). Nunca renumera lo ya asignado,
   // así un pedido manual (p. ej. Pedro Cabrales) conserva su consecutivo aunque entren ventas de Shopify.
   // Dentro de un mismo lote nuevo, ordena por número de pedido de Shopify y luego por fecha.
-  assignMissingOV(){ const list=(this.state.ventas||[]).slice(); const used=new Set(); list.forEach(v=>{ if(v.origen==='historico') return; const n=this.ovNum(v); if(n>0) used.add(n); });
+  assignMissingOV(){ const list=(this.state.ventas||[]).slice(); const used=new Set(); list.forEach(v=>{ const n=this.ovNum(v); if(n>0) used.add(n); });
     const missing=list.filter(v=>v.origen!=='historico' && !this.ovNum(v));
     if(!missing.length){ if(this.cloudOn()) this.cloudBulkVentas(list); return; }
     missing.sort((a,b)=>{ const na=this.pedidoNum(a), nb=this.pedidoNum(b); if(na&&nb&&na!==nb) return na-nb; if(na&&!nb) return -1; if(!na&&nb) return 1; return (a.fecha||'').localeCompare(b.fecha||''); });
     // Autocorregible: verifica contra los números YA en uso (no solo el máximo), así dos
     // operaciones casi simultáneas (import + sync) nunca reparten el mismo consecutivo.
-    let next=1; const takeNext=()=>{ while(used.has(next)) next++; used.add(next); return next++; };
+    let _mx=0; used.forEach(n=>{ if(n>_mx) _mx=n; });
+    let next=_mx+1; const takeNext=()=>{ while(used.has(next)) next++; used.add(next); return next++; };
     const idMap={}; missing.forEach((v)=>{ idMap[v.id]='ODA-'+String(takeNext()).padStart(5,'0'); });
     const out=list.map(v=>idMap[v.id]?{...v,ov:idMap[v.id]}:v);
     this.setState({ventas:out},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(out); }
@@ -9963,7 +9991,7 @@ Instrucciones de respuesta:
         let _rows=this._mergeRows(_cur, _d.map(x=>{ const dd=x.data||{}; return {...dd, canal:this.canonCanal(dd.canal), id:x.id}; }), 'id');
         const _dd=this._ventasAutoDedupe(_rows); _rows=_dd.list;
         this._syncSet('ventas', this._maxAct(_d));
-        this.setState({ventas:_rows},()=>{ this.persist(); this._congelarCostosSoon();
+        this.setState({ventas:_rows},()=>{ this.persist(); this._congelarCostosSoon(); this._ovDupSoon();
           if(_dd.removed.length){ _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } });
         return; }
     }
@@ -9981,7 +10009,7 @@ Instrucciones de respuesta:
         // Fusión de duplicados también AL CARGAR de la nube (antes solo al sincronizar Shopify):
         // limpia pares como ODA-00249/ODA-00478 del mismo pedido sin esperar otro sync.
         const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
-        this.setState({ventas:vlist, ventasCargando:false},()=>{ this._congelarCostosSoon(); if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
+        this.setState({ventas:vlist, ventasCargando:false},()=>{ this._congelarCostosSoon(); this._ovDupSoon(); if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
       else { this.setState({ventasCargando:false}); const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } }
     }catch(e){ this.setState({ventasCargando:false});
       // Reintento ACOTADO: antes reintentaba en bucle infinito cada 1.5 s y el toast
@@ -9990,9 +10018,9 @@ Instrucciones de respuesta:
       console.warn('[ventas] no se pudo cargar de la nube:', e);
       this._venRetry=(this._venRetry||0)+1;
       if(this._venRetry<=3){ this.toast('Reintentando cargar ventas… ('+this._venRetry+'/3)'); setTimeout(()=>{ this._venLoading=false; this.cloudLoadVentas(); }, 1500*this._venRetry); }
-      else { this._venLoading=false; this.toast('No se pudieron cargar las ventas: '+_msg); }
+      else { this._venLoading=false; this._venFail=true; this.toast('No se pudieron cargar las ventas: '+_msg); }
       return; }
-    this._venRetry=0; this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
+    this._venRetry=0; this._venFail=false; this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
   }
   async cloudSaveVenta(v){ const sb=this._sbClient(); if(!sb||!v) return; try{ await sb.from('ventas').upsert(this._ventaToDb(v)); }catch(e){} }
   async cloudBulkVentas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from('ventas').upsert(list.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} }
