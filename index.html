@@ -8935,11 +8935,10 @@ Instrucciones de respuesta:
       });
       // asignar consecutivo OV a los pedidos nuevos (sin desplazar los existentes) — autocorregible
       // contra números YA en uso, para no colisionar con una importación corriendo casi a la vez.
-      // Los históricos TAMBIÉN reservan su número (antes se excluían y el sync repartía otra vez su OV),
-      // y el consecutivo arranca en el MÁXIMO+1: rellenar huecos le ponía a un pedido nuevo un OV viejo
+      // Los históricos NO entran en el consecutivo (ni reservan número ni definen el máximo).
+      // El contador arranca en el MÁXIMO+1: rellenar huecos le ponía a un pedido nuevo un OV viejo
       // (24-ago: ODA-00250 quedó en tres ventas y el listado se desordenó).
-      const usedOV=new Set(); list.forEach(v=>{ const n=this.ovNum(v); if(n>0) usedOV.add(n); });
-      let _mxOV=0; usedOV.forEach(n=>{ if(n>_mxOV) _mxOV=n; });
+      const usedOV=new Set(); let _mxOV=0; list.forEach(v=>{ if(v.origen==='historico') return; const n=this.ovNum(v); if(n>0){ usedOV.add(n); if(n>_mxOV) _mxOV=n; } });
       let nextOVn=_mxOV+1; const takeNextOV=()=>{ while(usedOV.has(nextOVn)) nextOVn++; usedOV.add(nextOVn); return nextOVn++; };
       const sinOV=list.filter(v=>v.origen!=='historico' && !this.ovNum(v)).sort((a,b)=>this.pedidoNum(a)-this.pedidoNum(b));
       sinOV.forEach((v)=>{ v.ov='ODA-'+String(takeNextOV()).padStart(5,'0'); touched.add(v.id); });
@@ -9280,14 +9279,14 @@ Instrucciones de respuesta:
   // Reparación: si dos o más ventas quedaron con el MISMO OV (pasó el 24-ago, el sync repartió
   // números ya usados), la más antigua conserva el número y las otras se mandan al final del
   // consecutivo. Corre una vez por sesión tras cargar ventas; solo sube a la nube las que tocó.
-  _ovDupSoon(){ clearTimeout(this._ovDupT); this._ovDupT=setTimeout(()=>this.repararOVDuplicados(), 8000); }
+  _ovDupSoon(){ /* DESACTIVADO 24-ago: la reparación automática infló el consecutivo. Solo manual. */ }
   repararOVDuplicados(){
     if(this._ovDupDone || this._venFail) return;
     const acc=this.access(); if(!acc || this._modLevel(acc,'ventas')!=='write') return;
     this._ovDupDone=true;
     const list=(this.state.ventas||[]).slice();
-    const byN={}; list.forEach(v=>{ const n=this.ovNum(v); if(n>0){ (byN[n]=byN[n]||[]).push(v); } });
-    const used=new Set(Object.keys(byN).map(Number)); let mx=0; used.forEach(n=>{ if(n>mx) mx=n; });
+    const byN={}; list.forEach(v=>{ if(v.origen==='historico') return; const n=this.ovNum(v); if(n>0){ (byN[n]=byN[n]||[]).push(v); } });
+    const used=new Set(Object.keys(byN).map(Number)); let mx=0; list.forEach(v=>{ if(v.origen==='historico') return; const n=this.ovNum(v); if(n>mx) mx=n; });
     const fix={};
     Object.keys(byN).forEach(k=>{ const arr=byN[k]; if(arr.length<2) return;
       arr.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||'')) || String(a.id||'').localeCompare(String(b.id||'')));
@@ -9302,14 +9301,13 @@ Instrucciones de respuesta:
   // tomando el siguiente número libre (máximo existente + 1). Nunca renumera lo ya asignado,
   // así un pedido manual (p. ej. Pedro Cabrales) conserva su consecutivo aunque entren ventas de Shopify.
   // Dentro de un mismo lote nuevo, ordena por número de pedido de Shopify y luego por fecha.
-  assignMissingOV(){ const list=(this.state.ventas||[]).slice(); const used=new Set(); list.forEach(v=>{ const n=this.ovNum(v); if(n>0) used.add(n); });
+  assignMissingOV(){ const list=(this.state.ventas||[]).slice(); const used=new Set(); let _mxUsed=0; list.forEach(v=>{ if(v.origen==='historico') return; const n=this.ovNum(v); if(n>0){ used.add(n); if(n>_mxUsed) _mxUsed=n; } });
     const missing=list.filter(v=>v.origen!=='historico' && !this.ovNum(v));
     if(!missing.length){ if(this.cloudOn()) this.cloudBulkVentas(list); return; }
     missing.sort((a,b)=>{ const na=this.pedidoNum(a), nb=this.pedidoNum(b); if(na&&nb&&na!==nb) return na-nb; if(na&&!nb) return -1; if(!na&&nb) return 1; return (a.fecha||'').localeCompare(b.fecha||''); });
     // Autocorregible: verifica contra los números YA en uso (no solo el máximo), así dos
     // operaciones casi simultáneas (import + sync) nunca reparten el mismo consecutivo.
-    let _mx=0; used.forEach(n=>{ if(n>_mx) _mx=n; });
-    let next=_mx+1; const takeNext=()=>{ while(used.has(next)) next++; used.add(next); return next++; };
+    let next=_mxUsed+1; const takeNext=()=>{ while(used.has(next)) next++; used.add(next); return next++; };
     const idMap={}; missing.forEach((v)=>{ idMap[v.id]='ODA-'+String(takeNext()).padStart(5,'0'); });
     const out=list.map(v=>idMap[v.id]?{...v,ov:idMap[v.id]}:v);
     this.setState({ventas:out},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(out); }
@@ -9991,7 +9989,7 @@ Instrucciones de respuesta:
         let _rows=this._mergeRows(_cur, _d.map(x=>{ const dd=x.data||{}; return {...dd, canal:this.canonCanal(dd.canal), id:x.id}; }), 'id');
         const _dd=this._ventasAutoDedupe(_rows); _rows=_dd.list;
         this._syncSet('ventas', this._maxAct(_d));
-        this.setState({ventas:_rows},()=>{ this.persist(); this._congelarCostosSoon(); this._ovDupSoon();
+        this.setState({ventas:_rows},()=>{ this.persist(); this._congelarCostosSoon();
           if(_dd.removed.length){ _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } });
         return; }
     }
@@ -10009,7 +10007,7 @@ Instrucciones de respuesta:
         // Fusión de duplicados también AL CARGAR de la nube (antes solo al sincronizar Shopify):
         // limpia pares como ODA-00249/ODA-00478 del mismo pedido sin esperar otro sync.
         const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
-        this.setState({ventas:vlist, ventasCargando:false},()=>{ this._congelarCostosSoon(); this._ovDupSoon(); if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
+        this.setState({ventas:vlist, ventasCargando:false},()=>{ this._congelarCostosSoon(); if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
       else { this.setState({ventasCargando:false}); const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } }
     }catch(e){ this.setState({ventasCargando:false});
       // Reintento ACOTADO: antes reintentaba en bucle infinito cada 1.5 s y el toast
@@ -10060,6 +10058,8 @@ Instrucciones de respuesta:
     const out=list.filter(v=>!remove.has(v.id)).map(v=>fixed[v.id]||v);
     return {list:out, removed:[...remove], changed:Object.values(fixed)}; }
   fusionarPedidosDuplicados(){
+    // Con la lista de ventas incompleta (la carga de nube falló) esto renumeraría solo una parte.
+    if(this.cloudOn() && this._venFail){ this.toast('No se pudo cargar la lista completa de ventas. Recarga la página antes de renumerar.'); return; }
     let list=(this.state.ventas||[]).slice();
     const rank=(a,b)=>{ if(a.origen==='manual'&&b.origen!=='manual') return -1; if(b.origen==='manual'&&a.origen!=='manual') return 1;
       const t=this._ventaTocada(b)-this._ventaTocada(a); if(t!==0) return t; return String(a.fecha||'').localeCompare(String(b.fecha||'')); };
@@ -10088,6 +10088,8 @@ Instrucciones de respuesta:
     this.toast(msg.join(' · ')+' corregido(s)');
   }
   corregirConsecutivosOV(){ const list=(this.state.ventas||[]).slice();
+    // Con la lista de ventas incompleta (la carga de nube falló) esto renumeraría solo una parte.
+    if(this.cloudOn() && this._venFail){ this.toast('No se pudo cargar la lista completa de ventas. Recarga la página antes de renumerar.'); return; }
     // Ventas vivas = las del renglón Ventas (todo lo que NO es histórico).
     const live=list.filter(v=>v.origen!=='historico');
     if(!live.length){ this.toast('No hay ventas vivas'); return; }
