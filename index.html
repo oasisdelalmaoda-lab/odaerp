@@ -9983,8 +9983,16 @@ Instrucciones de respuesta:
         const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
         this.setState({ventas:vlist, ventasCargando:false},()=>{ this._congelarCostosSoon(); if(_dd.removed.length){ this.persist(); _dd.removed.forEach(id=>this._cloudDelOne('ventas', id)); if(_dd.changed&&_dd.changed.length) this.cloudBulkVentas(_dd.changed); } }); }
       else { this.setState({ventasCargando:false}); const cur=this.state.ventas||[]; if(cur.length){ try{ for(let i=0;i<cur.length;i+=200){ await sb.from('ventas').upsert(cur.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} } }
-    }catch(e){ this.setState({ventasCargando:false}); this.toast('Reintentando cargar ventas…'); setTimeout(()=>{ this._venLoading=false; this.cloudLoadVentas(); }, 1500); return; }
-    this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
+    }catch(e){ this.setState({ventasCargando:false});
+      // Reintento ACOTADO: antes reintentaba en bucle infinito cada 1.5 s y el toast
+      // «Reintentando cargar ventas…» quedaba saliendo para siempre sin decir el error.
+      const _msg=(e&&(e.message||e.details||e.hint))||'error desconocido';
+      console.warn('[ventas] no se pudo cargar de la nube:', e);
+      this._venRetry=(this._venRetry||0)+1;
+      if(this._venRetry<=3){ this.toast('Reintentando cargar ventas… ('+this._venRetry+'/3)'); setTimeout(()=>{ this._venLoading=false; this.cloudLoadVentas(); }, 1500*this._venRetry); }
+      else { this._venLoading=false; this.toast('No se pudieron cargar las ventas: '+_msg); }
+      return; }
+    this._venRetry=0; this._venLoading=false; if(this._venLoadAgain){ this._venLoadAgain=false; setTimeout(()=>this.cloudLoadVentas(), 300); }
   }
   async cloudSaveVenta(v){ const sb=this._sbClient(); if(!sb||!v) return; try{ await sb.from('ventas').upsert(this._ventaToDb(v)); }catch(e){} }
   async cloudBulkVentas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from('ventas').upsert(list.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} }
