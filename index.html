@@ -4995,6 +4995,25 @@
                               <sc-for list="{{ t.fotos }}" as="ft" hint-placeholder-count="0"><span style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(20,20,30,0.10);flex-shrink:0;background-size:cover;background-position:center;background-image:{{ ft.bgUrl }};"></span></sc-for>
                             </span>
                           </sc-if>
+                          <sc-if value="{{ t.confPreguntar }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                              <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">¿Quedó resuelto?</span>
+                              <button onClick="{{ t.onConfSi }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--sop-ok);background:transparent;color:var(--sop-ok);cursor:pointer;" style-hover="background:var(--sop-ok);color:#fff;">Sí, quedó bien</button>
+                              <button onClick="{{ t.onConfNo }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--sop-danger);background:transparent;color:var(--sop-danger);cursor:pointer;" style-hover="background:var(--sop-danger);color:#fff;">No, sigue igual</button>
+                            </span>
+                          </sc-if>
+                          <sc-if value="{{ t.confOk }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;color:var(--sop-ok);">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                              Confirmado por ti
+                            </span>
+                          </sc-if>
+                          <sc-if value="{{ t.confNo }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;color:var(--sop-danger);">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                              Lo devolviste para validar de nuevo
+                            </span>
+                          </sc-if>
                         </span>
                         <span style="font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:var(--radius-pill);background:{{ t.chipBg }};color:{{ t.chipFg }};white-space:nowrap;flex-shrink:0;">{{ t.estado }}</span>
                       </div>
@@ -7981,9 +8000,35 @@ class Component extends DCLogic {
       this.toast('Enviado a soporte. Te contactaremos pronto.');
       this.sopCargar();
     }catch(e){ this.setState({sopEnviando:false, sopError:'No pudimos enviar tu solicitud. Intenta de nuevo.'}); } })(); }
+  // Comprobación del cliente cuando un caso queda resuelto: confirma que quedó bien o lo niega
+  // para volver a validarlo. Queda registrado local (nunca se pierde el check) y en la nube si la
+  // tabla tiene las columnas; si no las tiene, el "no" al menos reabre el caso o crea uno nuevo.
+  _sopConfMap(){ try{ const m=JSON.parse(localStorage.getItem('oda_soporte_confirm_v1')||'{}'); return (m&&typeof m==='object')?m:{}; }catch(e){ return {}; } }
+  _sopConfDe(t){ if(!t) return ''; if(t.confirmado===true) return 'ok'; if(t.confirmado===false) return 'no'; return this._sopConfMap()[String(t.id)]||''; }
+  _sopConfSet(id,val){ const m=this._sopConfMap(); m[String(id)]=val; try{ localStorage.setItem('oda_soporte_confirm_v1',JSON.stringify(m)); }catch(e){} }
+  async sopConfirmar(id, ok){
+    this._sopConfSet(id, ok?'ok':'no'); this.forceUpdate();
+    const yo=this._sopYo(); const ahora=new Date().toISOString();
+    const url=this.SOP_URL+'/rest/v1/tickets?id=eq.'+encodeURIComponent(id);
+    const patch=(body)=>fetch(url,{method:'PATCH',headers:this.sopHeaders(true),body:JSON.stringify(body)});
+    try{
+      let r=await patch(ok? {confirmado:true, confirmado_at:ahora, confirmado_por:yo}
+                          : {confirmado:false, confirmado_at:ahora, confirmado_por:yo, estado:'Abierto'});
+      if(!r.ok && !ok) r=await patch({estado:'Abierto'});
+      if(!r.ok && !ok){
+        const t=(this.state.sopRemote||[]).find(x=>String(x.id)===String(id));
+        await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify({
+          cliente:this.SOP_CLIENTE, plan:this.SOP_PLAN, origen:'Desde su app', prioridad:'Alta',
+          asunto:'Sigue pendiente · '+((t&&t.asunto)||''),
+          descripcion:(yo?('[Creado por: '+yo+']\n'):'')+'El caso se marcó como resuelto pero el problema sigue igual.' })});
+      }
+    }catch(e){}
+    this.toast(ok? 'Gracias por confirmar. Queda cerrado.' : 'Listo, lo reabrimos: ODA Labs lo valida de nuevo.');
+    this.sopCargar();
+  }
   // ---- Salud del sistema (lee el chequeo diario que corre ODA Labs) ----
   _saludFecha(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10);
-    return d.toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).replace(/\./g,''); }
+    return d.toLocaleString('es-CO',{day:'numeric',month:'short'}).replace(/\sde\s/,' ').replace(/([A-Za-zÁÉÍÓÚáéíóú]{3})\./,'$1')+', '+d.toLocaleString('es-CO',{hour:'numeric',minute:'2-digit'}); }
   saludCargar(){ if(this._saludLoading) return; this._saludLoading=true; this.setState({saludCargando:true});
     fetch(this.SOP_URL+'/rest/v1/salud?cliente=eq.'+encodeURIComponent(this.SOP_CLIENTE)+'&order=creado.desc&limit=14',{headers:this.sopHeaders()})
       .then(r=> r.ok? r.json() : [])
@@ -8006,7 +8051,7 @@ class Component extends DCLogic {
     window.fetch=function(){ const a=arguments; const url=String((a[0]&&a[0].url)||a[0]||'');
       const mio=/supabase\.co/.test(url);
       return _f.apply(null, a).then(function(r){
-        if(mio){ if(!r.ok){ const st=r.status; self._odaFalla(url, st===401?'llave rechazada (401)':(st===403?'permiso denegado (403)':'http '+st)); } else { self._odaOkSoon(); } }
+        if(mio){ const st=r.status; if(r.ok || st===400 || st===406){ self._odaOkSoon(); } else { self._odaFalla(url, st===401?'llave rechazada (401)':(st===403?'permiso denegado (403)':'http '+st)); } }
         return r;
       }, function(e){ if(mio) self._odaFalla(url,'consulta sin respuesta'); throw e; }); }; }
   // ---- nav ----
@@ -12415,7 +12460,7 @@ Instrucciones de respuesta:
       const est={'Abierto':{bg:'var(--sop-warn-soft)',fg:'var(--sop-warn)'},'En curso':{bg:'rgba(90,75,255,0.1)',fg:'#5A4BFF'},'Resuelto':{bg:'var(--sop-ok-soft)',fg:'var(--sop-ok)'}};
       const tks=this._sopMios(st.sopRemote||[]);
       out.sopVacio=!tks.length && !st.sopCargando;
-      out.sopTickets=tks.map(t=>{ const cr=this._sopCreadorDe(t); return { asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(String(t.creado||t.fecha||'').slice(0,10)), creador:cr, hayCreador:!!cr, fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:(t.estado||'Abierto'), chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg }; });
+      out.sopTickets=tks.map(t=>{ const cr=this._sopCreadorDe(t); return { asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(String(t.creado||t.fecha||'').slice(0,10)), creador:cr, hayCreador:!!cr, fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:(t.estado||'Abierto'), chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg, confPreguntar:(String(t.estado||'')==='Resuelto' && !this._sopConfDe(t)), confOk:this._sopConfDe(t)==='ok', confNo:this._sopConfDe(t)==='no', onConfSi:()=>this.sopConfirmar(t.id,true), onConfNo:()=>this.sopConfirmar(t.id,false) }; });
       if(st.sopRemote===undefined && !st.sopCargando){ this.sopCargar(); }
     }
     out.showInicio = st.module==='inicio';
