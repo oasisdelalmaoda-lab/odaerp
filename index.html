@@ -479,6 +479,9 @@
                       </div>
                     </sc-for>
                   </div>
+                  <sc-if value="{{ sopHayConfErr }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12.5px;font-weight:600;color:var(--sop-danger);margin-top:10px;">{{ sopConfErr }}</div>
+                  </sc-if>
                 </div>
 
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
@@ -4990,6 +4993,9 @@
                         <span style="flex:1;min-width:0;">
                           <span style="display:block;font-size:14px;font-weight:700;color:var(--text-body);">{{ t.asunto }}</span>
                           <span style="display:block;font-size:12px;color:var(--text-muted);margin-top:2px;">{{ t.fechaFmt }} · Prioridad {{ t.prioridad }}<sc-if value="{{ t.hayCreador }}" hint-placeholder-val="{{ false }}"> · Creado por {{ t.creador }}</sc-if></span>
+                          <sc-if value="{{ t.reabiertoHay }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--sop-warn);margin-top:6px;">{{ t.reabiertoTxt }}</span>
+                          </sc-if>
                           <sc-if value="{{ t.hayFotos }}" hint-placeholder-val="{{ false }}">
                             <span style="display:flex;gap:6px;margin-top:8px;">
                               <sc-for list="{{ t.fotos }}" as="ft" hint-placeholder-count="0"><span style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(20,20,30,0.10);flex-shrink:0;background-size:cover;background-position:center;background-image:{{ ft.bgUrl }};"></span></sc-for>
@@ -4998,20 +5004,25 @@
                           <sc-if value="{{ t.confPreguntar }}" hint-placeholder-val="{{ false }}">
                             <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-subtle);">
                               <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">¿Quedó resuelto?</span>
-                              <button onClick="{{ t.onConfSi }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--sop-ok);background:transparent;color:var(--sop-ok);cursor:pointer;" style-hover="background:var(--sop-ok);color:#fff;">Sí, quedó bien</button>
-                              <button onClick="{{ t.onConfNo }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--sop-danger);background:transparent;color:var(--sop-danger);cursor:pointer;" style-hover="background:var(--sop-danger);color:#fff;">No, sigue igual</button>
+                              <button onClick="{{ t.onConfSi }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--sop-ok);background:transparent;color:var(--sop-ok);cursor:pointer;" style-hover="background:var(--sop-ok);color:#fff;">Sí, quedó bien</button>
+                              <button onClick="{{ t.onConfNo }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--sop-danger);background:transparent;color:var(--sop-danger);cursor:pointer;" style-hover="background:var(--sop-danger);color:#fff;">No, sigue igual</button>
+                            </span>
+                          </sc-if>
+                          <sc-if value="{{ t.rechazoAbierto }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:block;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                              <span style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;">¿Qué sigue pasando?</span>
+                              <input value="{{ sopRechazoTxt }}" onInput="{{ onSopRechazoInput }}" placeholder="Qué sigue igual o qué cambió" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid rgba(20,20,30,0.10);border-radius:10px;background:var(--sop-paper);color:var(--text-body);outline:none;" style-focus="background:#fff;box-shadow:0 0 0 3px var(--sop-accent-soft);border-color:var(--brand-primary);">
+                              <sc-if value="{{ sopRechazoError }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:12px;color:var(--sop-danger);margin-top:5px;">Cuéntanos qué sigue pasando para poder reabrirlo.</span></sc-if>
+                              <span style="display:flex;gap:8px;margin-top:9px;">
+                                <button onClick="{{ t.onRechazoEnviar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:6px 16px;border-radius:var(--radius-pill);border:1px solid var(--sop-danger);background:transparent;color:var(--sop-danger);cursor:pointer;" style-hover="background:var(--sop-danger);color:#fff;">Reabrir el caso</button>
+                                <button onClick="{{ sopRechazoCerrar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:6px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;">Cancelar</button>
+                              </span>
                             </span>
                           </sc-if>
                           <sc-if value="{{ t.confOk }}" hint-placeholder-val="{{ false }}">
                             <span style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;color:var(--sop-ok);">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
-                              Confirmado por ti
-                            </span>
-                          </sc-if>
-                          <sc-if value="{{ t.confNo }}" hint-placeholder-val="{{ false }}">
-                            <span style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;color:var(--sop-danger);">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                              Lo devolviste para validar de nuevo
+                              {{ t.confTxt }}
                             </span>
                           </sc-if>
                         </span>
@@ -7974,7 +7985,7 @@ class Component extends DCLogic {
       this._calInit=true; }
     window.Cal.ns.soporte("inline", { elementOrSelector:"#cal-soporte", calLink: "oda-labs/soporte-o-actualizacion", layout: "month_view", config: this._calPrefill() }); }
   _calPrefill(){ const u=(this.users||[]).find(x=>x.id===this.state.userId); return u? { name:u.name, email:u.email } : {}; }
-  sopCargar(){ this.setState({sopCargando:true}); fetch(this.SOP_URL+'/rest/v1/tickets?cliente=eq.'+encodeURIComponent(this.SOP_CLIENTE)+'&order=creado.desc',{headers:this.sopHeaders()}).then(r=>{ if(!r.ok) throw new Error('load'); return r.json(); }).then(rows=>this.setState({sopRemote:Array.isArray(rows)?rows:[], sopCargando:false})).catch(()=>this.setState({sopCargando:false})); }
+  sopCargar(){ this.setState({sopCargando:true}); fetch(this.SOP_URL+'/rest/v1/tickets?select=*&cliente=eq.'+encodeURIComponent(this.SOP_CLIENTE)+'&order=creado.desc',{headers:this.sopHeaders()}).then(r=>{ if(!r.ok) throw new Error('load'); return r.json(); }).then(rows=>this.setState({sopRemote:Array.isArray(rows)?rows:[], sopCargando:false})).catch(()=>this.setState({sopCargando:false})); }
   // Privacidad de tickets: cada uno solo lo ve quien lo creó. El creador viaja en "[Creado por: X]" al inicio de descripcion (y en usuario si la tabla lo tiene). Tickets viejos sin marca los ve solo el admin.
   _sopCreadorDe(t){ if(t.usuario) return String(t.usuario); const m=/^\[Creado por: ([^\]]+)\]/.exec(String(t.descripcion||'')); return m?m[1]:''; }
   _sopYo(){ const u=(this.users||[]).find(x=>x.id===this.state.userId); return u?u.name:''; }
@@ -7992,39 +8003,68 @@ class Component extends DCLogic {
     (async()=>{ try{
       const fotos=[]; for(let i=0;i<t.fotos.length;i++){ fotos.push(await this._sopSubirFoto(t.fotos[i],i)); }
       // El nombre del creador viaja en la columna usuario si existe; si la tabla no la tiene (PGRST204), se reintenta con la marca "[Creado por: X]" dentro de descripcion.
-      let body={ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, descripcion:t.detalle, prioridad:t.prioridad, fotos, usuario:t.usuario };
+      let body={ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, descripcion:t.detalle, prioridad:t.prioridad, fotos, usuario:t.usuario, creado_por:this._sopActor() };
       let r=await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify(body)});
       if(!r.ok){ body={ cliente:t.cliente, plan:t.plan, origen:t.origen, asunto:t.asunto, descripcion:((t.usuario?('[Creado por: '+t.usuario+']\n'):'')+t.detalle), prioridad:t.prioridad, fotos }; r=await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify(body)}); }
       if(!r.ok) throw new Error('insert '+r.status);
+      try{ const _rows=await r.json(); const _id=(Array.isArray(_rows)&&_rows[0]&&_rows[0].id); if(_id) this._sopEvento(_id,'creado',''); }catch(_e){}
       this.setState({sopDraft:{asunto:'',detalle:'',prioridad:'Media',fotos:[]}, sopAsuntoError:false, sopEnviando:false, sopError:''});
       this.toast('Enviado a soporte. Te contactaremos pronto.');
       this.sopCargar();
     }catch(e){ this.setState({sopEnviando:false, sopError:'No pudimos enviar tu solicitud. Intenta de nuevo.'}); } })(); }
-  // Comprobación del cliente cuando un caso queda resuelto: confirma que quedó bien o lo niega
-  // para volver a validarlo. Queda registrado local (nunca se pierde el check) y en la nube si la
-  // tabla tiene las columnas; si no las tiene, el "no" al menos reabre el caso o crea uno nuevo.
+  // Confirmación y reapertura de casos resueltos. Nunca borra ni duplica el ticket: es el mismo
+  // caso con su historia (columnas confirmado/confirmado_por/confirmado_en, reabierto_*, y la
+  // bitácora ticket_eventos). El registro local es solo respaldo del check en pantalla.
   _sopConfMap(){ try{ const m=JSON.parse(localStorage.getItem('oda_soporte_confirm_v1')||'{}'); return (m&&typeof m==='object')?m:{}; }catch(e){ return {}; } }
-  _sopConfDe(t){ if(!t) return ''; if(t.confirmado===true) return 'ok'; if(t.confirmado===false) return 'no'; return this._sopConfMap()[String(t.id)]||''; }
   _sopConfSet(id,val){ const m=this._sopConfMap(); m[String(id)]=val; try{ localStorage.setItem('oda_soporte_confirm_v1',JSON.stringify(m)); }catch(e){} }
-  async sopConfirmar(id, ok){
-    this._sopConfSet(id, ok?'ok':'no'); this.forceUpdate();
-    const yo=this._sopYo(); const ahora=new Date().toISOString();
-    const url=this.SOP_URL+'/rest/v1/tickets?id=eq.'+encodeURIComponent(id);
-    const patch=(body)=>fetch(url,{method:'PATCH',headers:this.sopHeaders(true),body:JSON.stringify(body)});
+  _sopConfDe(t){ if(!t) return ''; if(t.confirmado===true) return 'ok'; if(t.confirmado===false) return 'no'; return this._sopConfMap()[String(t.id)]||''; }
+  _sopActor(){ return this._sopYo() || this.SOP_CLIENTE; }
+  _sopFechaHora(iso){ if(!iso) return ''; const d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10);
+    return d.toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).replace(/\sde\s/,' ').replace(/([A-Za-zÁÉÍÓÚáéíóú]{3})\./,'$1'); }
+  _sopEvento(id, evento, detalle){ return fetch(this.SOP_URL+'/rest/v1/ticket_eventos',{method:'POST',headers:this.sopHeaders(true),
+    body:JSON.stringify({ ticket_id:id, evento, actor:this._sopActor(), rol:'cliente', detalle:detalle||'' })}).catch(()=>{}); }
+  _sopPatchLocal(id, campos){ this.setState(st=>({ sopRemote:(st.sopRemote||[]).map(t=> String(t.id)===String(id)? {...t, ...campos} : t) })); }
+  async sopConfirmarSi(id){
+    const t=(this.state.sopRemote||[]).find(x=>String(x.id)===String(id)); const prev=t?{...t}:null;
+    const ahora=new Date().toISOString(); const actor=this._sopActor();
+    this._sopConfSet(id,'ok');
+    this._sopPatchLocal(id,{confirmado:true, confirmado_por:actor, confirmado_en:ahora});
+    this.setState({sopConfErr:''});
     try{
-      let r=await patch(ok? {confirmado:true, confirmado_at:ahora, confirmado_por:yo}
-                          : {confirmado:false, confirmado_at:ahora, confirmado_por:yo, estado:'Abierto'});
-      if(!r.ok && !ok) r=await patch({estado:'Abierto'});
-      if(!r.ok && !ok){
-        const t=(this.state.sopRemote||[]).find(x=>String(x.id)===String(id));
-        await fetch(this.SOP_URL+'/rest/v1/tickets',{method:'POST',headers:this.sopHeaders(true),body:JSON.stringify({
-          cliente:this.SOP_CLIENTE, plan:this.SOP_PLAN, origen:'Desde su app', prioridad:'Alta',
-          asunto:'Sigue pendiente · '+((t&&t.asunto)||''),
-          descripcion:(yo?('[Creado por: '+yo+']\n'):'')+'El caso se marcó como resuelto pero el problema sigue igual.' })});
-      }
-    }catch(e){}
-    this.toast(ok? 'Gracias por confirmar. Queda cerrado.' : 'Listo, lo reabrimos: ODA Labs lo valida de nuevo.');
-    this.sopCargar();
+      const r=await fetch(this.SOP_URL+'/rest/v1/tickets?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:this.sopHeaders(true),
+        body:JSON.stringify({ confirmado:true, confirmado_por:actor, confirmado_en:ahora })});
+      if(!r.ok) throw new Error('patch '+r.status);
+      this._sopEvento(id,'confirmado','');
+      this.sopCargar();
+    }catch(e){
+      this._sopConfSet(id,'');
+      if(prev) this._sopPatchLocal(id,{confirmado:prev.confirmado, confirmado_por:prev.confirmado_por, confirmado_en:prev.confirmado_en});
+      this.setState({sopConfErr:'No pudimos registrar tu respuesta. Intenta de nuevo.'});
+    }
+  }
+  sopRechazoAbrir(id){ this.setState({sopRechazoId:id, sopRechazoTxt:'', sopRechazoError:false, sopConfErr:''}); }
+  sopRechazoCerrar(){ this.setState({sopRechazoId:null, sopRechazoTxt:'', sopRechazoError:false}); }
+  async sopRechazoEnviar(id){
+    const txt=String(this.state.sopRechazoTxt||'').trim();
+    if(!txt){ this.setState({sopRechazoError:true}); return; }
+    const t=(this.state.sopRemote||[]).find(x=>String(x.id)===String(id)); const prev=t?{...t}:null;
+    const actor=this._sopActor(); const ahora=new Date().toISOString();
+    this._sopConfSet(id,'no');
+    this._sopPatchLocal(id,{estado:'Abierto', confirmado:false, reabierto_por:actor, motivo_reapertura:txt,
+      reabierto_en:ahora, reabierto_veces:(Number(t&&t.reabierto_veces)||0)+1});
+    this.setState({sopRechazoId:null, sopRechazoTxt:'', sopRechazoError:false, sopConfErr:''});
+    try{
+      const r=await fetch(this.SOP_URL+'/rest/v1/tickets?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:this.sopHeaders(true),
+        body:JSON.stringify({ estado:'Abierto', confirmado:false, reabierto_por:actor, motivo_reapertura:txt })});
+      if(!r.ok) throw new Error('patch '+r.status);
+      this._sopEvento(id,'rechazado',txt);
+      this.sopCargar();
+    }catch(e){
+      this._sopConfSet(id,'');
+      if(prev) this._sopPatchLocal(id,{estado:prev.estado, confirmado:prev.confirmado, reabierto_por:prev.reabierto_por,
+        motivo_reapertura:prev.motivo_reapertura, reabierto_en:prev.reabierto_en, reabierto_veces:prev.reabierto_veces});
+      this.setState({sopConfErr:'No pudimos registrar tu respuesta. Intenta de nuevo.'});
+    }
   }
   // Clave interna de la automatización que tocó un mensaje. La plantilla guardada puede venir
   // con el nombre aprobado en Meta (o vacía, si se mandó texto libre): en ese caso se deduce.
@@ -12472,7 +12512,20 @@ Instrucciones de respuesta:
       const est={'Abierto':{bg:'var(--sop-warn-soft)',fg:'var(--sop-warn)'},'En curso':{bg:'rgba(90,75,255,0.1)',fg:'#5A4BFF'},'Resuelto':{bg:'var(--sop-ok-soft)',fg:'var(--sop-ok)'}};
       const tks=this._sopMios(st.sopRemote||[]);
       out.sopVacio=!tks.length && !st.sopCargando;
-      out.sopTickets=tks.map(t=>{ const cr=this._sopCreadorDe(t); return { asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(String(t.creado||t.fecha||'').slice(0,10)), creador:cr, hayCreador:!!cr, fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:(t.estado||'Abierto'), chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg, confPreguntar:(String(t.estado||'')==='Resuelto' && !this._sopConfDe(t)), confOk:this._sopConfDe(t)==='ok', confNo:this._sopConfDe(t)==='no', onConfSi:()=>this.sopConfirmar(t.id,true), onConfNo:()=>this.sopConfirmar(t.id,false) }; });
+      out.sopTickets=tks.map(t=>{ const cr=this._sopCreadorDe(t); return { asunto:t.asunto, prioridad:t.prioridad, fechaFmt:this.fmtFecha(String(t.creado||t.fecha||'').slice(0,10)), creador:cr, hayCreador:!!cr, fotos:(t.fotos||[]).map(u=>({bgUrl:'url("'+u+'")'})), hayFotos:(t.fotos||[]).length>0, estado:(t.estado||'Abierto'), chipBg:(est[t.estado]||est['Abierto']).bg, chipFg:(est[t.estado]||est['Abierto']).fg, confPreguntar:(String(t.estado||'')==='Resuelto' && this._sopConfDe(t)!=='ok' && String(st.sopRechazoId||'')!==String(t.id))
+        , confOk:(this._sopConfDe(t)==='ok')
+        , confTxt:('Confirmado por '+(t.confirmado_por||this._sopActor())+(t.confirmado_en?(' · '+this._sopFechaHora(t.confirmado_en)):''))
+        , reabiertoHay:((Number(t.reabierto_veces)||0)>0)
+        , reabiertoTxt:(((Number(t.reabierto_veces)||0)>1)
+            ? ('Reabierto '+(Number(t.reabierto_veces)||0)+' veces · última el '+this._sopFechaHora(t.reabierto_en))
+            : ('Reabierto el '+this._sopFechaHora(t.reabierto_en)))
+        , rechazoAbierto:(String(st.sopRechazoId||'')===String(t.id))
+        , onConfSi:()=>this.sopConfirmarSi(t.id)
+        , onConfNo:()=>this.sopRechazoAbrir(t.id)
+        , onRechazoEnviar:()=>this.sopRechazoEnviar(t.id) }; });
+      out.sopRechazoTxt=st.sopRechazoTxt||''; out.onSopRechazoInput=(e)=>this.setState({sopRechazoTxt:e.target.value, sopRechazoError:false});
+      out.sopRechazoError=!!st.sopRechazoError; out.sopRechazoCerrar=()=>this.sopRechazoCerrar();
+      out.sopConfErr=st.sopConfErr||''; out.sopHayConfErr=!!st.sopConfErr;
       if(st.sopRemote===undefined && !st.sopCargando){ this.sopCargar(); }
     }
     out.showInicio = st.module==='inicio';
