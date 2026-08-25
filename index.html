@@ -10272,7 +10272,7 @@ Instrucciones de respuesta:
   async cloudSyncMyProfile(uid, nombre){ const sb=this._sbClient(); if(!sb||!uid||!nombre) return; try{ await sb.from('profiles').update({nombre}).eq('id',uid).is('nombre',null); await sb.from('profiles').update({nombre}).eq('id',uid).eq('nombre',''); }catch(e){} }
   async cloudLoadProfiles(){ const sb=this._sbClient(); if(!sb) return; try{ let data=null; try{ const r=await sb.from('profiles').select('id,nombre,rol,email'); if(!r.error) data=r.data; }catch(e){} if(!data){ const r2=await sb.from('profiles').select('id,nombre,rol'); data=r2.data; } this.setState({cloudProfiles:(data||[]).map(p=>({id:p.id,nombre:(p.nombre&&String(p.nombre).trim())||(p.email?String(p.email).split('@')[0]:'Usuario '+String(p.id).slice(0,4)),rol:p.rol||''}))}); }catch(e){} }
   _dbToLead(r){ return { id:r.id, fecha:(r.creado||'').slice(0,10), nombre:r.nombre||'', celular:r.celular||'', correo:r.correo||'', ciudad:r.ciudad||'', origen:r.origen||'Otro', interes:r.interes||'', estado:r.estado||'Nuevo', valor:Number(r.valor)||0, nota:r.nota||'', asignadoA:r.asignado_a||'', creadoPor:r.creado_por||'', creadoFecha:(r.creado||'').slice(0,10), comentarios:Array.isArray(r.comentarios)?r.comentarios:[], alertas:Array.isArray(r.alertas)?r.alertas:[] }; }
-  _leadToDb(l){ const d={ nombre:l.nombre||'', celular:l.celular||'', correo:l.correo||'', ciudad:l.ciudad||'', origen:l.origen||'Otro', interes:l.interes||'', estado:l.estado||'Nuevo', valor:Number(l.valor)||0, nota:l.nota||'', comentarios:(l.comentarios||[]), alertas:(l.alertas||[]), actualizado:new Date().toISOString() }; d.asignado_a=l.asignadoA||null; return d; }
+  _leadToDb(l){ const d={ nombre:l.nombre||'', celular:l.celular||'', correo:l.correo||'', ciudad:l.ciudad||'', origen:l.origen||'Otro', interes:l.interes||'', estado:l.estado||'Nuevo', valor:Number(l.valor)||0, nota:l.nota||'', comentarios:(l.comentarios||[]), alertas:(l.alertas||[]), actualizado:new Date().toISOString() }; d.asignado_a=(this._isUuid(this._uidCanon(l.asignadoA))? this._uidCanon(l.asignadoA) : null); return d; }
   _isUuid(v){ return typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v); }
   async cloudLoadLeads(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('leads').select('*').order('creado',{ascending:false}); if(error) throw error; const _sig=JSON.stringify(data||[]); if(_sig===this._leadsSig && !this.state.cloudLeadsErr){ return; } this._leadsSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cloudLeads:(data||[]).map(r=>this._dbToLead(r)), cloudLeadsErr:''}); }catch(e){ this.setState({cloudLeadsErr:(e&&e.message)||'Error al cargar leads'}); } }
   async cloudSubscribe(){ const sb=this._sbClient(); if(!sb||this._sbSub) return; try{ const {data}=await sb.auth.getSession(); const tok=data&&data.session&&data.session.access_token; if(tok&&sb.realtime&&sb.realtime.setAuth){ try{ sb.realtime.setAuth(tok); }catch(e){} } this._sbSub=sb.channel('oda-leads').on('postgres_changes',{event:'*',schema:'public',table:'leads'},()=>{ this.cloudLoadLeads(); }).subscribe(); }catch(e){} }
@@ -10285,14 +10285,31 @@ Instrucciones de respuesta:
   // CRUD en nube
   async cloudSaveLead(d){ const sb=this._sbClient(); if(!sb) return; const body=this._leadToDb(d);
     try{ if(d._new || !this._isUuid(d.id)){ body.creado_por=this.state.cloudUser.id; if(!this._isUuid(body.asignado_a)) body.asignado_a=this.state.cloudUser.id; const {error}=await sb.from('leads').insert(body); if(error) throw error; this.toast('Lead registrado'); }
-      else { if(!this._isUuid(body.asignado_a)) body.asignado_a=null; const {error}=await sb.from('leads').update(body).eq('id',d.id); if(error) throw error; this.toast('Lead actualizado'); }
+      else { const {data,error}=await sb.from('leads').update(body).eq('id',d.id).select('id'); if(error) throw error; if(!data||!data.length) throw new Error('tu usuario no tiene permiso para cambiar este lead'); this.toast('Lead actualizado'); }
       this.setState({modal:null,draft:{}}); this.cloudLoadLeads(); }
     catch(e){ this.toast('No se pudo guardar: '+((e&&e.message)||'')); }
   }
-  async cloudPatchLead(id,patch){ const sb=this._sbClient(); if(!sb) return; // optimista
-    this.setState({cloudLeads:(this.state.cloudLeads||[]).map(l=>l.id===id?{...l,...patch}:l)});
-    try{ const body={...patch,actualizado:new Date().toISOString()}; if('asignadoA' in body){ body.asignado_a=body.asignadoA||null; delete body.asignadoA; } const {error}=await sb.from('leads').update(body).eq('id',id); if(error) throw error; }
-    catch(e){ this.toast('No se pudo guardar el cambio'); this.cloudLoadLeads(); }
+  // Guarda un cambio puntual del lead (estado / responsable). El responsable se normaliza al
+  // uuid del perfil (un id heredado tipo 'u3' rompía el update con "invalid input syntax for
+   // type uuid"), el update se VERIFICA con .select() (si RLS lo bloquea vuelven 0 filas sin
+  // error) y el toast muestra el motivo real en vez de un "no se pudo" a secas.
+  async cloudPatchLead(id,patch){ const sb=this._sbClient(); if(!sb) return;
+    const prev=(this.state.cloudLeads||[]).find(l=>l.id===id);
+    this.setState({cloudLeads:(this.state.cloudLeads||[]).map(l=>l.id===id?{...l,...patch}:l)}); // optimista
+    const body={...patch};
+    if('asignadoA' in body){ const uid=this._uidCanon(body.asignadoA)||''; body.asignado_a=this._isUuid(uid)? uid : null; delete body.asignadoA; }
+    const intento=(conTs)=>sb.from('leads').update(conTs?{...body,actualizado:new Date().toISOString()}:{...body}).eq('id',id).select('id');
+    try{
+      let r=await intento(true);
+      if(r.error && /actualizado/i.test(String(r.error.message||''))) r=await intento(false);
+      if(r.error){ const msg=String(r.error.message||'');
+        if(/asignado_a/i.test(msg)) throw new Error('la tabla «leads» no tiene la columna asignado_a · pídele al administrador correr: alter table leads add column asignado_a uuid references profiles(id)');
+        throw r.error; }
+      if(!r.data || !r.data.length) throw new Error('tu usuario no tiene permiso para cambiar este lead (regla de seguridad de la base)');
+      this._leadsSig=''; this.cloudLoadLeads();
+    }catch(e){ console.warn('cloudPatchLead falló', patch, e);
+      if(prev) this.setState({cloudLeads:(this.state.cloudLeads||[]).map(l=>l.id===id?prev:l)});
+      this.toast('No se pudo guardar el cambio: '+((e&&e.message)||'error desconocido')); this.cloudLoadLeads(); }
   }
   async cloudDeleteLead(id){ const sb=this._sbClient(); if(!sb) return; try{ const {error}=await sb.from('leads').delete().eq('id',id); if(error) throw error; this.toast('Lead eliminado'); this.cloudLoadLeads(); }catch(e){ this.toast('No se pudo eliminar'); } }
 
@@ -14086,9 +14103,9 @@ Instrucciones de respuesta:
       let leadsArr=allLeads.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
       if(st.leadFiltroEstado && st.leadFiltroEstado!=='todos') leadsArr=leadsArr.filter(l=>l.estado===st.leadFiltroEstado);
       if(ql) leadsArr=leadsArr.filter(l=>(((l.nombre||'')+' '+(l.ciudad||'')+' '+(l.celular||'')+' '+(l.correo||'')+' '+(l.origen||'')).toLowerCase().includes(ql)));
-      out.leadUserOptions=(this.cloudOn()? (st.cloudProfiles||[]).map(p=>({id:p.id,name:p.nombre})) : this.users.map(x=>({id:x.id,name:x.name})));
+      out.leadUserOptions=((this.cloudOn() && (st.cloudProfiles||[]).length)? (st.cloudProfiles||[]).map(p=>({id:p.id,name:p.nombre})) : this.users.map(x=>({id:x.id,name:x.name})));
       const todayLead=new Date().toISOString().slice(0,10);
-      out.leadsView=leadsArr.map(l=>{ const sty=this.leadEstadoStyle(l.estado); const contacto=[l.celular,l.correo].filter(Boolean).join('  ·  ')||'Sin contacto'; const v=Number(l.valor)||0; const pend=(l.alertas||[]).filter(a=>!a.hecho).slice().sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')); const nx=pend[0]; const nxVenc=nx?(nx.fecha<=todayLead):false; const nc=(l.comentarios||[]).length; return { id:l.id, nombre:l.nombre||'Lead sin nombre', estado:l.estado||'Nuevo', estadoBg:sty.bg, estadoFg:sty.fg, color:sty.fg, origen:l.origen||'—', contacto, ciudad:l.ciudad||'—', fechaFmt:this.fmtFecha(l.fecha), interes:l.interes||'', hasInteres:!!(l.interes&&String(l.interes).trim()), hasValor:v>0, valorFmt:this.fmt(v), creadoPorNombre:(this.leadUName(l.creadoPor)||'—'), hasCreador:!!l.creadoPor, asignadoA:(l.asignadoA||''), hasAsignado:!!l.asignadoA, asignadoNombre:(l.asignadoA?this.leadUName(l.asignadoA):'Sin asignar'), asignadoInitials:(l.asignadoA?this.leadUInitials(l.asignadoA):''), asignadoColor:(l.asignadoA?this.leadUColor(l.asignadoA):'#9b8e78'), hasAlerta:!!nx, alertaTxt:(nx?('Contactar '+this.fmtFecha(nx.fecha)):''), alertaBg:(nx?(nxVenc?'rgba(181,80,60,0.14)':'rgba(167,134,89,0.16)'):''), alertaFg:(nx?(nxVenc?'#B5503C':'#7A5E36'):''), nComentarios:nc, comentLabel:(nc>0?('· '+nc):''), onSeguimiento:()=>this.openSeguimiento(l), onAsignar:(e)=>this.assignLead(l.id,e.target.value), onEstado:(e)=>this.setLeadEstado(l.id,e.target.value), onEdit:()=>this.editLead(l), onDelete:()=>this.askDeleteLead(l), onCotizar:()=>this.convertLeadToCotizacion(l) }; });
+      out.leadsView=leadsArr.map(l=>{ const sty=this.leadEstadoStyle(l.estado); const contacto=[l.celular,l.correo].filter(Boolean).join('  ·  ')||'Sin contacto'; const v=Number(l.valor)||0; const pend=(l.alertas||[]).filter(a=>!a.hecho).slice().sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')); const nx=pend[0]; const nxVenc=nx?(nx.fecha<=todayLead):false; const nc=(l.comentarios||[]).length; return { id:l.id, nombre:l.nombre||'Lead sin nombre', estado:l.estado||'Nuevo', estadoBg:sty.bg, estadoFg:sty.fg, color:sty.fg, origen:l.origen||'—', contacto, ciudad:l.ciudad||'—', fechaFmt:this.fmtFecha(l.fecha), interes:l.interes||'', hasInteres:!!(l.interes&&String(l.interes).trim()), hasValor:v>0, valorFmt:this.fmt(v), creadoPorNombre:(this.leadUName(l.creadoPor)||'—'), hasCreador:!!l.creadoPor, asignadoA:(this._uidCanon(l.asignadoA)||''), hasAsignado:!!l.asignadoA, asignadoNombre:(l.asignadoA?this.leadUName(l.asignadoA):'Sin asignar'), asignadoInitials:(l.asignadoA?this.leadUInitials(l.asignadoA):''), asignadoColor:(l.asignadoA?this.leadUColor(l.asignadoA):'#9b8e78'), hasAlerta:!!nx, alertaTxt:(nx?('Contactar '+this.fmtFecha(nx.fecha)):''), alertaBg:(nx?(nxVenc?'rgba(181,80,60,0.14)':'rgba(167,134,89,0.16)'):''), alertaFg:(nx?(nxVenc?'#B5503C':'#7A5E36'):''), nComentarios:nc, comentLabel:(nc>0?('· '+nc):''), onSeguimiento:()=>this.openSeguimiento(l), onAsignar:(e)=>this.assignLead(l.id,e.target.value), onEstado:(e)=>this.setLeadEstado(l.id,e.target.value), onEdit:()=>this.editLead(l), onDelete:()=>this.askDeleteLead(l), onCotizar:()=>this.convertLeadToCotizacion(l) }; });
       out.leadsVacio=leadsArr.length===0;
       out.leadsVacioMsg=(allLeads.length===0)?'Aún no hay leads registrados. Crea el primero con «Nuevo lead».':'Ningún lead coincide con la búsqueda o el filtro.';
       if(out.cotTabProp){
