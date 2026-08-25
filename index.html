@@ -8026,6 +8026,18 @@ class Component extends DCLogic {
     this.toast(ok? 'Gracias por confirmar. Queda cerrado.' : 'Listo, lo reabrimos: ODA Labs lo valida de nuevo.');
     this.sopCargar();
   }
+  // Clave interna de la automatización que tocó un mensaje. La plantilla guardada puede venir
+  // con el nombre aprobado en Meta (o vacía, si se mandó texto libre): en ese caso se deduce.
+  _autoKey(meta){ const m=meta||{}; const p=String(m.plantilla||'').trim();
+    const known={pedido_despachado:1, recordatorio_pago:1, pedido_contraentrega:1, postventa:1, carrito_abandonado:1};
+    if(known[p]) return p;
+    if(m.carrito) return 'carrito_abandonado';
+    if(/carrito/i.test(p)) return 'carrito_abandonado';
+    if(/postventa/i.test(p)) return 'postventa';
+    if(/contraentrega/i.test(p)) return 'pedido_contraentrega';
+    if(/despach/i.test(p)) return 'pedido_despachado';
+    if(/recordatorio|pago/i.test(p)) return 'recordatorio_pago';
+    return p; }
   // ---- Salud del sistema (lee el chequeo diario que corre ODA Labs) ----
   _saludFecha(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10);
     return d.toLocaleString('es-CO',{day:'numeric',month:'short'}).replace(/\sde\s/,' ').replace(/([A-Za-zÁÉÍÓÚáéíóú]{3})\./,'$1')+', '+d.toLocaleString('es-CO',{hour:'numeric',minute:'2-digit'}); }
@@ -11975,7 +11987,7 @@ Instrucciones de respuesta:
       for(let i=0;i<need.length;i+=200){
         const chunk=need.slice(i,i+200);
         const {data:part}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).limit(10000);
-        const by={}; (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:((m.meta&&m.meta.plantilla)||''), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+        const by={}; (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:this._autoKey(m.meta), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
         chunk.forEach(id=>{ cache[id]={ts:'', msgs:by[id]||[]}; });
       }
       const list=(convs||[]).map(r=>{ const c=cache[r.id]||(cache[r.id]={msgs:[]}); c.ts=(r.ultimo_at||''); return { id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, cerradaAuto:!!r.cerrada_auto, sinRespuesta:!!r.sin_respuesta, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(c.msgs||[]) }; });
