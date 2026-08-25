@@ -4935,7 +4935,51 @@
                   </sc-if>
                 </div>
                 <div style="flex:1;min-width:300px;">
-                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0 0 14px;color:var(--brand-ink);">Mis solicitudes</h3>
+
+                  <sc-if value="{{ saludNada }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:26px;">El primer chequeo se corre esta noche.</div>
+                  </sc-if>
+
+                  <sc-if value="{{ saludHay }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:var(--surface-card);border:1px solid rgba(20,20,30,0.10);border-radius:20px;box-shadow:0 18px 40px -30px rgba(20,20,30,0.5);padding:24px;">
+                      <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">Salud del sistema</div>
+                      <div style="display:inline-flex;align-items:center;gap:9px;padding:6px 14px;border-radius:var(--radius-pill);background:{{ saludChipBg }};margin-bottom:18px;">
+                        <span style="width:10px;height:10px;border-radius:50%;background:{{ saludChipFg }};flex-shrink:0;"></span>
+                        <span style="font-size:12.5px;font-weight:700;color:{{ saludChipFg }};">{{ saludEstadoLabel }}</span>
+                      </div>
+                      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+                        <div style="flex:1;min-width:120px;background:var(--sop-paper);border:1px solid rgba(20,20,30,0.10);border-radius:16px;padding:14px 16px;">
+                          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Respuesta</div>
+                          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;color:var(--brand-ink);">{{ saludSeg }}</div>
+                        </div>
+                        <div style="flex:1;min-width:120px;background:var(--sop-paper);border:1px solid rgba(20,20,30,0.10);border-radius:16px;padding:14px 16px;">
+                          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Peso</div>
+                          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;color:var(--brand-ink);">{{ saludPeso }}</div>
+                        </div>
+                        <div style="flex:1;min-width:120px;background:var(--sop-paper);border:1px solid rgba(20,20,30,0.10);border-radius:16px;padding:14px 16px;">
+                          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Último chequeo</div>
+                          <div style="font-size:14px;font-weight:700;line-height:1.3;color:var(--brand-ink);">{{ saludFecha }}</div>
+                        </div>
+                      </div>
+                      <sc-if value="{{ saludHayResumen }}" hint-placeholder-val="{{ false }}">
+                        <p style="font-size:13.5px;color:var(--text-body);line-height:1.6;margin:0 0 18px;text-wrap:pretty;">{{ saludResumen }}</p>
+                      </sc-if>
+                      <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Últimos 14 chequeos</div>
+                      <div style="display:flex;align-items:flex-end;gap:4px;height:44px;">
+                        <sc-for list="{{ saludBarras }}" as="b" hint-placeholder-count="14">
+                          <span style="width:4px;border-radius:2px;background:var(--brand-primary);opacity:0.85;height:{{ b.h }};"></span>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ saludAlerta }}" hint-placeholder-val="{{ false }}">
+                        <div style="margin-top:18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
+                          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">ODA Labs ya está enterado y revisando.</div>
+                          <button onClick="{{ saludReportar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 20px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Reportar lo que estás viendo</button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:26px 0 14px;color:var(--brand-ink);">Mis solicitudes</h3>
                   <sc-if value="{{ sopCargandoShow }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">Cargando tus solicitudes…</div></sc-if>
                   <sc-if value="{{ sopVacio }}" hint-placeholder-val="{{ true }}">
                     <div style="padding:34px 22px;text-align:center;border:1px dashed var(--border-strong);border-radius:16px;color:var(--text-muted);font-size:13.5px;background:var(--surface-card);">Aún no has enviado solicitudes. Cuando reportes algo, aparecerá aquí con su estado.</div>
@@ -7665,6 +7709,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount(){
+    try{ this._odaEstadoInstall(); }catch(e){}
     setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
     let data=null, sess=null;
     try{ data=JSON.parse(localStorage.getItem(this.STORAGE)); }catch(e){}
@@ -7936,6 +7981,34 @@ class Component extends DCLogic {
       this.toast('Enviado a soporte. Te contactaremos pronto.');
       this.sopCargar();
     }catch(e){ this.setState({sopEnviando:false, sopError:'No pudimos enviar tu solicitud. Intenta de nuevo.'}); } })(); }
+  // ---- Salud del sistema (lee el chequeo diario que corre ODA Labs) ----
+  _saludFecha(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10);
+    return d.toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).replace(/\./g,''); }
+  saludCargar(){ if(this._saludLoading) return; this._saludLoading=true; this.setState({saludCargando:true});
+    fetch(this.SOP_URL+'/rest/v1/salud?cliente=eq.'+encodeURIComponent(this.SOP_CLIENTE)+'&order=creado.desc&limit=14',{headers:this.sopHeaders()})
+      .then(r=> r.ok? r.json() : [])
+      .then(rows=>{ this._saludLoading=false; this.setState({saludRows:Array.isArray(rows)?rows:[], saludCargando:false}); })
+      .catch(()=>{ this._saludLoading=false; this.setState({saludRows:[], saludCargando:false}); }); }
+  // Señal para el chequeo diario: nunca datos del negocio, solo módulo + causa técnica.
+  odaEstado(txt){ try{ document.body.setAttribute('data-oda-estado', String(txt||'ok').slice(0,120)); }catch(e){} }
+  _odaMod(url){ let m=/\/rest\/v1\/([a-z_]+)/i.exec(url); if(m) return m[1];
+    m=/\/functions\/v1\/([a-z0-9-]+)/i.exec(url); if(m) return m[1];
+    if(/\/auth\//.test(url)) return 'auth'; if(/\/storage\//.test(url)) return 'storage'; return 'supabase'; }
+  _odaFalla(url, txt){ this._odaErrTs=Date.now(); this.odaEstado(this._odaMod(url)+': '+txt); }
+  _odaOkSoon(){ clearTimeout(this._odaOkT); this._odaOkT=setTimeout(()=>{ if(Date.now()-(this._odaErrTs||0) > 60000) this.odaEstado('ok'); }, 1200); }
+  // Un solo punto de captura para TODA consulta a la base (rest, storage, auth, edge functions):
+  // el chequeo diario lee data-oda-estado; no se muestra nada al usuario ni se bloquea el render.
+  _odaEstadoInstall(){ if(window.__odaEstadoInstalled) return; window.__odaEstadoInstalled=true;
+    window.odaEstado=(t)=>this.odaEstado(t);
+    this.odaEstado('ok');
+    const _f=window.fetch.bind(window);
+    const self=this;
+    window.fetch=function(){ const a=arguments; const url=String((a[0]&&a[0].url)||a[0]||'');
+      const mio=/supabase\.co/.test(url);
+      return _f.apply(null, a).then(function(r){
+        if(mio){ if(!r.ok){ const st=r.status; self._odaFalla(url, st===401?'llave rechazada (401)':(st===403?'permiso denegado (403)':'http '+st)); } else { self._odaOkSoon(); } }
+        return r;
+      }, function(e){ if(mio) self._odaFalla(url,'consulta sin respuesta'); throw e; }); }; }
   // ---- nav ----
   goModule(m){ if(m==='soporte'){ this.sopCargar(); } if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser()){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
@@ -12311,6 +12384,29 @@ Instrucciones de respuesta:
       out.sopEnviar=()=>this.sopEnviar();
       const tab=st.sopTab||'problema'; out.sopEsProblema=tab==='problema'; out.sopEsCita=tab==='cita';
       out.sopTabProblema=()=>this.sopSetTab('problema'); out.sopTabCita=()=>this.sopSetTab('cita');
+      // ---- Salud del sistema (último chequeo diario de ODA Labs) ----
+      { const rows=st.saludRows;
+        if(rows===undefined && !st.saludCargando){ this.saludCargar(); }
+        const list=Array.isArray(rows)?rows:[];
+        const ult=list[0]||null;
+        out.saludHay=!!ult; out.saludNada=!ult && Array.isArray(rows);
+        if(ult){
+          const est=String(ult.estado||ult.semaforo||'').toLowerCase();
+          const nivel = /rojo|red|danger|critico|crítico/.test(est)? 'rojo' : (/amarillo|yellow|warn|obs/.test(est)? 'amarillo' : 'verde');
+          const col={verde:{bg:'var(--sop-ok-soft)',fg:'var(--sop-ok)',label:'Todo en orden'},amarillo:{bg:'var(--sop-warn-soft)',fg:'var(--sop-warn)',label:'Con observaciones'},rojo:{bg:'var(--sop-danger-soft)',fg:'var(--sop-danger)',label:'Necesita revisión'}}[nivel];
+          out.saludChipBg=col.bg; out.saludChipFg=col.fg; out.saludEstadoLabel=col.label;
+          out.saludAlerta = nivel!=='verde';
+          const ms=Number(ult.total_ms)||0; out.saludSeg=(ms/1000).toFixed(1)+' s';
+          out.saludPeso=(Math.round(Number(ult.peso_kb)||0))+' KB';
+          out.saludFecha=this._saludFecha(ult.creado||ult.fecha);
+          const res=String(ult.resumen_cliente||'').trim();
+          out.saludHayResumen=!!res; out.saludResumen=res;
+          const serie=list.slice(0,14).map(r=>Number(r.total_ms)||0).reverse();
+          const mx=Math.max.apply(null,serie.concat([1]));
+          out.saludBarras=serie.map(v=>({ h: Math.max(4, Math.round(v/mx*44))+'px' }));
+          out.saludReportar=()=>{ this.sopSetTab('problema'); this.setState(s=>({ sopDraft:{...(s.sopDraft||{prioridad:'Media',fotos:[]}), asunto:'Sobre el chequeo de salud del '+out.saludFecha}, sopAsuntoError:false })); };
+        }
+      }
       out.sopTabPBg=tab==='problema'?'var(--brand-primary)':'transparent'; out.sopTabPFg=tab==='problema'?'var(--text-on-brand)':'var(--text-body)'; out.sopTabPBorde=tab==='problema'?'var(--brand-primary)':'var(--border-strong)';
       out.sopTabCBg=tab==='cita'?'var(--brand-primary)':'transparent'; out.sopTabCFg=tab==='cita'?'var(--text-on-brand)':'var(--text-body)'; out.sopTabCBorde=tab==='cita'?'var(--brand-primary)':'var(--border-strong)';
       out.sopEnviarLabel=st.sopEnviando?'Enviando\u2026':'Enviar a soporte';
