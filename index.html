@@ -1387,6 +1387,7 @@
                 <div style="display:flex;align-items:center;gap:2px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:3px;"><button onClick="{{ vmProdOnLista }}" title="Vista de lista" style="display:flex;align-items:center;justify-content:center;width:34px;height:28px;border:none;border-radius:99px;cursor:pointer;font-family:inherit;background:{{ vmProdBgLista }};color:{{ vmProdFgLista }};"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></button><button onClick="{{ vmProdOnPeq }}" title="Tarjetas pequeñas" style="display:flex;align-items:center;justify-content:center;width:34px;height:28px;border:none;border-radius:99px;cursor:pointer;font-family:inherit;background:{{ vmProdBgPeq }};color:{{ vmProdFgPeq }};"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"></rect><rect x="15" y="3" width="6" height="6" rx="1"></rect><rect x="3" y="15" width="6" height="6" rx="1"></rect><rect x="15" y="15" width="6" height="6" rx="1"></rect><rect x="9" y="9" width="6" height="6" rx="1"></rect></svg></button><button onClick="{{ vmProdOnGra }}" title="Tarjetas grandes" style="display:flex;align-items:center;justify-content:center;width:34px;height:28px;border:none;border-radius:99px;cursor:pointer;font-family:inherit;background:{{ vmProdBgGra }};color:{{ vmProdFgGra }};"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg></button></div>
                 <sc-if value="{{ canWriteDes }}" hint-placeholder-val="{{ true }}">
                   <button onClick="{{ nuevoProductoImport }}" title="Importar masivamente desde Excel" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:10px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Subir Excel</button>
+                  <sc-if value="{{ shopPubShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onShopPublicar }}" title="Crea en Shopify, como borrador, los productos que todavía no existen allá" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:10px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>{{ shopPubLabel }}</button></sc-if>
                   <button onClick="{{ nuevoBulk }}" title="Crear varias variaciones que solo cambian el aceite" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:10px;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>Creación masiva</button>
                   <button onClick="{{ nuevoProducto }}" style="display:flex;align-items:center;gap:7px;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 160ms;" style-hover="background:var(--brand-hover);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Nuevo producto</button>
                 </sc-if>
@@ -5496,6 +5497,10 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Tamaño / presentación<input name="tamano" value="{{ draft.tamano }}" onInput="{{ onDraftInput }}" placeholder="10ml, 30ml, 180g…" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Inventario inicial (unidades)<input name="stockInicial" type="number" value="{{ draft.stockInicial }}" onInput="{{ onDraftInput }}" placeholder="0" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <div style="font-size:12px;font-weight:700;color:var(--text-body);">¿Cobra IVA?<label style="display:flex;align-items:center;gap:9px;margin-top:5px;font-weight:600;font-size:13px;color:var(--text-strong);background:var(--surface-raised);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer;"><input name="cobraIva" type="checkbox" checked="{{ prodCobraIva }}" onChange="{{ onDraftCheck }}" style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;">Aplica IVA 19%</label></div>
+                <div style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Tienda online
+                  <label style="display:flex;align-items:flex-start;gap:9px;margin-top:5px;font-weight:600;font-size:13px;color:var(--text-strong);background:var(--surface-raised);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer;"><input name="crearShopify" type="checkbox" checked="{{ prodCrearShopify }}" onChange="{{ onDraftCheck }}" style="width:16px;height:16px;margin-top:1px;accent-color:var(--brand-primary);cursor:pointer;flex-shrink:0;"><span>Crear también en Shopify como <strong>borrador</strong><span style="display:block;font-weight:400;font-size:11.5px;color:var(--text-muted);margin-top:2px;">Se crea con nombre, SKU, precio, foto e inventario inicial, sin publicar. Tú lo publicas en Shopify cuando esté listo.</span></span></label>
+                  <sc-if value="{{ prodYaEnShopify }}" hint-placeholder-val="{{ false }}"><div style="margin-top:6px;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--text-muted);">Ya existe en Shopify · id {{ prodShopifyId }}</div></sc-if>
+                </div>
               </div>
 
               <div style="margin-top:16px;">
@@ -8623,13 +8628,66 @@ class Component extends DCLogic {
   opFormula2(p,op){ return (op&&op.recarga)? this.formulaRecarga(p) : ((p&&p.formula)||[]); }
   productoCostoRecarga(p){ if(!p) return 0; if(p.esReventa) return this.productoCosto(p); return this.formulaRecarga(p).reduce((a,f)=>a+this.refCostoUnit(f.materiaCodigo)*(Number(f.cantidad)||0),0); }
   opCostoUnit(p,op){ if(!p) return 0; return (op&&op.recarga)? this.productoCostoRecarga(p) : this.productoCosto(p); }
-  nuevoProducto(){ this.open('producto',{ codigo:this.nextCode('PT-',this.state.productos), nombre:'', formato:'roll-on', tamano:'', precio:'', cobraIva:true, stockInicial:0, esReventa:false, costoCompra:'', foto:'', formula:[], _selMateria:'', _selCantidad:'', _new:true }); }
-  editProducto(p){ this.open('producto',{...p, cobraIva:(p.cobraIva!==false), stockInicial:(p.stockInicial||0), esReventa:(p.esReventa===true), costoCompra:(p.costoCompra||''), formula:(p.formula||[]).slice(), _selMateria:'', _selCantidad:''}); }
+  nuevoProducto(){ this.open('producto',{ crearShopify:false, codigo:this.nextCode('PT-',this.state.productos), nombre:'', formato:'roll-on', tamano:'', precio:'', cobraIva:true, stockInicial:0, esReventa:false, costoCompra:'', foto:'', formula:[], _selMateria:'', _selCantidad:'', _new:true }); }
+  // ===== PRODUCTOS EN SHOPIFY (borrador) =====
+  // El check del modal decide si además de guardarlo en el Hub se crea en Shopify. Siempre
+  // como BORRADOR: alguien lo publica allá cuando tenga fotos y descripción listas.
+  async shopifyCrearProducto(p, silent){
+    const sb=this._sbClient(); if(!sb){ if(!silent) this.toast('Sin conexión a la nube: no se pudo crear en Shopify'); return false; }
+    try{
+      const {data,error}=await sb.functions.invoke('shopify',{ body:{ mode:'productCreate', producto:{
+        codigo:p.codigo, nombre:p.nombre, formato:p.formato||'', tamano:p.tamano||'',
+        precio:Math.round(Number(p.precio)||0),
+        foto:p.foto||'', stockInicial:Number(p.stockInicial)||0 } } });
+      let det='';
+      if(error){ det=(error&&error.message)||'no respondió'; try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) det=j.error; } }catch(_e){} }
+      if(det || !data || data.error){ if(!silent) this.toast('Shopify: '+(det||(data&&data.error)||'no se pudo crear')); return false; }
+      const list=this.state.productos.slice();
+      const i=list.findIndex(x=>x.codigo===p.codigo);
+      if(i>=0){ const row={...list[i], shopifyProductId:String(data.shopifyId||''), shopifyHandle:String(data.handle||'')};
+        list[i]=row; this.setState({productos:list},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProducto(row); }
+      if(!silent){ const av=(data.avisos||[]).join(' · ');
+        this.toast('Creado en Shopify como borrador: '+p.nombre+(av? ' · '+av : '')); }
+      return true;
+    }catch(e){ if(!silent) this.toast('Shopify: '+((e&&e.message)||'error')); return false; }
+  }
+  prodFaltantesShopify(){ return (this.state.productos||[]).filter(p=>!String(p.shopifyProductId||'').trim()); }
+  async shopifyPublicarFaltantes(){
+    const falt=this.prodFaltantesShopify();
+    if(!falt.length){ this.toast('Todos los productos ya están en Shopify'); return; }
+    if(!confirm('Se crearán '+falt.length+' producto(s) en Shopify como BORRADOR. ¿Continuar?')) return;
+    this.setState({shopPubBusy:true});
+    let ok=0, fail=0;
+    for(const p of falt){ const r=await this.shopifyCrearProducto(p,true); if(r) ok++; else fail++; }
+    this.setState({shopPubBusy:false});
+    this.toast(ok+' producto(s) creados en Shopify como borrador'+(fail? ' · '+fail+' con error':''));
+  }
+  // Cupón del mes de la campaña de postventa: se crea en Shopify la primera vez que se usa
+  // (la función es idempotente). Mejor esfuerzo: si Shopify falla, el WhatsApp igual sale.
+  async shopifyCuponPostventa(v){
+    const c=this.waCuponPostventa(v); if(!c||!c.code) return;
+    this._cupOk=this._cupOk||{}; if(this._cupOk[c.code]) return;
+    const sb=this._sbClient(); if(!sb) return;
+    const base=this.parseFecha(v&&v.fecha)||new Date().toISOString().slice(0,10);
+    const d=new Date(base+'T12:00:00'); const fin=new Date(d.getFullYear(), d.getMonth()+2, 0);
+    const endsAt=fin.getFullYear()+'-'+String(fin.getMonth()+1).padStart(2,'0')+'-'+String(fin.getDate()).padStart(2,'0')+'T23:59:59-05:00';
+    try{ const {data,error}=await sb.functions.invoke('shopify',{ body:{ mode:'discountCode', code:c.code, pct:this.WA_CUPON_PCT, endsAt } });
+      if(!error && data && !data.error){ this._cupOk[c.code]=true; if(data.creado) this.toast('Cupón '+c.code+' creado en Shopify · '+this.WA_CUPON_PCT+'% hasta el '+c.hasta); }
+      else { console.warn('cupón postventa en Shopify:', (error&&error.message)||(data&&data.error)); }
+    }catch(e){ console.warn('cupón postventa en Shopify:', e); }
+  }
+  editProducto(p){ this.open('producto',{...p, crearShopify:false, cobraIva:(p.cobraIva!==false), stockInicial:(p.stockInicial||0), esReventa:(p.esReventa===true), costoCompra:(p.costoCompra||''), formula:(p.formula||[]).slice(), _selMateria:'', _selCantidad:''}); }
   addFormulaItem(){ const d=this.state.draft; if(!d._selMateria||!d._selCantidad){ this.toast('Elige un componente y la cantidad'); return; } const f=(d.formula||[]).slice(); f.push({materiaCodigo:d._selMateria, cantidad:Number(d._selCantidad)||0}); this.setState({draft:{...d,formula:f,_selMateria:'',_selCantidad:''}}); }
   removeFormulaItem(i){ const d=this.state.draft; const f=(d.formula||[]).slice(); f.splice(i,1); this.setState({draft:{...d,formula:f}}); }
   onFotoFile(e){ const file=e.target.files&&e.target.files[0]; if(!file) return; this.cloudUploadArchivo(file,'fotos-producto',(url)=>{ this.setState(s=>({draft:{...s.draft,foto:url}})); }); }
   quitarFoto(){ this.setState(s=>({draft:{...s.draft,foto:''}})); }
-  saveProducto(){ const d=this.state.draft; if(!d.nombre){ this.toast('Escribe el nombre del producto'); return; } let list=this.state.productos.slice(); const i=list.findIndex(x=>x.codigo===d.codigo); const esRev=(d.esReventa===true); const row={codigo:d.codigo,nombre:d.nombre,formato:d.formato||'',tamano:d.tamano||'',precio:Number(d.precio)||0,cobraIva:(d.cobraIva!==false),iva:19,stockInicial:Number(d.stockInicial)||0,esReventa:esRev,costoCompra:(esRev?(Number(d.costoCompra)||0):0),foto:d.foto||'',formula:(esRev?[]:(d.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo,cantidad:Number(f.cantidad)||0})))}; if(i>=0&&!d._new) list[i]=row; else list.push(row); this.setState({productos:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProducto(row); this.toast('Producto guardado'); }
+  saveProducto(){ const d=this.state.draft; if(!d.nombre){ this.toast('Escribe el nombre del producto'); return; } let list=this.state.productos.slice(); const i=list.findIndex(x=>x.codigo===d.codigo); const esRev=(d.esReventa===true); const row={codigo:d.codigo,nombre:d.nombre,formato:d.formato||'',tamano:d.tamano||'',precio:Number(d.precio)||0,cobraIva:(d.cobraIva!==false),iva:19,stockInicial:Number(d.stockInicial)||0,esReventa:esRev,costoCompra:(esRev?(Number(d.costoCompra)||0):0),foto:d.foto||'',formula:(esRev?[]:(d.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo,cantidad:Number(f.cantidad)||0})))};
+    const prev=(i>=0? list[i] : null);
+    if(prev&&prev.shopifyProductId){ row.shopifyProductId=prev.shopifyProductId; row.shopifyHandle=prev.shopifyHandle||''; }
+    if(i>=0&&!d._new) list[i]=row; else list.push(row);
+    this.setState({productos:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveProducto(row);
+    this.toast('Producto guardado');
+    if(d.crearShopify===true && !row.shopifyProductId) this.shopifyCrearProducto(row); }
   nuevoBulk(){ this.open('bulkproducto',{ nombrePlantilla:'Aceite esencial de {aceite} 10ml', formato:'aceite', tamano:'10ml', precio:'', cobraIva:true, stockInicial:0, cantidadAceite:10, formula:[], oils:[], _selMateria:'', _selCantidad:'' }); }
   toggleBulkOil(code){ const d=this.state.draft; const oils=(d.oils||[]).slice(); const i=oils.indexOf(code); if(i>=0) oils.splice(i,1); else oils.push(code); this.setState({draft:{...d,oils}}); }
   bulkNombre(plantilla,code){ const base=this.refNombre(code).replace(/^aceite esencial de\s*/i,'').replace(/^aceite esencial\s*/i,'').replace(/^mezcla\s*/i,''); return String(plantilla||'').replace(/\{aceite\}/gi, base); }
@@ -9180,6 +9238,7 @@ Instrucciones de respuesta:
   waConfigurado(){ const c=this.waCfg(); return !!(c.waCloudOn); }
   async waSendTemplate(v, key, silent){
     const t=this.waTemplates()[key]; if(!t){ if(!silent) this.toast('Plantilla no encontrada'); return false; }
+    if(key==='postventa'){ try{ await this.shopifyCuponPostventa(v); }catch(_e){} }
     const to=String((v&&v.celular)||'').replace(/\D/g,''); if(!to){ if(!silent) this.toast('El pedido no tiene celular'); return false; }
     try{
       const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
@@ -13470,6 +13529,9 @@ Instrucciones de respuesta:
         out.prodSelClear=()=>this.setState({prodSel:[]});
         out.onEditMasivo=()=>this.abrirEditMasivo(); }
       out.nuevoProducto=()=>this.nuevoProducto();
+      { const falt=this.prodFaltantesShopify().length;
+        out.shopPubShow=falt>0; out.shopPubLabel=(st.shopPubBusy? 'Creando en Shopify…' : ('Publicar '+falt+' en Shopify'));
+        out.onShopPublicar=()=>{ if(!st.shopPubBusy) this.shopifyPublicarFaltantes(); }; }
       out.nuevoBulk=()=>this.nuevoBulk();
       out.nuevoProductoImport=()=>this.openImport('productos');
     }
@@ -14828,6 +14890,8 @@ Instrucciones de respuesta:
     if(st.modal==='proveedor'){ out.telefonosDraft=(st.draft.telefonos||['']).map((t,i)=>({value:t, onInput:(e)=>this.updateTelefono(i,e.target.value), onRemove:()=>this.removeTelefono(i)})); out.addTelefono=()=>this.addTelefono(); }
     out.formatoOpts=this.formatoOpciones();
     if(st.modal==='producto'){ const d=st.draft;
+      out.prodCrearShopify=(d.crearShopify===true);
+      out.prodYaEnShopify=!!String(d.shopifyProductId||'').trim(); out.prodShopifyId=String(d.shopifyProductId||'');
       out.materiasFormulaOptions=this.ordenarPorCodigo([ ...(st.mezclas||[]).map(mz=>({codigo:mz.codigo,label:'Mezcla · '+mz.nombre+' ('+this.fmt(Math.round(this.mezclaCostoUnit(mz)))+'/ml)'})), ...st.materias.map(m=>({codigo:m.codigo,label:m.codigo+' · '+m.nombre+' ('+this.fmt(m.costo)+'/'+m.unidad+')'})) ]);
       this.combo(out,'matFormPick','_selMateria',out.materiasFormulaOptions);
       out.formulaDraft=(d.formula||[]).map((f,i)=>{ const cu=this.refCostoUnit(f.materiaCodigo); const cl=cu*(Number(f.cantidad)||0); return {nombre:this.refNombre(f.materiaCodigo), unidad:this.refUnidad(f.materiaCodigo), cantidad:f.cantidad, costoUnitFmt:this.fmt(Math.round(cu)), costoLineaFmt:this.fmt(Math.round(cl)), onRemove:()=>this.removeFormulaItem(i)}; });
