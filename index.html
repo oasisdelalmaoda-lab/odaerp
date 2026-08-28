@@ -2959,6 +2959,7 @@
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Sistema</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Contado</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Diferencia</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Efecto en PyG</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Motivo</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Registró</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Estado</th>
@@ -2971,6 +2972,7 @@
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;color:var(--text-muted);">{{ c.sistemaTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;font-weight:700;">{{ c.contadoTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;font-weight:800;color:{{ c.difColor }};">{{ c.difTxt }}</td>
+                        <td style="padding:13px 16px;text-align:right;white-space:nowrap;color:{{ c.valorColor }};" title="{{ c.valorNota }}">{{ c.valorTxt }}</td>
                         <td style="padding:13px 16px;">{{ c.motivo }}<span style="display:block;font-size:12px;color:var(--text-muted);">{{ c.nota }}</span></td>
                         <td style="padding:13px 16px;white-space:nowrap;">{{ c.quien }}</td>
                         <td style="padding:13px 16px;white-space:nowrap;">
@@ -4435,6 +4437,7 @@
                 <sc-if value="{{ pgHayFletesEntrega }}" hint-placeholder-val="{{ false }}"><div onClick="{{ pgSel.fletesentrega }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border-subtle);font-size:13.5px;cursor:pointer;" style-hover="background:var(--surface-raised);"><span style="color:var(--text-muted);">(−) Logística (flete de entregas + servicios)</span><span style="font-weight:600;color:var(--oda-sale);">−{{ pgFletesEntrega }}</span></div></sc-if>
                 <sc-if value="{{ pgHayObsequios }}" hint-placeholder-val="{{ false }}"><div onClick="{{ pgSel.obsequios }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border-subtle);font-size:13.5px;cursor:pointer;" style-hover="background:var(--surface-raised);"><span style="color:var(--text-muted);">(−) Obsequios / muestras (MSVC)</span><span style="font-weight:600;color:var(--oda-sale);">−{{ pgObsequios }}</span></div></sc-if>
                 <sc-if value="{{ pgHayRecargas }}" hint-placeholder-val="{{ false }}"><div onClick="{{ pgSel.recargas }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border-subtle);font-size:13.5px;cursor:pointer;" style-hover="background:var(--surface-raised);"><span style="color:var(--text-muted);">(−) Recargas (envase del cliente)</span><span style="font-weight:600;color:var(--oda-sale);">−{{ pgRecargas }}</span></div></sc-if>
+                <sc-if value="{{ pgHayAjusteInv }}" hint-placeholder-val="{{ false }}"><div onClick="{{ pgSel.ajusteinv }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border-subtle);font-size:13.5px;cursor:pointer;" style-hover="background:var(--surface-raised);"><span style="color:var(--text-muted);">{{ pgAjusteInvLabel }}</span><span style="font-weight:600;color:{{ pgAjusteInvColor }};">{{ pgAjusteInvTxt }}</span></div></sc-if>
                 <sc-if value="{{ pgHayGmf }}" hint-placeholder-val="{{ false }}"><div onClick="{{ pgSel.gmf }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid var(--border-subtle);font-size:13.5px;cursor:pointer;" style-hover="background:var(--surface-raised);"><span style="color:var(--text-muted);">(−) 4×1000 (GMF) sobre movimientos bancarios</span><span style="font-weight:600;color:var(--oda-sale);">−{{ pgGmf }}</span></div></sc-if>
                 <div onClick="{{ pgSel.operacional }}" style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:#2A2419;color:var(--text-inverse);cursor:pointer;"><span style="font-weight:700;font-size:15px;">Utilidad operacional <span style="color:rgba(251,248,242,0.6);font-weight:400;">· margen {{ pgMargenNeto }}</span></span><span style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:{{ pgOperColor }};">{{ pgOperacional }}</span></div>
               </div>
@@ -8700,6 +8703,9 @@ class Component extends DCLogic {
   // antigua primero, así que una fórmula nueva solo cambia el costo cuando se agota lo que ya hay.
   _mezSig(){ const st=this.state; let s=(st.produccionesMezcla||[]).length+'|'+(st.producciones||[]).length+'|'+(st.ventas||[]).length+'|'+(st.kits||[]).length+'|'+(st.productos||[]).length;
     (st.mezclas||[]).forEach(m=>{ s+='|'+m.codigo+':'+(m.formula||[]).map(f=>f.materiaCodigo+'x'+f.cantidad).join(',')+':'+(m.stockInicial||0); });
+    // Los conteos aprobados mueven las capas: sin ellos en la firma, el caché FIFO se
+    // quedaba con el valor viejo después de aprobar o rechazar un conteo.
+    const cts=(st.conteos||[]); s+='|c'+cts.length+':'+cts.reduce((a,c)=>a+(c.estado==='aprobado'?(Number(c.diferencia)||0):0),0);
     return s+'|'+(st.materias||[]).reduce((a,m)=>a+(Number(m.costo)||0),0); }
   // Congela la fórmula en las OM registradas ANTES de que existiera el snapshot, para que
   // editar una fórmula tampoco reescriba esas. Idempotente: solo toca las que no lo tienen
@@ -8729,8 +8735,16 @@ class Component extends DCLogic {
     capas.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||''))); return capas; }
   mezclaCapasRestantes(code){ const sig=this._mezSig(); if(!this._mezCache||this._mezCacheSig!==sig){ this._mezCache={}; this._mezCacheSig=sig; }
     if(this._mezCache[code]) return this._mezCache[code];
-    let cons=this.materiaConsumoTotal(code); const out=[];
+    // Un conteo aprobado también mueve las capas: el faltante se consume de la más antigua
+    // (igual que una salida real) y el sobrante entra como una capa al costo de la última
+    // producción. Sin esto la cantidad bajaba pero el valor del inventario quedaba igual.
+    const delta=this.conteoDelta(code);
+    let cons=this.materiaConsumoTotal(code) + (delta<0? -delta : 0);
+    const out=[];
     this.mezclaCapas(code).forEach(c=>{ if(cons<=0){ out.push({...c}); return; } if(cons>=c.ml){ cons-=c.ml; return; } out.push({...c, ml:c.ml-cons}); cons=0; });
+    if(delta>0){ const mz=(this.state.mezclas||[]).find(x=>x.codigo===code);
+      const cm=out.length? out[out.length-1].costoMl : (mz? this.mezclaCostoUnit(mz) : 0);
+      out.push({fecha:'', ml:delta, costoMl:cm, etiqueta:'Ajuste por conteo físico'}); }
     this._mezCache[code]=out; return out; }
   // Costo del próximo ml que se va a consumir = el de la capa más antigua que queda.
   mezclaCostoMlActual(code){ const r=this.mezclaCapasRestantes(code); if(r.length&&r[0].ml>0) return r[0].costoMl; const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); return mz?this.mezclaCostoUnit(mz):0; }
@@ -10919,6 +10933,21 @@ Instrucciones de respuesta:
     if(m) return {tipo:'materia', nombre:m.nombre, unidad:m.unidad||'und', label:this.tipoLabelInv(m.tipo), item:m};
     if(p) return {tipo:'producto', nombre:p.nombre, unidad:'und', label:'Reventa', item:p};
     return null; }
+  // Un conteo aprobado no mueve plata (no salió del banco) pero SÍ es un resultado del mes:
+  // el faltante es una pérdida y el sobrante la reduce. Va al PyG como «Ajustes de inventario».
+  // Excepción: «Error de registro anterior» no es una pérdida, es una corrección de digitación.
+  CONTEO_SIN_GASTO = ['Error de registro anterior'];
+  conteoCostoUnit(codigo){ const r=this._conteoRef(codigo); if(!r) return 0;
+    if(r.tipo==='mezcla') return this.mezclaCostoMlActual(codigo);
+    if(r.tipo==='producto') return this.productoCosto(r.item);
+    return Number(r.item.costo)||0; }
+  // Valor en pesos del ajuste: positivo = pérdida (faltante), negativo = sobrante.
+  conteoValor(c){ if(!c || c.estado!=='aprobado') return 0;
+    if(this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0) return 0;
+    if(c.valor!=null) return Number(c.valor)||0;
+    const cu=(c.costoUnit!=null)? (Number(c.costoUnit)||0) : this.conteoCostoUnit(c.codigo);
+    return -(Number(c.diferencia)||0)*cu; }
+  ajusteInvMes(ym){ return (this.state.conteos||[]).reduce((a,c)=> (c.estado==='aprobado' && this.mesDe(c.fecha)===ym)? a+this.conteoValor(c) : a, 0); }
   conteoSistema(codigo){ const r=this._conteoRef(codigo); if(!r) return 0;
     const v = r.tipo==='mezcla'? this.mezclaMlStock(codigo)
             : r.tipo==='producto'? this.productoStockActual(r.item)
@@ -10950,6 +10979,8 @@ Instrucciones de respuesta:
       motivo:d.motivo, nota:String(d.nota||'').trim(),
       solicitadoPor:yo, solicitadoAt:new Date().toISOString(),
       estado: admin? 'aprobado':'pendiente',
+      costoUnit: admin? this.conteoCostoUnit(d.codigo) : null,
+      valor: admin? ((this.CONTEO_SIN_GASTO.indexOf(d.motivo)>=0)? 0 : -dif*this.conteoCostoUnit(d.codigo)) : null,
       aprobadoPor: admin? yo : '', aprobadoAt: admin? new Date().toISOString() : '' };
     const list=[...(this.state.conteos||[]), row];
     this.setState({conteos:list, modal:null, draft:{}},()=>this.persist());
@@ -10966,7 +10997,10 @@ Instrucciones de respuesta:
       // Se recalcula contra el stock de HOY: entre la solicitud y la aprobación pudo haber producción.
       const sistema=this.conteoSistema(c.codigo);
       const dif=Math.round((Number(c.contado)-sistema)*1000)/1000;
+      const cu=this.conteoCostoUnit(c.codigo);
+      const sinGasto=this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0;
       row={...c, estado:'aprobado', sistemaAlAprobar:sistema, diferencia:dif,
+           costoUnit:cu, valor:(sinGasto? 0 : -dif*cu),
            aprobadoPor:this._auditUser(), aprobadoAt:new Date().toISOString()};
     } else {
       row={...c, estado:'rechazado', aprobadoPor:this._auditUser(), aprobadoAt:new Date().toISOString()};
@@ -10979,10 +11013,12 @@ Instrucciones de respuesta:
   conteosPendientes(){ return (this.state.conteos||[]).filter(c=>c.estado==='pendiente').length; }
   // ---- conteos compartidos (nube) ----
   _conteoToDb(c){ return { id:c.id, codigo:c.codigo, nombre:c.nombre||'', unidad:c.unidad||'und', clase:c.clase||'materia', fecha:c.fecha||null,
+    costo_unit:(c.costoUnit==null? null : Number(c.costoUnit)||0), valor:(c.valor==null? null : Number(c.valor)||0),
     sistema:Number(c.sistema)||0, contado:Number(c.contado)||0, diferencia:Number(c.diferencia)||0,
     motivo:c.motivo||'', nota:c.nota||'', solicitado_por:c.solicitadoPor||'', solicitado_at:c.solicitadoAt||null,
     estado:c.estado||'pendiente', aprobado_por:c.aprobadoPor||'', aprobado_at:c.aprobadoAt||null }; }
   _conteoFromDb(r){ return { id:r.id, codigo:r.codigo, nombre:r.nombre||'', unidad:r.unidad||'und', clase:r.clase||'materia', fecha:r.fecha||'',
+    costoUnit:(r.costo_unit==null? null : Number(r.costo_unit)||0), valor:(r.valor==null? null : Number(r.valor)||0),
     sistema:Number(r.sistema)||0, contado:Number(r.contado)||0, diferencia:Number(r.diferencia)||0,
     motivo:r.motivo||'', nota:r.nota||'', solicitadoPor:r.solicitado_por||'', solicitadoAt:r.solicitado_at||'',
     estado:r.estado||'pendiente', aprobadoPor:r.aprobado_por||'', aprobadoAt:r.aprobado_at||'' }; }
@@ -11695,7 +11731,7 @@ Instrucciones de respuesta:
   gmfMes(ym){ return this.cajaMovs().filter(m=>m.categoria==='GMF (4x1000)' && this.mesDe(m.fecha)===ym).reduce((a,m)=>a+m.monto,0); }
   movCategoriaReal(m){ if(m&&m.servicioCodigo){ const s=(this.state.servicios||[]).find(x=>x.codigo===m.servicioCodigo); if(s&&s.categoria) return s.categoria; } return (m&&m.categoria)||''; }
   recargasCostoMes(ym){ return (this.state.producciones||[]).filter(op=>op.recarga && this.mesDe(op.fecha)===ym).reduce((a,op)=>{ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); return a+this.productoCostoRecarga(p)*(Number(op.cantidad)||0); },0); }
-  finPyG(ym){ const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const ingresos=ventas.reduce((a,v)=>a+this.ventaNeta(v),0); const costo=ventas.reduce((a,v)=>a+this.ventaCostoVendido(v),0); const bruta=ingresos-costo; const movEgAll=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && m.categoria!=='Pago a proveedor' && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)' && m.categoria!=='Impuestos DIAN' && m.categoria!=='Retención en la fuente' && m.categoria!=='Préstamo otorgado'); const marketingSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Marketing').reduce((a,m)=>a+m.monto,0); const logisticaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Logística').reduce((a,m)=>a+m.monto,0); const nominaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Nómina').reduce((a,m)=>a+m.monto,0); const movEg=movEgAll.filter(m=>this.movCategoriaReal(m)!=='Marketing' && this.movCategoriaReal(m)!=='Logística' && this.movCategoriaReal(m)!=='Nómina'); const gastosOper=movEg.reduce((a,m)=>a+m.monto,0); const fletes=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym).reduce((a,o)=>a+this.ordenFlete(o),0); const obsequios=ventas.reduce((a,v)=>a+this.ventaObsequioCosto(v),0); const gmf=this.gmfMes(ym); const fletesEntrega=ventas.reduce((a,v)=>a+(Number(v.fleteEntrega)||0),0)+logisticaSvc; const rendimientos=this.cajaMovs().filter(m=>m.tipo==='ingreso' && this.mesDe(m.fecha)===ym && m.categoria==='Rendimientos financieros').reduce((a,m)=>a+m.monto,0); const envioNoOper=ventas.reduce((a,v)=>a+(Number(v.envio)||0),0); const noOperacional=envioNoOper+rendimientos; const recargas=this.recargasCostoMes(ym); const gastos=gastosOper+fletes+fletesEntrega+obsequios+recargas+gmf+marketingSvc+nominaSvc; const operacional=bruta-gastos; return {ingresos,costo,bruta,gastos,gastosOper,fletes,fletesEntrega,obsequios,recargas,gmf,marketing:marketingSvc,nomina:nominaSvc,rendimientos,envioNoOper,noOperacional,operacional,resultado:operacional+noOperacional, nVentas:ventas.length}; }
+  finPyG(ym){ const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const ingresos=ventas.reduce((a,v)=>a+this.ventaNeta(v),0); const costo=ventas.reduce((a,v)=>a+this.ventaCostoVendido(v),0); const bruta=ingresos-costo; const movEgAll=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && m.categoria!=='Pago a proveedor' && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)' && m.categoria!=='Impuestos DIAN' && m.categoria!=='Retención en la fuente' && m.categoria!=='Préstamo otorgado'); const marketingSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Marketing').reduce((a,m)=>a+m.monto,0); const logisticaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Logística').reduce((a,m)=>a+m.monto,0); const nominaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Nómina').reduce((a,m)=>a+m.monto,0); const movEg=movEgAll.filter(m=>this.movCategoriaReal(m)!=='Marketing' && this.movCategoriaReal(m)!=='Logística' && this.movCategoriaReal(m)!=='Nómina'); const gastosOper=movEg.reduce((a,m)=>a+m.monto,0); const fletes=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym).reduce((a,o)=>a+this.ordenFlete(o),0); const obsequios=ventas.reduce((a,v)=>a+this.ventaObsequioCosto(v),0); const gmf=this.gmfMes(ym); const fletesEntrega=ventas.reduce((a,v)=>a+(Number(v.fleteEntrega)||0),0)+logisticaSvc; const rendimientos=this.cajaMovs().filter(m=>m.tipo==='ingreso' && this.mesDe(m.fecha)===ym && m.categoria==='Rendimientos financieros').reduce((a,m)=>a+m.monto,0); const envioNoOper=ventas.reduce((a,v)=>a+(Number(v.envio)||0),0); const noOperacional=envioNoOper+rendimientos; const recargas=this.recargasCostoMes(ym); const ajusteInv=this.ajusteInvMes(ym); const gastos=gastosOper+fletes+fletesEntrega+obsequios+recargas+gmf+marketingSvc+nominaSvc+ajusteInv; const operacional=bruta-gastos; return {ingresos,costo,bruta,gastos,gastosOper,fletes,fletesEntrega,obsequios,recargas,ajusteInv,gmf,marketing:marketingSvc,nomina:nominaSvc,rendimientos,envioNoOper,noOperacional,operacional,resultado:operacional+noOperacional, nVentas:ventas.length}; }
   finPyGDetalle(ym, key, cat){ const byF=(arr)=>arr.slice().sort((a,b)=>(b._f||'').localeCompare(a._f||'')); const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const cli=(v)=>(this.fixTxt&&this.fixTxt(v.cliente))||v.cliente||'\u2014';
     if(key==='ventas'){ const fs=byF(ventas.map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:this.ventaNeta(v)}))).filter(x=>x.val!==0); return {titulo:'Ventas netas (sin IVA)', nota:'Base gravable de cada venta del mes, sin IVA ni envío.', filas:fs, totalLabel:fs.length+' ventas', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='costo'){ const fs=byF(ventas.map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:this.ventaCostoVendido(v)}))).filter(x=>x.val>0); return {titulo:'Costo de la mercancía vendida', nota:'Costo de los productos despachados en cada venta.', filas:fs, neg:true, totalLabel:fs.length+' ventas con costo', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
@@ -11707,6 +11743,9 @@ Instrucciones de respuesta:
     if(key==='recargas'){ const ops=(this.state.producciones||[]).filter(op=>op.recarga && this.mesDe(op.fecha)===ym); const fs=byF(ops.map(op=>{ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); return {_f:op.fecha||'', label:op.numero+' \u00b7 '+(p?p.nombre:op.productoCodigo), sub:(Number(op.cantidad)||0)+' und \u00b7 '+this.fmtFecha(op.fecha), val:this.productoCostoRecarga(p)*(Number(op.cantidad)||0)}; })).filter(x=>x.val>0); return {titulo:'Recargas (envase del cliente)', nota:'Costo de la mezcla y aceites usados al recargar envases tra\u00eddos por los clientes. No suman al stock de PT.', filas:fs, neg:true, totalLabel:fs.length+' recarga'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='gmf'){ const movs=this.cajaMovs().filter(m=>m.categoria==='GMF (4x1000)' && this.mesDe(m.fecha)===ym); const fs=byF(movs.map(m=>({_f:m.fecha||'', label:m.concepto||'4\u00d71000', sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0}))); return {titulo:'4\u00d71000 (GMF)', nota:'Gravamen a los movimientos financieros gravados del mes.', filas:fs, neg:true, totalLabel:fs.length+' movimientos', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='envios'){ const fsV=byF(ventas.filter(v=>(Number(v.envio)||0)>0).map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:Number(v.envio)||0}))); const rend=this.cajaMovs().filter(m=>m.tipo==='ingreso' && this.mesDe(m.fecha)===ym && m.categoria==='Rendimientos financieros'); const fsR=byF(rend.map(m=>({_f:m.fecha||'', label:m.concepto||'Rendimientos financieros', sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0}))); const fs=fsV.concat(fsR); return {titulo:'Ingresos no operacionales', nota:'Envíos cobrados al cliente y rendimientos financieros.', filas:fs, pos:true, totalLabel:fs.length+' ítems', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
+    if(key==='ajusteinv'){ const cs=(this.state.conteos||[]).filter(c=>c.estado==='aprobado' && this.mesDe(c.fecha)===ym && this.conteoValor(c)!==0);
+      const fs=byF(cs.map(c=>({_f:c.fecha||'', label:(c.codigo+' \u00b7 '+(c.nombre||'')), sub:(c.motivo||'')+' \u00b7 '+((Number(c.diferencia)||0)>0?'+':'')+this.fmtCant(Number(c.diferencia)||0)+' '+(c.unidad||'')+' \u00b7 aprob\u00f3 '+(c.aprobadoPor||'\u2014'), val:this.conteoValor(c)})));
+      return {titulo:'Ajustes de inventario', nota:'Faltantes y sobrantes de los conteos f\u00edsicos aprobados en el mes, valorados al costo. No mueven caja: el dinero no sali\u00f3 del banco, se perdi\u00f3 (o apareci\u00f3) producto. Los conteos con motivo \u00abError de registro anterior\u00bb no cuentan como p\u00e9rdida.', filas:fs, neg:true, totalLabel:fs.length+' conteo'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     const p=this.finPyG(ym);
     if(key==='bruta'){ return {titulo:'Utilidad bruta', nota:'Ventas netas menos el costo de la mercancía vendida.', filas:[{label:'Ventas netas', val:p.ingresos},{label:'(\u2212) Costo de la mercancía', val:p.costo, neg:true}], totalLabel:'Utilidad bruta \u00b7 margen '+(p.ingresos>0?Math.round(p.bruta/p.ingresos*100):0)+'%', totalVal:p.bruta}; }
     if(key==='operacional'){ return {titulo:'Utilidad operacional', nota:'Utilidad bruta menos todos los gastos operativos del mes.', filas:[{label:'Utilidad bruta', val:p.bruta},{label:'(\u2212) Gastos operativos', val:p.gastosOper, neg:true},{label:'(\u2212) Nómina', val:p.nomina, neg:true},{label:'(\u2212) Flete compras', val:p.fletes, neg:true},{label:'(\u2212) Flete entregas', val:p.fletesEntrega, neg:true},{label:'(\u2212) Obsequios (MSVC)', val:p.obsequios, neg:true},{label:'(\u2212) 4\u00d71000 (GMF)', val:p.gmf, neg:true}].filter(x=>x.val!==0||x.label==='Utilidad bruta'), totalLabel:'Utilidad operacional \u00b7 margen '+(p.ingresos>0?Math.round(p.operacional/p.ingresos*100):0)+'%', totalVal:p.operacional}; }
@@ -13938,6 +13977,9 @@ Instrucciones de respuesta:
           sistemaTxt:this.fmtCant(Number(c.sistema)||0)+' '+(c.unidad||''), contadoTxt:this.fmtCant(Number(c.contado)||0)+' '+(c.unidad||''),
           difTxt:(dif>0?'+':'')+this.fmtCant(dif), difColor:(dif<0?'var(--oda-sale)':(dif>0?'#4C6149':'var(--text-muted)')),
           motivo:c.motivo||'', nota:c.nota||'', quien:c.solicitadoPor||'—',
+          valorTxt:(c.estado!=='aprobado'? '—' : (this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0? 'Sin efecto' : ((this.conteoValor(c)>=0?'−':'+')+this.fmt(Math.abs(Math.round(this.conteoValor(c))))))),
+          valorColor:(c.estado!=='aprobado'||this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0? 'var(--text-muted)' : (this.conteoValor(c)>=0? 'var(--oda-sale)':'#4C6149')),
+          valorNota:(this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0? 'Corrección de registro: no se contabiliza como pérdida' : 'Va al estado de resultados como Ajustes de inventario. No mueve caja.'),
           estadoLabel:e.l, estadoBg:e.bg, estadoFg:e.fg,
           aprobTxt:(c.estado==='pendiente'? 'Esperando aprobación' : ((c.estado==='aprobado'?'Aprobó ':'Rechazó ')+(c.aprobadoPor||'—'))),
           puedeResolver:(_adm && c.estado==='pendiente'),
@@ -14089,6 +14131,10 @@ Instrucciones de respuesta:
       out.pgIngresos=this.fmt(Math.round(p.ingresos)); out.pgCosto=this.fmt(Math.round(p.costo)); out.pgBruta=this.fmt(Math.round(p.bruta));
       out.pgMargenBruto=(p.ingresos>0?Math.round(p.bruta/p.ingresos*100):0)+'%';
       out.pgGastosOper=this.fmt(Math.round(p.gastosOper)); out.pgFletes=this.fmt(Math.round(p.fletes)); out.pgGastos=this.fmt(Math.round(p.gastos)); out.pgObsequios=this.fmt(Math.round(p.obsequios||0)); out.pgGmf=this.fmt(Math.round(p.gmf||0)); out.pgHayGmf=(p.gmf||0)>0;; out.pgHayObsequios=(p.obsequios||0)>0; out.pgRecargas=this.fmt(Math.round(p.recargas||0)); out.pgHayRecargas=(p.recargas||0)>0;
+      { const aj=Math.round(p.ajusteInv||0); out.pgHayAjusteInv=aj!==0;
+        out.pgAjusteInvLabel=(aj>=0? '(\u2212) Ajustes de inventario (faltantes)' : '(+) Ajustes de inventario (sobrantes)');
+        out.pgAjusteInvTxt=(aj>=0? '\u2212':'+')+this.fmt(Math.abs(aj));
+        out.pgAjusteInvColor=(aj>=0? 'var(--oda-sale)' : '#4C6149'); }
       out.pgMarketing=this.fmt(Math.round(p.marketing||0)); out.pgHayMarketing=(p.marketing||0)>0;
       out.pgNomina=this.fmt(Math.round(p.nomina||0)); out.pgHayNomina=(p.nomina||0)>0;
       out.pgOperacional=this.fmt(Math.round(p.operacional)); out.pgOperColor=p.operacional>=0?'#4C6149':'var(--oda-sale)';
@@ -14101,7 +14147,7 @@ Instrucciones de respuesta:
       const _pgSel=st.pgDetSel||''; out.pgDetSel=_pgSel; const _pgCat=st.pgDetCat||''; const _det=_pgSel? this.finPyGDetalle(ym,_pgSel,(_pgSel==='gastosop'?_pgCat:'')):null; out.pgHayDet=!!_det; out.pgDetCatActive=!!(_det&&_det.catActive); out.pgVolverCat=()=>this.setState({pgDetCat:null});
       if(_det){ const col=(f)=>((f.neg||_det.neg)?'var(--oda-sale)':((f.pos||_det.pos)?'#4C6149':'var(--text-body)')); const sgn=(f)=>((f.neg||_det.neg)?'\u2212':((f.pos||_det.pos)?'+':'')); let tFmt,tCol; if(_det.neg){ tFmt='\u2212'+this.fmt(Math.round(Math.abs(_det.totalVal))); tCol='var(--oda-sale)'; } else if(_det.pos){ tFmt='+'+this.fmt(Math.round(Math.abs(_det.totalVal))); tCol='#4C6149'; } else { tFmt=this.fmt(Math.round(_det.totalVal)); tCol=_det.totalVal>=0?'var(--brand-ink)':'var(--oda-sale)'; } out.pgDet={ titulo:_det.titulo, nota:_det.nota, totalLabel:_det.totalLabel, totalFmt:tFmt, totalColor:tCol, vacio:(_det.filas||[]).length===0, filas:(_det.filas||[]).map(f=>({label:f.label, sub:f.sub||'', tieneSub:!!f.sub, valorFmt:sgn(f)+this.fmt(Math.round(Math.abs(f.val))), valorColor:col(f), onClick:(f.onClick||(()=>{})), cursor:(f.cursor||'default'), hoverStyle:(f.hoverStyle||'')})) }; }
       out.pgCerrarDet=()=>this.setState({pgDetSel:null,pgDetCat:null}); const _pgsel=(k)=>()=>this.setState(s=>({pgDetSel: s.pgDetSel===k?null:k, pgDetCat:null}));
-      out.pgSel={ ventas:_pgsel('ventas'), costo:_pgsel('costo'), bruta:_pgsel('bruta'), gastosop:_pgsel('gastosop'), marketing:_pgsel('marketing'), nomina:_pgsel('nomina'), fletes:_pgsel('fletes'), fletesentrega:_pgsel('fletesentrega'), obsequios:_pgsel('obsequios'), recargas:_pgsel('recargas'), gmf:_pgsel('gmf'), operacional:_pgsel('operacional'), envios:_pgsel('envios'), resultado:_pgsel('resultado') };
+      out.pgSel={ ventas:_pgsel('ventas'), costo:_pgsel('costo'), bruta:_pgsel('bruta'), gastosop:_pgsel('gastosop'), marketing:_pgsel('marketing'), nomina:_pgsel('nomina'), fletes:_pgsel('fletes'), fletesentrega:_pgsel('fletesentrega'), obsequios:_pgsel('obsequios'), recargas:_pgsel('recargas'), ajusteinv:_pgsel('ajusteinv'), gmf:_pgsel('gmf'), operacional:_pgsel('operacional'), envios:_pgsel('envios'), resultado:_pgsel('resultado') };
     }
     if(out.showFinImp){
       const ym=this.finMes(); const iva=this.finIva(ym); const r=this.finReten(ym);
