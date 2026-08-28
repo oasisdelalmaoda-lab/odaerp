@@ -2702,6 +2702,7 @@
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Costo unit.</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Valor</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Precio venta</th>
+                    <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><th style="padding:12px 16px;"></th></sc-if>
                   </tr></thead>
                   <tbody>
                     <sc-for list="{{ invPTRows }}" as="p" hint-placeholder-count="4">
@@ -2713,6 +2714,7 @@
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ p.costoFmt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ p.valorFmt }}</td>
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ p.precioFmt }}</td>
+                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><button onClick="{{ p.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:none;border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);">Conteo</button></td></sc-if>
                       </tr>
                     </sc-for>
                   </tbody>
@@ -3023,9 +3025,14 @@
                     <div style="font-size:11px;font-weight:700;color:var(--brand-ink);letter-spacing:0.04em;">{{ kardexCodigo }}</div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;line-height:1.15;">{{ kardexNombreItem }}</div>
                   </div>
-                  <div style="text-align:right;">
-                    <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Saldo actual</div>
-                    <div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1;color:{{ kardexSaldoColor }};">{{ kardexSaldoFinal }} <span style="font-size:14px;font-weight:600;color:var(--text-muted);">{{ kardexUnidad }}</span></div>
+                  <div style="display:flex;align-items:flex-end;gap:16px;">
+                    <sc-if value="{{ kardexPuedeContar }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ onKardexConteo }}" style="font-family:inherit;font-size:13px;font-weight:700;color:#fff;background:var(--brand-ink);border:none;border-radius:var(--radius-pill);padding:10px 18px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);">Registrar conteo físico</button>
+                    </sc-if>
+                    <div style="text-align:right;">
+                      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Saldo actual</div>
+                      <div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1;color:{{ kardexSaldoColor }};">{{ kardexSaldoFinal }} <span style="font-size:14px;font-weight:600;color:var(--text-muted);">{{ kardexUnidad }}</span></div>
+                    </div>
                   </div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
@@ -8200,6 +8207,7 @@ class Component extends DCLogic {
   goModule(m){ if(m==='soporte'){ this.sopCargar(); } if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser()){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
   _modHasAccess(p,mod){ if(p.admin) return true; return this._modLevel(p,mod)!=='none'; }
+  canWriteMod(mod){ const acc=this.access(); return !!acc && this._modLevel(acc,mod)==='write'; }
   _firstModuleFor(lu){ return 'inicio'; const p=(this.state.userPerms||{})[lu.id]||this.roles[lu.role]||{}; if(p.admin) return 'compras'; const order=['compras','desarrollo','produccion','inventario','ventas','finanzas','marketing']; return order.find(m=>this._modHasAccess(p,m))||'ventas'; }
 
   // ---- modal ----
@@ -8954,7 +8962,7 @@ class Component extends DCLogic {
     if(this.esProdReventa(m.codigo)) return this.stockReventa(m.codigo);
     return (Number(m.stockActual)||0) + this.productoComprado(m.codigo) - this.materiaConsumoTotal(m.codigo) + this.conteoDelta(m.codigo); }
   productoStockActual(p){ if(p&&p.esReventa) return this.stockReventa(p.codigo);
-    return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo); }
+    return (Number(p.stockInicial)||0) + this.productoStockProducido(p.codigo) - this.productoVendido(p.codigo) - this.productoRemisionado(p.codigo) - this.productoMuestreado(p.codigo) + this.conteoDelta(p.codigo); }
   // ---- reposición automática: stock mínimo y punto de reorden desde el histórico de ventas ----
   reordenCfg(){ return { ventana:90, lead:7, anticip:7, cobertura:30, ...(this.state.reordenCfg||{}) }; }
   setReordenCfg(k,v){ const cfg={...this.reordenCfg(), [k]:(v===''?'':Number(v))}; this.setState({reordenCfg:cfg}); try{ localStorage.setItem('oda_hub_reorden_v1', JSON.stringify(cfg)); }catch(e){} }
@@ -9025,7 +9033,7 @@ class Component extends DCLogic {
   mezclaLotesProducidos(code){ return (this.state.produccionesMezcla||[]).filter(x=>x.mezclaCodigo===code).reduce((a,x)=>a+(Number(x.lotes)||0),0); }
   mezclaMlProducidos(code){ return (this.state.produccionesMezcla||[]).filter(x=>x.mezclaCodigo===code).reduce((a,op)=>a+this.omMl(op),0); }
   mezclaMlInicial(code){ const mz=(this.state.mezclas||[]).find(x=>x.codigo===code); return mz?(Number(mz.stockInicial)||0):0; }
-  mezclaMlStock(code){ return this.mezclaMlInicial(code)+this.mezclaMlProducidos(code)-this.materiaConsumoTotal(code); }
+  mezclaMlStock(code){ return this.mezclaMlInicial(code)+this.mezclaMlProducidos(code)-this.materiaConsumoTotal(code)+this.conteoDelta(code); }
   nextCodeProduccionMez(){ let max=0; (this.state.produccionesMezcla||[]).forEach(o=>{ const m=(o.numero||'').match(/(\d+)$/); if(m) max=Math.max(max,Number(m[1])); }); return 'OM-2026-'+String(max+1).padStart(3,'0'); }
   nuevaProduccionMez(){ this.open('produccionmez',{ _numero:this.nextCodeProduccionMez(), mezclaCodigo:'', ml:'', fecha:new Date().toISOString().slice(0,10) }); }
   saveProduccionMez(){ const d=this.state.draft; if(!d.mezclaCodigo){ this.toast('Selecciona una mezcla'); return; } const ml=Number(d.ml)||0; if(ml<=0){ this.toast('Indica cuántos ml vas a producir'); return; }
@@ -10901,11 +10909,29 @@ Instrucciones de respuesta:
       _derivado:Math.round(this.materiaStockActual(real)), stockActual:(Number(real.stockActual)||0), costo:(Number(real.costo)||0) }); }
   // ===== CONTEO FÍSICO (con aprobación del Administrador) =====
   MOTIVOS_CONTEO = ['Conteo periódico','Merma o derrame','Producto vencido','Error de registro anterior','Devolución a proveedor','Muestra o consumo interno','Otro'];
-  conteoSistema(codigo){ const m=(this.state.materias||[]).find(x=>x.codigo===codigo); return m? Math.round(this.materiaStockActual(m)*1000)/1000 : 0; }
+  // Qué es el código que se va a contar: materia/insumo, mezcla o producto terminado.
+  _conteoRef(codigo){ const st=this.state;
+    const p=(st.productos||[]).find(x=>x.codigo===codigo);
+    if(p && !p.esReventa) return {tipo:'producto', nombre:p.nombre, unidad:'und', label:'Producto terminado', item:p};
+    const mz=(st.mezclas||[]).find(x=>x.codigo===codigo);
+    if(mz) return {tipo:'mezcla', nombre:mz.nombre, unidad:'ml', label:'Mezcla', item:mz};
+    const m=(st.materias||[]).find(x=>x.codigo===codigo);
+    if(m) return {tipo:'materia', nombre:m.nombre, unidad:m.unidad||'und', label:this.tipoLabelInv(m.tipo), item:m};
+    if(p) return {tipo:'producto', nombre:p.nombre, unidad:'und', label:'Reventa', item:p};
+    return null; }
+  conteoSistema(codigo){ const r=this._conteoRef(codigo); if(!r) return 0;
+    const v = r.tipo==='mezcla'? this.mezclaMlStock(codigo)
+            : r.tipo==='producto'? this.productoStockActual(r.item)
+            : this.materiaStockActual(r.item);
+    return Math.round(v*1000)/1000; }
   nuevoConteo(m){
-    if(!m) return;
-    this.open('conteo',{ codigo:m.codigo, _nombre:m.nombre, _unidad:m.unidad||'und', _tipo:this.tipoLabelInv(m.tipo),
-      _sistema:this.conteoSistema(m.codigo), contado:'', motivo:'Conteo periódico', nota:'',
+    const codigo=(typeof m==='string')? m : (m&&m.codigo);
+    if(!codigo) return;
+    if(!this.canWriteMod('inventario')){ this.toast('No tienes permiso de escritura en Inventario'); return; }
+    const r=this._conteoRef(codigo);
+    if(!r){ this.toast('No encontré ese item en el inventario'); return; }
+    this.open('conteo',{ codigo, _nombre:r.nombre, _unidad:r.unidad, _tipo:r.label, _clase:r.tipo,
+      _sistema:this.conteoSistema(codigo), contado:'', motivo:'Conteo periódico', nota:'',
       fecha:new Date().toISOString().slice(0,10) });
   }
   saveConteo(){
@@ -10919,7 +10945,7 @@ Instrucciones de respuesta:
     const dif=Math.round((contado-sistema)*1000)/1000;
     if(dif===0){ this.toast('El conteo coincide con el sistema · no hay nada que ajustar'); this.close(); return; }
     const admin=this.isAdminUser(); const yo=this._auditUser();
-    const row={ id:'CF-'+Date.now(), codigo:d.codigo, nombre:d._nombre||'', unidad:d._unidad||'und',
+    const row={ id:'CF-'+Date.now(), codigo:d.codigo, nombre:d._nombre||'', unidad:d._unidad||'und', clase:d._clase||'materia',
       fecha:d.fecha||new Date().toISOString().slice(0,10), sistema, contado, diferencia:dif,
       motivo:d.motivo, nota:String(d.nota||'').trim(),
       solicitadoPor:yo, solicitadoAt:new Date().toISOString(),
@@ -10952,11 +10978,11 @@ Instrucciones de respuesta:
   }
   conteosPendientes(){ return (this.state.conteos||[]).filter(c=>c.estado==='pendiente').length; }
   // ---- conteos compartidos (nube) ----
-  _conteoToDb(c){ return { id:c.id, codigo:c.codigo, nombre:c.nombre||'', unidad:c.unidad||'und', fecha:c.fecha||null,
+  _conteoToDb(c){ return { id:c.id, codigo:c.codigo, nombre:c.nombre||'', unidad:c.unidad||'und', clase:c.clase||'materia', fecha:c.fecha||null,
     sistema:Number(c.sistema)||0, contado:Number(c.contado)||0, diferencia:Number(c.diferencia)||0,
     motivo:c.motivo||'', nota:c.nota||'', solicitado_por:c.solicitadoPor||'', solicitado_at:c.solicitadoAt||null,
     estado:c.estado||'pendiente', aprobado_por:c.aprobadoPor||'', aprobado_at:c.aprobadoAt||null }; }
-  _conteoFromDb(r){ return { id:r.id, codigo:r.codigo, nombre:r.nombre||'', unidad:r.unidad||'und', fecha:r.fecha||'',
+  _conteoFromDb(r){ return { id:r.id, codigo:r.codigo, nombre:r.nombre||'', unidad:r.unidad||'und', clase:r.clase||'materia', fecha:r.fecha||'',
     sistema:Number(r.sistema)||0, contado:Number(r.contado)||0, diferencia:Number(r.diferencia)||0,
     motivo:r.motivo||'', nota:r.nota||'', solicitadoPor:r.solicitado_por||'', solicitadoAt:r.solicitado_at||'',
     estado:r.estado||'pendiente', aprobadoPor:r.aprobado_por||'', aprobadoAt:r.aprobado_at||'' }; }
@@ -11022,6 +11048,8 @@ Instrucciones de respuesta:
     (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz||mz.codigo===codigo) return; this.omFormula(op).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return;
       (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (this.kitItemsEn(it.productoCodigo, v.fecha, it)||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); });
+    (st.conteos||[]).forEach(c=>{ if(c.codigo!==codigo||c.estado!=='aprobado') return; const dif=Number(c.diferencia)||0; if(!dif) return;
+      rows.push({fecha:c.fecha||'',tipo:(dif<0?'salida':'entrada'),concepto:'Ajuste por conteo físico · '+(c.motivo||'')+(c.aprobadoPor?(' · aprobó '+c.aprobadoPor):''),cantidad:Math.abs(dif)}); });
       (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
     rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
     let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; });
@@ -11059,6 +11087,8 @@ Instrucciones de respuesta:
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||v.consignTienda||!this._enCorte(v.fecha)) return; (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const cod=it.productoCodigo||it.referencia; if(cod===codigo){ rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta · '+this.ventaRef(v),cantidad:u}); } else { const k={items:(this.kitItemsEn(it.productoCodigo, v.fecha, it)||[])}; if(k){ (k.items||[]).forEach(ki=>{ if(ki.tipo==='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); } } }); });
     (st.msvc||[]).forEach(mv=>{ if(mv.anulada||!this._enCorte(mv.fecha)) return; (mv.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const cod=it.productoCodigo||it.referencia; if(this.padSku(cod)===this.padSku(codigo)){ const ccaso=mv.casoId?('Muestra (Servicio) · '+(mv.motivo||mv.numero||'')):('Muestra MSVC · '+(mv.numero||mv.destinatario||'')); rows.push({fecha:mv.fecha||'',tipo:(u<0?'entrada':'salida'),concepto:ccaso,cantidad:Math.abs(u)}); } }); });
     (st.remisiones||[]).forEach(r=>{ if(r.tipo!=='remision'||!this._enCorte(r.fecha)) return; (r.items||[]).forEach(it=>{ if(this.padSku(it.codigo)===this.padSku(codigo)) rows.push({fecha:r.fecha||'',tipo:'salida',concepto:'Remisión · '+r.numero+' · '+this.tiendaNombre(r.tiendaId),cantidad:Number(it.cantidad)||0}); else { const k=(st.kits||[]).find(x=>x.codigo===it.codigo); if(k){ (this.kitItemsEn(it.codigo, r.fecha, it)||[]).forEach(ki=>{ if(ki.tipo==='producto'&&this.padSku(ki.codigo)===this.padSku(codigo)) rows.push({fecha:r.fecha||'',tipo:'salida',concepto:'Remisión · '+r.numero+' · '+this.tiendaNombre(r.tiendaId),cantidad:(Number(it.cantidad)||0)*(Number(ki.cantidad)||1)}); }); } } }); });
+    (st.conteos||[]).forEach(c=>{ if(c.codigo!==codigo||c.estado!=='aprobado') return; const dif=Number(c.diferencia)||0; if(!dif) return;
+      rows.push({fecha:c.fecha||'',tipo:(dif<0?'salida':'entrada'),concepto:'Ajuste por conteo físico · '+(c.motivo||'')+(c.aprobadoPor?(' · aprobó '+c.aprobadoPor):''),cantidad:Math.abs(dif)}); });
     rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
     let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; }); return rows;
   }
@@ -13791,7 +13821,7 @@ Instrucciones de respuesta:
       const mkRows=(filterFn)=> st.materias.filter(filterFn).map(m=>{ const real=Math.round(this.materiaStockActual(m)); const bajo=real<(Number(m.stockMinimo)||0); return {...m, stockActual:real, costoFmt:this.fmt(m.costo), valorFmt:this.fmt(Math.round(this.materiaValor(m))), stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', bajo, estadoLabel:bajo?'Bajo mínimo':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', tipoLabel:this.tipoLabelInv(m.tipo), onAjustar:()=>this.ajustarInventario(m), onConteo:()=>this.nuevoConteo(m)}; });
       if(out.showInvMP){ out.invMPRows=mkRows(m=>mpTipos.includes(m.tipo)); out.invMPVacio=out.invMPRows.length===0; out.invMPTotal=this.fmt(Math.round(valMP)); }
       if(out.showInvInsumos){ out.invInsRows=mkRows(m=>esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)); out.invInsVacio=out.invInsRows.length===0; out.invInsTotal=this.fmt(Math.round(valIns+valEmp+valEnv)); }
-      if(out.showInvPT){ out.invPTRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, formatoLabel:this.formatoLabel(p.formato), stock, stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), precioFmt:this.fmt(p.precio)}; }); out.invPTVacio=st.productos.length===0; out.invPTTotal=this.fmt(Math.round(valPT)); }
+      if(out.showInvPT){ out.invPTRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {onConteo:()=>this.nuevoConteo(p.codigo), codigo:p.codigo, nombre:p.nombre, formatoLabel:this.formatoLabel(p.formato), stock, stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), precioFmt:this.fmt(p.precio)}; }); out.invPTVacio=st.productos.length===0; out.invPTTotal=this.fmt(Math.round(valPT)); }
       if(out.showInvConsig){
         const resumen=this.tiendaResumen();
         out.consigTiendas=resumen.map(t=>({ id:t.id, nombre:t.nombre, tipoL:(t.tipo==='vendedor'?'Vendedor':'Tienda'), tipoBg:(t.tipo==='vendedor'?'rgba(101,150,166,0.18)':'rgba(98,123,96,0.16)'), tipoFg:(t.tipo==='vendedor'?'#3F6A7A':'#4C6149'), ciudad:t.ciudad||'—', margenPct:t.margenPct, nSkus:t.nSkus, unidades:t.unidades, valorFmt:this.fmt(Math.round(t.valor)), hayEmpaque:(t.empUnid>0), empaqueTxt:(this.fmtCant(t.empUnid)+' en materiales ('+this.fmt(Math.round(t.empCosto))+')'), onVer:((id)=>()=>this.setState({consignSel:id, consigSelTab:'stock'}))(t.id), onEditar:((id)=>()=>this.editarTienda(this.consignTiendas().find(x=>x.id===id)))(t.id), onRemision:((id)=>()=>this.nuevaRemision(id))(t.id) }));
@@ -13937,6 +13967,8 @@ Instrucciones de respuesta:
           const rows=tipoKdx==='materia'?this.buildKardexMateria(codKdx):(tipoKdx==='mezcla'?this.buildKardexMezcla(codKdx):this.buildKardexProducto(codKdx));
           out.kardexRows=rows.map(r=>({ fecha:r.fecha||'—', concepto:r.concepto, signo:(r.tipo==='salida'?'-':'+'), cantidadFmt:this.fmtCant(r.cantidad), saldoFmt:this.fmtCant(Math.round(r.saldo*1000)/1000), saldoColor:r.saldo<0?'var(--oda-sale)':'var(--text-strong)', tipoBg:r.tipo==='inicial'?'#EFE9DD':(r.tipo==='entrada'?'rgba(98,123,96,0.13)':'rgba(181,80,60,0.10)'), tipoFg:r.tipo==='inicial'?'var(--text-body)':(r.tipo==='entrada'?'#4C6149':'#B5503C'), tipoLabel:r.tipo==='inicial'?'Base':(r.tipo==='entrada'?'Entrada':'Salida') }));
           out.kardexVacio=rows.length===0;
+          out.kardexPuedeContar=!!out.canWriteInv;
+          out.onKardexConteo=()=>this.nuevoConteo(codKdx);
           const lastSaldo=rows.length>0?rows[rows.length-1].saldo:0;
           out.kardexSaldoFinal=this.fmtCant(Math.round(lastSaldo*1000)/1000);
           out.kardexSaldoColor=lastSaldo<0?'var(--oda-sale)':'var(--text-strong)';
