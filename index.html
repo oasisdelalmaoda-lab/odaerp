@@ -3131,21 +3131,34 @@
           <sc-if value="{{ showVentasBase }}" hint-placeholder-val="{{ false }}">
             <div>
               <div>
-              <div style="display:flex;gap:6px;margin-bottom:20px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;width:max-content;">
-                <button onClick="{{ onBaseTabPanorama }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabPanBg }};color:{{ baseTabPanFg }};transition:background 140ms;">Histórico</button>
-                <button onClick="{{ onBaseTabClientes }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabCliBg }};color:{{ baseTabCliFg }};transition:background 140ms;">Clientes · Inteligencia</button>
-                
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+                <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;width:max-content;">
+                  <button onClick="{{ onBaseTabPanorama }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabPanBg }};color:{{ baseTabPanFg }};transition:background 140ms;">Histórico</button>
+                  <button onClick="{{ onBaseTabClientes }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabCliBg }};color:{{ baseTabCliFg }};transition:background 140ms;">Clientes · Inteligencia</button>
+                </div>
+                <div style="flex:1;"></div>
+                <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
+                  <sc-for list="{{ baseYears }}" as="y" hint-placeholder-count="4"><button onClick="{{ y.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ y.bg }};color:{{ y.fg }};">{{ y.label }}</button></sc-for>
+                </div>
               </div>
               <sc-if value="{{ baseNotCamp }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
                 <p style="font-size:12.5px;color:var(--text-muted);margin:0;max-width:480px;line-height:1.55;text-wrap:pretty;">Toda la historia de ventas para analizar y definir estrategias. Importa el histórico desde 2020 por Excel/CSV.</p>
                 <sc-if value="{{ ventasCargando }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--brand-primary);background:rgba(167,134,89,0.14);border-radius:99px;padding:5px 12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand-primary);animation:odaPulse 1s ease-in-out infinite;"></span>Cargando ventas de la nube…</span></sc-if>
                 <div style="flex:1;"></div>
-                <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
-                  <sc-for list="{{ baseYears }}" as="y" hint-placeholder-count="4"><button onClick="{{ y.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ y.bg }};color:{{ y.fg }};">{{ y.label }}</button></sc-for>
-                </div>
+                
                 <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
                   <sc-for list="{{ baseCanalChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}</button></sc-for>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <div style="display:flex;align-items:center;gap:7px;background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 14px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+                    <input value="{{ basePanQ }}" onInput="{{ onBasePanQ }}" placeholder="Buscar cliente" style="border:none;background:none;outline:none;font-family:inherit;font-size:13px;color:var(--text-body);width:150px;">
+                  </div>
+                  <select value="{{ basePanProd }}" onChange="{{ onBaseProd }}" style="font-family:inherit;font-size:13px;font-weight:600;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 14px;cursor:pointer;max-width:230px;">
+                    <sc-for list="{{ baseProdOpts }}" as="o" hint-placeholder-count="1"><option value="{{ o.val }}">{{ o.label }}</option></sc-for>
+                  </select>
+                  <sc-if value="{{ baseFiltrosOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ baseLimpiarFiltros }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 14px;border:1px solid var(--border-subtle);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">Limpiar</button></sc-if>
                 </div>
                 <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}">
                   <button onClick="{{ nuevaBaseImport }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Importar histórico</button>
@@ -3175,6 +3188,76 @@
                   <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;line-height:1.2;margin-top:11px;text-wrap:balance;">{{ bkMejorProducto }}</div>
                 </div>
               </div>
+
+              <sc-if value="{{ baseMatHay }}" hint-placeholder-val="{{ true }}">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Ventas por canal y año</h3>
+                  <span style="font-size:12px;color:var(--text-muted);">Clic en una celda para ver los pedidos</span>
+                </div>
+                <div class="oda-scroll" style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;">
+                    <thead>
+                      <tr style="background:var(--surface-raised);">
+                        <th style="text-align:left;padding:10px 16px;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:800;position:sticky;left:0;background:var(--surface-raised);">Canal</th>
+                        <sc-for list="{{ baseMatYears }}" as="h" hint-placeholder-count="5"><th style="text-align:right;padding:10px 14px;font-size:11.5px;font-weight:800;color:var(--brand-ink);">{{ h.y }}</th></sc-for>
+                        <th style="text-align:right;padding:10px 18px 10px 14px;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:800;">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <sc-for list="{{ baseMatRows }}" as="r" hint-placeholder-count="6">
+                        <tr style="border-top:1px solid var(--border-subtle);">
+                          <td style="padding:9px 16px;font-weight:700;position:sticky;left:0;background:var(--surface-card);"><span style="display:inline-flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.color }};"></span>{{ r.canal }}</span></td>
+                          <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="5"><td onClick="{{ c.onClick }}" style="text-align:right;padding:9px 14px;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};font-variant-numeric:tabular-nums;">{{ c.txt }}</td></sc-for>
+                          <td style="text-align:right;padding:9px 18px 9px 14px;font-weight:800;font-variant-numeric:tabular-nums;">{{ r.totalFmt }}</td>
+                        </tr>
+                      </sc-for>
+                      <tr style="border-top:2px solid var(--border-strong);background:var(--surface-raised);">
+                        <td style="padding:11px 16px;font-weight:800;position:sticky;left:0;background:var(--surface-raised);">Suma total</td>
+                        <sc-for list="{{ baseMatTot }}" as="t" hint-placeholder-count="5"><td style="text-align:right;padding:11px 14px;font-weight:800;font-variant-numeric:tabular-nums;">{{ t.txt }}</td></sc-for>
+                        <td style="text-align:right;padding:11px 18px 11px 14px;font-weight:800;font-variant-numeric:tabular-nums;">{{ baseMatGran }}</td>
+                      </tr>
+                      <tr style="background:var(--surface-raised);">
+                        <td style="padding:0 16px 11px;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;position:sticky;left:0;background:var(--surface-raised);">Variación</td>
+                        <sc-for list="{{ baseMatVar }}" as="v" hint-placeholder-count="5"><td style="text-align:right;padding:0 14px 11px;font-size:11.5px;font-weight:800;color:{{ v.color }};font-variant-numeric:tabular-nums;">{{ v.txt }}</td></sc-for>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{ baseParetoShow }}" hint-placeholder-val="{{ false }}">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);">
+                  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Pareto de clientes</h3>
+                    <span style="font-size:12px;font-weight:700;color:var(--brand-primary);">{{ baseParetoSub }}</span>
+                  </div>
+                  <div style="font-size:12.5px;color:var(--text-muted);margin-top:5px;">{{ baseParetoResumen }}</div>
+                </div>
+                <sc-if value="{{ baseParetoVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:26px;text-align:center;font-size:13px;color:var(--text-muted);">Ningún cliente con ventas en este filtro.</div></sc-if>
+                <div>
+                  <sc-for list="{{ basePareto }}" as="p" hint-placeholder-count="8">
+                    <div onClick="{{ p.onClick }}" class="oda-row" style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--border-subtle);cursor:pointer;">
+                      <span style="width:22px;font-size:11.5px;color:var(--text-muted);font-weight:700;flex-shrink:0;">{{ p.pos }}</span>
+                      <div style="flex:1;min-width:0;">
+                        <div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:4px;">
+                          <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.cliente }}</span>
+                          <span style="color:var(--text-muted);white-space:nowrap;">{{ p.pedidos }}</span>
+                        </div>
+                        <div style="height:9px;background:var(--surface-raised);border-radius:99px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:{{ p.barColor }};width:{{ p.bar }};"></div></div>
+                      </div>
+                      <span style="width:112px;text-align:right;font-size:12.5px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;">{{ p.totalFmt }}</span>
+                      <span style="width:48px;text-align:right;font-size:11.5px;color:var(--text-muted);font-variant-numeric:tabular-nums;">{{ p.pct }}</span>
+                      <span style="width:56px;text-align:right;font-size:11.5px;font-weight:800;color:{{ p.acumColor }};font-variant-numeric:tabular-nums;">{{ p.acum }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="padding:10px 20px;font-size:11.5px;color:var(--text-muted);">Últimas dos columnas: participación del cliente y acumulado. En dorado, los que suman el primer 80%.</div>
+              </div>
+              </sc-if>
 
               <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-bottom:20px;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
@@ -14395,7 +14478,19 @@ Instrucciones de respuesta:
       const selC=Array.isArray(st.baseCanalesSel)?st.baseCanalesSel:[];
       const canalesDisp=[...new Set(filY.map(v=>this.canonCanal(v.canal)||'—'))].filter(c=>c!=='MSVC').sort();
       const selCVal=selC.filter(c=>canalesDisp.includes(c));
-      const fil = selCVal.length? filY.filter(v=>selCVal.includes(this.canonCanal(v.canal)||'—')) : filY;
+      const filCa = selCVal.length? filY.filter(v=>selCVal.includes(this.canonCanal(v.canal)||'—')) : filY;
+      // Filtro por producto (select) — restringe a las ventas que incluyen ese producto.
+      const prodDisp=[...new Set(filCa.flatMap(v=>(v.items||[]).map(it=>String(it.producto||it.referencia||'').trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+      const prodSelRaw=String(st.baseProdSel||''); const prodOn=!!prodSelRaw && prodDisp.includes(prodSelRaw);
+      const filP = prodOn? filCa.filter(v=>(v.items||[]).some(it=>String(it.producto||it.referencia||'').trim()===prodSelRaw)) : filCa;
+      // Búsqueda por cliente (nombre, correo o celular).
+      const qCli=String(st.basePanQ||'').trim().toLowerCase(); const qDig=qCli.replace(/\D/g,'');
+      const fil = qCli? filP.filter(v=>{ const n=String(this.fixTxt(v.cliente)||'').toLowerCase(); if(n.includes(qCli)) return true; if(String(v.correo||'').toLowerCase().includes(qCli)) return true; return qDig.length>=4 && String(v.celular||'').replace(/\D/g,'').includes(qDig); }) : filP;
+      out.baseProdOpts=[{val:'',label:'Todos los productos',sel:!prodOn}, ...prodDisp.map(p=>({val:p,label:p,sel:prodOn&&p===prodSelRaw}))];
+      out.onBaseProd=(e)=>this.setState({baseProdSel:e.target.value});
+      out.basePanQ=st.basePanQ||''; out.onBasePanQ=(e)=>this.setState({basePanQ:e.target.value});
+      out.basePanProd=prodOn?prodSelRaw:'';
+      out.baseFiltrosOn=!!(qCli||prodOn||selCVal.length); out.baseLimpiarFiltros=()=>this.setState({basePanQ:'', baseProdSel:'', baseCanalesSel:[]});
       out.baseCanalChips=['todos',...canalesDisp].map(c=>{ const on=(c==='todos')? selCVal.length===0 : selCVal.includes(c); return {label:(c==='todos'?'Todos los canales':c), bg:(on?'var(--brand-ink)':'transparent'), fg:(on?'#fff':'var(--text-muted)'), onClick:()=>this.toggleCliFiltro('baseCanalesSel', c==='todos'?'todos':c)}; });
       const totalHist=fil.reduce((a,v)=>a+this.ventaTotal(v),0); const totalNeto=fil.reduce((a,v)=>a+this.ventaNetaProductos(v),0); const count=fil.length;
       out.bkTotal=this.fmt(Math.round(totalNeto)); out.bkCount=count; out.bkTicket=this.fmt(Math.round(count?totalHist/count:0)); out.bkUnidades=fil.reduce((a,v)=>a+this.ventaUnidades(v),0);
@@ -14421,6 +14516,37 @@ Instrucciones de respuesta:
       const cm={}; fil.forEach(v=>{const c=v.ciudad||'—'; cm[c]=(cm[c]||0)+this.ventaTotal(v);});
       const cArr=Object.keys(cm).map(k=>({k,val:cm[k]})).sort((a,b)=>b.val-a.val).slice(0,5);
       out.baseCiudades=cArr.map(x=>({ciudad:x.k, totalFmt:this.fmt(Math.round(x.val)), onClick:()=>this.openBaseDetalle('ciudad',x.k,x.k)}));
+      // ---- Matriz canal × año ----
+      { const num=(n)=>Math.round(Number(n)||0).toLocaleString('es-CO',{maximumFractionDigits:0});
+        const mYears=[...new Set(fil.map(v=>(v.fecha||'').slice(0,4)).filter(Boolean))].sort();
+        const gr={}, colT={}, rowT={};
+        fil.forEach(v=>{ const y=(v.fecha||'').slice(0,4); const c=this.canonCanal(v.canal)||'—'; if(!y||c==='MSVC') return; const t=this.ventaTotal(v); gr[c+'|'+y]=(gr[c+'|'+y]||0)+t; colT[y]=(colT[y]||0)+t; rowT[c]=(rowT[c]||0)+t; });
+        const mCan=Object.keys(rowT).sort((a,b)=>rowT[b]-rowT[a]);
+        out.baseMatYears=mYears.map(y=>({y}));
+        out.baseMatRows=mCan.map(c=>({ canal:c, color:this.canalStyle(c).fg, totalFmt:num(rowT[c]),
+          cells:mYears.map(y=>{ const v=gr[c+'|'+y]||0; const share=colT[y]>0? v/colT[y] : 0;
+            return { txt:v? num(v):'·', bg:v? 'rgba(167,134,89,'+(0.06+share*0.34).toFixed(3)+')':'transparent', fg:v?'var(--text-body)':'var(--border-strong)', onClick:()=>this.openBaseDetalle('canalanio', c+'|'+y, c+' · '+y) }; }) }));
+        out.baseMatTot=mYears.map(y=>({txt:num(colT[y]||0)}));
+        out.baseMatGran=num(mYears.reduce((a,y)=>a+(colT[y]||0),0));
+        out.baseMatVar=mYears.map((y,i)=>{ if(i===0||!colT[mYears[i-1]]) return {txt:'', color:'var(--text-muted)'}; const p=((colT[y]||0)-colT[mYears[i-1]])/colT[mYears[i-1]]*100; return {txt:(p>=0?'+':'')+p.toFixed(1)+'%', color:p>=0?'#4C6149':'#B5503C'}; });
+        out.baseMatHay=mYears.length>0 && mCan.length>0; }
+      // ---- Pareto de clientes (aparece al filtrar por canal, producto o cliente) ----
+      out.baseParetoShow=out.baseFiltrosOn;
+      if(out.baseFiltrosOn){
+        const valorDe=(v)=> prodOn? (v.items||[]).filter(it=>String(it.producto||it.referencia||'').trim()===prodSelRaw).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0) : this.ventaTotal(v);
+        const cmap={}; fil.forEach(v=>{ const k=(this.fixTxt(v.cliente)||'').trim()||'Sin nombre'; if(!cmap[k]) cmap[k]={val:0,n:0}; cmap[k].val+=valorDe(v); cmap[k].n++; });
+        const arr=Object.keys(cmap).map(k=>({k,val:cmap[k].val,n:cmap[k].n})).filter(x=>x.val>0).sort((a,b)=>b.val-a.val);
+        const tot=arr.reduce((a,x)=>a+x.val,0); const mx=Math.max(1,...arr.map(x=>x.val)); let acc=0;
+        out.basePareto=arr.slice(0,30).map((x,i)=>{ acc+=x.val; const ac=tot>0?acc/tot*100:0; const clave=ac<=80.0001;
+          return { pos:i+1, cliente:x.k, pedidos:x.n+(x.n===1?' pedido':' pedidos'), totalFmt:this.fmt(Math.round(x.val)), pct:(tot>0?x.val/tot*100:0).toFixed(1)+'%', acum:ac.toFixed(1)+'%',
+            bar:(x.val/mx*100).toFixed(1)+'%', barColor:clave?'var(--brand-primary)':'#D6CCBA', acumColor:clave?'#4C6149':'var(--text-muted)',
+            onClick:()=>this.openBaseDetalle('cliente', x.k, x.k) }; });
+        out.baseParetoVacio=arr.length===0; out.baseParetoN=arr.length;
+        let n80=0,a2=0; for(const x of arr){ a2+=x.val; n80++; if(tot>0 && a2/tot>=0.8) break; }
+        out.baseParetoResumen=arr.length? (n80+' de '+arr.length+' clientes ('+(arr.length?Math.round(n80/arr.length*100):0)+'%) concentran el 80% de '+this.fmt(Math.round(tot))) : 'Sin ventas para este filtro';
+        const partes=[]; if(selCVal.length) partes.push(selCVal.join(' + ')); if(prodOn) partes.push(prodSelRaw); if(qCli) partes.push('«'+String(st.basePanQ||'').trim()+'»');
+        out.baseParetoSub=partes.join(' · ');
+      }
       out.baseVacio=all.length===0; out.nuevaBaseImport=()=>this.openImport('ventasHist');
       // ---- Pestaña + inteligencia de clientes ----
       // La pestaña «Campañas WhatsApp» se retiró: su único bloque (agradecimiento y
@@ -14920,9 +15046,9 @@ Instrucciones de respuesta:
     out.modalTitle = st.modal ? (st.modal==='dianpago' ? 'Pago de impuestos DIAN' : st.modal==='disputa' ? 'Disputa con transportadora' : st.modal==='basedetalle' ? ('Ventas · '+(st.baseDetLabel||'')) : st.modal==='detalle' ? (st.detalleId? 'Detalle de orden':'Detalle') : st.modal==='cliente' ? 'Ficha de cliente' : st.modal==='wacampaign' ? 'Campaña de WhatsApp' : st.modal==='saldoreal' ? 'Saldo real de la cuenta' : titles[st.modal]) : '';
     out.showModalFooter = st.modal && st.modal!=='detalle' && st.modal!=='import' && st.modal!=='detalleventa' && st.modal!=='cliente' && st.modal!=='wacampaign' && st.modal!=='movdetalle' && st.modal!=='leadseg' && st.modal!=='basedetalle' && st.modal!=='cotpreview' && st.modal!=='cancelorden' && st.modal!=='cerrarcaso' && st.modal!=='conciliacion';
     if(st.modal==='basedetalle'){ const dim=st.baseDetDim, key=st.baseDetKey;
-      const all=(st.ventas||[]); const match=(v)=>{ if(dim==='canal') return (v.canal||'')===key; if(dim==='ciudad') return (v.ciudad||'—')===key; if(dim==='periodo'){ return (v.fecha||'').slice(0, key.length)===key; } return false; };
+      const all=(st.ventas||[]); const match=(v)=>{ if(dim==='canal') return (v.canal||'')===key; if(dim==='ciudad') return (v.ciudad||'—')===key; if(dim==='periodo'){ return (v.fecha||'').slice(0, key.length)===key; } if(dim==='cliente') return ((this.fixTxt(v.cliente)||'').trim()||'Sin nombre')===key; if(dim==='canalanio'){ const p=String(key).split('|'); return (this.canonCanal(v.canal)||'—')===p[0] && (v.fecha||'').slice(0,4)===p[1]; } return false; };
       const sel=all.filter(match);
-      out.baseDetTitulo=st.baseDetLabel||key; out.baseDetDimLabel=(dim==='canal'?'Canal':dim==='ciudad'?'Ciudad':'Periodo');
+      out.baseDetTitulo=st.baseDetLabel||key; out.baseDetDimLabel=(dim==='canal'?'Canal':dim==='ciudad'?'Ciudad':dim==='cliente'?'Cliente':dim==='canalanio'?'Canal · año':'Periodo');
       out.baseDetCount=sel.length; out.baseDetTotalFmt=this.fmt(Math.round(sel.reduce((a,v)=>a+this.ventaTotal(v),0))); out.baseDetUnidades=sel.reduce((a,v)=>a+this.ventaUnidades(v),0);
       let rows=sel.map(v=>({ _fecha:v.fecha||'', _cliente:(this.fixTxt(v.cliente)||''), _pi:(v.ov||''), _ps:(v.pedido||''), _canal:v.canal||'', _ciudad:this.fixTxt(v.ciudad)||'', _und:this.ventaUnidades(v), _total:this.ventaTotal(v), fechaFmt:this.fmtFecha(v.fecha), cliente:this.fixTxt(v.cliente)||'—', pedidoInterno:(v.ov||'—'), pedidoShopify:(v.pedido||'—'), canal:v.canal||'—', ciudad:this.fixTxt(v.ciudad)||'—', unidades:this.ventaUnidades(v), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), onClick:()=>this.verVenta(v) }));
       const q=(st.baseDetQuery||'').toLowerCase().trim(); if(q){ rows=rows.filter(r=>(r._cliente+' '+r._pi+' '+r._ps+' '+r._canal+' '+r._ciudad+' '+r._fecha).toLowerCase().includes(q)); }
