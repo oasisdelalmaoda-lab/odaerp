@@ -71,7 +71,7 @@
           <svg width="380" height="380" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"></path><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"></path></svg>
         </div>
         <div style="display:flex;align-items:center;gap:13px;position:relative;">
-          <img src="logo-wordmark-white.png" alt="Oasis del Alma" style="height:180px;width:auto;display:block;">
+          <img src="logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
         </div>
         <div style="position:relative;">
           <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:18px;">Hub Intelligence de Negocio</div>
@@ -119,7 +119,7 @@
       <!-- SIDEBAR -->
       <aside class="oda-sidebar" style="background:#2A2419;color:var(--text-inverse);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;">
         <div class="oda-brandbar" style="height:85px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
-          <img src="logo-wordmark-white.png" alt="OdA" style="height:46px;width:auto;display:block;flex-shrink:0;">
+          <img src="logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
           <div class="oda-brandtext" style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
             <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;color:rgba(251,248,242,0.92);">Hub</div>
             <div style="font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(251,248,242,0.45);margin-top:3px;">Intelligence de Negocio</div>
@@ -208,7 +208,7 @@
           <sc-if value="{{ showVentasSub }}" hint-placeholder-val="{{ false }}">
             <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vV_reg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div></sc-if>
-              <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
+              <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Historico</div></sc-if>
               <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
               <sc-if value="{{ vV_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.servicio }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenSvc.c }};background:{{ subVenSvc.bg }};border-left:2px solid {{ subVenSvc.b }};"><span>Servicio al cliente</span><sc-if value="{{ casoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ casoBadge }}</span></sc-if></div></sc-if>
             </div>
@@ -1882,7 +1882,7 @@
                   </sc-for>
                 </div>
                 <div style="flex:1;min-width:12px;"></div>
-                <input value="{{ qInv }}" onInput="{{ setQInv }}" placeholder="Buscar por código o nombre…" style="font-family:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);min-width:230px;" />
+                <input value="{{ qInv }}" onInput="{{ setQInv }}" placeholder="Buscar por código o nombre…" style="font-family:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);min-width:230px;">
                 <span style="flex-shrink:0;font-size:12px;color:var(--text-muted);white-space:nowrap;">{{ invItemsCount }} ítems</span>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
@@ -3141,6 +3141,9 @@
                 <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
                   <sc-for list="{{ baseYears }}" as="y" hint-placeholder-count="4"><button onClick="{{ y.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ y.bg }};color:{{ y.fg }};">{{ y.label }}</button></sc-for>
                 </div>
+                <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
+                  <sc-for list="{{ baseCanalChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}</button></sc-for>
+                </div>
                 <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}">
                   <button onClick="{{ nuevaBaseImport }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Importar histórico</button>
                 </sc-if>
@@ -3184,7 +3187,17 @@
                   </div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
-                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0 0 16px;">Ventas por canal</h3>
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0 0 10px;">Ventas por canal</h3>
+                  <div style="display:flex;justify-content:center;margin-bottom:14px;">
+                    <svg viewBox="0 0 150 150" style="width:150px;height:150px;display:block;">
+                      <circle cx="75" cy="75" r="54" fill="none" stroke="#EFE9DD" stroke-width="20"></circle>
+                      <sc-for list="{{ baseDona }}" as="d" hint-placeholder-count="4">
+                        <circle cx="75" cy="75" r="54" fill="none" stroke="{{ d.color }}" stroke-width="20" stroke-dasharray="{{ d.dash }}" stroke-dashoffset="{{ d.offset }}" transform="rotate(-90 75 75)"><title>{{ d.tip }}</title></circle>
+                      </sc-for>
+                      <text x="75" y="71" text-anchor="middle" font-size="9.5" fill="#A89F8E" letter-spacing="1">CANALES</text>
+                      <text x="75" y="90" text-anchor="middle" font-size="17" fill="#3A3326" font-weight="600">{{ baseDonaN }}</text>
+                    </svg>
+                  </div>
                   <div style="display:flex;flex-direction:column;gap:12px;">
                     <sc-for list="{{ baseCanales }}" as="c" hint-placeholder-count="4">
                       <div onClick="{{ c.onClick }}" class="oda-row" style="cursor:pointer;padding:4px;margin:-4px;border-radius:8px;">
@@ -14298,13 +14311,22 @@ Instrucciones de respuesta:
       const years=[...new Set(all.map(v=>(v.fecha||'').slice(0,4)).filter(Boolean))].sort();
       const selA=Array.isArray(st.baseAnios)?st.baseAnios:[]; const allSel=selA.length===0;
       out.baseYears=['todos',...years].map(y=>{ const on=(y==='todos')? allSel : selA.includes(y); return {label:(y==='todos'?'Todo':y), active:on, bg:(on?'var(--brand-primary)':'transparent'), fg:(on?'var(--text-on-brand)':'var(--text-muted)'), onClick:()=>this.toggleBaseAnio(y)}; });
-      const fil = allSel? all : all.filter(v=>selA.includes((v.fecha||'').slice(0,4)));
+      const filY = allSel? all : all.filter(v=>selA.includes((v.fecha||'').slice(0,4)));
+      // Filtro por canal (acumulable, igual que los años). MSVC no es canal de venta: se excluye.
+      const selC=Array.isArray(st.baseCanalesSel)?st.baseCanalesSel:[];
+      const canalesDisp=[...new Set(filY.map(v=>this.canonCanal(v.canal)||'—'))].filter(c=>c!=='MSVC').sort();
+      const selCVal=selC.filter(c=>canalesDisp.includes(c));
+      const fil = selCVal.length? filY.filter(v=>selCVal.includes(this.canonCanal(v.canal)||'—')) : filY;
+      out.baseCanalChips=['todos',...canalesDisp].map(c=>{ const on=(c==='todos')? selCVal.length===0 : selCVal.includes(c); return {label:(c==='todos'?'Todos los canales':c), bg:(on?'var(--brand-ink)':'transparent'), fg:(on?'#fff':'var(--text-muted)'), onClick:()=>this.toggleCliFiltro('baseCanalesSel', c==='todos'?'todos':c)}; });
       const totalHist=fil.reduce((a,v)=>a+this.ventaTotal(v),0); const totalNeto=fil.reduce((a,v)=>a+this.ventaNetaProductos(v),0); const count=fil.length;
       out.bkTotal=this.fmt(Math.round(totalNeto)); out.bkCount=count; out.bkTicket=this.fmt(Math.round(count?totalHist/count:0)); out.bkUnidades=fil.reduce((a,v)=>a+this.ventaUnidades(v),0);
-      const canMap={}; fil.forEach(v=>{ const ck=this.canonCanal(v.canal)||'—'; canMap[ck]=(canMap[ck]||0)+this.ventaTotal(v); });
+      const canMap={}; fil.forEach(v=>{ const ck=this.canonCanal(v.canal)||'—'; if(ck==='MSVC') return; canMap[ck]=(canMap[ck]||0)+this.ventaTotal(v); });
       const canArr=Object.keys(canMap).map(k=>({k,val:canMap[k]})).sort((a,b)=>b.val-a.val); const canMax=Math.max(1,...canArr.map(x=>x.val));
       out.baseCanales=canArr.map(x=>{const cs=this.canalStyle(x.k);return {canal:x.k, totalFmt:this.fmt(Math.round(x.val)), pct:(totalHist>0?Math.round(x.val/totalHist*100):0)+'%', bar:(x.val/canMax*100).toFixed(1)+'%', color:cs.fg, onClick:()=>this.openBaseDetalle('canal',x.k,x.k)};});
       out.bkMejorCanal=canArr.length?canArr[0].k:'—';
+      { const CIRC=2*Math.PI*54; let acc=0;
+        out.baseDona=canArr.filter(x=>x.val>0).slice(0,8).map(x=>{ const frac=totalHist>0? x.val/totalHist : 0; const len=CIRC*frac; const seg={ color:this.canalStyle(x.k).fg, dash:len.toFixed(2)+' '+(CIRC-len).toFixed(2), offset:(-acc).toFixed(2), tip:x.k+' · '+this.fmt(Math.round(x.val))+' · '+Math.round(frac*100)+'%' }; acc+=len; return seg; });
+        out.baseDonaN=out.baseDona.length; }
       const margenTotal=fil.reduce((a,v)=>a+(this.ventaNetaProductos(v)-this.ventaCosto(v)),0);
       out.bkMargenPct=(totalNeto>0?(margenTotal/totalNeto*100):0).toFixed(1)+'%'; out.bkMargenSub='margen '+this.fmt(Math.round(margenTotal));
       let evo=[];
