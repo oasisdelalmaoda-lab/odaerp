@@ -2926,6 +2926,9 @@
                               <button onClick="{{ c.onRechazar }}" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--oda-sale);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;">Rechazar</button>
                             </div>
                           </sc-if>
+                          <sc-if value="{{ c.puedeAnular }}" hint-placeholder-val="{{ false }}">
+                            <div style="margin-top:7px;"><button onClick="{{ c.onAnular }}" title="Deja el registro pero deshace el ajuste de inventario" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--oda-sale);background:none;border:1px solid rgba(181,80,60,0.32);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;">Anular</button></div>
+                          </sc-if>
                         </td>
                       </tr>
                     </sc-for>
@@ -10741,6 +10744,7 @@ Instrucciones de respuesta:
       fecha:new Date().toISOString().slice(0,10) });
   }
   saveConteo(){
+    if(this._conteoSaving) return; // doble clic en Guardar creaba dos conteos iguales
     const d=this.state.draft;
     if(d.contado===''||d.contado===null||d.contado===undefined){ this.toast('Escribe cuántas unidades contaste'); return; }
     const contado=Number(d.contado); if(!isFinite(contado)||contado<0){ this.toast('El conteo debe ser un número mayor o igual a cero'); return; }
@@ -10760,11 +10764,24 @@ Instrucciones de respuesta:
       valor: admin? ((this.CONTEO_SIN_GASTO.indexOf(d.motivo)>=0)? 0 : -dif*this.conteoCostoUnit(d.codigo)) : null,
       aprobadoPor: admin? yo : '', aprobadoAt: admin? new Date().toISOString() : '' };
     const list=[...(this.state.conteos||[]), row];
+    this._conteoSaving=true; setTimeout(()=>{ this._conteoSaving=false; }, 1200);
     this.setState({conteos:list, modal:null, draft:{}},()=>this.persist());
     if(this.cloudOn()) this.cloudBulkConteos([row]);
     const sg=(dif>0?'+':'')+this.fmtCant(dif);
     this.toast(admin ? ('Conteo aplicado · '+sg+' '+row.unidad+' en '+row.codigo)
                     : ('Conteo enviado a aprobación · '+sg+' '+row.unidad+' en '+row.codigo));
+  }
+  // Anular un conteo YA APROBADO: se conserva el registro pero deja de mover el inventario
+  // (conteoDelta solo suma los 'aprobado'). Sirve para deshacer conteos repetidos por error.
+  anularConteo(id){
+    if(!this.isAdminUser()){ this.toast('Solo el Administrador puede anular un conteo'); return; }
+    const c=(this.state.conteos||[]).find(x=>x.id===id); if(!c||c.estado!=='aprobado') return;
+    if(!window.confirm('¿Anular este conteo? El ajuste de '+c.codigo+' se deshace y el registro queda marcado como anulado.')) return;
+    const row={...c, estado:'anulado', valor:0, aprobadoPor:this._auditUser(), aprobadoAt:new Date().toISOString()};
+    const list=(this.state.conteos||[]).map(x=>x.id===id?row:x);
+    this.setState({conteos:list},()=>this.persist());
+    if(this.cloudOn()) this.cloudBulkConteos([row]);
+    this.toast('Conteo anulado · stock de '+c.codigo+' recalculado');
   }
   resolverConteo(id, aprobar){
     if(!this.isAdminUser()){ this.toast('Solo el Administrador puede aprobar un conteo'); return; }
@@ -10861,9 +10878,11 @@ Instrucciones de respuesta:
     (st.produccionesMezcla||[]).forEach(op=>{ if(!this._enCorte(op.fecha)) return; const mz=(st.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz||mz.codigo===codigo) return; this.omFormula(op).forEach(f=>{ if(f.materiaCodigo===codigo){ const cant=(Number(f.cantidad)||0)*(Number(op.lotes)||0); if(cant>0) rows.push({fecha:op.fecha||'',tipo:'salida',concepto:'Prod. mezcla · '+op.numero+' · '+mz.nombre,cantidad:cant}); } }); });
     (st.ventas||[]).forEach(v=>{ if(v.cancelada||!this._enCorte(v.fecha)) return;
       (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const k=(st.kits||[]).find(x=>x.codigo===it.productoCodigo); if(k) (this.kitItemsEn(it.productoCodigo, v.fecha, it)||[]).forEach(ki=>{ if(ki.tipo!=='producto'&&ki.codigo===codigo) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Venta kit · '+this.ventaRef(v),cantidad:u*(Number(ki.cantidad)||1)}); }); });
+      (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
+    // Los ajustes por conteo se agregan UNA vez (antes estaban dentro del forEach de ventas
+    // y el kardex de la mezcla repetía el mismo ajuste una vez por cada venta).
     (st.conteos||[]).forEach(c=>{ if(c.codigo!==codigo||c.estado!=='aprobado') return; const dif=Number(c.diferencia)||0; if(!dif) return;
       rows.push({fecha:c.fecha||'',tipo:(dif<0?'salida':'entrada'),concepto:'Ajuste por conteo físico · '+(c.motivo||'')+(c.aprobadoPor?(' · aprobó '+c.aprobadoPor):''),cantidad:Math.abs(dif)}); });
-      (v.empaques||[]).forEach(e=>{ if(e.materiaCodigo===codigo&&(Number(e.cantidad)||0)>0) rows.push({fecha:v.fecha||'',tipo:'salida',concepto:'Empaque · venta '+this.ventaRef(v),cantidad:Number(e.cantidad)||0}); }); });
     rows.sort((a,b)=>{ if(!a.fecha&&!b.fecha) return 0; if(!a.fecha) return -1; if(!b.fecha) return 1; return a.fecha.localeCompare(b.fecha); });
     let saldo=0; rows.forEach(r=>{ saldo+=(r.tipo==='salida'?-r.cantidad:r.cantidad); r.saldo=saldo; });
     return rows;
@@ -13800,7 +13819,7 @@ Instrucciones de respuesta:
         }
       }
       if(out.showInvConteos){
-      const _est={pendiente:{l:'Pendiente',bg:'rgba(167,134,89,0.16)',fg:'#7A5E36'}, aprobado:{l:'Aprobado',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}, rechazado:{l:'Rechazado',bg:'rgba(181,80,60,0.12)',fg:'#B5503C'}};
+      const _est={pendiente:{l:'Pendiente',bg:'rgba(167,134,89,0.16)',fg:'#7A5E36'}, anulado:{l:'Anulado',bg:'rgba(156,151,162,0.20)',fg:'#5E5A66'}, aprobado:{l:'Aprobado',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}, rechazado:{l:'Rechazado',bg:'rgba(181,80,60,0.12)',fg:'#B5503C'}};
       const _adm=this.isAdminUser();
       out.conteosRows=(st.conteos||[]).slice().sort((a,b)=>String(b.solicitadoAt||b.fecha||'').localeCompare(String(a.solicitadoAt||a.fecha||''))).map(c=>{
         const dif=Number(c.diferencia)||0; const e=_est[c.estado]||_est.pendiente;
@@ -13814,6 +13833,8 @@ Instrucciones de respuesta:
           estadoLabel:e.l, estadoBg:e.bg, estadoFg:e.fg,
           aprobTxt:(c.estado==='pendiente'? 'Esperando aprobación' : ((c.estado==='aprobado'?'Aprobó ':'Rechazó ')+(c.aprobadoPor||'—'))),
           puedeResolver:(_adm && c.estado==='pendiente'),
+          puedeAnular:(_adm && c.estado==='aprobado'),
+          onAnular:()=>this.anularConteo(c.id),
           onAprobar:()=>this.resolverConteo(c.id,true), onRechazar:()=>this.resolverConteo(c.id,false) }; });
       out.conteosVacio=out.conteosRows.length===0;
     }
