@@ -12316,14 +12316,24 @@ Instrucciones de respuesta:
       if(sig===this._convSig && this.state.convsCloud){ this._convLoading=false; return; }
       const cache=this._convMsgCache=this._convMsgCache||{};
       const need=(convs||[]).filter(r=>{ const c=cache[r.id]; return !c || c.ts!==(r.ultimo_at||''); }).map(r=>r.id);
-      for(let i=0;i<need.length;i+=200){
-        const chunk=need.slice(i,i+200);
-        const {data:part}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).limit(10000);
-        const by={}; (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:this._autoKey(m.meta), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
-        chunk.forEach(id=>{ cache[id]={ts:'', msgs:by[id]||[]}; });
+      // Regla 22: PAGINAR con .range() — la API corta en ~1000 filas y sin paginar las
+      // conversaciones del final de cada lote quedaban SIN mensajes (chats vacíos, 31-ago).
+      for(let i=0;i<need.length;i+=50){
+        const chunk=need.slice(i,i+50);
+        const by={}; let ok=true;
+        for(let off=0, page=1000; ; off+=page){
+          const {data:part,error:eMsg}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).range(off,off+page-1);
+          if(eMsg){ console.warn('cloudLoadConvs · mensajes', eMsg); ok=false; break; }
+          (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:this._autoKey(m.meta), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+          if(!part || part.length<page) break;
+          if(off>50000) break;
+        }
+        // si la bajada falló, no cachear vacío: dejar que el próximo ciclo lo reintente
+        if(ok) chunk.forEach(id=>{ cache[id]={ts:'', msgs:by[id]||[]}; });
       }
+      const completo=!need.some(id=>!cache[id]);
       const list=(convs||[]).map(r=>{ const c=cache[r.id]||(cache[r.id]={msgs:[]}); c.ts=(r.ultimo_at||''); return { id:r.id, canal:r.canal||'web', cliente:r.cliente||r.id, telefono:r.telefono||'', estado:r.estado||'bot', intencion:r.intencion||'consulta', asignadoA:r.asignado_a||'', promosOff:!!r.promos_off, cerradaAuto:!!r.cerrada_auto, sinRespuesta:!!r.sin_respuesta, noLeidos:r.no_leidos||0, inicio:(r.creado_at||'').slice(0,10), ultimoAt:r.ultimo_at||'', mensajes:this._convDedupMsgs(c.msgs||[]) }; });
-      this._convSig=sig;
+      this._convSig=completo?sig:null;
       this._convNotify(list);
       this.setState({convsCloud:list});
     }catch(e){} this._convLoading=false; }
