@@ -182,9 +182,7 @@
           <sc-if value="{{ showInventarioSub }}" hint-placeholder-val="{{ false }}">
             <div style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vI_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvResumen.c }};background:{{ subInvResumen.bg }};border-left:2px solid {{ subInvResumen.b }};">Resumen</div></sc-if>
-              <sc-if value="{{ vI_mp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.mp }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvMP.c }};background:{{ subInvMP.bg }};border-left:2px solid {{ subInvMP.b }};">Materia prima</div></sc-if>
-              <sc-if value="{{ vI_ins }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.insumos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvIns.c }};background:{{ subInvIns.bg }};border-left:2px solid {{ subInvIns.b }};">Insumos y empaques</div></sc-if>
-              <sc-if value="{{ vI_pt }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvPT.c }};background:{{ subInvPT.bg }};border-left:2px solid {{ subInvPT.b }};">Producto terminado</div></sc-if>
+              <sc-if value="{{ vI_items }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.items }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvItems.c }};background:{{ subInvItems.bg }};border-left:2px solid {{ subInvItems.b }};">Existencias</div></sc-if>
               <sc-if value="{{ vI_consig }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.consig }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConsig.c }};background:{{ subInvConsig.bg }};border-left:2px solid {{ subInvConsig.b }};">Consignación</div></sc-if>
               <sc-if value="{{ vI_conteos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.conteos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConteos.c }};background:{{ subInvConteos.bg }};border-left:2px solid {{ subInvConteos.b }};">Conteos físicos<sc-if value="{{ conteosPendHay }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;font-size:10.5px;font-weight:800;background:var(--oda-sale);color:#fff;border-radius:99px;padding:2px 7px;">{{ conteosPend }}</span></sc-if></div></sc-if>
               <sc-if value="{{ vI_kardex }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.kardex }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvKardex.c }};background:{{ subInvKardex.bg }};border-left:2px solid {{ subInvKardex.b }};">Kardex</div></sc-if>
@@ -201,7 +199,6 @@
               <sc-if value="{{ vV_reg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div></sc-if>
               <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
               <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
-              <sc-if value="{{ vV_carritos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.carritos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCarritos.c }};background:{{ subVenCarritos.bg }};border-left:2px solid {{ subVenCarritos.b }};">Carritos abandonados</div></sc-if>
               <sc-if value="{{ vV_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.servicio }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenSvc.c }};background:{{ subVenSvc.bg }};border-left:2px solid {{ subVenSvc.b }};"><span>Servicio al cliente</span><sc-if value="{{ casoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ casoBadge }}</span></sc-if></div></sc-if>
             </div>
           </sc-if>
@@ -1863,18 +1860,29 @@
             </div>
           </sc-if>
 
-          <!-- ===== INVENTARIO · MATERIA PRIMA ===== -->
-          <sc-if value="{{ showInvMP }}" hint-placeholder-val="{{ false }}">
+          <!-- ===== INVENTARIO · EXISTENCIAS (unificado) ===== -->
+          <sc-if value="{{ showInvItems }}" hint-placeholder-val="{{ false }}">
             <div>
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;">
-                <p style="font-size:12.5px;color:var(--text-muted);margin:0;">Aceites esenciales y fragancias valorados al costo actual.</p>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:8px 18px;font-size:13px;white-space:nowrap;">Valor total <strong style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-left:6px;">{{ invMPTotal }}</strong></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+                <p style="font-size:12.5px;color:var(--text-muted);margin:0;">Materias primas, insumos, empaques y producto terminado, valorados al costo actual.</p>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:8px 18px;font-size:13px;white-space:nowrap;">Valor {{ invItemsScope }} <strong style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-left:6px;">{{ invItemsTotal }}</strong></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+                <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                  <sc-for list="{{ invCatFiltros }}" as="c" hint-placeholder-count="5">
+                    <button onClick="{{ c.on }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:var(--radius-pill);cursor:pointer;white-space:nowrap;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}<span style="margin-left:6px;opacity:0.62;font-weight:600;">{{ c.n }}</span></button>
+                  </sc-for>
+                </div>
+                <div style="flex:1;min-width:12px;"></div>
+                <input value="{{ qInv }}" onInput="{{ setQInv }}" placeholder="Buscar por código o nombre…" style="font-family:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);min-width:230px;" />
+                <span style="flex-shrink:0;font-size:12px;color:var(--text-muted);white-space:nowrap;">{{ invItemsCount }} ítems</span>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:820px;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:900px;">
                   <thead><tr style="background:var(--surface-raised);text-align:left;">
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Código</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Materia prima</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Ítem</th>
+                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Categoría</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Stock</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Costo unit.</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Valor</th>
@@ -1882,19 +1890,21 @@
                     <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><th style="padding:12px 16px;"></th></sc-if>
                   </tr></thead>
                   <tbody>
-                    <sc-for list="{{ invMPRows }}" as="m" hint-placeholder-count="4">
+                    <sc-for list="{{ invItemsRows }}" as="r" hint-placeholder-count="6">
                       <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
-                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ m.codigo }}</td>
-                        <td style="padding:13px 16px;font-weight:600;">{{ m.nombre }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:700;color:{{ m.stockColor }};white-space:nowrap;">{{ m.stockActual }} {{ m.unidad }}<span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);">mín. {{ m.stockMinimo }}</span></td>
-                        <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.costoFmt }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.valorFmt }}</td>
-                        <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ m.estadoBg }};color:{{ m.estadoFg }};">{{ m.estadoLabel }}</span></td>
-                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button onClick="{{ m.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:1px solid var(--brand-ink);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);border-color:var(--brand-hover);">Conteo</button><sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}"><button onClick="{{ m.onAjustar }}" title="Corregir el saldo inicial (Administrador)" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Inicial</button></sc-if></div></td></sc-if>
+                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ r.codigo }}</td>
+                        <td style="padding:13px 16px;font-weight:600;">{{ r.nombre }}</td>
+                        <td style="padding:13px 16px;white-space:nowrap;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:{{ r.catBg }};color:{{ r.catFg }};">{{ r.catLabel }}</span></td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;color:{{ r.stockColor }};white-space:nowrap;">{{ r.stockTxt }}<span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);">{{ r.subTxt }}</span></td>
+                        <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ r.costoFmt }}</td>
+                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ r.valorFmt }}</td>
+                        <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ r.estadoBg }};color:{{ r.estadoFg }};">{{ r.estadoLabel }}</span></td>
+                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button onClick="{{ r.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:1px solid var(--brand-ink);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);border-color:var(--brand-hover);">Conteo</button><sc-if value="{{ r.verInicial }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onAjustar }}" title="Corregir el saldo inicial (Administrador)" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Inicial</button></sc-if></div></td></sc-if>
                       </tr>
                     </sc-for>
                   </tbody>
                 </table>
+                <sc-if value="{{ invItemsVacio }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:38px;">No hay ítems con ese filtro.</div></sc-if>
               </div>
             </div>
           </sc-if>
@@ -2647,82 +2657,6 @@
             </div>
           </sc-if>
 
-          <!-- ===== INVENTARIO · INSUMOS Y EMPAQUES ===== -->
-          <sc-if value="{{ showInvInsumos }}" hint-placeholder-val="{{ false }}">
-            <div>
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;">
-                <p style="font-size:12.5px;color:var(--text-muted);margin:0;">Insumos y materiales de empaque valorados al costo actual.</p>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:8px 18px;font-size:13px;white-space:nowrap;">Valor total <strong style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-left:6px;">{{ invInsTotal }}</strong></div>
-              </div>
-              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:860px;">
-                  <thead><tr style="background:var(--surface-raised);text-align:left;">
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Código</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Insumo / empaque</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Tipo</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Stock</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Costo unit.</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Valor</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Estado</th>
-                    <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><th style="padding:12px 16px;"></th></sc-if>
-                  </tr></thead>
-                  <tbody>
-                    <sc-for list="{{ invInsRows }}" as="m" hint-placeholder-count="4">
-                      <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
-                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ m.codigo }}</td>
-                        <td style="padding:13px 16px;font-weight:600;">{{ m.nombre }}</td>
-                        <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ m.tipoLabel }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:700;color:{{ m.stockColor }};white-space:nowrap;">{{ m.stockActual }} {{ m.unidad }}<span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);">mín. {{ m.stockMinimo }}</span></td>
-                        <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.costoFmt }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.valorFmt }}</td>
-                        <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ m.estadoBg }};color:{{ m.estadoFg }};">{{ m.estadoLabel }}</span></td>
-                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button onClick="{{ m.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:1px solid var(--brand-ink);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);border-color:var(--brand-hover);">Conteo</button><sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}"><button onClick="{{ m.onAjustar }}" title="Corregir el saldo inicial (Administrador)" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Inicial</button></sc-if></div></td></sc-if>
-                      </tr>
-                    </sc-for>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </sc-if>
-
-          <!-- ===== INVENTARIO · PRODUCTO TERMINADO ===== -->
-          <sc-if value="{{ showInvPT }}" hint-placeholder-val="{{ false }}">
-            <div>
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;">
-                <p style="font-size:12.5px;color:var(--text-muted);margin:0;">Stock disponible (inicial + producido) valorado al costo de fórmula.</p>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:8px 18px;font-size:13px;white-space:nowrap;">Valor total <strong style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-left:6px;">{{ invPTTotal }}</strong></div>
-              </div>
-              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:820px;">
-                  <thead><tr style="background:var(--surface-raised);text-align:left;">
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Código</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Producto</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Formato</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Stock</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Costo unit.</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Valor</th>
-                    <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Precio venta</th>
-                    <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><th style="padding:12px 16px;"></th></sc-if>
-                  </tr></thead>
-                  <tbody>
-                    <sc-for list="{{ invPTRows }}" as="p" hint-placeholder-count="4">
-                      <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
-                        <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ p.codigo }}</td>
-                        <td style="padding:13px 16px;font-weight:600;">{{ p.nombre }}</td>
-                        <td style="padding:13px 16px;color:var(--text-muted);white-space:nowrap;">{{ p.formatoLabel }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:800;color:{{ p.stockColor }};white-space:nowrap;">{{ p.stock }} und</td>
-                        <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ p.costoFmt }}</td>
-                        <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ p.valorFmt }}</td>
-                        <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ p.precioFmt }}</td>
-                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><button onClick="{{ p.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:none;border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);">Conteo</button></td></sc-if>
-                      </tr>
-                    </sc-for>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </sc-if>
-
           <!-- ===== INVENTARIO · CONSIGNACIÓN ===== -->
           <sc-if value="{{ showInvConsig }}" hint-placeholder-val="{{ false }}">
             <div>
@@ -3066,66 +3000,6 @@
                 </div>
                 <p style="font-size:11.5px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">El <strong>Saldo base</strong> de materias e insumos es el stock registrado en el sistema (importación + ajustes manuales). Las <strong>Entradas</strong> vienen de entregas de órdenes de compra; las <strong>Salidas</strong>, de producciones y ventas registradas en el Hub.</p>
               </sc-if>
-            </div>
-          </sc-if>
-
-          <!-- ===== VENTAS · CARRITOS ABANDONADOS ===== -->
-          <sc-if value="{{ showVentasCarritos }}" hint-placeholder-val="{{ false }}">
-            <div>
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
-                <div style="font-size:13px;color:var(--text-muted);max-width:420px;line-height:1.5;">Checkouts sin completar en Shopify. Escríbeles por WhatsApp para ayudarlos a terminar la compra.</div>
-                <button onClick="{{ carritosRefrescar }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg>Actualizar</button>
-              </div>
-              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                  <div onClick="{{ campCarritosTog.on }}" style="width:42px;height:22px;border-radius:99px;background:{{ campCarritosTog.bg }};position:relative;cursor:pointer;transition:background 140ms;flex-shrink:0;"><span style="position:absolute;top:2px;left:{{ campCarritosTog.x }};width:18px;height:18px;border-radius:99px;background:#fff;transition:left 140ms;"></span></div>
-                  <div style="flex:1;"><div style="font-weight:800;font-size:13.5px;">Recuperación automática de carritos</div><div style="font-size:11.5px;color:var(--text-muted);">Mensaje a la hora configurada del abandono + segundo intento a las 24h con cupón. Requiere la función <code style="font-size:10.5px;">carritos-auto</code> desplegada.</div></div>
-                </div>
-                <div style="display:flex;gap:14px;flex-wrap:wrap;">
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Horas tras el abandono<input type="number" min="1" step="1" value="{{ campHoras }}" onInput="{{ onCampHoras }}" style="display:block;width:110px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cupón (2º intento y campañas)<input value="{{ campCupon }}" onInput="{{ onCampCupon }}" placeholder="ej. VUELVE10" style="display:block;width:160px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Plantilla aprobada de Meta <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ campPlantilla }}" onInput="{{ onCampPlantilla }}" placeholder="nombre exacto · vacío = texto libre" style="display:block;width:230px;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
-                </div>
-                <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">⚠ WhatsApp solo permite iniciar conversación con una <strong>plantilla aprobada</strong> en Meta; sin plantilla, el mensaje automático solo llega a quienes te escribieron en las últimas 24h.</p>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;">
-                <div style="position:relative;flex:1 1 160px;min-width:150px;max-width:260px;">
-                  <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
-                  <input value="{{ qCarrito }}" onInput="{{ onQCarrito }}" placeholder="Buscar cliente, producto…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:12px;padding:8px 10px 8px 31px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);">
-                </div>
-                <span style="flex-shrink:0;font-size:11px;color:var(--text-muted);">Del</span>
-                <input type="date" value="{{ carDesde }}" onInput="{{ onCarDesde }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
-                <span style="flex-shrink:0;font-size:11px;color:var(--text-muted);">al</span>
-                <input type="date" value="{{ carHasta }}" onInput="{{ onCarHasta }}" style="flex-shrink:0;font-family:inherit;font-size:11.5px;padding:7px 8px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-body);">
-                <button onClick="{{ onCarSoloRechazo }}" style="flex-shrink:0;display:flex;align-items:center;gap:5px;font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 11px;border-radius:var(--radius-pill);cursor:pointer;border:1px solid {{ carSoloRechazoBorder }};background:{{ carSoloRechazoBg }};color:{{ carSoloRechazoFg }};">Con motivo de rechazo</button>
-                <sc-if value="{{ carHayFiltros }}" hint-placeholder-val="{{ false }}"><button onClick="{{ carLimpiar }}" title="Limpiar" style="flex-shrink:0;display:flex;align-items:center;font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:7px 9px;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></sc-if>
-                <div style="flex:1;"></div>
-                <span style="flex-shrink:0;font-size:12px;color:var(--text-muted);">{{ carCount }} carritos</span>
-                <button onClick="{{ exportCarritos }}" title="Descargar base de datos" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>Descargar</button>
-              </div>
-              <sc-if value="{{ carritosLoading }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;">Consultando Shopify…</div></sc-if>
-              <sc-if value="{{ carritosVacio }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:40px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);">No hay carritos abandonados en el rango.</div></sc-if>
-              <div style="display:flex;flex-direction:column;gap:12px;">
-                <sc-for list="{{ carritosList }}" as="c" hint-placeholder-count="0">
-                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:0;">
-                      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><span style="font-weight:700;font-size:14.5px;">{{ c.nombreTxt }}</span><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ c.clienteBg }};color:{{ c.clienteFg }};">{{ c.clienteTxt }}</span><sc-if value="{{ c.contactado }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:rgba(31,168,85,0.14);color:#1FA855;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Contactado</span></sc-if></div>
-                      <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;">{{ c.contactoTxt }} · {{ c.fechaFmt }}</div>
-                      <sc-if value="{{ c.esCliente }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:5px;"><span style="font-size:11.5px;color:#4C6149;font-weight:600;">{{ c.ultimaTxt }}</span><button onClick="{{ c.onHist }}" style="font-family:inherit;font-size:11px;font-weight:700;color:var(--brand-primary);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;">Ver historial</button></div></sc-if>
-                      <div style="font-size:12.5px;color:var(--text-body);margin-top:7px;">{{ c.productosTxt }}</div>
-                      <input value="{{ c.notaMotivo }}" onInput="{{ c.onNotaMotivo }}" placeholder="Motivo de rechazo (opcional, ej. Addi bloqueó por riesgo)" style="width:100%;box-sizing:border-box;margin-top:8px;font-family:inherit;font-size:11.5px;padding:6px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-page);color:var(--text-body);">
-                    </div>
-                    <div style="text-align:right;flex-shrink:0;">
-                      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;">{{ c.totalFmt }}</div>
-                      <button onClick="{{ c.onWa }}" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:var(--radius-pill);border:none;background:#1FA855;color:#fff;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"></path></svg>WhatsApp</button>
-                      <div style="display:flex;gap:5px;margin-top:6px;justify-content:flex-end;">
-                        <button onClick="{{ c.onToggleWa }}" title="Marcar contacto confirmado por WhatsApp" style="display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:800;padding:4px 8px;border-radius:var(--radius-pill);border:1px solid {{ c.waBorder }};background:{{ c.waBg }};color:{{ c.waFg }};cursor:pointer;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>WhatsApp</button>
-                        <button onClick="{{ c.onToggleLlamada }}" title="Marcar que se le llamó" style="display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:800;padding:4px 8px;border-radius:var(--radius-pill);border:1px solid {{ c.llBorder }};background:{{ c.llBg }};color:{{ c.llFg }};cursor:pointer;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>Llamé</button>
-                      </div>
-                    </div>
-                  </div>
-                </sc-for>
-              </div>
             </div>
           </sc-if>
 
@@ -7609,8 +7483,8 @@ class Component extends DCLogic {
     compras:    [{key:'resumen',label:'Resumen'},{key:'proveedores',label:'Proveedores'},{key:'materias',label:'Materias e Insumos'},{key:'servicios',label:'Servicios'},{key:'reorden',label:'Reposición'},{key:'ordenes',label:'Órdenes de compra'}],
     desarrollo: [{key:'mezclas',label:'Mezclas'},{key:'productos',label:'Productos'},{key:'kits',label:'Kits'}],
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
-    inventario: [{key:'resumen',label:'Resumen'},{key:'mp',label:'Mat. prima'},{key:'insumos',label:'Insumos'},{key:'pt',label:'Prod. terminado'},{key:'consig',label:'Consignación'},{key:'conteos',label:'Conteos físicos'},{key:'kardex',label:'Kardex'}],
-    ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'carritos',label:'Carritos abandonados'},{key:'servicio',label:'Servicio al cliente'}],
+    inventario: [{key:'resumen',label:'Resumen'},{key:'items',label:'Existencias'},{key:'consig',label:'Consignación'},{key:'conteos',label:'Conteos físicos'},{key:'kardex',label:'Kardex'}],
+    ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'servicio',label:'Servicio al cliente'}],
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'},{key:'informe',label:'Informe'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'finbold',label:'Bold'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
@@ -7831,7 +7705,7 @@ class Component extends DCLogic {
     casoOpenId:null, casoModal:false, casoDraft:null, casoWaMsg:null, casoWaTpl:null, qCaso:'', fCasoTipo:'todos', fCasoEstado:'todos', casoItemSel:'', casoItemQty:'1', casoAfectSel:'', casoSegText:'',
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
     mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
-    shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
+    invFiltroCat:'todos', qInv:'', shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
     canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, igNomLoading:false, igNomDetalle:'', envLog:null, waEnvios:null, autoCorriendo:false,
     boldPagos:null, boldRefs:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
     recordatorios:null, recVerId:null, recFiltro:'pendientes',
@@ -8066,7 +7940,9 @@ class Component extends DCLogic {
   }
   access(){ const u=this.users.find(x=>x.id===this.state.userId); if(!u) return null; const p=(this.state.userPerms||{})[u.id]; return p||this.roles[u.role]||null; }
   // Nivel efectivo de un módulo: el máximo entre sus submódulos (override sub > nivel del módulo)
-  _modLevel(p,mod){ if(!p) return 'none'; if(p.admin) return 'write'; const subs=(this.subModDef[mod]||[]).map(s=>s.key); const ml=p[mod]||'none'; if(!subs.length) return ml; const rank={none:0,read:1,write:2}; let best='none'; subs.forEach(s=>{ const k=mod+'__'+s; const eff=(k in p)?p[k]:ml; if((rank[eff]||0)>(rank[best]||0)) best=eff; }); return best; }
+  // Permisos heredados: 'inventario__items' toma el mayor de los antiguos mp/insumos/pt
+  _subAlias(p,k){ if(k!=='inventario__items'||!p) return undefined; const rank={none:0,read:1,write:2}; let best; ['inventario__mp','inventario__insumos','inventario__pt'].forEach(x=>{ if(x in p && (best===undefined||(rank[p[x]]||0)>(rank[best]||0))) best=p[x]; }); return best; }
+  _modLevel(p,mod){ if(!p) return 'none'; if(p.admin) return 'write'; const subs=(this.subModDef[mod]||[]).map(s=>s.key); const ml=p[mod]||'none'; if(!subs.length) return ml; const rank={none:0,read:1,write:2}; let best='none'; subs.forEach(s=>{ const k=mod+'__'+s; const al=this._subAlias(p,k); const eff=(k in p)?p[k]:(al!==undefined?al:ml); if((rank[eff]||0)>(rank[best]||0)) best=eff; }); return best; }
   togglePerm(uid,mod){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const curr=base[mod]||'none'; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[mod]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
   toggleAdmin(uid){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const updated={...perms,[uid]:{...base,admin:!base.admin}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
   toggleSubPerm(uid,mod,subkey){ const perms={...(this.state.userPerms||{})}; const u=this.users.find(x=>x.id===uid); const base=perms[uid]||{...(this.roles[u&&u.role]||{})}; const subKey=mod+'__'+subkey; const modLevel=base[mod]||'none'; const curr=subKey in base?base[subKey]:modLevel; const next={none:'read',read:'write',write:'none'}[curr]||'none'; const updated={...perms,[uid]:{...base,[subKey]:next}}; this.setState({userPerms:updated}); try{localStorage.setItem('oda_hub_perms_v1',JSON.stringify(updated));}catch(e){} if(this.cloudOn()) this.cloudSavePermiso(uid, updated[uid]); }
@@ -12753,12 +12629,12 @@ Instrucciones de respuesta:
 
     out.userName=u.name; out.userInitials=u.initials; out.userRole=u.role; out.userColor=u.color; out.isAdmin=isAdmin;
     out.canWrite=canWrite; out.noAdmin=!isAdmin;
-    const subVis=(mod,key)=>{ const a=acc||{}; if(a.admin) return true; const k=mod+'__'+key; if(a[k]!==undefined) return a[k]!=='none'; return (a[mod]||'none')!=='none'; };
+    const subVis=(mod,key)=>{ const a=acc||{}; if(a.admin) return true; const k=mod+'__'+key; if(a[k]!==undefined) return a[k]!=='none'; const al=this._subAlias(a,k); if(al!==undefined) return al!=='none'; return (a[mod]||'none')!=='none'; };
     out.vC_resumen=subVis('compras','resumen'); out.vC_prov=subVis('compras','proveedores'); out.vC_mat=subVis('compras','materias'); out.vC_svc=subVis('compras','servicios'); out.vC_ord=subVis('compras','ordenes');
     out.vD_mez=subVis('desarrollo','mezclas'); out.vD_prod=subVis('desarrollo','productos'); out.vD_kits=subVis('desarrollo','kits');
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
-    out.vI_resumen=subVis('inventario','resumen'); out.vI_mp=subVis('inventario','mp'); out.vI_ins=subVis('inventario','insumos'); out.vI_pt=subVis('inventario','pt'); out.vI_conteos=subVis('inventario','conteos'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
-    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=subVis('ventas','carritos'); out.vV_svc=subVis('ventas','servicio');
+    out.vI_resumen=subVis('inventario','resumen'); out.vI_items=subVis('inventario','items'); out.vI_mp=out.vI_items; out.vI_ins=out.vI_items; out.vI_pt=out.vI_items; out.vI_conteos=subVis('inventario','conteos'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
+    out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=false; out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_bold=subVis('finanzas','finbold'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
@@ -12995,8 +12871,8 @@ Instrucciones de respuesta:
     out.invNavBg = onInv? 'rgba(167,134,89,0.18)':'transparent';
     out.invNavColor = onInv? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyI=(k)=>{ const a=onInv&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subInvResumen=subStyI('resumen'); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvConteos=subStyI('conteos'); out.subInvKardex=subStyI('kardex');
-    out.subnavInv={ conteos:()=>this.setState({module:'inventario',sub:'conteos'}), resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
+    out.subInvResumen=subStyI('resumen'); out.subInvItems=(function(a){ return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; })(onInv&&['items','mp','insumos','pt'].includes(st.sub)); out.subInvMP=subStyI('mp'); out.subInvIns=subStyI('insumos'); out.subInvPT=subStyI('pt'); out.subInvConsig=subStyI('consig'); out.subInvConteos=subStyI('conteos'); out.subInvKardex=subStyI('kardex');
+    out.subnavInv={ items:()=>this.setState({module:'inventario',sub:'items'}), conteos:()=>this.setState({module:'inventario',sub:'conteos'}), resumen:()=>this.setState({module:'inventario',sub:'resumen'}), mp:()=>this.setState({module:'inventario',sub:'mp'}), insumos:()=>this.setState({module:'inventario',sub:'insumos'}), pt:()=>this.setState({module:'inventario',sub:'pt'}), consig:()=>this.setState({module:'inventario',sub:'consig',consignSel:null}), kardex:()=>this.setState({module:'inventario',sub:'kardex',kardexCodigo:'',kardexTipo:'materia'}) };
     const invAcc = this._modLevel(acc,'inventario');
     out.canWriteInv = invAcc==='write';
 
@@ -13060,9 +12936,7 @@ Instrucciones de respuesta:
     out.showProduccionMez = onProd && st.sub==='prodmez';
     out.showProduccionPT = onProd && st.sub==='pt';
     out.showInvResumen = onInv && st.sub==='resumen';
-    out.showInvMP = onInv && st.sub==='mp';
-    out.showInvInsumos = onInv && st.sub==='insumos';
-    out.showInvPT = onInv && st.sub==='pt';
+    out.showInvItems = onInv && ['items','mp','insumos','pt'].includes(st.sub);
     out.showInvConsig = onInv && st.sub==='consig';
     out.showInvKardex = onInv && st.sub==='kardex';
     out.showInvConteos = onInv && st.sub==='conteos';
@@ -13515,7 +13389,7 @@ Instrucciones de respuesta:
     out.showVentasListado = onVen && st.sub==='listado';
     out.showVentasPedidos = onVen && st.sub==='pedidos';
     out.showVentasCotizador = onVen && st.sub==='cotizador';
-    out.showVentasCarritos = onVen && st.sub==='carritos'; if(out.showVentasCarritos) this._buildCartAuto(out);
+    out.showVentasCarritos = false; // submódulo retirado: la recuperación de carritos vive en Conversaciones
     out.showVentasServicio = onVen && st.sub==='servicio';
     out.showFinResumen = onFin && st.sub==='finresumen';
     out.showFinPagar = onFin && st.sub==='finpagar';
@@ -13868,9 +13742,23 @@ Instrucciones de respuesta:
         }
       }
       const mkRows=(filterFn)=> st.materias.filter(filterFn).map(m=>{ const real=Math.round(this.materiaStockActual(m)); const bajo=real<(Number(m.stockMinimo)||0); return {...m, stockActual:real, costoFmt:this.fmt(m.costo), valorFmt:this.fmt(Math.round(this.materiaValor(m))), stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', bajo, estadoLabel:bajo?'Bajo mínimo':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', tipoLabel:this.tipoLabelInv(m.tipo), onAjustar:()=>this.ajustarInventario(m), onConteo:()=>this.nuevoConteo(m)}; });
-      if(out.showInvMP){ out.invMPRows=mkRows(m=>mpTipos.includes(m.tipo)); out.invMPVacio=out.invMPRows.length===0; out.invMPTotal=this.fmt(Math.round(valMP)); }
-      if(out.showInvInsumos){ out.invInsRows=mkRows(m=>esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)); out.invInsVacio=out.invInsRows.length===0; out.invInsTotal=this.fmt(Math.round(valIns+valEmp+valEnv)); }
-      if(out.showInvPT){ out.invPTRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {onConteo:()=>this.nuevoConteo(p.codigo), codigo:p.codigo, nombre:p.nombre, formatoLabel:this.formatoLabel(p.formato), stock, stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), precioFmt:this.fmt(p.precio)}; }); out.invPTVacio=st.productos.length===0; out.invPTTotal=this.fmt(Math.round(valPT)); }
+      if(out.showInvItems){
+        const catMeta={mp:{label:'Materia prima',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}, ins:{label:'Insumo',bg:'rgba(101,150,166,0.14)',fg:'#3F6B7A'}, emp:{label:'Empaque',bg:'rgba(193,170,129,0.20)',fg:'#7A6537'}, env:{label:'Envase',bg:'rgba(156,151,162,0.18)',fg:'#5E5A66'}, pt:{label:'Producto terminado',bg:'rgba(167,134,89,0.16)',fg:'#8A6A3E'}};
+        const catOf=(m)=> mpTipos.includes(m.tipo)?'mp':(empTipos.includes(m.tipo)?'emp':(envTipos.includes(m.tipo)?'env':'ins'));
+        const esAdmin=this.isAdminUser();
+        const matRows=mkRows(m=>mpTipos.includes(m.tipo)||esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)).map(m=>{ const cat=catOf(m); return {...m, cat, catLabel:catMeta[cat].label, catBg:catMeta[cat].bg, catFg:catMeta[cat].fg, stockTxt:m.stockActual+' '+(m.unidad||''), subTxt:'mín. '+(Number(m.stockMinimo)||0), valorNum:Math.round(this.materiaValor(m)), verInicial:esAdmin}; });
+        const ptRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, cat:'pt', catLabel:catMeta.pt.label, catBg:catMeta.pt.bg, catFg:catMeta.pt.fg, stockTxt:stock+' und', subTxt:this.formatoLabel(p.formato), stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), valorNum:Math.round(stock*cu), estadoLabel:bajo?'Sin stock':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', verInicial:false, onConteo:()=>this.nuevoConteo(p.codigo)}; });
+        const todos=matRows.concat(ptRows);
+        const cat=st.invFiltroCat||'todos'; const q=(st.qInv||'').trim().toLowerCase();
+        const enCat=(r,c)=> c==='todos'? true : (c==='empenv'? (r.cat==='emp'||r.cat==='env') : r.cat===c);
+        const filtradas=todos.filter(r=>enCat(r,cat)).filter(r=>!q || (r.codigo||'').toLowerCase().includes(q) || (r.nombre||'').toLowerCase().includes(q));
+        const defs=[{k:'todos',label:'Todos'},{k:'mp',label:'Materia prima'},{k:'ins',label:'Insumos'},{k:'empenv',label:'Empaques y envases'},{k:'pt',label:'Producto terminado'}];
+        out.invCatFiltros=defs.map(d=>{ const act=d.k===cat; return {label:d.label, n:todos.filter(r=>enCat(r,d.k)).length, on:()=>this.setState({invFiltroCat:d.k}), bg:act?'var(--brand-ink)':'var(--surface-card)', fg:act?'#fff':'var(--text-muted)', bd:act?'var(--brand-ink)':'var(--border-strong)'}; });
+        out.qInv=st.qInv||''; out.setQInv=(e)=>this.setState({qInv:e.target.value});
+        out.invItemsRows=filtradas; out.invItemsVacio=filtradas.length===0; out.invItemsCount=filtradas.length;
+        out.invItemsTotal=this.fmt(filtradas.reduce((a,r)=>a+(r.valorNum||0),0));
+        out.invItemsScope=(cat==='todos'&&!q)?'total':'filtrado';
+      }
       if(out.showInvConsig){
         const resumen=this.tiendaResumen();
         out.consigTiendas=resumen.map(t=>({ id:t.id, nombre:t.nombre, tipoL:(t.tipo==='vendedor'?'Vendedor':'Tienda'), tipoBg:(t.tipo==='vendedor'?'rgba(101,150,166,0.18)':'rgba(98,123,96,0.16)'), tipoFg:(t.tipo==='vendedor'?'#3F6A7A':'#4C6149'), ciudad:t.ciudad||'—', margenPct:t.margenPct, nSkus:t.nSkus, unidades:t.unidades, valorFmt:this.fmt(Math.round(t.valor)), hayEmpaque:(t.empUnid>0), empaqueTxt:(this.fmtCant(t.empUnid)+' en materiales ('+this.fmt(Math.round(t.empCosto))+')'), onVer:((id)=>()=>this.setState({consignSel:id, consigSelTab:'stock'}))(t.id), onEditar:((id)=>()=>this.editarTienda(this.consignTiendas().find(x=>x.id===id)))(t.id), onRemision:((id)=>()=>this.nuevaRemision(id))(t.id) }));
