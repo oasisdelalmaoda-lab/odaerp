@@ -29,6 +29,17 @@
   @keyframes odaPulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
   input:focus,select:focus{outline:none;box-shadow:var(--shadow-focus);border-color:var(--brand-primary)!important;}
   .oda-hamburger{display:none;}
+  .oda-shell.oda-nav-rail{grid-template-columns:64px 1fr !important;}
+  .oda-nav-rail .oda-sidebar{overflow:hidden;}
+  .oda-nav-rail .oda-brandbar{padding:0 !important;justify-content:center;}
+  .oda-nav-rail .oda-brandbar img{height:32px !important;}
+  .oda-nav-rail .oda-brandtext{display:none !important;}
+  .oda-nav-rail nav{padding:14px 8px !important;}
+  .oda-nav-rail .oda-navitem{justify-content:center;gap:0 !important;padding:11px 0 !important;position:relative;}
+  .oda-nav-rail .oda-navitem > *:not(svg){display:none !important;}
+  .oda-nav-rail .oda-navsub,.oda-nav-rail .oda-navsection{display:none !important;}
+  .oda-nav-rail .oda-userstrip{padding:14px 0 !important;justify-content:center;}
+  .oda-nav-rail .oda-userstrip > span:nth-of-type(2),.oda-nav-rail .oda-userstrip > button{display:none !important;}
   .oda-backdrop{display:none;}
   @media print{
     html,body{height:auto !important;overflow:visible !important;background:#fff !important;}
@@ -107,9 +118,9 @@
 
       <!-- SIDEBAR -->
       <aside class="oda-sidebar" style="background:#2A2419;color:var(--text-inverse);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;">
-        <div style="padding:22px 22px 16px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
+        <div class="oda-brandbar" style="height:85px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
           <img src="logo-wordmark-white.png" alt="OdA" style="height:46px;width:auto;display:block;flex-shrink:0;">
-          <div style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
+          <div class="oda-brandtext" style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
             <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;color:rgba(251,248,242,0.92);">Hub</div>
             <div style="font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(251,248,242,0.45);margin-top:3px;">Intelligence de Negocio</div>
           </div>
@@ -128,7 +139,7 @@
               
             </div>
           </sc-if>
-          <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:6px 10px 8px;">Módulos</div>
+          <div class="oda-navsection" style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:6px 10px 8px;">Módulos</div>
 
           <sc-if value="{{ canCompras }}" hint-placeholder-val="{{ true }}">
           <!-- COMPRAS -->
@@ -137,7 +148,7 @@
             <span style="flex:1;">Compras</span>
           </div>
           <sc-if value="{{ showComprasSub }}" hint-placeholder-val="{{ true }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vC_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subResumen.c }};background:{{ subResumen.bg }};border-left:2px solid {{ subResumen.b }};">{{ subResumen.dot }}Resumen</div></sc-if>
               <sc-if value="{{ vC_prov }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.proveedores }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProv.c }};background:{{ subProv.bg }};border-left:2px solid {{ subProv.b }};">Proveedores</div></sc-if>
               <sc-if value="{{ vC_mat }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.materias }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMat.c }};background:{{ subMat.bg }};border-left:2px solid {{ subMat.b }};">Materias e insumos</div></sc-if>
@@ -154,7 +165,7 @@
             <span style="flex:1;">Desarrollo de producto</span>
           </div>
           <sc-if value="{{ showDesarrolloSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vD_mez }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavDes.mezclas }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMez.c }};background:{{ subMez.bg }};border-left:2px solid {{ subMez.b }};">Creación de mezclas</div></sc-if>
               <sc-if value="{{ vD_prod }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavDes.productos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProd.c }};background:{{ subProd.bg }};border-left:2px solid {{ subProd.b }};">Creación de producto</div></sc-if>
               <sc-if value="{{ vD_kits }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavDes.kits }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subKits.c }};background:{{ subKits.bg }};border-left:2px solid {{ subKits.b }};">Creación de kits</div></sc-if>
@@ -168,7 +179,7 @@
             <span style="flex:1;">Producción</span>
           </div>
           <sc-if value="{{ showProduccionSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vP_mez }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavProd.mez }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subProdMez.c }};background:{{ subProdMez.bg }};border-left:2px solid {{ subProdMez.b }};">Producción de mezclas</div></sc-if>
               <sc-if value="{{ vP_pt }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavProd.pt }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subPT.c }};background:{{ subPT.bg }};border-left:2px solid {{ subPT.b }};">Producción de PT</div></sc-if>
             </div>
@@ -180,7 +191,7 @@
             <span style="flex:1;">Inventario</span>
           </div>
           <sc-if value="{{ showInventarioSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vI_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvResumen.c }};background:{{ subInvResumen.bg }};border-left:2px solid {{ subInvResumen.b }};">Resumen</div></sc-if>
               <sc-if value="{{ vI_items }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.items }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvItems.c }};background:{{ subInvItems.bg }};border-left:2px solid {{ subInvItems.b }};">Existencias</div></sc-if>
               <sc-if value="{{ vI_consig }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavInv.consig }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subInvConsig.c }};background:{{ subInvConsig.bg }};border-left:2px solid {{ subInvConsig.b }};">Consignación</div></sc-if>
@@ -195,7 +206,7 @@
             <span style="flex:1;">Ventas</span>
           </div>
           <sc-if value="{{ showVentasSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vV_reg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.registro }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenReg.c }};background:{{ subVenReg.bg }};border-left:2px solid {{ subVenReg.b }};">Ventas</div></sc-if>
               <sc-if value="{{ vV_base }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.base }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenBase.c }};background:{{ subVenBase.bg }};border-left:2px solid {{ subVenBase.b }};">Base de datos</div></sc-if>
               <sc-if value="{{ vV_cot }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavVen.cotizador }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subVenCot.c }};background:{{ subVenCot.bg }};border-left:2px solid {{ subVenCot.b }};">Leads</div></sc-if>
@@ -210,7 +221,7 @@
             <sc-if value="{{ convBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ convBadgeCount }}</span></sc-if>
           </div>
           <sc-if value="{{ showConversacionesSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vX_bandeja }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.bandeja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvBandeja.c }};background:{{ subConvBandeja.bg }};border-left:2px solid {{ subConvBandeja.b }};">Bandeja</div></sc-if>
               <sc-if value="{{ vX_agente }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.agente }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvAgente.c }};background:{{ subConvAgente.bg }};border-left:2px solid {{ subConvAgente.b }};">Agente IA</div></sc-if>
               <sc-if value="{{ vX_canales }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.canales }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvCanales.c }};background:{{ subConvCanales.bg }};border-left:2px solid {{ subConvCanales.b }};"><span style="flex:1;">Canales</span><sc-if value="{{ canalesAlertaShow }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:99px;background:#B5503C;flex-shrink:0;"></span></sc-if></div></sc-if>
@@ -224,7 +235,7 @@
             <span style="flex:1;">Finanzas</span>
           </div>
           <sc-if value="{{ showFinanzasSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vF_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinResumen.c }};background:{{ subFinResumen.bg }};border-left:2px solid {{ subFinResumen.b }};">Tablero</div></sc-if>
               <sc-if value="{{ vF_pagar }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.pagar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPagar.c }};background:{{ subFinPagar.bg }};border-left:2px solid {{ subFinPagar.b }};">Cuentas por pagar</div></sc-if>
               <sc-if value="{{ vF_cobrar }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.cobrar }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinCobrar.c }};background:{{ subFinCobrar.bg }};border-left:2px solid {{ subFinCobrar.b }};">Cuentas por cobrar</div></sc-if>
@@ -243,18 +254,14 @@
             <span style="flex:1;">Marketing</span>
           </div>
           <sc-if value="{{ showMarketingSub }}" hint-placeholder-val="{{ false }}">
-            <div style="margin:2px 0 6px 0;padding-left:8px;">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vM_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktResumen.c }};background:{{ subMktResumen.bg }};border-left:2px solid {{ subMktResumen.b }};">Resumen</div></sc-if>
-              <sc-if value="{{ vM_camp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.campanas }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktCamp.c }};background:{{ subMktCamp.bg }};border-left:2px solid {{ subMktCamp.b }};">Campañas</div></sc-if>
-              <sc-if value="{{ vM_recom }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.recom }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktRecom.c }};background:{{ subMktRecom.bg }};border-left:2px solid {{ subMktRecom.b }};">Recomendaciones IA</div></sc-if>
-              <sc-if value="{{ vM_creativos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.creativos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktCreativos.c }};background:{{ subMktCreativos.bg }};border-left:2px solid {{ subMktCreativos.b }};">Creativos</div></sc-if>
-              <sc-if value="{{ vM_publicos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.publicos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktPublicos.c }};background:{{ subMktPublicos.bg }};border-left:2px solid {{ subMktPublicos.b }};">Públicos</div></sc-if>
               <sc-if value="{{ vM_conexion }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.conexion }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktConexion.c }};background:{{ subMktConexion.bg }};border-left:2px solid {{ subMktConexion.b }};">Conexión Meta</div></sc-if>
             </div>
           </sc-if>
           </sc-if>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:18px 10px 8px;">Administración</div>
+            <div class="oda-navsection" style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:18px 10px 8px;">Administración</div>
             <div class="oda-navitem" onClick="{{ nav.adminTablero }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ adminTabNavColor }};background:{{ adminTabNavBg }};">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
               <span style="flex:1;">Tablero</span>
@@ -270,7 +277,7 @@
           </div>
         </nav>
 
-        <div style="padding:14px;border-top:1px solid rgba(251,248,242,0.08);display:flex;align-items:center;gap:11px;">
+        <div class="oda-userstrip" style="padding:14px;border-top:1px solid rgba(251,248,242,0.08);display:flex;align-items:center;gap:11px;">
           <span style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;color:#fff;flex-shrink:0;background:{{ userColor }};">{{ userInitials }}</span>
           <span style="flex:1;min-width:0;line-height:1.25;">
             <span style="display:block;font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ userName }}</span>
@@ -288,8 +295,9 @@
 
       <!-- MAIN -->
       <main class="oda-scroll" style="height:100vh;overflow-y:auto;background:var(--surface-page);">
-        <header style="position:sticky;top:0;z-index:5;background:rgba(247,242,233,0.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--border-subtle);padding:14px 32px;display:flex;align-items:center;gap:18px;">
+        <header style="position:sticky;top:0;z-index:5;background:rgba(247,242,233,0.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--border-subtle);height:85px;box-sizing:border-box;padding:0 32px;display:flex;align-items:center;gap:18px;">
           <button class="oda-hamburger" onClick="{{ toggleSidebar }}" aria-label="Abrir menú" style="align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;padding:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+          <button onClick="{{ toggleNavCollapse }}" title="{{ navCollapseTitle }}" aria-label="{{ navCollapseTitle }}" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--surface-card);color:var(--text-muted);cursor:pointer;padding:0;" style-hover="color:var(--brand-ink);border-color:var(--border-strong);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
           <div style="flex:1;min-width:0;">
             <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);">{{ crumb }}</div>
             <div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;line-height:1.1;margin-top:1px;">{{ pageTitle }}</div>
@@ -4533,12 +4541,13 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
                   <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">ROAS</div>
                   <div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ mktKpiRoas }}</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">retorno sobre la inversión</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ mktKpiRoasNota }}</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;opacity:0.85;">{{ mktKpiRoasTotal }}</div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
                   <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">CPA</div>
                   <div style="font-family:'Cormorant Garamond',serif;font-size:31px;font-weight:600;line-height:1;margin-top:10px;">{{ mktKpiCpa }}</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">costo por venta</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">costo por venta atribuida</div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
                   <div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Ingresos atribuidos</div>
@@ -4614,151 +4623,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </sc-if>
-
-          <!-- ===== MARKETING · CAMPAÑAS ===== -->
-          <sc-if value="{{ showMktCampanas }}" hint-placeholder-val="{{ false }}">
-            <div>
-              <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:14px;">
-                <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-right:4px;">Periodo</span>
-                <sc-for list="{{ mktRangos }}" as="r" hint-placeholder-count="4">
-                  <button onClick="{{ r.onClick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--radius-pill);cursor:pointer;transition:background 140ms;background:{{ r.bg }};color:{{ r.fg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
-                </sc-for>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-                <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-right:4px;">Estado</span>
-                <button onClick="{{ mktFiltroTodas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);cursor:pointer;background:{{ mktFA.bg }};color:{{ mktFA.fg }};">Todas</button>
-                <button onClick="{{ mktFiltroActivas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);cursor:pointer;background:{{ mktFB.bg }};color:{{ mktFB.fg }};">Activas</button>
-                <button onClick="{{ mktFiltroPausadas }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);cursor:pointer;background:{{ mktFC.bg }};color:{{ mktFC.fg }};">Pausadas</button>
-              </div>
-              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
-                <div style="overflow-x:auto;">
-                  <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:940px;">
-                    <thead>
-                      <tr style="background:var(--surface-linen);text-align:left;">
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Campaña</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Inversión</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Ingresos</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">ROAS</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">CPA</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">CTR</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Frec.</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Result.</th>
-                        <th style="padding:12px 16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <sc-for list="{{ mktCampanas }}" as="c" hint-placeholder-count="6">
-                        <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
-                          <td style="padding:13px 16px;">
-                            <div style="display:flex;align-items:center;gap:10px;">
-                              <span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ c.moodColor }};"></span>
-                              <span style="min-width:0;">
-                                <span style="display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.nombre }}</span>
-                                <span style="display:block;font-size:11px;font-weight:700;margin-top:2px;color:{{ c.objColor }};">{{ c.objetivo }} · {{ c.moodLabel }}</span>
-                              </span>
-                            </div>
-                          </td>
-                          <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ c.spendFmt }}</td>
-                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.ingresosFmt }}</td>
-                          <td style="padding:13px 16px;text-align:right;font-weight:800;white-space:nowrap;color:{{ c.roasColor }};">{{ c.roasFmt }}</td>
-                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.cpaFmt }}</td>
-                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.ctrFmt }}</td>
-                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;">{{ c.frecuencia }}</td>
-                          <td style="padding:13px 16px;text-align:right;white-space:nowrap;"><span style="font-weight:700;">{{ c.resultados }}</span> <span style="color:var(--text-muted);font-size:11px;">{{ c.resLabel }}</span></td>
-                          <td style="padding:13px 16px;text-align:center;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;white-space:nowrap;background:{{ c.estBg }};color:{{ c.estFg }};">{{ c.estLabel }}</span></td>
-                        </tr>
-                      </sc-for>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </sc-if>
-
-          <!-- ===== MARKETING · RECOMENDACIONES IA ===== -->
-          <sc-if value="{{ showMktRecom }}" hint-placeholder-val="{{ false }}">
-            <div>
-              <div style="background:#2A2419;color:var(--text-inverse);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:22px;position:relative;overflow:hidden;">
-                <div style="position:absolute;right:-40px;bottom:-50px;color:var(--brand-primary);opacity:0.12;"><svg width="220" height="220" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"></path><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"></path></svg></div>
-                <div style="position:relative;max-width:640px;">
-                  <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:10px;">Experto en Meta Ads · IA</div>
-                  <h2 style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;margin:0 0 10px;line-height:1.1;text-wrap:balance;color:var(--text-inverse);">Análisis experto de tus campañas</h2>
-                  <p style="font-size:14px;line-height:1.6;color:rgba(251,248,242,0.72);margin:0 0 18px;text-wrap:pretty;">La IA revisa el rendimiento de tu pauta, lo cruza con tus ventas del ERP y te dice qué cambiar: presupuesto, públicos, tipo de campaña y creativos.</p>
-                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                    <button onClick="{{ mktGenAI }}" disabled="{{ mktAiLoading }}" style="display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:14px;font-weight:700;padding:12px 22px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;">{{ mktGenBtnLabel }}</button>
-                    <span style="font-size:12px;color:rgba(251,248,242,0.5);">{{ mktAiTsFmt }}</span>
-                  </div>
-                </div>
-              </div>
-              <sc-if value="{{ mktAiHasError }}" hint-placeholder-val="{{ false }}">
-                <div style="font-size:13px;color:#B5503C;background:rgba(181,80,60,0.09);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:20px;font-weight:600;">{{ mktAiError }}</div>
-              </sc-if>
-              <sc-if value="{{ mktAiHasAnswer }}" hint-placeholder-val="{{ false }}">
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px 26px;margin-bottom:22px;">
-                  <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:12px;">Análisis generado</div>
-                  <div style="font-size:14px;line-height:1.7;color:var(--text-body);white-space:pre-wrap;text-wrap:pretty;">{{ mktAiAnswerClean }}</div>
-                </div>
-              </sc-if>
-              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:14px;">Recomendaciones rápidas</div>
-              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
-                <sc-for list="{{ mktInsights }}" as="i" hint-placeholder-count="4">
-                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;border-left:3px solid {{ i.tagColor }};">
-                    <div style="font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:{{ i.tagColor }};margin-bottom:7px;">{{ i.tag }}</div>
-                    <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:6px;line-height:1.2;">{{ i.titulo }}</div>
-                    <div style="font-size:13px;line-height:1.6;color:var(--text-body);text-wrap:pretty;">{{ i.texto }}</div>
-                  </div>
-                </sc-for>
-              </div>
-            </div>
-          </sc-if>
-
-          <!-- ===== MARKETING · CREATIVOS ===== -->
-          <sc-if value="{{ showMktCreativos }}" hint-placeholder-val="{{ false }}">
-            <div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
-                <sc-for list="{{ mktCreativos }}" as="cr" hint-placeholder-count="6">
-                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
-                    <div style="height:130px;background:{{ cr.moodColor }};position:relative;display:flex;align-items:flex-end;padding:14px;">
-                      <span style="position:absolute;top:12px;left:12px;font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,0.22);padding:4px 10px;border-radius:99px;">{{ cr.formato }}</span>
-                      <span style="position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:{{ cr.estBg }};color:{{ cr.estFg }};">{{ cr.estLabel }}</span>
-                      <span style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,0.25);">{{ cr.moodLabel }}</span>
-                    </div>
-                    <div style="padding:16px 18px;">
-                      <div style="font-size:13.5px;font-weight:700;margin-bottom:6px;">{{ cr.nombre }}</div>
-                      <div style="font-size:12.5px;color:var(--text-muted);line-height:1.5;font-style:italic;margin-bottom:14px;text-wrap:pretty;">“{{ cr.copy }}”</div>
-                      <div style="display:flex;gap:14px;padding-top:12px;border-top:1px solid var(--border-subtle);">
-                        <span style="flex:1;"><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CTR</span><span style="display:block;font-weight:700;font-size:14px;margin-top:2px;">{{ cr.ctrFmt }}</span></span>
-                        <span style="flex:1;"><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Gasto</span><span style="display:block;font-weight:700;font-size:14px;margin-top:2px;">{{ cr.spendFmt }}</span></span>
-                        <span style="flex:1;"><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Ventas</span><span style="display:block;font-weight:700;font-size:14px;margin-top:2px;">{{ cr.resultados }}</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </sc-for>
-              </div>
-            </div>
-          </sc-if>
-
-          <!-- ===== MARKETING · PÚBLICOS ===== -->
-          <sc-if value="{{ showMktPublicos }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;flex-direction:column;gap:14px;">
-              <sc-for list="{{ mktPublicos }}" as="a" hint-placeholder-count="5">
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-                  <div style="flex:1;min-width:220px;">
-                    <div style="display:flex;align-items:center;gap:9px;margin-bottom:5px;">
-                      <span style="font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px;color:#fff;background:{{ a.tipoColor }};">{{ a.tipo }}</span>
-                      <span style="font-size:14.5px;font-weight:700;">{{ a.nombre }}</span>
-                    </div>
-                    <div style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">{{ a.detalle }} · {{ a.ubicacion }} · {{ a.edad }} años</div>
-                  </div>
-                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Inversión</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.spendFmt }}</div></div>
-                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Alcance</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.alcanceFmt }}</div></div>
-                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CTR</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.ctrFmt }}</div></div>
-                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Ventas</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.resultados }}</div></div>
-                  <div style="text-align:right;"><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CPA</div><div style="font-weight:700;font-size:14px;margin-top:2px;">{{ a.cpaFmt }}</div></div>
-                </div>
-              </sc-for>
             </div>
           </sc-if>
 
@@ -4977,7 +4841,7 @@
             </div>
           </sc-if>
 
-          <div style="margin-top:44px;padding:20px 4px 6px;border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;">
+          <div style="margin:44px -32px -60px;height:65px;box-sizing:border-box;padding:0 32px;border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;">
             <span style="display:inline-flex;align-items:center;gap:7px;">
               <span style="font-family:'Sora',sans-serif;font-size:11.5px;color:var(--text-muted);">Desarrollado por</span>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3F3A4E" stroke-width="3.4" stroke-linecap="butt"><path d="M12 2.5a9.5 9.5 0 0 1 8.2 4.7"></path><path d="M21.5 12a9.5 9.5 0 0 1-4.7 8.2"></path><path d="M12 21.5a9.5 9.5 0 0 1-8.2-4.7"></path><path d="M2.5 12a9.5 9.5 0 0 1 4.7-8.2"></path></svg>
@@ -7487,7 +7351,7 @@ class Component extends DCLogic {
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'servicio',label:'Servicio al cliente'}],
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'},{key:'informe',label:'Informe'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'finbold',label:'Bold'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
-    marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktcampanas',label:'Campañas'},{key:'mktrecom',label:'Recomendaciones IA'},{key:'mktcreativos',label:'Creativos'},{key:'mktpublicos',label:'Públicos'},{key:'mktconexion',label:'Conexión Meta'}]
+    marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktconexion',label:'Conexión Meta'}]
   };
 
   // ======================================================================
@@ -7596,11 +7460,13 @@ class Component extends DCLogic {
     const impresiones=cs.reduce((s,c)=>s+c.impresiones,0);
     const clicks=cs.reduce((s,c)=>s+c.clicks,0);
     const alcance=cs.reduce((s,c)=>s+c.alcance,0);
-    const roas=spend>0?ingresos/spend:0;
-    const cpa=resultados>0?spend/resultados:0;
+    const spendVentas=cs.reduce((s,c)=>s+(c.objetivo==='Ventas'?c.spend:0),0);
+    const roas=spendVentas>0?ingresos/spendVentas:0;          // ROAS real: solo campañas de venta
+    const roasTotal=spend>0?ingresos/spend:0;                 // sobre toda la inversión
+    const cpa=resultados>0?spendVentas/resultados:0;
     const ctr=impresiones>0?clicks/impresiones*100:0;
     const cpm=impresiones>0?spend/impresiones*1000:0;
-    return { spend, ingresos, resultados, impresiones, clicks, alcance, roas, cpa, ctr, cpm };
+    return { spend, spendVentas, ingresos, resultados, impresiones, clicks, alcance, roas, roasTotal, cpa, ctr, cpm };
   }
   // margen de un producto/kit terminado (aprox.) para cruzar rentabilidad real
   mktMargenProducto(cod){ try{ const p=(this.state.productos||[]).find(x=>x.codigo===cod); const k=(this.state.kits||[]).find(x=>x.codigo===cod); const precio=(p&&p.precio)||(k&&k.precio)||0; return precio; }catch(e){ return 0; } }
@@ -7698,7 +7564,7 @@ class Component extends DCLogic {
     cuentasFin:[], movimientos:[], gastosFijos:[], retenConfig:null, finMes:null, metodosFin:null, liquidaciones:[], msvc:[], creditos:[], detCredId:null,
     qProv:'', qMat:'', qProd:'', qKit:'', qMez:'', qSvc:'', qVenta:'', qPedido:'', qListado:'', qLead:'', leadFiltroEstado:'todos', filtroTipo:'todos', filtroProvMat:'todos', filtroEstado:'activas', filtroSvc:'todas', filtroCanal:'todos', baseAnio:'todos', baseDim:'mes',
     baseTab:'panorama', baseAiQuery:'', baseAiAnswer:'', baseAiLoading:false, baseSegFiltro:'todos', baseCliSort:'total', baseCliQ:'', baseCliAnios:[], baseCliMeses:[], baseCliCanales:[], clienteSelKey:null, clienteMsg:'', clienteMsgLoading:false,
-    modal:null, draft:{}, detalleId:null, sidebarOpen:false,
+    modal:null, draft:{}, detalleId:null, sidebarOpen:false, navCollapsed:false,
     importType:null, importRows:[], importError:'', importName:'',
     toast:null, confirmDel:null, fechaCorte:'2026-06-18', loginStep:'select', loginPendingId:null, loginPwd:'', loginError:'', userPerms:null, expandedPermUser:null, reglasNeg:null, reglasEmpaque:null, clienteWaUrl:'', waCampTpl:'', waCampLoading:false, invCatSel:null,
     cotTab:'leads', propuesta:null, propuestaDocCache:'', consignSel:null, segLeadId:null,
@@ -7752,6 +7618,7 @@ class Component extends DCLogic {
     try{ const _acct=localStorage.getItem('oda_hub_meta_acct_v1'); if(_acct) patch.mktAdAccountId=_acct; }catch(e){}
     try{ const _live=JSON.parse(localStorage.getItem('oda_hub_meta_live_v1')||'null'); if(_live && Array.isArray(_live.campanas) && _live.campanas.length){ patch.mktLiveCampanas=_live.campanas; patch.mktLiveCreativos=(Array.isArray(_live.creativos)&&_live.creativos.length)?_live.creativos:null; patch.mktLivePublicos=(Array.isArray(_live.publicos)&&_live.publicos.length)?_live.publicos:null; patch.mktLiveTendencia=(Array.isArray(_live.tendencia)&&_live.tendencia.length>1)?_live.tendencia:null; patch.mktUsingLive=true; patch.mktConectado=true; patch.mktLiveTs=_live.ts||0; if(_live.rango) patch.mktRango=_live.rango; } }catch(e){}
     try{ const _rc=JSON.parse(localStorage.getItem('oda_hub_reorden_v1')||'null'); if(_rc) patch.reordenCfg=_rc; }catch(e){}
+    try{ if(localStorage.getItem('oda_hub_nav_collapsed')==='1') patch.navCollapsed=true; }catch(e){}
     try{ const _cv=JSON.parse(localStorage.getItem('oda_hub_conv_v1')||'null'); if(_cv) patch.conversaciones=_cv; }catch(e){}
     try{ const _ag=JSON.parse(localStorage.getItem('oda_hub_agente_v1')||'null'); if(_ag) patch.agenteCfg=_ag; }catch(e){}
     try{ const _c=JSON.parse(localStorage.getItem('oda_hub_car_contact_v1')||'null'); if(_c) patch.carritosContactados=_c; }catch(e){}
@@ -12637,7 +12504,7 @@ Instrucciones de respuesta:
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=false; out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_bold=subVis('finanzas','finbold'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
-    out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=subVis('marketing','mktcampanas'); out.vM_recom=subVis('marketing','mktrecom'); out.vM_creativos=subVis('marketing','mktcreativos'); out.vM_publicos=subVis('marketing','mktpublicos'); out.vM_conexion=subVis('marketing','mktconexion');
+    out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=false; out.vM_recom=false; out.vM_creativos=false; out.vM_publicos=false; out.vM_conexion=subVis('marketing','mktconexion');
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
 
     // ===== INICIO (resumen personal de pendientes) =====
@@ -12826,7 +12693,9 @@ Instrucciones de respuesta:
     out.pwdModalOpen=!!st.pwdModalOpen; out.pwdNew=st.pwdNew||''; out.pwdNew2=st.pwdNew2||'';
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
-    out.shellNavClass=st.sidebarOpen?'oda-nav-open':''; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
+    out.shellNavClass=(st.sidebarOpen?'oda-nav-open':'')+(st.navCollapsed?' oda-nav-rail':'');
+    out.navCollapseTitle=st.navCollapsed?'Mostrar el menú':'Contraer el menú';
+    out.toggleNavCollapse=()=>{ const v=!this.state.navCollapsed; this.setState({navCollapsed:v}); try{ localStorage.setItem('oda_hub_nav_collapsed', v?'1':'0'); }catch(e){} }; out.toggleSidebar=()=>this.setState(s=>({sidebarOpen:!s.sidebarOpen})); out.closeSidebar=()=>{ if(this.state.sidebarOpen) this.setState({sidebarOpen:false}); };
     out.nav={ inicio:()=>this.goModule('inicio'), informes:()=>this.goModule('informes'), compras:()=>this.goModule('compras'), desarrollo:()=>this.goModule('desarrollo'), ventas:()=>this.goModule('ventas'), conversaciones:()=>this.goModule('conversaciones'), finanzas:()=>this.goModule('finanzas'), produccion:()=>this.goModule('produccion'), inventario:()=>this.goModule('inventario'), soporte:()=>this.goModule('soporte'), marketing:()=>this.goModule('marketing'), admin:()=>this.setState({module:'admin',sub:'usuarios'}), adminTablero:()=>this.setState({module:'admin',sub:'tablero'}), adminUsuarios:()=>this.setState({module:'admin',sub:'usuarios'}) };
     out.subnav={ reorden:()=>this.goSub('reorden'), resumen:()=>this.goSub('resumen'), proveedores:()=>this.goSub('proveedores'), materias:()=>this.goSub('materias'), servicios:()=>this.goSub('servicios'), ordenes:()=>this.goSub('ordenes') };
     out.filtro={ activas:()=>this.setState({filtroEstado:'activas'}), todas:()=>this.setState({filtroEstado:'todas'}), pendiente:()=>this.setState({filtroEstado:'pendiente'}), aprobada:()=>this.setState({filtroEstado:'aprobada'}), recibida:()=>this.setState({filtroEstado:'recibida'}) };
@@ -13403,9 +13272,9 @@ Instrucciones de respuesta:
     out.showFinPyg = onFin && st.sub==='finpyg';
     out.showFinImp = onFin && st.sub==='finimpuestos';
     out.showMktResumen = onMkt && st.sub==='mktresumen';
-    out.showMktCampanas = onMkt && st.sub==='mktcampanas';
-    out.showMktRecom = onMkt && st.sub==='mktrecom';
-    out.showMktCreativos = onMkt && st.sub==='mktcreativos';
+    out.showMktCampanas = false;
+    out.showMktRecom = false;
+    out.showMktCreativos = false;
     out.showMktPublicos = onMkt && st.sub==='mktpublicos';
     out.showMktConexion = onMkt && st.sub==='mktconexion';
     out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
@@ -13415,7 +13284,7 @@ Instrucciones de respuesta:
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
     else if(onProd){ out.crumb='Producción'; out.pageTitle= st.sub==='prodmez'?'Producción de Mezclas':'Producción de PT'; }
-    else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',mp:'Materia prima',insumos:'Insumos y empaques',pt:'Producto terminado',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
+    else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',items:'Existencias',mp:'Existencias',insumos:'Existencias',pt:'Existencias',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
     else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':(st.sub==='informe'?'Informe del chatbot':(st.sub==='canales'?'Canales · estado de conexión':'Bandeja de conversaciones')); }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',finbold:'Bold · pagos y conciliación',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
@@ -13454,7 +13323,9 @@ Instrucciones de respuesta:
       // KPIs
       out.mktKpiSpend=this.fmt(Math.round(K.spend));
       out.mktKpiIngresos=this.fmt(Math.round(K.ingresos));
-      out.mktKpiRoas=K.roas.toFixed(1)+'x';
+      out.mktKpiRoas=K.roas.toFixed(2)+'x';
+      out.mktKpiRoasNota='ingresos ÷ '+this.fmt(Math.round(K.spendVentas))+' en campañas de venta';
+      out.mktKpiRoasTotal=K.spend>0? ('Sobre toda la inversión: '+K.roasTotal.toFixed(2)+'x') : '';
       out.mktKpiCpa=this.fmt(Math.round(K.cpa));
       out.mktKpiVentas=K.resultados;
       out.mktKpiCtr=K.ctr.toFixed(2)+'%';
