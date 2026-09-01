@@ -10016,7 +10016,27 @@ Instrucciones de respuesta:
     sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else this._afterCloudLogin(s.user); } });
     try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
   }
-  _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email; this.setState({cloudUser:{id:user.id,email:user.email,nombre}}); this.cloudSyncMyProfile(user.id,nombre); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudSubscribe(); this.cloudStartAutoRefresh(); this.cloudLoadPermisos(); this.cloudSubscribePermisos(); this.cloudLoadProveedores(); this.cloudSubscribeProveedores(); this.cloudLoadMaterias(); this.cloudSubscribeMaterias(); this.cloudLoadProductos(); this.cloudSubscribeProductos(); this.cloudLoadKits(); this.cloudSubscribeKits(); this.cloudLoadMezclas(); this.cloudSubscribeMezclas(); this.cloudLoadProducciones(); this.cloudSubscribeProducciones(); this.cloudLoadProdMez(); this.cloudSubscribeProdMez(); this.cloudLoadVentas(); this.cloudSubscribeVentas(); this.cloudLoadCotizaciones(); this.cloudSubscribeCotizaciones(); this.cloudLoadCuentas(); this.cloudSubscribeCuentas(); this.cloudLoadMovimientos(); this.cloudSubscribeMovimientos(); this.cloudLoadGastos(); this.cloudSubscribeGastos(); this.cloudLoadMetodos(); this.cloudSubscribeMetodos(); this.cloudLoadLiquidaciones(); this.cloudSubscribeLiquidaciones(); this.cloudLoadServicios(); this.cloudSubscribeServicios(); this.cloudLoadOrdenes(); this.cloudSubscribeOrdenes(); this.cloudLoadTiendas(); this.cloudSubscribeTiendas(); this.cloudLoadRemisiones(); this.cloudSubscribeRemisiones(); this.cloudLoadMsvc(); this.cloudSubscribeMsvc(); this.cloudLoadCasos(); this.cloudSubscribeCasos(); this.cloudLoadCreditos(); this.cloudSubscribeCreditos(); this.cloudLoadConvs(); this.cloudSubscribeConvs(); this.cloudLoadAgenteCfg(); this.cloudLoadConteos(); this.cloudLoadRecordatorios(); this.cloudSubscribeRecordatorios(); }
+  // Al entrar se bajaban ~28 tablas y se abrían ~25 suscripciones EN EL MISMO instante; con esa
+  // avalancha la API rechazaba algunas y (antes del reintento) la tabla quedaba vacía en silencio
+  // — así se veían kits y estructuras de producto en blanco al abrir sesión (1-sep). Ahora la
+  // descarga va por tandas: primero lo que la pantalla necesita, el resto detrás.
+  _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email;
+    this.setState({cloudUser:{id:user.id,email:user.email,nombre}});
+    this.cloudSyncMyProfile(user.id,nombre); this.cloudSubscribe(); this.cloudStartAutoRefresh();
+    const tandas=[
+      ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); },
+      ()=>{ this.cloudLoadMaterias(); this.cloudLoadProveedores(); this.cloudLoadOrdenes(); this.cloudLoadProfiles(); this.cloudLoadLeads(); },
+      ()=>{ this.cloudLoadProducciones(); this.cloudLoadProdMez(); this.cloudLoadCotizaciones(); this.cloudLoadServicios(); this.cloudLoadConteos(); },
+      ()=>{ this.cloudLoadCuentas(); this.cloudLoadMetodos(); this.cloudLoadMovimientos(); this.cloudLoadGastos(); this.cloudLoadLiquidaciones(); },
+      ()=>{ this.cloudLoadTiendas(); this.cloudLoadRemisiones(); this.cloudLoadMsvc(); this.cloudLoadCasos(); this.cloudLoadCreditos(); },
+      ()=>{ this.cloudLoadConvs(); this.cloudLoadAgenteCfg(); this.cloudLoadRecordatorios(); },
+      ()=>{ this.cloudSubscribePermisos(); this.cloudSubscribeProveedores(); this.cloudSubscribeMaterias(); this.cloudSubscribeProductos(); this.cloudSubscribeKits(); this.cloudSubscribeMezclas(); },
+      ()=>{ this.cloudSubscribeProducciones(); this.cloudSubscribeProdMez(); this.cloudSubscribeVentas(); this.cloudSubscribeCotizaciones(); this.cloudSubscribeCuentas(); this.cloudSubscribeMovimientos(); },
+      ()=>{ this.cloudSubscribeGastos(); this.cloudSubscribeMetodos(); this.cloudSubscribeLiquidaciones(); this.cloudSubscribeServicios(); this.cloudSubscribeOrdenes(); this.cloudSubscribeTiendas(); },
+      ()=>{ this.cloudSubscribeRemisiones(); this.cloudSubscribeMsvc(); this.cloudSubscribeCasos(); this.cloudSubscribeCreditos(); this.cloudSubscribeConvs(); this.cloudSubscribeRecordatorios(); },
+    ];
+    tandas.forEach((f,ix)=>{ if(ix===0){ try{ f(); }catch(e){} return; } setTimeout(()=>{ try{ f(); }catch(e){} }, ix*450); });
+  }
   // ---- alertas y recordatorios (módulo Inicio) ----
   async cloudLoadRecordatorios(){ const sb=this._sbClient(); if(!sb) return;
     try{ const {data,error}=await sb.from('recordatorios').select('*').order('cuando',{ascending:true}).limit(400);
@@ -10238,7 +10258,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(x=>this._provFromDb(x)), 'codigo');
         this._syncSet('proveedores', this._maxAct(_d));
         this.setState({proveedores:_rows},()=>this.persist()); return; } }
-    try{ const {data,error}=await sb.from('proveedores').select('*'); if(error) throw error; if(data) this._syncSet('proveedores', this._maxAct(data)); if(data && data.length){ this.setState({proveedores:data.map(r=>this._provFromDb(r))},()=>this.persist()); } else { const cur=this.state.proveedores||[]; if(cur.length){ try{ await sb.from('proveedores').upsert(cur.map(p=>this._provToDb(p))); }catch(e){} } } }catch(e){} }
+    try{ const {data,error}=await sb.from('proveedores').select('*'); if(error) throw error; if(data) this._syncSet('proveedores', this._maxAct(data)); if(data && data.length){ this.setState({proveedores:data.map(r=>this._provFromDb(r))},()=>this.persist()); } else { const cur=this.state.proveedores||[]; if(cur.length){ try{ await sb.from('proveedores').upsert(cur.map(p=>this._provToDb(p))); }catch(e){} } } }catch(e){ this._reintentoCarga('proveedores', ()=>this.cloudLoadProveedores(), e); } }
   async cloudSaveProveedor(p){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('proveedores').upsert(this._provToDb(p)); }catch(e){} }
   async cloudBulkProveedores(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('proveedores').upsert(list.map(p=>this._provToDb(p))); }catch(e){} }
   cloudSubscribeProveedores(){ const sb=this._sbClient(); if(!sb||this._provSub) return; try{ this._provSub=sb.channel('oda-proveedores').on('postgres_changes',{event:'*',schema:'public',table:'proveedores'},()=>{ this.cloudLoadProveedores(); }).subscribe(); }catch(e){} }
@@ -10252,7 +10272,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(x=>this._matFromDb(x)), 'codigo');
         this._syncSet('materias', this._maxAct(_d));
         this.setState({materias:_rows},()=>{ this.persist(); this._autoCostoSoon(); }); return; } }
-    try{ const {data,error}=await sb.from('materias').select('*'); if(error) throw error; if(data) this._syncSet('materias', this._maxAct(data)); if(data && data.length){ this.setState({materias:data.map(r=>this._matFromDb(r))},()=>{ this.persist(); this._autoCostoSoon(); }); } else { const cur=this.state.materias||[]; if(cur.length){ try{ await sb.from('materias').upsert(cur.map(m=>this._matToDb(m))); }catch(e){} } } }catch(e){} }
+    try{ const {data,error}=await sb.from('materias').select('*'); if(error) throw error; if(data) this._syncSet('materias', this._maxAct(data)); if(data && data.length){ this.setState({materias:data.map(r=>this._matFromDb(r))},()=>{ this.persist(); this._autoCostoSoon(); }); } else { const cur=this.state.materias||[]; if(cur.length){ try{ await sb.from('materias').upsert(cur.map(m=>this._matToDb(m))); }catch(e){} } } }catch(e){ this._reintentoCarga('materias', ()=>this.cloudLoadMaterias(), e); } }
   // Una materia sin costo unitario cargado adopta el costo de las órdenes de compra ya
   // RECIBIDAS (promedio ponderado por lo recibido). Solo llena ceros: un costo ya cargado
   // nunca se pisa. Es idempotente y corre tras cargar materias u órdenes de la nube, así
@@ -10290,7 +10310,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
         this._syncSet('productos', this._maxAct(_d));
         this.setState({productos:_rows},()=>{ this.persist();  }); return; } }
-    try{ let _r=await sb.from('productos').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('productos').select('codigo,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('productos', this._maxAct(data)); if(data && data.length){ this.setState({productos:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.productos||[]; if(cur.length){ try{ await sb.from('productos').upsert(cur.map(p=>this._prodToDb(p))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('productos').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('productos').select('codigo,data'); const {data,error}=_r; if(error) throw error; this._cargaOk('productos'); if(data) this._syncSet('productos', this._maxAct(data)); if(data && data.length){ this.setState({productos:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.productos||[]; if(cur.length){ try{ await sb.from('productos').upsert(cur.map(p=>this._prodToDb(p))); }catch(e){} } } }catch(e){ this._reintentoCarga('productos', ()=>this.cloudLoadProductos(), e); } }
   async cloudSaveProducto(p){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('productos').upsert(this._prodToDb(p)); }catch(e){} }
   async cloudDeleteProducto(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('productos').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkProductos(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('productos').upsert(list.map(p=>this._prodToDb(p))); }catch(e){} }
@@ -10304,7 +10324,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
         this._syncSet('kits', this._maxAct(_d));
         this.setState({kits:_rows},()=>{ this.persist();  }); return; } }
-    try{ let _r=await sb.from('kits').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('kits').select('codigo,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('kits', this._maxAct(data)); if(data && data.length){ this.setState({kits:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.kits||[]; if(cur.length){ try{ await sb.from('kits').upsert(cur.map(k=>this._kitToDb(k))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('kits').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('kits').select('codigo,data'); const {data,error}=_r; if(error) throw error; this._cargaOk('kits'); if(data) this._syncSet('kits', this._maxAct(data)); if(data && data.length){ this.setState({kits:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.kits||[]; if(cur.length){ try{ await sb.from('kits').upsert(cur.map(k=>this._kitToDb(k))); }catch(e){} } } }catch(e){ this._reintentoCarga('kits', ()=>this.cloudLoadKits(), e); } }
   async cloudSaveKit(k){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('kits').upsert(this._kitToDb(k)); }catch(e){} }
   async cloudDeleteKit(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('kits').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkKits(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('kits').upsert(list.map(k=>this._kitToDb(k))); }catch(e){} }
@@ -10318,7 +10338,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
         this._syncSet('mezclas', this._maxAct(_d));
         this.setState({mezclas:_rows},()=>{ this.persist();  }); return; } }
-    try{ let _r=await sb.from('mezclas').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('mezclas').select('codigo,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('mezclas', this._maxAct(data)); if(data && data.length){ this.setState({mezclas:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.mezclas||[]; if(cur.length){ try{ await sb.from('mezclas').upsert(cur.map(m=>this._mezToDb(m))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('mezclas').select('codigo,data,actualizado'); if(_r.error) _r=await sb.from('mezclas').select('codigo,data'); const {data,error}=_r; if(error) throw error; this._cargaOk('mezclas'); if(data) this._syncSet('mezclas', this._maxAct(data)); if(data && data.length){ this.setState({mezclas:data.map(r=>({...(r.data||{}), codigo:r.codigo}))},()=>this.persist()); } else { const cur=this.state.mezclas||[]; if(cur.length){ try{ await sb.from('mezclas').upsert(cur.map(m=>this._mezToDb(m))); }catch(e){} } } }catch(e){ this._reintentoCarga('mezclas', ()=>this.cloudLoadMezclas(), e); } }
   async cloudSaveMezcla(m){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('mezclas').upsert(this._mezToDb(m)); }catch(e){} }
   async cloudDeleteMezcla(cod){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('mezclas').delete().eq('codigo',cod); }catch(e){} }
   async cloudBulkMezclas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('mezclas').upsert(list.map(m=>this._mezToDb(m))); }catch(e){} }
@@ -10332,7 +10352,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
         this._syncSet('producciones', this._maxAct(_d));
         this.setState({producciones:_rows},()=>{ this.persist();  }); return; } }
-    try{ let _r=await sb.from('producciones').select('id,data,actualizado'); if(_r.error) _r=await sb.from('producciones').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('producciones', this._maxAct(data)); if(data && data.length){ this.setState({producciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.producciones||[]; if(cur.length){ try{ await sb.from('producciones').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('producciones').select('id,data,actualizado'); if(_r.error) _r=await sb.from('producciones').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('producciones', this._maxAct(data)); if(data && data.length){ this.setState({producciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.producciones||[]; if(cur.length){ try{ await sb.from('producciones').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){ this._reintentoCarga('producciones', ()=>this.cloudLoadProducciones(), e); } }
   async cloudSaveProduccion(o){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('producciones').upsert(this._opToDb(o)); }catch(e){} }
   async cloudBulkProducciones(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('producciones').upsert(list.map(o=>this._opToDb(o))); }catch(e){} }
   cloudSubscribeProducciones(){ const sb=this._sbClient(); if(!sb||this._popSub) return; try{ this._popSub=sb.channel('oda-producciones').on('postgres_changes',{event:'*',schema:'public',table:'producciones'},()=>{ this.cloudLoadProducciones(); }).subscribe(); }catch(e){} }
@@ -10343,7 +10363,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
         this._syncSet('producciones_mezcla', this._maxAct(_d));
         this.setState({produccionesMezcla:_rows},()=>{ this.persist(); this._backfillOMSnaps(); }); return; } }
-    try{ let _r=await sb.from('producciones_mezcla').select('id,data,actualizado'); if(_r.error) _r=await sb.from('producciones_mezcla').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('producciones_mezcla', this._maxAct(data)); if(data && data.length){ this.setState({produccionesMezcla:data.map(r=>({...(r.data||{}), id:r.id}))},()=>{ this.persist(); this._backfillOMSnaps(); }); } else { const cur=this.state.produccionesMezcla||[]; if(cur.length){ try{ await sb.from('producciones_mezcla').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('producciones_mezcla').select('id,data,actualizado'); if(_r.error) _r=await sb.from('producciones_mezcla').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('producciones_mezcla', this._maxAct(data)); if(data && data.length){ this.setState({produccionesMezcla:data.map(r=>({...(r.data||{}), id:r.id}))},()=>{ this.persist(); this._backfillOMSnaps(); }); } else { const cur=this.state.produccionesMezcla||[]; if(cur.length){ try{ await sb.from('producciones_mezcla').upsert(cur.map(o=>this._opToDb(o))); }catch(e){} } } }catch(e){ this._reintentoCarga('producciones de mezcla', ()=>this.cloudLoadProdMez(), e); } }
   async cloudSaveProdMez(o){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('producciones_mezcla').upsert(this._opToDb(o)); }catch(e){} }
   async cloudBulkProdMez(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('producciones_mezcla').upsert(list.map(o=>this._opToDb(o))); }catch(e){} }
   cloudSubscribeProdMez(){ const sb=this._sbClient(); if(!sb||this._pomSub) return; try{ this._pomSub=sb.channel('oda-prodmez').on('postgres_changes',{event:'*',schema:'public',table:'producciones_mezcla'},()=>{ this.cloudLoadProdMez(); }).subscribe(); }catch(e){} }
@@ -10481,7 +10501,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
         this._syncSet('cotizaciones', this._maxAct(_d));
         this.setState({cotizaciones:_rows},()=>{ this.persist();  }); return; } }
-    try{ let _r=await sb.from('cotizaciones').select('id,data,actualizado'); if(_r.error) _r=await sb.from('cotizaciones').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('cotizaciones', this._maxAct(data)); if(data && data.length){ const _sig=JSON.stringify(data); if(_sig===this._cotSig){ return; } this._cotSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('cotizaciones').select('id,data,actualizado'); if(_r.error) _r=await sb.from('cotizaciones').select('id,data'); const {data,error}=_r; if(error) throw error; if(data) this._syncSet('cotizaciones', this._maxAct(data)); if(data && data.length){ const _sig=JSON.stringify(data); if(_sig===this._cotSig){ return; } this._cotSig=_sig; /* sin cambios → sin re-render (poll cada 15 s) */ this.setState({cotizaciones:data.map(r=>({...(r.data||{}), id:r.id}))},()=>this.persist()); } else { const cur=this.state.cotizaciones||[]; if(cur.length){ try{ await sb.from('cotizaciones').upsert(cur.map(c=>this._cotToDb(c))); }catch(e){} } } }catch(e){ this._reintentoCarga('cotizaciones', ()=>this.cloudLoadCotizaciones(), e); } }
   async cloudSaveCotizacion(c){ const sb=this._sbClient(); if(!sb||!c) return; try{ await sb.from('cotizaciones').upsert(this._cotToDb(c)); }catch(e){} }
   async cloudDeleteCotizacion(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('cotizaciones').delete().eq('id',id); }catch(e){} }
   cloudSubscribeCotizaciones(){ const sb=this._sbClient(); if(!sb||this._cotSub) return; try{ this._cotSub=sb.channel('oda-cotizaciones').on('postgres_changes',{event:'*',schema:'public',table:'cotizaciones'},()=>{ this.cloudLoadCotizaciones(); }).subscribe(); }catch(e){} }
@@ -10544,6 +10564,15 @@ Instrucciones de respuesta:
     this.cloudLoadProducciones(); this.cloudLoadProdMez(); this.cloudLoadVentas(); this.cloudLoadCotizaciones(); this.cloudLoadServicios();
     this.cloudLoadOrdenes(); this.cloudLoadRemisiones(); this.cloudLoadMovimientos(); this.cloudLoadGastos(); this.cloudLoadLiquidaciones();
     this.cloudLoadCasos(); this.cloudLoadCreditos(); this.cloudLoadMsvc(); this.cloudLoadTiendas(); this.cloudLoadCuentas(); this.cloudLoadMetodos(); }
+  // Si un select de la carga inicial falla (hipo de red, o el límite de la API al abrir ~25 tablas
+  // a la vez), antes el error se tragaba en silencio y esa tabla quedaba VACÍA hasta que alguien
+  // apretara «Descargar todo otra vez» (1-sep: kits y estructuras de producto en blanco y pedidos
+  // «sin costo»). Ahora reintenta hasta 3 veces con espera creciente y, si no, lo dice.
+  _reintentoCarga(tabla, fn, err){ this._retryN=this._retryN||{}; const n=(this._retryN[tabla]||0)+1;
+    try{ console.warn('OdA · falló la carga de '+tabla, err); }catch(e){}
+    if(n>3){ this._retryN[tabla]=0; this.toast('No se pudo cargar '+tabla+' desde la nube · usa «Descargar todo otra vez» en Administración'); return; }
+    this._retryN[tabla]=n; setTimeout(()=>{ try{ fn(); }catch(e){} }, n*2500); }
+  _cargaOk(tabla){ if(this._retryN) this._retryN[tabla]=0; }
   async _cloudLoadList(table, key, seedList, _retry){ const sb=this._sbClient(); if(!sb) return;
     // Incremental: si ya hay copia local y marca de agua, solo lo cambiado.
     const _cur=this.state[key]||[];
@@ -10602,7 +10631,7 @@ Instrucciones de respuesta:
         const _rows=this._mergeRows(_cur, _d.map(r=>r.data||{}).filter(x=>x&&x.codigo), 'codigo');
         this._syncSet('servicios', this._maxAct(_d));
         this.setState({servicios:_rows},()=>this.persist()); return; } }
-    try{ let _r=await sb.from('servicios').select('id,data,actualizado'); if(_r.error) _r=await sb.from('servicios').select('id,data'); const {data,error}=_r; if(error) return; if(data) this._syncSet('servicios', this._maxAct(data)); if(data && data.length){ this.setState({servicios:data.map(r=>r.data||{}).filter(s=>s&&s.codigo)},()=>this.persist()); } else { const cur=(this.state.servicios||[]).filter(s=>s&&s.codigo); if(cur.length){ try{ await sb.from('servicios').upsert(cur.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} } } }catch(e){} }
+    try{ let _r=await sb.from('servicios').select('id,data,actualizado'); if(_r.error) _r=await sb.from('servicios').select('id,data'); const {data,error}=_r; if(error) return; if(data) this._syncSet('servicios', this._maxAct(data)); if(data && data.length){ this.setState({servicios:data.map(r=>r.data||{}).filter(s=>s&&s.codigo)},()=>this.persist()); } else { const cur=(this.state.servicios||[]).filter(s=>s&&s.codigo); if(cur.length){ try{ await sb.from('servicios').upsert(cur.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} } } }catch(e){ this._reintentoCarga('servicios', ()=>this.cloudLoadServicios(), e); } }
   async cloudSaveServicio(s){ const sb=this._sbClient(); if(!sb||!s) return; try{ await sb.from('servicios').upsert({id:s.codigo, data:s, actualizado:new Date().toISOString()}); }catch(e){} }
   async cloudDeleteServicio(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('servicios').delete().eq('id',id); }catch(e){} }
   async cloudBulkServicios(l){ const sb=this._sbClient(); if(!sb||!l||!l.length) return; try{ await sb.from('servicios').upsert(l.map(s=>({id:s.codigo,data:s,actualizado:new Date().toISOString()}))); }catch(e){} }
