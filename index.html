@@ -1135,6 +1135,7 @@
                     <sc-for list="{{ backupHist }}" as="h" hint-placeholder-count="0">
                       <div style="display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-raised);">
                         <span style="flex:1;min-width:0;font-size:12.5px;font-weight:600;">{{ h.fechaFmt }}</span>
+                        <span style="font-size:11.5px;color:var(--text-muted);flex-shrink:0;">{{ h.pesoTxt }}</span>
                         <button onClick="{{ h.onDescargar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">Descargar</button>
                         <button onClick="{{ h.onRestaurar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Restaurar</button>
                       </div>
@@ -7780,19 +7781,61 @@ class Component extends DCLogic {
   persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
   respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_conv_v1','oda_hub_agente_v1','oda_hub_movajustes_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
-  writeAutoBackup(){ try{ const dump={_fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); localStorage.setItem('oda_hub_backup_v1', JSON.stringify(dump));
-    // Historial: una instantánea por día (se reemplaza la del mismo día), conservando las últimas 10.
+  // ---- copias comprimidas (gzip) ----
+  // Sin comprimir, una sola foto llenaba el cupo del navegador y el historial quedaba en 1.
+  // Con gzip cada foto pesa ~10 veces menos, así que sí caben las últimas 10 (una por día).
+  _gzSoportado(){ try{ return typeof CompressionStream!=='undefined' && typeof DecompressionStream!=='undefined'; }catch(e){ return false; } }
+  async _gzPack(obj){ const txt=JSON.stringify(obj);
+    const st=new Blob([txt]).stream().pipeThrough(new CompressionStream('gzip'));
+    const buf=new Uint8Array(await new Response(st).arrayBuffer());
+    let s=''; const CH=8192; for(let p=0;p<buf.length;p+=CH) s+=String.fromCharCode.apply(null, buf.subarray(p,p+CH));
+    return btoa(s); }
+  async _gzUnpack(b64){ const raw=atob(b64); const buf=new Uint8Array(raw.length); for(let p=0;p<raw.length;p++) buf[p]=raw.charCodeAt(p);
+    const st=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return JSON.parse(await new Response(st).text()); }
+  // Devuelve las claves guardadas de una copia, venga comprimida (gz) o en el formato viejo (keys).
+  async _backupKeys(dump){ if(!dump) return null;
+    if(dump.keys && typeof dump.keys==='object') return dump.keys;
+    if(dump.gz){ try{ return await this._gzUnpack(dump.gz); }catch(e){ return null; } }
+    return null; }
+  _backupPesoKb(dump){ try{ return Math.max(1, Math.round(JSON.stringify(dump).length/1024)); }catch(e){ return 0; } }
+  async writeAutoBackup(){ try{
+    const keys={}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) keys[k]=v; });
+    const fecha=new Date().toISOString();
+    let gz=null; if(this._gzSoportado()){ try{ gz=await this._gzPack(keys); }catch(e){ gz=null; } }
+    const foto = gz? {_fecha:fecha, gz} : {_fecha:fecha, keys};
+    // Última copia (la que restaura «Restaurar copia automática»).
+    try{ if(gz){ localStorage.setItem('oda_hub_backup_gz_v1', JSON.stringify(foto)); localStorage.removeItem('oda_hub_backup_v1'); }
+         else { localStorage.setItem('oda_hub_backup_v1', JSON.stringify(foto)); } }catch(e){}
+    // Historial: una foto por día (se reemplaza la del mismo día), conservando las últimas 10.
     try{ let hist=[]; try{ hist=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); }catch(_e){ hist=[]; }
-      const hoy=dump._fecha.slice(0,10); hist=hist.filter(h=>String(h._fecha||'').slice(0,10)!==hoy); hist.push(dump); hist.sort((a,b)=>String(b._fecha).localeCompare(String(a._fecha))); hist=hist.slice(0,10);
+      const hoy=fecha.slice(0,10); hist=hist.filter(h=>String(h._fecha||'').slice(0,10)!==hoy); hist.push(foto);
+      hist.sort((a,b)=>String(b._fecha).localeCompare(String(a._fecha))); hist=hist.slice(0,10);
+      // Último recurso si aún no cabe: se van soltando las más viejas.
       let guardado=false; while(!guardado && hist.length){ try{ localStorage.setItem('oda_hub_backup_hist_v1', JSON.stringify(hist)); guardado=true; }catch(qe){ hist=hist.slice(0,hist.length-1); } }
     }catch(_e){}
   }catch(e){} }
   backupHistList(){ try{ const h=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); return Array.isArray(h)?h:[]; }catch(e){ return []; } }
-  restaurarBackupHist(fechaISO){ try{ const h=this.backupHistList(); const dump=h.find(x=>x._fecha===fechaISO); if(!dump||!dump.keys){ this.toast('No se encontró esa copia'); return; } if(!window.confirm('¿Restaurar la copia del '+this.fmtDateTime(Date.parse(dump._fecha))+'? Se reemplazan los datos actuales de este navegador.')) return; Object.keys(dump.keys).forEach(k=>{ localStorage.setItem(k, dump.keys[k]); }); this.toast('Copia restaurada · recargando…'); setTimeout(()=>location.reload(), 900); }catch(e){ this.toast('No se pudo restaurar'); } }
-  descargarBackupHist(fechaISO){ try{ const h=this.backupHistList(); const dump=h.find(x=>x._fecha===fechaISO); if(!dump) return; const out={_app:'OdA Hub Intelligence',_version:1,_fecha:dump._fecha,keys:dump.keys}; const blob=new Blob([JSON.stringify(out)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='OdA-Hub-respaldo-'+String(dump._fecha).slice(0,10)+'.json'; a.click(); }catch(e){} }
+  async restaurarBackupHist(fechaISO){ try{ const h=this.backupHistList(); const dump=h.find(x=>x._fecha===fechaISO);
+    const keys=await this._backupKeys(dump);
+    if(!keys){ this.toast('No se pudo leer esa copia'); return; }
+    if(!window.confirm('¿Restaurar la copia del '+this.fmtDateTime(Date.parse(dump._fecha))+'? Se reemplazan los datos actuales de este navegador.')) return;
+    Object.keys(keys).forEach(k=>{ localStorage.setItem(k, keys[k]); });
+    this.toast('Copia restaurada · recargando…'); setTimeout(()=>location.reload(), 900); }catch(e){ this.toast('No se pudo restaurar'); } }
+  async descargarBackupHist(fechaISO){ try{ const h=this.backupHistList(); const dump=h.find(x=>x._fecha===fechaISO); const keys=await this._backupKeys(dump);
+    if(!keys){ this.toast('No se pudo leer esa copia'); return; }
+    const out={_app:'OdA Hub Intelligence',_version:1,_fecha:dump._fecha,keys};
+    const blob=new Blob([JSON.stringify(out)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='OdA-Hub-respaldo-'+String(dump._fecha).slice(0,10)+'.json'; a.click(); }catch(e){ this.toast('No se pudo descargar la copia'); } }
   descargarRespaldo(){ try{ const dump={_app:'OdA Hub Intelligence', _version:1, _fecha:new Date().toISOString(), keys:{}}; this.respaldoKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) dump.keys[k]=v; }); const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='OdA-Hub-respaldo-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1200); this.toast('Respaldo descargado'); }catch(e){ this.toast('No se pudo descargar el respaldo'); } }
   restaurarRespaldo(e){ const f=e.target.files&&e.target.files[0]; if(!f){ return; } const reader=new FileReader(); reader.onload=()=>{ try{ const dump=JSON.parse(reader.result); if(!dump||!dump.keys||typeof dump.keys!=='object') throw new Error('bad'); let n=0; Object.keys(dump.keys).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n) throw new Error('empty'); this.toast('Respaldo restaurado · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(err){ this.toast('Archivo de respaldo inválido'); } try{ e.target.value=''; }catch(x){} }; reader.readAsText(f); }
-  restaurarAutoBackup(){ try{ const raw=localStorage.getItem('oda_hub_backup_v1'); if(!raw){ this.toast('Aún no hay copia automática'); return; } const dump=JSON.parse(raw); let n=0; Object.keys(dump.keys||{}).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, dump.keys[k]); n++; } }); if(!n){ this.toast('Copia automática vacía'); return; } this.toast('Copia automática restaurada · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(e){ this.toast('No se pudo restaurar la copia'); } }
+  async restaurarAutoBackup(){ try{
+    let dump=null; try{ const g=localStorage.getItem('oda_hub_backup_gz_v1'); if(g) dump=JSON.parse(g); }catch(e){}
+    if(!dump){ try{ const raw=localStorage.getItem('oda_hub_backup_v1'); if(raw) dump=JSON.parse(raw); }catch(e){} }
+    if(!dump){ this.toast('Aún no hay copia automática'); return; }
+    const keys=await this._backupKeys(dump); if(!keys){ this.toast('No se pudo leer la copia automática'); return; }
+    let n=0; Object.keys(keys).forEach(k=>{ if(this.respaldoKeys().includes(k)){ localStorage.setItem(k, keys[k]); n++; } });
+    if(!n){ this.toast('Copia automática vacía'); return; }
+    this.toast('Copia automática restaurada · recargando…'); setTimeout(()=>{ try{ location.reload(); }catch(x){} },800); }catch(e){ this.toast('No se pudo restaurar la copia'); } }
   migrate(d){
     // El stock pasó a derivarse de las entregas: el campo stockActual guarda solo el SALDO BASE.
     // Se le resta una vez lo recibido en órdenes para que el stock mostrado no cambie hoy.
@@ -14351,7 +14394,7 @@ Instrucciones de respuesta:
       out.onDescargarRespaldo=()=>this.descargarRespaldo();
       out.onRestaurarRespaldo=(e)=>this.restaurarRespaldo(e);
       out.onRestaurarAuto=()=>this.restaurarAutoBackup();
-      out.backupHist=this.backupHistList().map(h=>({ fecha:h._fecha, fechaFmt:this.fmtDateTime(Date.parse(h._fecha)), onRestaurar:()=>this.restaurarBackupHist(h._fecha), onDescargar:()=>this.descargarBackupHist(h._fecha) }));
+      out.backupHist=this.backupHistList().map(h=>({ fecha:h._fecha, fechaFmt:this.fmtDateTime(Date.parse(h._fecha)), pesoTxt:(this._backupPesoKb(h)+' KB'+(h.gz?' · comprimida':'')), onRestaurar:()=>this.restaurarBackupHist(h._fecha), onDescargar:()=>this.descargarBackupHist(h._fecha) }));
       out.backupHistHay=out.backupHist.length>0;
       // ---- claves de IA (Gemini + Anthropic) ----
       const _aiK=this.aiGetKeys(); const _aiProv=this.aiActiveProvider();
