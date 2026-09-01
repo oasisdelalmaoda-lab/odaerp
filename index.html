@@ -10253,7 +10253,7 @@ Instrucciones de respuesta:
   _provFromDb(r){ return { codigo:r.codigo, nombre:r.nombre||'', nit:r.nit||'', contactoNombre:r.contacto_nombre||'', telefonos:(Array.isArray(r.telefonos)?r.telefonos:[]), email:r.email||'', ciudad:r.ciudad||'', condicionesPago:r.condiciones_pago||'', calificacion:Number(r.calificacion)||0, autorretenedor:(r.autorretenedor?'si':'no') }; }
   async cloudLoadProveedores(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.proveedores||[];
-    if(_cur.length && this._syncGet('proveedores')){ const _d=await this._cloudSince('proveedores','*');
+    if(_cur.length && this._syncGet('proveedores') && await this._localCompleto('proveedores', _cur.length)){ const _d=await this._cloudSince('proveedores','*');
       if(_d){ this._syncSweepSoon('proveedores','proveedores','codigo'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(x=>this._provFromDb(x)), 'codigo');
         this._syncSet('proveedores', this._maxAct(_d));
@@ -10267,7 +10267,7 @@ Instrucciones de respuesta:
   _matFromDb(r){ return { codigo:r.codigo, nombre:r.nombre||'', tipo:r.tipo||'insumo', unidad:r.unidad||'und', costo:Number(r.costo)||0, iva:(r.iva===null||r.iva===undefined?19:Number(r.iva)), proveedorCodigo:r.proveedor_codigo||'', marca:r.marca||'', stockActual:Number(r.stock_actual)||0, stockMinimo:Number(r.stock_minimo)||0 }; }
   async cloudLoadMaterias(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.materias||[];
-    if(_cur.length && this._syncGet('materias')){ const _d=await this._cloudSince('materias','*');
+    if(_cur.length && this._syncGet('materias') && await this._localCompleto('materias', _cur.length)){ const _d=await this._cloudSince('materias','*');
       if(_d){ this._syncSweepSoon('materias','materias','codigo'); this._autoCostoSoon(); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(x=>this._matFromDb(x)), 'codigo');
         this._syncSet('materias', this._maxAct(_d));
@@ -10305,7 +10305,7 @@ Instrucciones de respuesta:
   _prodToDb(p){ return { codigo:p.codigo, data:p, actualizado:new Date().toISOString() }; }
   async cloudLoadProductos(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.productos||[];
-    if(_cur.length && this._syncGet('productos')){ const _d=await this._cloudSince('productos','codigo,data');
+    if(_cur.length && this._syncGet('productos') && await this._localCompleto('productos', _cur.length)){ const _d=await this._cloudSince('productos','codigo,data');
       if(_d){ this._syncSweepSoon('productos','productos','codigo'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
         this._syncSet('productos', this._maxAct(_d));
@@ -10319,7 +10319,7 @@ Instrucciones de respuesta:
   _kitToDb(k){ return { codigo:k.codigo, data:k, actualizado:new Date().toISOString() }; }
   async cloudLoadKits(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.kits||[];
-    if(_cur.length && this._syncGet('kits')){ const _d=await this._cloudSince('kits','codigo,data');
+    if(_cur.length && this._syncGet('kits') && await this._localCompleto('kits', _cur.length)){ const _d=await this._cloudSince('kits','codigo,data');
       if(_d){ this._syncSweepSoon('kits','kits','codigo'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
         this._syncSet('kits', this._maxAct(_d));
@@ -10333,7 +10333,7 @@ Instrucciones de respuesta:
   _mezToDb(m){ return { codigo:m.codigo, data:m, actualizado:new Date().toISOString() }; }
   async cloudLoadMezclas(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.mezclas||[];
-    if(_cur.length && this._syncGet('mezclas')){ const _d=await this._cloudSince('mezclas','codigo,data');
+    if(_cur.length && this._syncGet('mezclas') && await this._localCompleto('mezclas', _cur.length)){ const _d=await this._cloudSince('mezclas','codigo,data');
       if(_d){ this._syncSweepSoon('mezclas','mezclas','codigo'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), codigo:r.codigo})), 'codigo');
         this._syncSet('mezclas', this._maxAct(_d));
@@ -10347,7 +10347,7 @@ Instrucciones de respuesta:
   _opToDb(o){ return { id:o.id, data:o, actualizado:new Date().toISOString() }; }
   async cloudLoadProducciones(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.producciones||[];
-    if(_cur.length && this._syncGet('producciones')){ const _d=await this._cloudSince('producciones','id,data');
+    if(_cur.length && this._syncGet('producciones') && await this._localCompleto('producciones', _cur.length)){ const _d=await this._cloudSince('producciones','id,data');
       if(_d){ this._syncSweepSoon('producciones','producciones','id'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
         this._syncSet('producciones', this._maxAct(_d));
@@ -10358,7 +10358,7 @@ Instrucciones de respuesta:
   cloudSubscribeProducciones(){ const sb=this._sbClient(); if(!sb||this._popSub) return; try{ this._popSub=sb.channel('oda-producciones').on('postgres_changes',{event:'*',schema:'public',table:'producciones'},()=>{ this.cloudLoadProducciones(); }).subscribe(); }catch(e){} }
   async cloudLoadProdMez(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.produccionesMezcla||[];
-    if(_cur.length && this._syncGet('producciones_mezcla')){ const _d=await this._cloudSince('producciones_mezcla','id,data');
+    if(_cur.length && this._syncGet('producciones_mezcla') && await this._localCompleto('producciones_mezcla', _cur.length)){ const _d=await this._cloudSince('producciones_mezcla','id,data');
       if(_d){ this._syncSweepSoon('producciones_mezcla','produccionesMezcla','id'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
         this._syncSet('producciones_mezcla', this._maxAct(_d));
@@ -10373,7 +10373,7 @@ Instrucciones de respuesta:
     // Incremental (invariante 22): con copia local + marca de agua solo se piden las ventas
     // nuevas o corregidas. La dedupe (invariante 1) corre sobre la lista fusionada.
     const _cur=this.state.ventas||[];
-    if(_cur.length && this._syncGet('ventas')){
+    if(_cur.length && this._syncGet('ventas') && await this._localCompleto('ventas', _cur.length)){
       const _d=await this._cloudSince('ventas','id,data');
       if(_d){ this._syncSweepSoon('ventas','ventas','id'); this._venLoading=false; this._congelarCostosSoon();
         if(!_d.length) return; // nada nuevo → sin re-render
@@ -10496,7 +10496,7 @@ Instrucciones de respuesta:
   _cotToDb(c){ return { id:c.id, data:c, actualizado:new Date().toISOString() }; }
   async cloudLoadCotizaciones(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=this.state.cotizaciones||[];
-    if(_cur.length && this._syncGet('cotizaciones')){ const _d=await this._cloudSince('cotizaciones','id,data');
+    if(_cur.length && this._syncGet('cotizaciones') && await this._localCompleto('cotizaciones', _cur.length)){ const _d=await this._cloudSince('cotizaciones','id,data');
       if(_d){ this._syncSweepSoon('cotizaciones','cotizaciones','id'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>({...(r.data||{}), id:r.id})), 'id');
         this._syncSet('cotizaciones', this._maxAct(_d));
@@ -10568,6 +10568,19 @@ Instrucciones de respuesta:
   // a la vez), antes el error se tragaba en silencio y esa tabla quedaba VACÍA hasta que alguien
   // apretara «Descargar todo otra vez» (1-sep: kits y estructuras de producto en blanco y pedidos
   // «sin costo»). Ahora reintenta hasta 3 veces con espera creciente y, si no, lo dice.
+  // La descarga incremental se apoya en la copia local: si esa copia quedó CORTA (un guardado
+  // local que no cupo, una carga que falló antes), el delta solo trae lo nuevo y la copia sigue
+  // incompleta para siempre — se veía como kits/productos faltantes que solo arreglaba
+  // «Descargar todo otra vez». Antes de usar el delta se compara cuántas filas hay en la nube
+  // (una consulta de solo conteo, una vez por tabla y sesión); si la copia local tiene menos,
+  // se hace carga COMPLETA.
+  async _localCompleto(tabla, n){ this._cntOk=this._cntOk||{}; if(this._cntOk[tabla]) return true;
+    try{ const sb=this._sbClient(); if(!sb) return true;
+      const { count, error } = await sb.from(tabla).select('*',{count:'exact',head:true});
+      if(error || count==null) return true;              // ante la duda, sigue el camino normal
+      if(n < count){ try{ console.warn('OdA · copia local corta de '+tabla+': '+n+' de '+count+' → carga completa'); }catch(e){} return false; }
+      this._cntOk[tabla]=true; return true;
+    }catch(e){ return true; } }
   _reintentoCarga(tabla, fn, err){ this._retryN=this._retryN||{}; const n=(this._retryN[tabla]||0)+1;
     try{ console.warn('OdA · falló la carga de '+tabla, err); }catch(e){}
     if(n>3){ this._retryN[tabla]=0; this.toast('No se pudo cargar '+tabla+' desde la nube · usa «Descargar todo otra vez» en Administración'); return; }
@@ -10576,7 +10589,7 @@ Instrucciones de respuesta:
   async _cloudLoadList(table, key, seedList, _retry){ const sb=this._sbClient(); if(!sb) return;
     // Incremental: si ya hay copia local y marca de agua, solo lo cambiado.
     const _cur=this.state[key]||[];
-    if(_cur.length && this._syncGet(table)){
+    if(_cur.length && this._syncGet(table) && await this._localCompleto(table, _cur.length)){
       const _d=await this._cloudSince(table);
       if(_d){ this._cloudLoaded=this._cloudLoaded||{}; this._cloudLoaded[table]=true; this._syncSweepSoon(table, key);
         if(!_d.length) return; // nada nuevo → ni setState ni re-render
@@ -10626,7 +10639,7 @@ Instrucciones de respuesta:
   // ---- servicios / ordenes / tiendas / remisiones (nube) ----
   async cloudLoadServicios(){ const sb=this._sbClient(); if(!sb) return;
     const _cur=(this.state.servicios||[]).filter(x=>x&&x.codigo);
-    if(_cur.length && this._syncGet('servicios')){ const _d=await this._cloudSince('servicios','id,data');
+    if(_cur.length && this._syncGet('servicios') && await this._localCompleto('servicios', _cur.length)){ const _d=await this._cloudSince('servicios','id,data');
       if(_d){ this._syncSweepSoon('servicios','servicios','codigo','id'); if(!_d.length) return;
         const _rows=this._mergeRows(_cur, _d.map(r=>r.data||{}).filter(x=>x&&x.codigo), 'codigo');
         this._syncSet('servicios', this._maxAct(_d));
