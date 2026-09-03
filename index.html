@@ -6521,7 +6521,7 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Rol base<select name="role" value="{{ draft.role }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><sc-for list="{{ userRolesOptions }}" as="r" hint-placeholder-count="4"><option value="{{ r }}">{{ r }}</option></sc-for></select></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Contraseña<input name="password" value="{{ draft.password }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:'Courier New',monospace;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
-              <p style="font-size:11.5px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;text-wrap:pretty;">El rol solo es el punto de partida: al guardar se abre la fila del usuario en la matriz y ahí marcas módulo por módulo (sin acceso / lectura / escritura). Elige <strong>Personalizado</strong> para empezar sin ningún acceso. Los cambios se comparten con todos los equipos.</p>
+              <p style="font-size:11.5px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;text-wrap:pretty;">El rol solo es el punto de partida: al guardar se abre la fila del usuario en la matriz y ahí marcas módulo por módulo (sin acceso / lectura / escritura). Elige <strong>Personalizado</strong> para empezar sin ningún acceso. Al guardar también se crea o actualiza su cuenta de acceso (correo y contraseña) — no hay que hacer nada más. Los cambios se comparten con todos los equipos.</p>
               <sc-if value="{{ userDelShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onUserDelete }}" style="margin-top:14px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);border:1px solid rgba(181,80,60,0.45);background:var(--surface-card);color:#B5503C;cursor:pointer;">{{ userDelLabel }}</button></sc-if>
             </sc-if>
 
@@ -7520,13 +7520,29 @@ class Component extends DCLogic {
     if(!/^\S+@\S+\.\S+$/.test(email)){ this.toast('Escribe un correo v\u00e1lido'); return; }
     if(pwd.length<6){ this.toast('La contrase\u00f1a debe tener al menos 6 caracteres'); return; }
     if(this.users.some(u=>String(u.email||'').toLowerCase()===email && u.id!==d._id)){ this.toast('Ya existe un usuario con ese correo'); return; }
-    if(d._id){ this.updateUser(d._id,{name,email,role,password:pwd,initials:this._userInitials(name)}); this.close(); this.toast('Usuario actualizado'); return; }
+    if(d._id){ const prev=this.users.find(u=>u.id===d._id)||{}; this.updateUser(d._id,{name,email,role,password:pwd,initials:this._userInitials(name)}); this.close(); this.toast('Usuario actualizado'); this._authSync('actualizar',{name,email,role,password:(pwd!==String(prev.password||'')?pwd:''),prevEmail:String(prev.email||'')}); return; }
     const colors=['#6596A6','#627B60','#9C97A2','#B08A6B','#6B7A9C','#C9A15A','#B5503C','#5A4A33']; const nu={ id:'cu'+Date.now(), name, email, role, password:pwd, initials:this._userInitials(name), color:colors[this.users.length%colors.length] };
     const c0=this._usersCfgGet(); this._usersCfgSave({ overrides:{...c0.overrides}, custom:c0.custom.concat([nu]), _ts:c0._ts });
     const perms={...(this.state.userPerms||{})}; perms[nu.id]={...(this.roles[role]||{})}; this.setState({userPerms:perms}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(perms)); }catch(e){} if(this.cloudOn()) this.cloudSavePermiso(nu.id,perms[nu.id]);
-    this.close(); this.setState({expandedPermUser:nu.id}); this.toast(role==='Personalizado'? 'Usuario creado \u00b7 marca abajo a qu\u00e9 m\u00f3dulos entra' : 'Usuario creado \u00b7 ajusta sus permisos en la matriz'); }
+    this.close(); this.setState({expandedPermUser:nu.id}); this.toast(role==='Personalizado'? 'Usuario creado \u00b7 marca abajo a qu\u00e9 m\u00f3dulos entra' : 'Usuario creado \u00b7 ajusta sus permisos en la matriz');
+    this._authSync('crear',{name,email,role,password:pwd}); }
+  // Crea/actualiza/elimina la CUENTA DE ACCESO (Supabase Auth) vía la Edge Function `usuarios`,
+  // para que no haya que entrar a Authentication → Users. Corre después de guardar en el Hub;
+  // si falla, el usuario del Hub queda igual y el toast dice qué pasó.
+  async _authSync(accion, u){
+    if(!this.cloudOn()) return; const sb=this._sbClient(); if(!sb) return;
+    try{
+      const { data, error } = await sb.functions.invoke('usuarios', { body:{ accion, ...u } });
+      if(error || !data || data.error){ const msg=(data&&data.error)||(error&&error.message)||'sin respuesta';
+        this.toast('Cuenta de acceso: '+msg+(/no encontr|not found|404/i.test(msg)? ' \u00b7 falta desplegar la funci\u00f3n «usuarios»' : '')); return; }
+      const t={creada:'Cuenta de acceso creada \u00b7 ya puede entrar con su correo y contrase\u00f1a', actualizada:'Cuenta de acceso actualizada', eliminada:'Cuenta de acceso eliminada', no_existia:'No ten\u00eda cuenta de acceso'}[data.accion];
+      if(t) this.toast(t);
+    }catch(e){ console.warn('usuarios fn:', e); this.toast('No se pudo sincronizar la cuenta de acceso: '+String(e&&e.message||e)); }
+  }
   eliminarUsuario(){ const d=this.state.draft||{}; if(!d._id||!d._custom) return; if(!d._confirmDel){ this.setState(s=>({draft:{...s.draft,_confirmDel:true}})); return; }
+    const delU=this.users.find(u=>u.id===d._id)||{};
     const c0=this._usersCfgGet(); this._usersCfgSave({ overrides:{...c0.overrides}, custom:c0.custom.filter(u=>u.id!==d._id), _ts:c0._ts });
+    if(delU.email) this._authSync('eliminar',{email:delU.email});
     const perms={...(this.state.userPerms||{})}; delete perms[d._id]; this.setState({userPerms:perms}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(perms)); }catch(e){} this.close(); this.toast('Usuario eliminado'); }
   _modDerivado(uP,mod){ if(uP.admin) return {t:'write',n:(this.subModDef[mod]||[]).length,tot:(this.subModDef[mod]||[]).length}; const ml=uP[mod]||'none'; const subs=this.subModDef[mod]||[]; const vals=subs.map(s=>{ const k=mod+'__'+s.key; return (k in uP)?uP[k]:ml; }); const on=vals.filter(v=>v!=='none'); if(!on.length) return {t:'none',n:0,tot:vals.length}; const full=on.length===vals.length; const allW=on.every(v=>v==='write'), allR=on.every(v=>v==='read'); return { t:(full&&allW)?'write':(full&&allR)?'read':'mix', n:on.length, tot:vals.length }; }
   subModDef = {
