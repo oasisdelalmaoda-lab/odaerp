@@ -56,6 +56,7 @@
   }
   @media (max-width:1180px){ .oda-kpi4{grid-template-columns:repeat(2,minmax(0,1fr)) !important;} }
   @media (max-width:520px){ .oda-kpi4{grid-template-columns:1fr !important;} }
+  @media (max-width:900px){ .oda-grid2{grid-template-columns:1fr !important;} }
   @media (max-width:820px){
     .oda-shell{grid-template-columns:1fr !important;}
     .oda-sidebar{position:fixed !important;top:0 !important;left:0 !important;height:100vh !important;width:248px !important;z-index:60 !important;transform:translateX(-100%);transition:transform .28s ease;}
@@ -228,9 +229,9 @@
           <sc-if value="{{ showConversacionesSub }}" hint-placeholder-val="{{ false }}">
             <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vX_bandeja }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.bandeja }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvBandeja.c }};background:{{ subConvBandeja.bg }};border-left:2px solid {{ subConvBandeja.b }};">Bandeja</div></sc-if>
+              <sc-if value="{{ vX_informe }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.informe }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvInforme.c }};background:{{ subConvInforme.bg }};border-left:2px solid {{ subConvInforme.b }};">Informe</div></sc-if>
               <sc-if value="{{ vX_agente }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.agente }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvAgente.c }};background:{{ subConvAgente.bg }};border-left:2px solid {{ subConvAgente.b }};">Agente IA</div></sc-if>
               <sc-if value="{{ vX_canales }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.canales }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvCanales.c }};background:{{ subConvCanales.bg }};border-left:2px solid {{ subConvCanales.b }};"><span style="flex:1;">Canales</span><sc-if value="{{ canalesAlertaShow }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:99px;background:#B5503C;flex-shrink:0;"></span></sc-if></div></sc-if>
-              <sc-if value="{{ vX_informe }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavConv.informe }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subConvInforme.c }};background:{{ subConvInforme.bg }};border-left:2px solid {{ subConvInforme.b }};">Informe</div></sc-if>
             </div>
           </sc-if>
           </sc-if>
@@ -2117,7 +2118,7 @@
                   </div>
                 </sc-if>
               </div>
-              <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;max-width:900px;line-height:1.5;">El riel de la izquierda filtra por canal y las pestañas separan lo tuyo de lo que está sin asignar. La franja oscura de arriba muestra a quién le debes respuesta y hace cuánto — con aviso en el navegador. Al tomar una conversación el bot queda en pausa; «Pedir datos» envía el guión amable para capturar nombre, WhatsApp y correo y no perder el hilo.</p>
+              
             </div>
           </sc-if>
 
@@ -2526,7 +2527,7 @@
 
           <!-- ===== CONVERSACIONES · INFORME ===== -->
           <sc-if value="{{ showConvInforme }}" hint-placeholder-val="{{ false }}">
-            <div style="max-width:980px;">
+            <div style="max-width:1480px;">
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
                 <span style="font-size:12.5px;color:var(--text-muted);">Métricas del chatbot y ventas atribuidas a los canales de chat.</span>
                 <div style="flex:1;"></div>
@@ -2538,16 +2539,17 @@
               <sc-if value="{{ ciFueraPeriodo }}" hint-placeholder-val="{{ false }}">
                 <div style="background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px;font-size:12.5px;color:var(--text-muted);line-height:1.55;">Hay conversaciones registradas, pero ninguna en el período elegido. Amplía el rango arriba.</div>
               </sc-if>
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px;">
+              <div class="oda-kpi4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Conversaciones</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;">{{ ciTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciActivas }} activas ahora</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Resueltas solo por el bot</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ ciBotPct }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">sin intervención de un asesor</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#B5503C;font-weight:700;">Escaladas a humano</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#B5503C;">{{ ciEscaladas }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciNecesitaAhora }} esperando ahora</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#7A6035;font-weight:700;">Con intención de compra</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#7A6035;">{{ ciVentasInt }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">clasificadas por el agente</div></div>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">Vendido tras el chat</div><div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1.1;margin-top:8px;color:var(--brand-ink);">{{ ciAtribTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciAtribPedidos }} pedidos · ticket {{ ciAtribTicket }}</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;">Vendido tras el chat</div><div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1.1;margin-top:8px;color:var(--brand-ink);">{{ ciAtribTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciAtribPedidos }} · ticket {{ ciAtribTicket }}</div></div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Ventas por el chat</div><div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1.1;margin-top:8px;color:#4C6149;">{{ ciPorChatTotal }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciPorChatPedidos }} · {{ ciPorChatPct }}</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4C6149;font-weight:700;">Conversión del chat</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;color:#4C6149;">{{ ciConvPct }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciConvVenta }} de {{ ciVentasInt }} con intención terminaron en pedido</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Primera respuesta</div><div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;margin-top:8px;">{{ ciRespMin }}</div><div style="font-size:12px;color:var(--text-muted);margin-top:5px;">{{ ciRespBase }}</div></div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;">
+              <div style="display:grid;grid-template-columns:1fr;gap:14px;align-items:start;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 14px;">Conversaciones por canal</h3>
                   <sc-if value="{{ ciCanalesVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Sin conversaciones en el período.</div></sc-if>
@@ -2565,43 +2567,37 @@
                     <span><strong style="font-size:16px;">{{ ciMsgsAsesor }}</strong> por asesores</span>
                     <span><strong style="font-size:16px;">{{ ciMsgsPorConv }}</strong> mensajes por conversación</span>
                   </div>
-                </div>
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;">
-                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Valor vendido por canal</h3>
-                  <p style="font-size:11.5px;color:var(--text-muted);margin:0 0 14px;">Ventas registradas en el período, según el canal del pedido.</p>
-                  <sc-if value="{{ ciVentasVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Sin ventas en el período seleccionado.</div></sc-if>
-                  <div style="display:flex;flex-direction:column;gap:10px;">
-                    <sc-for list="{{ ciVentas }}" as="v" hint-placeholder-count="3">
-                      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:{{ v.bg }};">
-                        <span style="font-size:12.5px;font-weight:700;flex:1;">{{ v.canal }}<sc-if value="{{ v.esChat }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(167,134,89,0.16);color:var(--brand-ink);">Chat</span></sc-if></span>
-                        <span style="font-size:11.5px;color:var(--text-muted);">{{ v.pedidos }} pedidos · ticket {{ v.ticket }}</span>
-                        <span style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ v.total }}</span>
-                      </div>
-                    </sc-for>
-                  </div>
-                  <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-subtle);display:flex;align-items:baseline;gap:8px;"><span style="font-size:12.5px;font-weight:700;flex:1;">Total canales de chat</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--brand-ink);">{{ ciChatTotal }}</span></div>
-                  <p style="font-size:11px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;text-wrap:pretty;">«Vendido tras el chat» arriba se calcula cruzando el celular del pedido con el teléfono de la conversación, no por el canal escrito en el pedido.<sc-if value="{{ ciHaySinTel }}" hint-placeholder-val="{{ false }}"> {{ ciSinTel }} conversaciones sin teléfono no se pueden cruzar.</sc-if></p>
+                  <p style="font-size:11px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;text-wrap:pretty;">«Vendido tras el chat» cruza el celular del pedido con el teléfono de la conversación y exige que el cliente haya escrito en los 14 días ANTES del pedido (la postventa o el carrito que llegan después no cuentan). «Ventas por el chat» es la parte donde el bot o un asesor mandó el link de compra/pago antes del pedido, o el pedido se registró con canal de chat.<sc-if value="{{ ciHaySinTel }}" hint-placeholder-val="{{ false }}"> {{ ciSinTel }} conversaciones sin teléfono no se pueden cruzar.</sc-if></p>
                 </div>
               </div>
 
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-top:14px;">
                 <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
-                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Pedidos vendidos tras el chat</h3>
-                  <span style="font-size:11.5px;color:var(--text-muted);">{{ ciAtribPedidos }} · {{ ciAtribTotal }}</span>
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">{{ ciAtribTitulo }}</h3>
+                  <span style="font-size:11.5px;color:var(--text-muted);">{{ ciAtribResumen }}</span>
+                  <div style="display:flex;gap:2px;padding:3px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-card);">
+                    <button onClick="{{ ciAtribF.chat }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border:none;border-radius:var(--radius-pill);cursor:pointer;background:{{ ciAtribBtnChat.bg }};color:{{ ciAtribBtnChat.fg }};">Por el chat</button>
+                    <button onClick="{{ ciAtribF.todos }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border:none;border-radius:var(--radius-pill);cursor:pointer;background:{{ ciAtribBtnTodos.bg }};color:{{ ciAtribBtnTodos.fg }};">Todos tras el chat</button>
+                  </div>
                 </div>
-                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Cada pedido cuyo celular coincide con una conversación del período. Toca uno para abrir su conversación.</p>
-                <sc-if value="{{ ciAtribVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Ningún pedido del período cruza con una conversación.</div></sc-if>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;text-wrap:pretty;">{{ ciAtribDesc }}</p>
+                <sc-if value="{{ ciAtribVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;text-wrap:pretty;">{{ ciAtribVacioTxt }}</div></sc-if>
                 <div style="display:flex;flex-direction:column;gap:0;">
                   <sc-for list="{{ ciAtribList }}" as="p" hint-placeholder-count="0">
-                    <div onClick="{{ p.abrir }}" class="oda-row" style="display:flex;align-items:center;gap:12px;padding:11px 8px;border-bottom:1px solid var(--border-subtle);cursor:pointer;">
-                      <span style="font-size:11.5px;color:var(--text-muted);width:78px;flex-shrink:0;">{{ p.fecha }}</span>
-                      <span style="font-size:12.5px;font-weight:700;width:82px;flex-shrink:0;">{{ p.pedido }}</span>
-                      <div style="flex:1;min-width:0;">
-                        <div style="font-size:12.5px;font-weight:700;line-height:1.4;">{{ p.cliente }}</div>
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:1px;line-height:1.45;">{{ p.items }}</div>
+                    <div onClick="{{ p.abrir }}" class="oda-row" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:11px 8px;border-bottom:1px solid var(--border-subtle);cursor:pointer;background:{{ p.rowBg }};">
+                      <div style="flex:1 1 240px;min-width:0;display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:11.5px;color:var(--text-muted);width:78px;flex-shrink:0;">{{ p.fecha }}</span>
+                        <span style="font-size:12.5px;font-weight:700;width:82px;flex-shrink:0;">{{ p.pedido }}</span>
+                        <div style="flex:1;min-width:0;">
+                          <div style="font-size:12.5px;font-weight:700;line-height:1.4;">{{ p.cliente }}</div>
+                          <div style="font-size:11px;color:var(--text-muted);margin-top:1px;line-height:1.45;">{{ p.items }}</div>
+                        </div>
                       </div>
-                      <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ p.canalBg }};color:{{ p.canalFg }};flex-shrink:0;">{{ p.canal }}</span>
-                      <span style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--brand-ink);white-space:nowrap;width:104px;text-align:right;flex-shrink:0;">{{ p.total }}</span>
+                      <div style="display:flex;align-items:center;gap:10px;flex:0 0 auto;margin-left:auto;">
+                        <sc-if value="{{ p.hayMotivo }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(98,123,96,0.16);color:#4C6149;white-space:nowrap;"><span style="width:6px;height:6px;border-radius:50%;background:#4C6149;"></span>{{ p.motivo }}</span></sc-if>
+                        <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ p.canalBg }};color:{{ p.canalFg }};white-space:nowrap;">{{ p.canal }}</span>
+                        <span style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--brand-ink);white-space:nowrap;min-width:104px;text-align:right;">{{ p.total }}</span>
+                      </div>
                     </div>
                   </sc-for>
                 </div>
@@ -7539,7 +7535,7 @@ class Component extends DCLogic {
     produccion: [{key:'prodmez',label:'Prod. mezclas'},{key:'prodpt',label:'Prod. PT'}],
     inventario: [{key:'resumen',label:'Resumen'},{key:'items',label:'Existencias'},{key:'consig',label:'Consignación'},{key:'conteos',label:'Conteos físicos'},{key:'kardex',label:'Kardex'}],
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'servicio',label:'Servicio al cliente'}],
-    conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'},{key:'informe',label:'Informe'}],
+    conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'informe',label:'Informe'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'finbold',label:'Bold'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktconexion',label:'Conexión Meta'}]
   };
@@ -13526,27 +13522,64 @@ Instrucciones de respuesta:
       out.ciChatTotal=this.fmt(Math.round(chatTotal));
       // ---- atribución real: cruza el celular del pedido con el teléfono de la conversación ----
       const _tel=(t)=>String(t||'').replace(/\D/g,'').slice(-10);
-      const telConv={}; convs.forEach(c=>{ const k=_tel(c.telefono); if(k.length>=7) (telConv[k]=telConv[k]||[]).push(c.id); });
-      const atrib=enPeriodo.filter(v=>{ const k=_tel(v.celular); return k.length>=7 && telConv[k]; });
+      const telConv={}, convById={}; convs.forEach(c=>{ convById[c.id]=c; const k=_tel(c.telefono); if(k.length>=7) (telConv[k]=telConv[k]||[]).push(c.id); });
+      // El chat debe ir ANTES del pedido: solo cuentan los mensajes de los 14 días previos a la fecha de la venta
+      // (hasta ese mismo día). Sin esto, la postventa y el carrito abandonado —que le escriben a casi todo
+      // comprador DESPUÉS de comprar— hacían que casi cualquier pedido pareciera «vendido tras el chat».
+      const VENT_DIAS=14; const _fv=(v)=>String(this.parseFecha(v.fecha)||'');
+      const _msgsAntes=(c,f)=>{ if(!f) return []; const lim=new Date(new Date(f+'T12:00:00').getTime()-VENT_DIAS*86400000).toISOString().slice(0,10);
+        return (c.mensajes||[]).filter(m=>{ const d=String(m.at||'').slice(0,10); return d && d>=lim && d<=f; }); };
+      const LINK_RE=/oasisdelalma\.co|checkout|link de pago|bold\.co|wompi|mercadopago|addi|shopify|carrito/i;
+      const _convsDe=(v)=>(telConv[_tel(v.celular)]||[]).map(id=>convById[id]).filter(Boolean);
+      const atribConvs={}; // ventaId -> ids de conversaciones que la preceden
+      const atrib=enPeriodo.filter(v=>{ const k=_tel(v.celular); if(k.length<7 || !telConv[k]) return false; const f=_fv(v);
+        const ok=_convsDe(v).filter(c=>_msgsAntes(c,f).some(m=>m.de==='cliente')); if(ok.length) atribConvs[v.id]=ok.map(c=>c.id); return ok.length>0; });
       const atribTotal=atrib.reduce((a,v)=>a+this.ventaSubtotal(v),0);
-      const convsConVenta=new Set(); atrib.forEach(v=>{ (telConv[_tel(v.celular)]||[]).forEach(id=>convsConVenta.add(id)); });
+      const convsConVenta=new Set(); atrib.forEach(v=>{ (atribConvs[v.id]||[]).forEach(id=>convsConVenta.add(id)); });
       out.ciAtribPedidos=atrib.length+(atrib.length===1?' pedido':' pedidos'); out.ciAtribTotal=this.fmt(Math.round(atribTotal));
       out.ciAtribTicket=atrib.length? this.fmt(Math.round(atribTotal/atrib.length)) : '—';
+      // Ventas POR el chat: dentro de las anteriores, el bot o un asesor le mandó el link de compra/pago
+      // antes del pedido, o el pedido se registró con un canal de chat (lo hizo el asesor desde la conversación).
+      const porChat=atrib.filter(v=>{ const f=_fv(v); const esCanalChat=chatCanales.some(k=>String(v.canal||'').toLowerCase().includes(k));
+        return esCanalChat || _convsDe(v).some(c=>_msgsAntes(c,f).some(m=>(m.de==='bot'||m.de==='asesor') && LINK_RE.test(String(m.texto||'')))); });
+      const porChatTotal=porChat.reduce((a,v)=>a+this.ventaSubtotal(v),0);
+      out.ciPorChatTotal=this.fmt(Math.round(porChatTotal)); out.ciPorChatPedidos=porChat.length+(porChat.length===1?' pedido':' pedidos');
+      out.ciPorChatPct=atrib.length? Math.round(porChat.length/atrib.length*100)+'% de lo vendido tras el chat' : 'el chat entregó el link o registró el pedido';
+      const porChatIds=new Set(porChat.map(v=>v.id));
+      // Motivo por el que un pedido cuenta como «por el chat» (para mostrarlo en la lista)
+      const _motivoChat=(v)=>{ const f=_fv(v); const esCanalChat=chatCanales.some(k=>String(v.canal||'').toLowerCase().includes(k));
+        let quien=null; _convsDe(v).some(c=>_msgsAntes(c,f).some(m=>{ if((m.de==='bot'||m.de==='asesor') && LINK_RE.test(String(m.texto||''))){ quien=m.de; return true; } return false; }));
+        if(quien==='bot') return 'El bot mandó el link'; if(quien==='asesor') return 'El asesor mandó el link'; if(esCanalChat) return 'Registrado desde el chat'; return ''; };
+      const filtroAtrib=st.ciAtribFiltro||'chat'; out.ciAtribFiltro=filtroAtrib;
+      out.ciAtribF={ chat:()=>this.setState({ciAtribFiltro:'chat'}), todos:()=>this.setState({ciAtribFiltro:'todos'}) };
+      const fBtnA=(k)=>({ bg:filtroAtrib===k?'var(--brand-primary)':'transparent', fg:filtroAtrib===k?'var(--text-on-brand)':'var(--text-body)' });
+      out.ciAtribBtnChat=fBtnA('chat'); out.ciAtribBtnTodos=fBtnA('todos');
+      out.ciAtribTitulo=filtroAtrib==='chat'? 'Pedidos vendidos por el chat' : 'Pedidos vendidos tras el chat';
+      out.ciAtribResumen=filtroAtrib==='chat'? (out.ciPorChatPedidos+' · '+out.ciPorChatTotal) : (out.ciAtribPedidos+' · '+out.ciAtribTotal);
+      out.ciAtribDesc=filtroAtrib==='chat'? 'Pedidos que el bot o un asesor cerró: mandó el link de compra/pago en los 14 días previos o registró el pedido desde la conversación. Toca uno para abrirla.'
+        : 'Todos los pedidos cuyo cliente escribió por chat en los 14 días previos a comprar, aunque haya comprado por su cuenta. Toca uno para abrir la conversación.';
       // Detalle de los pedidos atribuidos al chat
       { const nomIt=(it)=>{ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return (p?p.nombre:(k?k.nombre:(it.producto||c||'')))||''; };
-        out.ciAtribList=atrib.slice().sort((a,b)=>String(this.parseFecha(b.fecha)||'').localeCompare(String(this.parseFecha(a.fecha)||''))).slice(0,60).map(v=>{
+        const _lista=filtroAtrib==='chat'? porChat : atrib;
+        out.ciAtribList=_lista.slice().sort((a,b)=>String(this.parseFecha(b.fecha)||'').localeCompare(String(this.parseFecha(a.fecha)||''))).slice(0,60).map(v=>{
           const cs=this.canalStyle(v.canal); const its=(v.items||[]);
           const txt=its.map(it=>((Number(it.unidades)||1)+' × '+nomIt(it))).join(', ');
-          const ids=(telConv[_tel(v.celular)]||[]);
-          return { pedido:(v.pedido||v.ov||'—'), fecha:this.fmtFecha(v.fecha), cliente:this.titleCase(v.cliente||''),
+          const ids=(atribConvs[v.id]||telConv[_tel(v.celular)]||[]);
+          const motivo=porChatIds.has(v.id)? _motivoChat(v) : '';
+          return { pedido:(v.pedido||v.ov||'—'), fecha:this.fmtFecha(v.fecha), cliente:this.titleCase(v.cliente||''), porChat:porChatIds.has(v.id), motivo, hayMotivo:!!motivo,
+            rowBg:porChatIds.has(v.id)?'rgba(98,123,96,0.05)':'transparent',
             items:(txt.length>90? txt.slice(0,87)+'…' : txt), canal:(v.canal||'—'), canalBg:cs.bg, canalFg:cs.fg,
             total:this.fmt(Math.round(this.ventaSubtotal(v))),
             abrir:()=>{ if(ids[0]) this.setState({module:'conversaciones', sub:'bandeja', convSelId:ids[0]}); } }; });
-        out.ciAtribVacio=atrib.length===0; }
+        out.ciAtribVacio=_lista.length===0;
+        out.ciAtribVacioTxt=filtroAtrib==='chat'? 'Ningún pedido del período fue cerrado por el bot o un asesor con link. Mira «Todos» para ver los que compraron por su cuenta después de chatear.' : 'Ningún pedido del período cruza con una conversación.'; }
       const conTel=convs.filter(c=>_tel(c.telefono).length>=7).length;
       out.ciSinTel=convs.length-conTel; out.ciHaySinTel=(convs.length-conTel)>0;
-      out.ciConvVenta=convsConVenta.size;
-      out.ciConvPct=out.ciVentasInt? Math.round(convsConVenta.size/out.ciVentasInt*100)+'%' : '—';
+      // Conversión: de las conversaciones CON intención de compra, cuántas terminaron en pedido (mismo universo
+      // arriba y abajo — antes el numerador contaba conversaciones de cualquier intención y podía pasar del 100 %).
+      const intVenta=convs.filter(c=>c.intencion==='ventas' && convsConVenta.has(c.id)).length;
+      out.ciConvVenta=intVenta;
+      out.ciConvPct=out.ciVentasInt? Math.round(intVenta/out.ciVentasInt*100)+'%' : '—';
       // ---- tiempo de primera respuesta del bot (de la hora del 1er mensaje del cliente al 1er mensaje del bot) ----
       const _min=(h)=>{ const m=/^(\d{1,2}):(\d{2})/.exec(String(h||'')); return m? Number(m[1])*60+Number(m[2]) : null; };
       const difs=[]; convs.forEach(c=>{ const ms=c.mensajes||[]; const i=ms.findIndex(m=>m.de==='cliente'); if(i<0) return; const j=ms.findIndex((m,x)=>x>i&&m.de==='bot'); if(j<0) return; const a=_min(ms[i].hora), b=_min(ms[j].hora); if(a===null||b===null) return; let d=b-a; if(d<0) d+=1440; if(d<=240) difs.push(d); });
