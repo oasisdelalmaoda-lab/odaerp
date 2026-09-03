@@ -6525,7 +6525,7 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Rol base<select name="role" value="{{ draft.role }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><sc-for list="{{ userRolesOptions }}" as="r" hint-placeholder-count="4"><option value="{{ r }}">{{ r }}</option></sc-for></select></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Contraseña<input name="password" value="{{ draft.password }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:'Courier New',monospace;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
-              <p style="font-size:11.5px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">El rol define los permisos iniciales; luego los ajustas por submódulo en la matriz. Los cambios se comparten con todos los equipos.</p>
+              <p style="font-size:11.5px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;text-wrap:pretty;">El rol solo es el punto de partida: al guardar se abre la fila del usuario en la matriz y ahí marcas módulo por módulo (sin acceso / lectura / escritura). Elige <strong>Personalizado</strong> para empezar sin ningún acceso. Los cambios se comparten con todos los equipos.</p>
               <sc-if value="{{ userDelShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onUserDelete }}" style="margin-top:14px;font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);border:1px solid rgba(181,80,60,0.45);background:var(--surface-card);color:#B5503C;cursor:pointer;">{{ userDelLabel }}</button></sc-if>
             </sc-if>
 
@@ -7509,6 +7509,7 @@ class Component extends DCLogic {
     'Administrador':            { compras:'write', desarrollo:'write', ventas:'write', finanzas:'write', produccion:'write', inventario:'write', marketing:'write', conversaciones:'write', admin:true  },
     'Administración y Finanzas': { compras:'read',  desarrollo:'none',  ventas:'read',  finanzas:'write', produccion:'none',  inventario:'read',  marketing:'read',  conversaciones:'none',  admin:false },
     'Mercadeo y Publicidad':    { compras:'none',  desarrollo:'read',  ventas:'read',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'write', conversaciones:'write', admin:false },
+    'Personalizado':            { compras:'none',  desarrollo:'none',  ventas:'none',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  conversaciones:'none',  admin:false },
     'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  conversaciones:'write', admin:false },
   };
   _usersCfgGet(){ if(!this._usersCfgCache){ let c=null; try{ c=JSON.parse(localStorage.getItem('oda_hub_usuarios_v1')); }catch(e){} if(!c||typeof c!=='object') c={}; this._usersCfgCache={ overrides:(c.overrides||{}), custom:(c.custom||[]), _ts:(Number(c._ts)||0) }; } return this._usersCfgCache; }
@@ -7527,7 +7528,7 @@ class Component extends DCLogic {
     const colors=['#6596A6','#627B60','#9C97A2','#B08A6B','#6B7A9C','#C9A15A','#B5503C','#5A4A33']; const nu={ id:'cu'+Date.now(), name, email, role, password:pwd, initials:this._userInitials(name), color:colors[this.users.length%colors.length] };
     const c0=this._usersCfgGet(); this._usersCfgSave({ overrides:{...c0.overrides}, custom:c0.custom.concat([nu]), _ts:c0._ts });
     const perms={...(this.state.userPerms||{})}; perms[nu.id]={...(this.roles[role]||{})}; this.setState({userPerms:perms}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(perms)); }catch(e){} if(this.cloudOn()) this.cloudSavePermiso(nu.id,perms[nu.id]);
-    this.close(); this.toast('Usuario creado \u00b7 ajusta sus permisos en la matriz'); }
+    this.close(); this.setState({expandedPermUser:nu.id}); this.toast(role==='Personalizado'? 'Usuario creado \u00b7 marca abajo a qu\u00e9 m\u00f3dulos entra' : 'Usuario creado \u00b7 ajusta sus permisos en la matriz'); }
   eliminarUsuario(){ const d=this.state.draft||{}; if(!d._id||!d._custom) return; if(!d._confirmDel){ this.setState(s=>({draft:{...s.draft,_confirmDel:true}})); return; }
     const c0=this._usersCfgGet(); this._usersCfgSave({ overrides:{...c0.overrides}, custom:c0.custom.filter(u=>u.id!==d._id), _ts:c0._ts });
     const perms={...(this.state.userPerms||{})}; delete perms[d._id]; this.setState({userPerms:perms}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(perms)); }catch(e){} this.close(); this.toast('Usuario eliminado'); }
@@ -12553,7 +12554,7 @@ Instrucciones de respuesta:
         for(let off=0, page=1000; ; off+=page){
           const {data:part,error:eMsg}=await sb.from('mensajes').select('conversacion_id,de,texto,meta,creado_at').in('conversacion_id',chunk).order('creado_at',{ascending:true}).range(off,off+page-1);
           if(eMsg){ console.warn('cloudLoadConvs · mensajes', eMsg); ok=false; break; }
-          (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:this._autoKey(m.meta), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), falloIA:!!(m.meta&&m.meta.falloIA), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
+          (part||[]).forEach(m=>{ (by[m.conversacion_id]=by[m.conversacion_id]||[]).push({de:m.de, texto:m.texto, auto:this._autoKey(m.meta), asesor:((m.meta&&m.meta.asesor)||''), noEntregado:!!(m.meta&&m.meta.noEntregado), limiteMkt:!!(m.meta&&m.meta.limiteMarketing), falloIA:!!(m.meta&&m.meta.falloIA), at:m.creado_at, fecha:this._convFechaDe(m.creado_at), hora:this._convHoraDe(m.creado_at)}); });
           if(!part || part.length<page) break;
           if(off>50000) break;
         }
@@ -12565,8 +12566,21 @@ Instrucciones de respuesta:
       this._convSig=completo?sig:null;
       this._convNotify(list);
       this._notifFalloIA(list);
+      this._cerrarLimiteMkt(list);
       this.setState({convsCloud:list});
     }catch(e){} this._convLoading=false; }
+  // Conversaciones que quedaron en «necesita humano» SOLO porque WhatsApp frenó una promoción
+  // (código 131049, tope de marketing por usuario): no hay nada que responder → se resuelven.
+  // Cubre las viejas (aviso noEntregado con el texto de Meta) y las nuevas (limiteMarketing).
+  _cerrarLimiteMkt(list){ try{
+    if(!this.canWriteMod('conversaciones')) return;
+    const sb=this._sbClient(); const RE=/healthy ecosystem engagement|límite de mensajes de marketing/i;
+    (list||[]).forEach(c=>{ if(c.estado!=='necesita') return; const ms=c.mensajes||[]; let last=null; for(let i=ms.length-1;i>=0;i--){ if(ms[i].de!=='cliente'){ last=ms[i]; break; } }
+      if(!last || last.de!=='sistema' || !(last.limiteMkt || RE.test(String(last.texto||'')))) return;
+      const ultimoCliente=ms.slice().reverse().find(m=>m.de==='cliente'); if(ultimoCliente && ultimoCliente.at && last.at && ultimoCliente.at>last.at) return;
+      c.estado='resuelta'; c.noLeidos=0;
+      if(sb) sb.from('conversaciones').update({estado:'resuelta', no_leidos:0}).eq('id',c.id).then(()=>{}); });
+  }catch(e){} }
   _convNotify(list){ try{ const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; const prev=this._convSeen; const seen={}; (list||[]).forEach(c=>{ seen[c.id]=(c.mensajes||[]).length; });
     if(prev && me){ (list||[]).forEach(c=>{ const n=seen[c.id]||0, o=prev[c.id]||0; if(n>o && this._mismoUid(c.asignadoA, me)){ const last=(c.mensajes||[])[n-1]||{}; if(last.de==='cliente'){ this.toast('Nuevo mensaje de '+(c.cliente||'cliente')); this._deskNotify('Nuevo mensaje · '+(c.cliente||'Conversaciones'), String(last.texto||'').slice(0,120)); } } }); }
     this._convSeen=seen; }catch(e){} }
@@ -13633,7 +13647,7 @@ Instrucciones de respuesta:
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, cerrAuto:!!cc.cerradaAuto, sinResp:!!cc.sinRespuesta, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
-          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?'#8A4A3C':(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?'1px dashed rgba(181,80,60,0.45)':(esCliente?'1px solid var(--border-subtle)':'none'), noEntregado:!!(esSys&&m.noEntregado), canalL:this._convCanalNativo(cc.canal).l, nativoUrl:this._convCanalNativo(cc.canal).url, onManual:()=>this.convMarcarManual(cc.id) }; }) };
+          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); return { texto:im?'':m.texto, esImg:!!im, img:im?im[1]:'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?(m.limiteMkt?'var(--text-muted)':'#8A4A3C'):(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?(m.limiteMkt?'1px dashed var(--border-strong)':'1px dashed rgba(181,80,60,0.45)'):(esCliente?'1px solid var(--border-subtle)':'none'), noEntregado:!!(esSys&&m.noEntregado), canalL:this._convCanalNativo(cc.canal).l, nativoUrl:this._convCanalNativo(cc.canal).url, onManual:()=>this.convMarcarManual(cc.id) }; }) };
         out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
         // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
