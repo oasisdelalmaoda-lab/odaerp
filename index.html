@@ -9,8 +9,8 @@
 <x-dc>
 <helmet>
 <title>OdA · Hub Intelligence</title>
-<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="colors.css">
 <link rel="stylesheet" href="typography.css">
@@ -54,6 +54,8 @@
     #oda-informe > div{break-inside:avoid;page-break-inside:avoid;}
     @page{size:A4 portrait;margin:14mm;}
   }
+  @media (max-width:1180px){ .oda-kpi4{grid-template-columns:repeat(2,minmax(0,1fr)) !important;} }
+  @media (max-width:520px){ .oda-kpi4{grid-template-columns:1fr !important;} }
   @media (max-width:820px){
     .oda-shell{grid-template-columns:1fr !important;}
     .oda-sidebar{position:fixed !important;top:0 !important;left:0 !important;height:100vh !important;width:248px !important;z-index:60 !important;transform:translateX(-100%);transition:transform .28s ease;}
@@ -416,7 +418,7 @@
                 </div>
               </div>
 
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px;">
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px;container-type:inline-size;" class="oda-kpi4">
                 <sc-for list="{{ infKpis }}" as="k" hint-placeholder-count="4">
                   <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
                     <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">{{ k.label }}</div>
@@ -4747,23 +4749,38 @@
               <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
                   <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
-                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Campañas destacadas</h3>
-                    <button onClick="{{ subnavMkt.campanas }}" style="font-size:12.5px;font-weight:700;color:var(--brand-primary);background:none;border:none;cursor:pointer;font-family:inherit;">Ver todas →</button>
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Campañas</h3>
+                    <span style="font-size:12px;color:var(--text-muted);">{{ mktTopNota }}</span>
                   </div>
                   <div>
                     <sc-for list="{{ mktTop }}" as="c" hint-placeholder-count="5">
-                      <div style="display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border-subtle);">
-                        <span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ c.moodColor }};"></span>
-                        <span style="flex:1;min-width:0;">
-                          <span style="display:block;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.nombre }}</span>
-                          <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:1px;">{{ c.objetivo }} · {{ c.spendFmt }}</span>
-                        </span>
-                        <span style="text-align:right;flex-shrink:0;">
-                          <span style="display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;line-height:1;color:{{ c.roasColor }};">{{ c.roasFmt }}</span>
-                          <span style="display:block;font-size:11px;color:var(--text-muted);margin-top:2px;">{{ c.ingresosFmt }}</span>
-                        </span>
+                      <div style="padding:13px 20px;border-bottom:1px solid var(--border-subtle);">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                          <span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ c.moodColor }};"></span>
+                          <span style="flex:1;min-width:0;">
+                            <span style="display:flex;align-items:center;gap:8px;min-width:0;">
+                              <span style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.nombre }}</span>
+                              <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;flex-shrink:0;background:{{ c.estBg }};color:{{ c.estFg }};">{{ c.estLabel }}</span>
+                            </span>
+                            <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:1px;">{{ c.objetivo }} · inversión {{ c.spendFmt }}</span>
+                          </span>
+                          <span style="text-align:right;flex-shrink:0;">
+                            <span style="display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;line-height:1;color:{{ c.roasColor }};">{{ c.roasFmt }}</span>
+                            <span style="display:block;font-size:11px;color:var(--text-muted);margin-top:2px;">{{ c.ingresosFmt }}</span>
+                          </span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px 12px;margin:10px 0 0 21px;">
+                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Resultados</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.resultados }} <span style="font-weight:500;color:var(--text-muted);">{{ c.resLabel }}</span></span></span>
+                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Costo / resultado</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.cpaFmt }}</span></span>
+                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">CTR</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.ctrFmt }}</span></span>
+                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Alcance</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.alcanceFmt }}</span></span>
+                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Frecuencia</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;color:{{ c.frecColor }};">{{ c.frecuencia }}</span></span>
+                        </div>
                       </div>
                     </sc-for>
+                    <sc-if value="{{ mktTopVacio }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:24px 20px;font-size:13px;color:var(--text-muted);text-align:center;">Ninguna campaña tuvo inversión en este periodo.</div>
+                    </sc-if>
                   </div>
                 </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
@@ -6058,7 +6075,7 @@
               <label style="display:block;margin-top:14px;font-size:12px;font-weight:700;color:var(--text-body);">Nota / condiciones<input name="nota" value="{{ draft.nota }}" onInput="{{ onDraftInput }}" placeholder="Condiciones de entrega, validez…" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               <sc-if value="{{ cotMargenShow }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:14px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 16px;">
-                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Rentabilidad · solo visible para el equipo</div>
+                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Rentabilidad · sobre precio sin IVA · solo visible para el equipo</div>
                   <div style="display:flex;gap:14px;flex-wrap:wrap;">
                     <div style="flex:1;min-width:130px;"><div style="font-size:11px;color:var(--text-muted);">Margen inicial <span style="color:var(--text-muted);">(sin descuento)</span></div><div style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;line-height:1.1;margin-top:2px;color:#4C6149;">{{ cotMargenIniPct }}%</div><div style="font-size:11.5px;color:var(--text-muted);">{{ cotMargenIniFmt }}</div></div>
                     <div style="width:1px;background:var(--border-subtle);align-self:stretch;"></div>
@@ -6069,10 +6086,10 @@
                 </div>
               </sc-if>
               <div style="margin-top:16px;margin-left:auto;width:300px;max-width:100%;font-size:13px;">
-                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">Subtotal (IVA incl.)</span><span>{{ cotSubtotalFmt }}</span></div>
+                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">Subtotal sin IVA</span><span>{{ cotSubtotalFmt }}</span></div>
                 <sc-if value="{{ cotDescShow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--brand-primary);font-weight:700;"><span>Descuento {{ cotDescPctTxt }}</span><span>{{ cotDescMontoFmt }}</span></div></sc-if>
                 <sc-if value="{{ cotEnvioShow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">Envío</span><span>{{ cotEnvioFmt }}</span></div></sc-if>
-                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-muted);font-size:12px;"><span>IVA (19%) incluido</span><span>{{ cotIvaFmt }}</span></div>
+                <div style="display:flex;justify-content:space-between;padding:5px 0;color:var(--text-body);"><span style="color:var(--text-muted);">IVA (19%)</span><span>{{ cotIvaFmt }}</span></div>
                 <div style="display:flex;justify-content:space-between;padding:11px 0 0;border-top:2px solid var(--brand-primary);margin-top:6px;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;"><span>Total</span><span>{{ cotTotalFinalFmt }}</span></div>
               </div>
             </sc-if>
@@ -7624,6 +7641,35 @@ class Component extends DCLogic {
     }catch(e){ this.setState({ mktLiveLoading:false, mktLiveError:(e&&e.message)||'No se pudo traer los datos de Meta.' }); }
   }
   mktUsarDemo(){ this.setState({ mktUsingLive:false }); this.toast('Mostrando datos de demostración'); }
+  // ---- Gasto real de pauta por mes (para el Informe gerencial) ----
+  // La inversión en pauta sale del módulo de Marketing (cuenta de Meta), no de los egresos de
+  // Finanzas: el pago a Meta se registra en caja cuando se cobra la tarjeta, no en el mes en que
+  // se invirtió. Cache por mes en state.mktGastoMeses + localStorage; Finanzas queda de respaldo.
+  _mktGastoMap(){ if(!this._mgm){ let m=null; try{ m=JSON.parse(localStorage.getItem('oda_hub_meta_gasto_v1')||'null'); }catch(e){} this._mgm=(m&&typeof m==='object')?m:{}; } return this._mgm; }
+  mktGastoMes(ym){ const m=this.state.mktGastoMeses||this._mktGastoMap(); const v=m[ym]; return (typeof v==='number' && v>0)? v : 0; }
+  mktGastoMesConocido(ym){ const m=this.state.mktGastoMeses||this._mktGastoMap(); return typeof m[ym]==='number'; }
+  _mktAcct(){ return String(this.state.mktAdAccountId||(this.state.reglasNeg||{}).mktAcct||'').trim(); }
+  // Pide a Meta el gasto de los meses que el informe necesita (actual, anterior, año anterior).
+  // El mes en curso se refresca si la marca tiene más de 6 h; los cerrados solo si no están.
+  async mktCargarGastoMeses(yms){
+    const acct=this._mktAcct(); if(!acct || !this.cloudOn()) return;
+    const map=this._mktGastoMap(); const hoyYm=this.mesActual(); const ts=(map.__ts||{});
+    const falta=(yms||[]).filter(ym=>{ if(!/^\d{4}-\d{2}$/.test(ym)) return false; if(ym>hoyYm) return false;
+      if(typeof map[ym]!=='number') return true; return ym===hoyYm && (Date.now()-(ts[ym]||0))>6*3600e3; });
+    if(!falta.length || this._mktGastoLoading) return;
+    this._mktGastoLoading=true;
+    try{
+      const sb=this._sbClient(); if(!sb) return;
+      const yS=falta.slice().sort(); const since=yS[0]+'-01'; const until=this.ultimoDiaMes(yS[yS.length-1]);
+      const { data, error } = await sb.functions.invoke('meta', { body:{ modo:'gastoMensual', adAccountId:acct, since, until } });
+      if(error || !data || data.error || !data.meses) throw new Error((data&&data.error)||'sin respuesta');
+      const nm={...map, __ts:{...ts}};
+      falta.forEach(ym=>{ nm[ym]=Math.round(Number(data.meses[ym])||0); nm.__ts[ym]=Date.now(); });
+      this._mgm=nm; try{ localStorage.setItem('oda_hub_meta_gasto_v1', JSON.stringify(nm)); }catch(e){}
+      this._idCache=null; this._imdCache={}; this.setState({ mktGastoMeses:nm });
+    }catch(e){ console.warn('Meta gasto mensual:', e); }
+    finally{ this._mktGastoLoading=false; }
+  }
   mktKpis(){
     const cs=this.mktCampSource();
     const spend=cs.reduce((s,c)=>s+c.spend,0);
@@ -8280,7 +8326,7 @@ class Component extends DCLogic {
   // Sello de los datos que alimentan el informe. Si no cambia, se reusa lo ya calculado:
   // sin esto el informe recalcula 12 meses de P&G y de caja en CADA render y traba la app.
   _infSello(){ const s=this.state;
-    const k=[s.ventas,s.movimientos,s.ordenes,s.materias,s.productos,s.servicios,s.cuentas,s.creditos,s.liquidaciones,s.movAjustes];
+    const k=[s.ventas,s.movimientos,s.ordenes,s.materias,s.productos,s.servicios,s.cuentas,s.creditos,s.liquidaciones,s.movAjustes,s.mktGastoMeses];
     if(!this._isKey || this._isKey.length!==k.length || !this._isKey.every((x,i)=>x===k[i])){ this._isKey=k; this._isN=(this._isN||0)+1; }
     return this._isN; }
   // hd = corte de día del mes (1..31). Con el mes en curso, las bases de comparación se
@@ -8309,12 +8355,15 @@ class Component extends DCLogic {
     const keys=Array.from(new Set(vs.map(v=>this._infKeyCli(v)).filter(Boolean)));
     const nuevos=keys.filter(k=>String(prim[k]||'').slice(0,7)===ym).length;
     let pyg={}; try{ pyg=this.finPyG(ym)||{}; }catch(e){ pyg={}; }
+    // Pauta: primero el gasto real de la cuenta de Meta (módulo Marketing); si no hay, egresos de Finanzas.
+    const mktMeta=this.mktGastoMes(ym); const mktFuente=mktMeta>0? 'meta' : 'finanzas';
+    const marketing=(mktMeta>0? mktMeta : (Number(pyg.marketing)||0))*prop;
     return { vs, ingresos, costo, bruta:ingresos-costo, margen:(ingresos>0? (ingresos-costo)/ingresos*100 : 0),
       pedidos, unidades, ticket:(pedidos? ingresos/pedidos : 0),
       clientes:keys.length, nuevos, recurrentes:Math.max(0, keys.length-nuevos),
       parcial:!!corte, hastaDia:corte||dias, dias,
       // Lo que viene del P&G no se puede cortar por día: se prorratea al tramo (solo cuando hay corte).
-      marketing:(Number(pyg.marketing)||0)*prop, gastos:(Number(pyg.gastos)||0)*prop, operacional:(Number(pyg.operacional)||0)*prop };
+      marketing, mktFuente, gastos:(Number(pyg.gastos)||0)*prop, operacional:(Number(pyg.operacional)||0)*prop };
   }
   infDelta(act, prev){
     if(!prev) return { txt:'sin base', fg:'var(--text-muted)' };
@@ -8481,6 +8530,8 @@ class Component extends DCLogic {
   infExportPDF(){ this.toast('Elige «Guardar como PDF» en el destino de impresión'); setTimeout(()=>{ try{ window.print(); }catch(e){} }, 350); }
   _buildInformes(out){
     const st=this.state; const ym=this.infMes(); const r=this._infDatos(ym); const R=(n)=>Math.round(n);
+    // Gasto real de pauta desde Meta para los tres meses que compara el informe (en diferido, fuera del render).
+    if(this._mktGastoPedido!==ym){ this._mktGastoPedido=ym; setTimeout(()=>this.mktCargarGastoMeses([ym, this.mesShift(ym,-1), this.mesShift(ym,-12)]), 0); }
     out.infMesLabel=this.mesLabel(ym); out.infYm=ym;
     out.infGenerado='Generado el '+this.fmtFecha(new Date().toISOString().slice(0,10))+' · ODA LABS S.A.S. · NIT 902.063.571-6';
     out.infPrev=()=>this.infShift(-1); out.infNext=()=>this.infShift(1);
@@ -8515,7 +8566,7 @@ class Component extends DCLogic {
         r.d.ingresos>0? 'De cada $100 vendidos' : 'sin ventas en el periodo', r.d.ingresos>0 && _mNeto<0),
         r.d.ingresos>0? {} : { dPrev:'\u2014', dPrevFg:'var(--text-muted)', dYoY:'\u2014', dYoYFg:'var(--text-muted)' }),
       Object.assign(kpi('ROAS de pauta', _roas>0? _roas.toFixed(1)+'x' : '\u2014', _roas, _roasPrev, _roasYoY,
-        _roas>0? ('Pauta '+this.fmt(R(r.d.marketing))+' \u00b7 CAC '+this.fmt(R(r.cac))) : 'sin inversi\u00f3n registrada'),
+        _roas>0? ('Pauta '+this.fmt(R(r.d.marketing))+(r.d.mktFuente==='meta'? ' (Meta)' : '')+' \u00b7 CAC '+this.fmt(R(r.cac))) : (this._mktAcct()? 'sin gasto de pauta en Meta este mes' : 'conecta la cuenta de Meta en Marketing')),
         _roas>0? {} : { dPrev:'\u2014', dPrevFg:'var(--text-muted)', dYoY:'\u2014', dYoYFg:'var(--text-muted)' }),
       // Punto en el tiempo: la plata de hoy no tiene contra qué compararse mes a mes.
       Object.assign(kpi('D\u00edas de caja', _dc>0? Math.round(_dc)+' d\u00edas' : '\u2014', _dc, 0, 0,
@@ -8569,8 +8620,9 @@ class Component extends DCLogic {
       { key:'m2', label:'ROAS', valor:(r.d.marketing>0? roas.toFixed(1)+'x' : '—') },
       { key:'m3', label:'CAC', valor:(r.d.nuevos>0? this.fmt(R(r.cac)) : '—') },
       { key:'m4', label:'% del ingreso', valor:(r.d.ingresos>0? this.infPct(r.d.marketing/r.d.ingresos*100) : '—') }];
-    out.infMktNota=r.d.marketing>0? 'Inversión tomada de los egresos de categoría Marketing del mes. CAC = inversión ÷ clientes nuevos.'
-      : 'No hay egresos de categoría Marketing registrados en '+this.mesLabel(ym)+'. Regístralos en Finanzas para ver ROAS y CAC.';
+    out.infMktNota=r.d.marketing>0? (r.d.mktFuente==='meta'? 'Inversión tomada del gasto real de la cuenta de Meta (módulo Marketing). CAC = inversión ÷ clientes nuevos.'
+        : 'Inversión tomada de los egresos de categoría Marketing del mes (Meta no reportó gasto). CAC = inversión ÷ clientes nuevos.')
+      : (this._mktAcct()? 'La cuenta de Meta no reporta gasto de pauta en '+this.mesLabel(ym)+'.' : 'Conecta la cuenta de Meta en Marketing → Conexión Meta para ver ROAS y CAC.');
   }
   isAdminUser(){ const a=this.access(); return !!(a&&a.admin); }
   editMateria(m){ this.open('materia',{...m, _orig:m.codigo, marca:(m.marca||''), ivaExento:(Number(m.iva)===0)}); }
@@ -9913,7 +9965,7 @@ Instrucciones de respuesta:
     const filas=(c.items||[]).map(it=>{ const u=Number(it.unidades)||0; const neto=Number(it.valorUnit)||0; const bruto=Number(it.valorBruto!=null?it.valorBruto:neto)||0; const sub=u*neto; const dpct=bruto>0?Math.round((1-neto/bruto)*100):0;
       return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+(it.producto||it.referencia)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td>'+(hayDesc?('<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;color:#8A8073;">'+(dpct>0?this.fmt(bruto):'—')+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;color:#B5503C;font-weight:700;">'+(dpct>0?('-'+dpct+'%'):'—')+'</td>'):'')+'<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(neto)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(sub)+'</td></tr>'; }).join('');
     const total=this.cotTotal(c);
-    const merc=(c.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0); const descPctG=Number(c.descuentoPct)||0; const descMonto=Math.round(merc*descPctG/100); const baseDesc=merc-descMonto; const factor=merc>0?baseDesc/merc:1; let ivaBase=0; (c.items||[]).forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const ivaInc=Math.round(ivaBase*19/119);
+    const merc=(c.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0); const descPctG=Number(c.descuentoPct)||0; const descMonto=Math.round(merc*descPctG/100); const baseDesc=merc-descMonto; const factor=merc>0?baseDesc/merc:1; let ivaBase=0; (c.items||[]).forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const ivaInc=Math.round(ivaBase*19/119); const ivaIniInc=Math.round((factor>0?ivaBase/factor:ivaBase)*19/119); const mercNeta=merc-ivaIniInc; const descNeto=mercNeta-(baseDesc-ivaInc);
     const ths='<tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:11px 14px;font-weight:600;">Producto</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Unid.</th>'+(hayDesc?'<th style="padding:11px 14px;text-align:right;font-weight:600;">Precio</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Desc.</th>':'')+'<th style="padding:11px 14px;text-align:right;font-weight:600;">Valor unit.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Subtotal</th></tr>';
     const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.numero+'</title></head>'
       +'<body style="font-family:Georgia,serif;color:#3A3326;max-width:760px;margin:0 auto;padding:40px 36px;background:#FBF8F2;">'
@@ -9924,10 +9976,10 @@ Instrucciones de respuesta:
       +'<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:22px;line-height:1.6;"><div><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Para</span><br><strong style="font-size:15px;">'+c.cliente+'</strong><br>'+[c.ciudad,c.celular].filter(Boolean).join(' · ')+(c.correo?('<br>'+c.correo):'')+'</div><div style="text-align:right;"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Detalles</span><br><strong>Fecha:</strong> '+this.fmtFecha(c.fecha)+'<br><strong>Válida por:</strong> '+c.validez+' días</div></div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead>'+ths+'</thead><tbody>'+filas+'</tbody></table>'
       +'<div style="margin-top:18px;margin-left:auto;width:300px;font-size:13px;">'
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Subtotal (IVA incl.)</span><span>'+this.fmt(Math.round(merc))+'</span></div>'
-        +(descMonto>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Descuento ('+descPctG+'%)</span><span>−'+this.fmt(descMonto)+'</span></div>'):'')
+        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Subtotal sin IVA</span><span>'+this.fmt(Math.round(mercNeta))+'</span></div>'
+        +(descMonto>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Descuento ('+descPctG+'%)</span><span>−'+this.fmt(Math.round(descNeto))+'</span></div>'):'')
         +((Number(c.envio)||0)>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Envío</span><span>'+this.fmt(c.envio||0)+'</span></div>'):'')
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#8A8073;font-size:12px;"><span>IVA (19%) incluido</span><span>'+this.fmt(Math.round(ivaInc))+'</span></div>'
+        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>IVA (19%)</span><span>'+this.fmt(Math.round(ivaInc))+'</span></div>'
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
@@ -13810,10 +13862,27 @@ Instrucciones de respuesta:
       out.mktFA=fBtn('todas'); out.mktFB=fBtn('activas'); out.mktFC=fBtn('pausadas');
       const _src=this.mktCampSource();
       out.mktCampanas=_src.filter(c=> filtroC==='todas'?true:(filtroC==='activas'?c.estado==='activa':c.estado==='pausada')).map(mapCamp);
-      out.mktTop=_src.slice().sort((a,b)=>b.ingresos-a.ingresos).slice(0,5).map(mapCamp);
+      // Solo campañas con inversión en el periodo (las pausadas sin gasto son ruido: la cuenta real trae ~100).
+      const _conInv=_src.filter(c=>(c.spend||0)>0).sort((a,b)=>(b.ingresos-a.ingresos)||(b.spend-a.spend));
+      out.mktTop=_conInv.slice(0,10).map(c=>{ const m=mapCamp(c); m.frecColor=m.fatiga?'var(--oda-sale)':'var(--text-body)'; return m; });
+      out.mktTopVacio=!_conInv.length;
+      const _sinInv=_src.length-_conInv.length, _masInv=Math.max(0,_conInv.length-10);
+      out.mktTopNota=(_conInv.length? _conInv.length+(_conInv.length===1?' campaña con inversión':' campañas con inversión') : 'sin inversión en el periodo')
+        +(_masInv? ' · mostrando las 10 principales' : '')+(_sinInv? ' · '+_sinInv+' sin inversión' : '');
       // alertas
       const alerts=[];
-      _src.forEach(c=>{ if(c.frecuencia>=3) alerts.push({tipo:'Fatiga de anuncio', txt:c.nombre+' · frecuencia '+c.frecuencia.toFixed(1)+'. Renueva el creativo o amplía el público.', color:'#B5503C'}); const r=this.mktRoas(c); if(c.objetivo==='Ventas'&&r>0&&r<2.5) alerts.push({tipo:'ROAS bajo', txt:c.nombre+' · ROAS '+r.toFixed(1)+'x. Revisa segmentación, oferta o página de destino.', color:'#B08A6B'}); });
+      // Solo sobre campañas con inversión en el periodo (las pausadas sin gasto no pueden alertar nada).
+      _conInv.forEach(c=>{
+        const r=this.mktRoas(c);
+        if(c.frecuencia>=3) alerts.push({tipo:'Fatiga de anuncio', txt:c.nombre+' · frecuencia '+c.frecuencia.toFixed(1)+'. Renueva el creativo o amplía el público.', color:'#B5503C'});
+        if(c.objetivo==='Ventas' && c.resultados===0 && c.spend>=100000) alerts.push({tipo:'Sin ventas', txt:c.nombre+' · '+this.fmt(c.spend)+' invertidos y ninguna compra atribuida. Revisa la oferta, el píxel o pausa la campaña.', color:'#B5503C'});
+        else if(c.objetivo==='Ventas' && r>0 && r<2.5) alerts.push({tipo:'ROAS bajo', txt:c.nombre+' · ROAS '+r.toFixed(1)+'x. Revisa segmentación, oferta o página de destino.', color:'#B08A6B'});
+        if(c.objetivo==='Ventas' && r>=6 && c.estado==='activa') alerts.push({tipo:'Oportunidad', txt:c.nombre+' · ROAS '+r.toFixed(1)+'x. Vale la pena subirle presupuesto de a poco (10–20 %).', color:'#4C6149'});
+        if(c.estado==='pausada' && r>=3) alerts.push({tipo:'Pausada con buen retorno', txt:c.nombre+' · ROAS '+r.toFixed(1)+'x en el periodo pero está pausada. Considera reactivarla.', color:'#3F6A7A'});
+        const ctr=this.mktCtr(c); if(c.impresiones>=5000 && ctr<0.6) alerts.push({tipo:'CTR bajo', txt:c.nombre+' · CTR '+ctr.toFixed(2)+'%. El anuncio no llama la atención: prueba otro gancho o formato.', color:'#B08A6B'});
+      });
+      const _kpiAll=this.mktKpis(); if(_conInv.length && _kpiAll.spend>0 && _kpiAll.roas<2) alerts.unshift({tipo:'Cuenta', txt:'ROAS total '+_kpiAll.roas.toFixed(1)+'x en el periodo: la pauta no se está pagando sola.', color:'#B5503C'});
+      const _ord={'Cuenta':0,'Sin ventas':1,'Fatiga de anuncio':2,'ROAS bajo':3,'CTR bajo':4,'Pausada con buen retorno':5,'Oportunidad':6}; alerts.sort((a,b)=>(_ord[a.tipo]??9)-(_ord[b.tipo]??9));
       out.mktAlertas=alerts; out.mktAlertasVacio=alerts.length===0;
       // creativos
       const crEst=(e)=>({ganador:{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',t:'Ganador'},activo:{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Activo'},fatiga:{bg:'rgba(181,80,60,0.14)',fg:'#B5503C',t:'Fatiga'}}[e]||{bg:'#EFE9DD',fg:'#A89F8E',t:e});
@@ -15118,14 +15187,17 @@ Instrucciones de respuesta:
       const factor=mercancia>0?baseDesc/mercancia:1; let ivaBase=0;
       items2.forEach(it=>{ const line=(Number(it.valorUnit)||0)*(Number(it.unidades)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; });
       const ivaInc=Math.round(ivaBase*19/119); const totalFinal=baseDesc+envio;
-      const margenIni=mercancia-costoTot, margenDesc=baseDesc-costoTot;
+      // Margen sobre el precio SIN IVA: el IVA incluido en el precio no es utilidad (se le paga a la DIAN)
+      const ivaIniInc=Math.round((factor>0?ivaBase/factor:ivaBase)*19/119);
+      const mercNeta=mercancia-ivaIniInc, baseDescNeta=baseDesc-ivaInc;
+      const margenIni=mercNeta-costoTot, margenDesc=baseDescNeta-costoTot;
       out.cotMargenShow=items2.length>0;
-      out.cotMargenIniFmt=this.fmt(Math.round(margenIni)); out.cotMargenIniPct=(mercancia>0?(margenIni/mercancia*100):0).toFixed(1);
-      out.cotMargenDescFmt=this.fmt(Math.round(margenDesc)); out.cotMargenDescPct=(baseDesc>0?(margenDesc/baseDesc*100):0).toFixed(1);
-      out.cotMargenDescColor=(margenDesc<0?'#B5503C':((baseDesc>0?margenDesc/baseDesc:0)<0.2?'#9A6B2E':'#4C6149'));
+      out.cotMargenIniFmt=this.fmt(Math.round(margenIni)); out.cotMargenIniPct=(mercNeta>0?(margenIni/mercNeta*100):0).toFixed(1);
+      out.cotMargenDescFmt=this.fmt(Math.round(margenDesc)); out.cotMargenDescPct=(baseDescNeta>0?(margenDesc/baseDescNeta*100):0).toFixed(1);
+      out.cotMargenDescColor=(margenDesc<0?'#B5503C':((baseDescNeta>0?margenDesc/baseDescNeta:0)<0.2?'#9A6B2E':'#4C6149'));
       out.cotCostoTotFmt=this.fmt(Math.round(costoTot));
       out.cotDescPct=(d2.descuentoPct!=null&&d2.descuentoPct!=='')?d2.descuentoPct:''; out.cotDescPctTxt=descPctG>0?('('+descPctG+'%)'):'';
-      out.cotSubtotalFmt=this.fmt(Math.round(mercancia)); out.cotDescShow=descMonto>0; out.cotDescMontoFmt='\u2212'+this.fmt(descMonto);
+      out.cotSubtotalFmt=this.fmt(Math.round(mercNeta)); out.cotDescShow=descMonto>0; out.cotDescMontoFmt='\u2212'+this.fmt(Math.round(mercNeta-baseDescNeta));
       out.cotEnvioShow=envio>0; out.cotEnvioFmt=this.fmt(envio); out.cotIvaFmt=this.fmt(Math.round(ivaInc)); out.cotTotalFinalFmt=this.fmt(Math.round(totalFinal));
       const seen={}; const opts=[]; this.clientesData().forEach(c=>{ if(seen[c.key]) return; seen[c.key]=1; opts.push({key:c.key, label:c.cliente+(c.ciudad?(' · '+c.ciudad):'')}); });
       out.cotClienteOptions=opts.sort((a,b)=>a.label.localeCompare(b.label)); out.cotClienteHay=opts.length>0;
