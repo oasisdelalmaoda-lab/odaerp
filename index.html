@@ -5648,7 +5648,7 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 13px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Precio venta</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;line-height:1.1;margin-top:3px;">{{ prodPrecioFmt }}</div></div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 13px;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Utilidad · margen</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;line-height:1.1;margin-top:3px;color:{{ prodMargenColor }};">{{ prodMargenFmt }}</div><div style="font-size:11px;font-weight:700;color:{{ prodMargenColor }};">{{ prodMargenPct }}</div></div>
               </div>
-              <sc-if value="{{ prodCobraIva }}" hint-placeholder-val="{{ true }}"><div style="margin-top:8px;font-size:12px;color:var(--text-body);">Precio final con IVA: <strong>{{ prodPrecioConIvaFmt }}</strong> <span style="color:var(--text-muted);">(IVA {{ prodIvaFmt }} · el margen se calcula sobre el precio sin IVA)</span></div></sc-if>
+              <sc-if value="{{ prodCobraIva }}" hint-placeholder-val="{{ true }}"><div style="margin-top:8px;font-size:12px;color:var(--text-body);">El precio de venta ya incluye IVA · Base sin IVA: <strong>{{ prodPrecioNetoFmt }}</strong> <span style="color:var(--text-muted);">(IVA {{ prodIvaFmt }} · la utilidad y el margen se calculan sobre la base sin IVA)</span></div></sc-if>
               <sc-if value="{{ prodEsFabricado }}" hint-placeholder-val="{{ true }}"><div style="margin-top:10px;display:flex;gap:9px;align-items:flex-start;background:rgba(101,150,166,0.1);border:1px solid rgba(101,150,166,0.25);border-radius:var(--radius-sm);padding:10px 12px;"><span style="color:#3F6A7A;display:flex;flex-shrink:0;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span><span style="font-size:11.5px;color:var(--text-body);line-height:1.5;">El costo usa el <strong>costo actual</strong> de las materias. El consumo real es <strong>PEPS</strong> (primero en entrar, primero en salir): se descuenta primero el lote más antiguo y el costo se recalcula cuando cambian los precios. Esto se controla en Inventario.</span></div></sc-if>
             </sc-if>
 
@@ -9039,11 +9039,14 @@ class Component extends DCLogic {
     oils.forEach(code=>{ const cod=this.nextCode('PT-',list); const formula=[...(d.formula||[]).map(f=>({materiaCodigo:f.materiaCodigo,cantidad:Number(f.cantidad)||0})), {materiaCodigo:code, cantidad:Number(d.cantidadAceite)||0}]; list.push({codigo:cod, nombre:this.bulkNombre(d.nombrePlantilla,code), formato:d.formato||'', tamano:d.tamano||'', precio:Number(d.precio)||0, cobraIva:(d.cobraIva!==false), iva:19, stockInicial:Number(d.stockInicial)||0, foto:'', formula}); n++; });
     this.setState({productos:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkProductos(list); this.toast(n+' producto'+(n===1?'':'s')+' creado'+(n===1?'':'s')); }
 
-  kitComponentPrecio(it){ if(it.tipo==='producto'){ const p=this.state.productos.find(x=>x.codigo===it.codigo); return p?(Number(p.precio)||0):0; } const m=this.state.materias.find(x=>x.codigo===it.codigo); return m?(Number(m.costo)||0):0; }
+  kitComponentPrecio(it){ if(it.tipo==='producto'){ const p=this.state.productos.find(x=>x.codigo===it.codigo); return p?this.productoPrecioNeto(p):0; } const m=this.state.materias.find(x=>x.codigo===it.codigo); return m?(Number(m.costo)||0):0; }
   kitComponentCosto(it){ if(it.tipo==='producto'){ const p=this.state.productos.find(x=>x.codigo===it.codigo); return p?this.productoCosto(p):0; } const m=this.state.materias.find(x=>x.codigo===it.codigo); return m?(Number(m.costo)||0):0; }
   kitSuma(k){ return (k.items||[]).reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0); }
   kitCosto(k){ return (k.items||[]).reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0); }
-  kitPrecioNeto(k){ const p=Number(k.precio)||0; return (k&&k.precioConIva)? Math.round(p/1.19) : p; }
+  kitPrecioNeto(k){ const p=Number(k.precio)||0; return (k&&k.cobraIva===false)? p : Math.round(p/1.19); }
+  // El precio guardado de un producto es SIEMPRE el precio final que paga el cliente (con IVA
+  // incluido si cobra IVA) — igual que en Shopify, ventas y cotizaciones. Neto = base sin IVA.
+  productoPrecioNeto(p){ const pr=Number(p&&p.precio)||0; return (p&&p.cobraIva===false)? pr : Math.round(pr/1.19); }
   nuevoKit(){ this.open('kit',{ codigo:this.nextCode('KIT-',this.state.kits), nombre:'', precio:'', foto:'', items:[], _selKitItem:'', _selCantidad:1, _new:true }); }
   editKit(k){ this.open('kit',{...k, items:(k.items||[]).slice(), _selKitItem:'', _selCantidad:1}); }
   askDelete(tipo,item){ this.setState({confirmDel:{tipo, codigo:item.codigo, nombre:item.nombre}}); }
@@ -14220,7 +14223,7 @@ Instrucciones de respuesta:
       out.qProd=st.qProd; out.onQProd=(e)=>this.setState({qProd:e.target.value});
       const q=(st.qProd||'').toLowerCase();
       out.productosVacio=st.productos.length===0;
-      out.productosView=st.productos.filter(p=>!q||(p.nombre+p.codigo+(p.formato||'')).toLowerCase().includes(q)).map(p=>{ const costo=this.productoCosto(p); const precio=Number(p.precio)||0; const margen=precio-costo; const pct=precio>0?margen/precio*100:0; const fs=this.formatoStyle(p.formato);
+      out.productosView=st.productos.filter(p=>!q||(p.nombre+p.codigo+(p.formato||'')).toLowerCase().includes(q)).map(p=>{ const costo=this.productoCosto(p); const precio=Number(p.precio)||0; const neto=this.productoPrecioNeto(p); const margen=neto-costo; const pct=neto>0?margen/neto*100:0; const fs=this.formatoStyle(p.formato);
         return {...p, fotoTiene:!!p.foto, fotoVacia:!p.foto, foto:p.foto||'', fotoNode:(p.foto?React.createElement('img',{src:p.foto,style:{width:'100%',height:'100%',objectFit:'cover'}}):null), costoFmt:this.fmt(costo), precioFmt:this.fmt(precio), margenFmt:this.fmt(margen), margenPct:(precio>0?pct:0).toFixed(0)+'%', margenColor:margen>0?'#4C6149':(margen<0?'var(--oda-sale)':'var(--text-muted)'), margenBg:margen>0?'rgba(98,123,96,0.14)':(margen<0?'rgba(181,80,60,0.12)':'#EFE9DD'), formatoLabel:this.formatoLabel(p.formato), formatoBg:fs.bg, formatoFg:fs.fg, ingredientes:(p.formula||[]).length, esReventa:(p.esReventa===true), tipoTxt:(p.esReventa===true?'Reventa':((p.formula||[]).length+' en fórmula')), stockActual:this.productoStockActual(p), tamano:p.tamano||'—', stockInicial:(p.stockInicial||0), ivaTxt:((p.cobraIva!==false)?'Cobra IVA':'Sin IVA'), margenBajo:(st.reglasNeg&&st.reglasNeg.margenMinPct!=='')&&pct<(Number(st.reglasNeg.margenMinPct)||0), onEdit:()=>this.editProducto(p), onDelete:()=>this.askDelete('producto',p)}; });
       { const sel=(st.prodSel||[]);
         out.productosView=out.productosView.map(p=>{ const on=sel.indexOf(p.codigo)>=0; return {...p, sel:on, selBd:on?'var(--brand-primary)':'var(--border-strong)', selBg:on?'var(--brand-primary)':'transparent', selRowBg:on?'rgba(167,134,89,0.07)':'transparent', onSel:()=>this.prodSelToggle(p.codigo)}; });
@@ -15741,11 +15744,11 @@ Instrucciones de respuesta:
       out.revBtnBg=(d.esReventa===true)?'var(--brand-ink)':'transparent'; out.revBtnFg=(d.esReventa===true)?'#fff':'var(--text-muted)';
       out.prodCostoLabel=(d.esReventa===true)?'Costo de compra':'Costo fórmula';
       const costo=(d.esReventa===true)? (Number(d.costoCompra)||0) : (d.formula||[]).reduce((a,f)=>a+this.refCostoUnit(f.materiaCodigo)*(Number(f.cantidad)||0),0);
-      const precio=Number(d.precio)||0; const incl=(d.precioConIva===true); const cobraIva=(d.cobraIva!==false); const neto= incl? Math.round(precio/1.19) : precio; const precioConIva= incl? precio : (cobraIva? precio*1.19 : precio); const margen=neto-costo;
+      const precio=Number(d.precio)||0; const cobraIva=(d.cobraIva!==false); const incl=cobraIva; const neto= cobraIva? Math.round(precio/1.19) : precio; const precioConIva=precio; const margen=neto-costo;
       out.prodCostoFmt=this.fmt(Math.round(costo)); out.prodPrecioFmt=this.fmt(precio); out.prodMargenFmt=this.fmt(Math.round(margen));
       out.prodMargenPct=(neto>0?margen/neto*100:0).toFixed(1)+'%';
       out.prodMargenColor= margen>0?'#4C6149':(margen<0?'var(--oda-sale)':'var(--text-muted)');
-      out.prodCobraIva=(cobraIva||incl); out.prodPrecioConIvaFmt=this.fmt(Math.round(precioConIva)); out.prodIvaFmt=this.fmt(Math.round(precioConIva-neto));
+      out.prodCobraIva=(cobraIva||incl); out.prodPrecioConIvaFmt=this.fmt(Math.round(precioConIva)); out.prodPrecioNetoFmt=this.fmt(Math.round(neto)); out.prodIvaFmt=this.fmt(Math.round(precioConIva-neto));
       out.prodFoto=d.foto||''; out.prodTieneFoto=!!d.foto; out.prodSinFoto=!d.foto; out.prodFotoNode=(d.foto?React.createElement('img',{src:d.foto,style:{width:'100%',height:'100%',objectFit:'cover'}}):null);
       out.addFormulaItem=()=>this.addFormulaItem(); out.onFotoFile=(e)=>this.onFotoFile(e); out.quitarFoto=()=>this.quitarFoto(); out.onDraftCheck=(e)=>this.updateDraft(e.target.name,e.target.checked);
     }
@@ -15786,7 +15789,7 @@ Instrucciones de respuesta:
       out.kitItemsVacio=(d.items||[]).length===0;
       const suma=(d.items||[]).reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0);
       const costo=(d.items||[]).reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0);
-      const precio=Number(d.precio)||0; const precioNeto=(d.precioConIva? Math.round(precio/1.19):precio); const ahorro=suma-precioNeto; const margen=precioNeto-costo;
+      const precio=Number(d.precio)||0; const precioNeto=(d.cobraIva===false? precio : Math.round(precio/1.19)); const ahorro=suma-precioNeto; const margen=precioNeto-costo;
       out.kitSumaFmt=this.fmt(suma); out.kitPrecioFmt=this.fmt(precio); out.kitPrecioNetoFmt=this.fmt(precioNeto); out.kitAhorroFmt=this.fmt(ahorro); out.kitCostoFmt=this.fmt(costo); out.kitMargenFmt=this.fmt(margen);
       out.kitAhorroPct=(suma>0?ahorro/suma*100:0).toFixed(0)+'%';
       out.kitMargenPct=(precioNeto>0?margen/precioNeto*100:0).toFixed(0)+'%';
