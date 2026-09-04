@@ -11,13 +11,13 @@
 <title>OdA · Hub Intelligence</title>
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
-<link rel="stylesheet" href="fonts.css">
-<link rel="stylesheet" href="colors.css">
-<link rel="stylesheet" href="typography.css">
-<link rel="stylesheet" href="spacing.css">
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/colors.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/typography.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/tokens/base.css">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@800&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
-<script src="_ds_bundle.js"></script>
+<script src="_ds/oda-oasis-del-alma-design-system-35d6ca2c-4396-4407-b10b-7103e4f7d158/_ds_bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -58,6 +58,21 @@
   @media (max-width:520px){ .oda-kpi4{grid-template-columns:1fr !important;} }
   @media (max-width:900px){ .oda-grid2{grid-template-columns:1fr !important;} }
   .oda-mobile-only{display:none !important;}
+  /* --- Portátil / ventana angosta (821–1360 px): Conversaciones conserva el MISMO diseño de 3 columnas,
+     solo se aprieta: lista más angosta, y las acciones del chat bajan a una segunda fila en vez de
+     salirse o aplastar el nombre (en otros equipos con pantalla de 1366 px o zoom 125 % se veía distinto). --- */
+  @media (min-width:821px) and (max-width:1360px){
+    .oda-convgrid{grid-template-columns:56px minmax(240px,270px) minmax(300px,1fr) !important;}
+    .oda-convhead{flex-wrap:wrap !important;row-gap:8px !important;}
+    .oda-convhead > div[style*="flex: 1 1 auto"]{flex:1 1 140px !important;}
+    .oda-convhead .oda-convacts{display:flex !important;flex-wrap:wrap;gap:6px;flex-basis:100%;align-items:center;}
+    .oda-convhead .oda-convacts select{max-width:180px;}
+    .oda-convlist [style*="font-size: 11.5px"]{font-size:11px !important;}
+  }
+  @media (min-width:821px) and (max-width:1100px){
+    .oda-convgrid{grid-template-columns:56px minmax(220px,240px) minmax(280px,1fr) !important;}
+    .oda-convhead .oda-convlive{display:none !important;}
+  }
   @media (max-width:820px){
     /* --- Celular: lectura de informes y resúmenes --- */
     .oda-shell > main > header{height:64px !important;padding:0 14px !important;gap:10px !important;}
@@ -139,7 +154,7 @@
           <svg width="380" height="380" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"></path><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"></path></svg>
         </div>
         <div style="display:flex;align-items:center;gap:13px;position:relative;">
-          <img src="logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
+          <img src="uploads/logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
         </div>
         <div style="position:relative;">
           <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:18px;">Hub Intelligence de Negocio</div>
@@ -187,7 +202,7 @@
       <!-- SIDEBAR -->
       <aside class="oda-sidebar" style="background:#2A2419;color:var(--text-inverse);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;">
         <div class="oda-brandbar" style="height:85px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
-          <img src="logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
+          <img src="uploads/logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
           <div class="oda-brandtext" style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
             <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;color:rgba(251,248,242,0.92);">Hub</div>
             <div style="font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(251,248,242,0.45);margin-top:3px;">Intelligence de Negocio</div>
@@ -10050,7 +10065,7 @@ Instrucciones de respuesta:
     const total=this.cotTotal(c);
     const merc=(c.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0); const descPctG=Number(c.descuentoPct)||0; const descMonto=Math.round(merc*descPctG/100); const baseDesc=merc-descMonto; const factor=merc>0?baseDesc/merc:1; let ivaBase=0; (c.items||[]).forEach(it=>{ const line=(Number(it.unidades)||0)*(Number(it.valorUnit)||0)*factor; const p=(this.state.productos||[]).find(x=>x.codigo===(it.productoCodigo||it.referencia)); const cobra=p?(p.cobraIva!==false):true; if(cobra) ivaBase+=line; }); const ivaInc=Math.round(ivaBase*19/119); const ivaIniInc=Math.round((factor>0?ivaBase/factor:ivaBase)*19/119); const mercNeta=merc-ivaIniInc; const descNeto=mercNeta-(baseDesc-ivaInc);
     const ths='<tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:11px 14px;font-weight:600;">Producto</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Unid.</th>'+(hayDesc?'<th style="padding:11px 14px;text-align:right;font-weight:600;">Precio</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Desc.</th>':'')+'<th style="padding:11px 14px;text-align:right;font-weight:600;">Valor unit.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Subtotal</th></tr>';
-    const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.numero+'</title></head>'
+    const html=this._docPrintCss('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.numero+'</title></head>'
       +'<body style="font-family:Georgia,serif;color:#3A3326;max-width:760px;margin:0 auto;padding:40px 36px;background:#FBF8F2;">'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #A78659;padding-bottom:18px;margin-bottom:26px;">'
         +'<div><img src="'+this.LOGO_WORDMARK_BROWN+'" alt="Oasis del Alma" style="height:104px;width:auto;display:block;"><div style="font-size:12px;color:#5A4A33;font-weight:700;margin-top:10px;letter-spacing:0.02em;">ODA LABS S.A.S.</div></div>'
@@ -10067,7 +10082,7 @@ Instrucciones de respuesta:
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
-      +'</body></html>';
+      +'</body></html>');
     return html; }
   descargarCotizacion(c){ const html=this.cotDocHtml(c).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Cotizacion-'+(c.numero||'OdA')+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Cotización descargada · ábrela para guardarla como PDF'); }catch(e){ this.toast('No se pudo descargar la cotización'); } }
   previewCotizacion(c){ this.setState({modal:'cotpreview', cotPreviewHtml:this.cotDocHtml(c), cotPreviewNum:(c.numero||''), cotPreviewC:c, cotPreviewKind:'cotizacion'}); }
@@ -10086,7 +10101,7 @@ Instrucciones de respuesta:
     const subFull=(v.items||[]).reduce((a,it)=>a+Math.round((Number(it.unidades)||0)*(Number(it.valorUnit)||0)),0); const descPctG=Number(v.descuentoPct)||0; const descMonto=Math.round(subFull*descPctG/100); const total=subFull-descMonto+envio; const saldo=Math.max(0, total-pagado);
     const ths='<tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:11px 14px;font-weight:600;">Producto</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Unid.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Valor unit.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Subtotal</th></tr>';
     const num=v.ov||v.pedido||'—'; const metodo=v.metodoPago&&v.metodoPago!=='—'?v.metodoPago:'';
-    const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+num+'</title></head>'
+    const html=this._docPrintCss('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+num+'</title></head>'
       +'<body style="font-family:Georgia,serif;color:#3A3326;max-width:760px;margin:0 auto;padding:40px 36px;background:#FBF8F2;">'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #A78659;padding-bottom:18px;margin-bottom:26px;">'
         +'<div><img src="'+this.LOGO_WORDMARK_BROWN+'" alt="Oasis del Alma" style="height:104px;width:auto;display:block;"><div style="font-size:12px;color:#5A4A33;font-weight:700;margin-top:10px;letter-spacing:0.02em;">ODA LABS S.A.S.</div></div>'
@@ -10104,7 +10119,7 @@ Instrucciones de respuesta:
         +(saldo>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Saldo por cobrar</span><span>'+this.fmt(saldo)+'</span></div>'):'')
       +'</div>'
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
-      +'</body></html>';
+      +'</body></html>');
     return html; }
   descargarPedido(v){ const html=this.pedidoDocHtml(v).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Pedido-'+((v.ov||v.pedido||'OdA').replace(/[^\w-]/g,''))+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Pedido descargado · ábrelo para guardarlo como PDF'); }catch(e){ this.toast('No se pudo descargar el pedido'); } }
 
@@ -11062,7 +11077,11 @@ Instrucciones de respuesta:
   closeDocView(){ this.setState({docView:null}); }
   printDocView(){ try{ const f=document.getElementById('docViewFrame'); if(f&&f.contentWindow){ f.contentWindow.focus(); f.contentWindow.print(); } }catch(e){} }
   downloadDocView(){ const dv=this.state.docView; if(!dv) return; this._deliverDoc(dv.html, dv.fname, 'download'); }
+  // Sin encabezado ni pie del navegador al imprimir/guardar PDF (fecha, título, URL, 1/1):
+  // con @page{margin:0} Chrome no tiene dónde pintarlos; el margen visual vuelve por el body.
+  _docPrintCss(html){ if(/oda-print-clean/.test(html)) return html; const css='<style id="oda-print-clean">@page{size:A4;margin:0;}@media print{html,body{background:#fff !important;}body{margin:0 auto !important;padding:14mm 16mm !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>'; return html.indexOf('</head>')>=0? html.replace('</head>', css+'</head>') : css+html; }
   _deliverDoc(html, fname, mode){ try{
+      html=this._docPrintCss(html);
       if(mode==='view'){ this._openDocView(html, fname&&fname.replace(/\.html?$/i,'').replace(/[-_]/g,' '), fname); return; }
       const printScript='<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},400);};<\/scr'+'ipt>';
       const out=html.indexOf('</body>')>=0? html.replace('</body>', printScript+'</body>') : (html+printScript);
@@ -11844,7 +11863,7 @@ Instrucciones de respuesta:
       if(cr.modalidad==='unico'){ const fPago=cr.primeraCuota||cr.fecha; const meses=Math.max(0,Math.round((new Date((fPago||new Date().toISOString().slice(0,10))+'T00:00:00')-new Date((cr.fecha||fPago)+'T00:00:00'))/(1000*60*60*24*30))); const intUnico=Math.round(cap*((Number(cr.tasaMensual)||0)/100)*Math.max(1,meses)); const retUnico=aplicaRetenSim?Math.round(intUnico*(retenPctSim/100)):0; schTable='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#8A8073;margin:22px 0 8px;">Simulación del valor a devolver</div><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:8px 12px;font-weight:600;">Fecha de pago</th><th style="padding:8px 12px;font-weight:600;text-align:right;">Capital</th><th style="padding:8px 12px;font-weight:600;text-align:right;">Interés</th>'+(aplicaRetenSim?'<th style="padding:8px 12px;font-weight:600;text-align:right;">Retención '+retenPctSim+'%</th>':'')+'<th style="padding:8px 12px;font-weight:600;text-align:right;">Valor real a devolver</th></tr></thead><tbody><tr><td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;">'+this.fmtFecha(fPago)+'</td><td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(cap)+'</td><td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(intUnico)+'</td>'+(aplicaRetenSim?('<td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;color:#B5503C;">−'+this.fmt(retUnico)+'</td>'):'')+'<td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(cap+intUnico-retUnico)+'</td></tr></tbody></table>'; }
       else if(cr.modalidad==='soloInteres'){ const per=cr.periodicidadInt||'mensual'; const perLbl=({semanal:'Semanal',quincenal:'Quincenal',mensual:'Mensual',trimestral:'Trimestral'})[per]||'Mensual'; const montoPer=this.credInteresPeriodico(cr); const retPer=aplicaRetenSim?Math.round(montoPer*(retenPctSim/100)):0; schTable='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#8A8073;margin:22px 0 8px;">Simulación de pagos de interés</div><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:8px 12px;font-weight:600;">Periodicidad</th><th style="padding:8px 12px;font-weight:600;text-align:right;">Interés por período</th>'+(aplicaRetenSim?'<th style="padding:8px 12px;font-weight:600;text-align:right;">Retención '+retenPctSim+'%</th><th style="padding:8px 12px;font-weight:600;text-align:right;">Valor real por período</th>':'')+'<th style="padding:8px 12px;font-weight:600;text-align:right;">Capital (al final)</th></tr></thead><tbody><tr><td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;">'+perLbl+'</td><td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(montoPer)+'</td>'+(aplicaRetenSim?('<td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;color:#B5503C;">−'+this.fmt(retPer)+'</td><td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(montoPer-retPer)+'</td>'):'')+'<td style="padding:8px 12px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(cap)+'</td></tr></tbody></table>'; }
     }
-    const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Condiciones · '+(cr.nombre||'')+'</title></head>'
+    const html=this._docPrintCss('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Condiciones · '+(cr.nombre||'')+'</title></head>'
       +'<body style="font-family:Georgia,serif;color:#3A3326;max-width:760px;margin:0 auto;padding:40px 36px;background:#FBF8F2;">'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #A78659;padding-bottom:18px;margin-bottom:26px;">'
         +'<div><img src="'+this.LOGO_WORDMARK_BROWN+'" alt="Oasis del Alma" style="height:88px;width:auto;display:block;"><div style="font-size:12px;color:#5A4A33;font-weight:700;margin-top:10px;letter-spacing:0.02em;">ODA LABS S.A.S.</div></div>'
@@ -11856,7 +11875,7 @@ Instrucciones de respuesta:
       +(cr.nota?('<div style="margin-top:22px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota adicional:</strong> '+cr.nota+'</div>'):'')
       +'<div style="margin-top:48px;display:flex;justify-content:space-between;gap:40px;font-size:12.5px;"><div style="flex:1;border-top:1px solid #3A3326;padding-top:8px;text-align:center;">Firma del prestamista<br>'+prestamista+'</div><div style="flex:1;border-top:1px solid #3A3326;padding-top:8px;text-align:center;">Firma del prestatario<br>'+prestatario+'</div></div>'
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">ODA LABS S.A.S. · NIT 902.063.571-6 · Cali, Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
-      +'</body></html>';
+      +'</body></html>');
     return html; }
   previewCredito(id){ const cr=this.credList().find(x=>x.id===id); if(!cr) return; this.setState({modal:'cotpreview', cotPreviewHtml:this.credDocHtml(cr), cotPreviewNum:(cr.nombre||''), cotPreviewC:cr, cotPreviewKind:'credito'}); }
   descargarCredito(cr){ const html=this.credDocHtml(cr).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Condiciones-'+((cr.nombre||'OdA').replace(/[^a-z0-9]+/gi,'-'))+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Documento descargado · ábrelo para guardarlo como PDF'); }catch(e){ this.toast('No se pudo descargar el documento'); } }
@@ -13719,7 +13738,7 @@ Instrucciones de respuesta:
       out.tabSinBg=_tbg(tab==='sin'); out.tabSinFg=_tfg(tab==='sin');
       out.tabTodosBg=_tbg(tab==='todos'); out.tabTodosFg=_tfg(tab==='todos');
       const _row=(c)=>{ const last=_last(c); const asigN=c.asignadoA? this.leadUName(c.asignadoA):''; const esp=_esperando(c);
-        const q=(last.de==='bot'?'Oda: ':(last.de==='asesor'? ((this.leadUName(c.asignadoA)||'Asesor')+': ') : '')); const t0=String(last.texto||'').replace(/^\[IMG:.*\]$/,'📷 imagen'); const prev=q+t0;
+        const q=(last.de==='bot'?'Oda: ':(last.de==='asesor'? ((this.leadUName(last.asesor||c.asignadoA)||'Asesor')+': ') : '')); const t0=String(last.texto||'').replace(/^\[IMG:.*\]$/,'📷 imagen'); const prev=q+t0;
         return { esRow:true, id:c.id, cliente:c.cliente||c.id, esWa:c.canal==='whatsapp', esIg:c.canal==='instagram', esMs:c.canal==='messenger', esWeb:c.canal==='web', logoBg:_logoBg(c.canal),
           tiempo:(esp? (_minTxt(_esperaMin(c))||last.hora||'') : (last.hora||'')), tiempoFg:(esp?'#B5503C':'var(--text-muted)'),
           preview:prev.slice(0,58)+(prev.length>58?'…':''), online:(c.canal==='web' && _wo.indexOf(String(c.id))>=0),
