@@ -5591,6 +5591,12 @@
                   <sc-if value="{{ prodYaEnShopify }}" hint-placeholder-val="{{ false }}"><div style="margin-top:6px;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--text-muted);">Ya existe en Shopify · id {{ prodShopifyId }}</div></sc-if>
                 </div>
               </div>
+              <sc-if value="{{ prodExiste }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:14px;padding:12px 14px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-linen);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                  <div style="font-size:12px;color:var(--text-body);line-height:1.45;max-width:520px;"><strong style="color:var(--text-strong);">Corregir el costo de lo ya vendido.</strong> Cada venta guarda el costo del momento; si la estructura estaba mal desde el principio, esto la recalcula con la estructura actual en todas las ventas de este producto (y de los kits que lo incluyen). Guarda primero la estructura corregida.</div>
+                  <button onClick="{{ onRecongelarCosto }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;border:1px solid var(--border-strong);background:var(--surface-raised);color:var(--text-strong);cursor:pointer;white-space:nowrap;">Recalcular costo en ventas anteriores</button>
+                </div>
+              </sc-if>
 
               <div style="margin-top:16px;">
                 <div style="font-size:12px;font-weight:700;color:var(--text-body);margin-bottom:7px;">Foto del producto</div>
@@ -9284,6 +9290,25 @@ class Component extends DCLogic {
   // Congela el costo actual en un ítem nuevo. Nunca pisa un snapshot ya guardado y no guarda
   // ceros (una materia sin costo cargado sigue calculándose en vivo hasta que tenga costo).
   _itemConCosto(it, code){ const prev=Number(it&&it.costoUnit)||0; if(prev>0) return prev; const c=Math.round(this.ventaItemCostoVivo(code)||0); return c>0? c : undefined; }
+  // Corrección MANUAL del costo congelado de UN producto (p. ej. la estructura tenía un envase
+  // equivocado desde el principio): recongela costoUnit con la estructura ACTUAL en todos los
+  // ítems de ese producto y de los kits que lo contienen. Acotado al producto, con confirmación,
+  // y sube a la nube solo las ventas tocadas (invariante 4). Nunca corre solo.
+  recongelarCostoProducto(code){
+    if(!this.canWriteMod('desarrollo')){ this.toast('Sin permiso de escritura en Desarrollo'); return; }
+    const p=(this.state.productos||[]).find(x=>x.codigo===code); if(!p) return;
+    const nuevo=Math.round(this.ventaItemCostoVivo(code)||0); if(nuevo<=0){ this.toast('El producto no tiene costo calculable hoy (revisa la estructura)'); return; }
+    const kitsCon=(this.state.kits||[]).filter(k=>(k.items||[]).some(ki=>ki.tipo==='producto'&&ki.codigo===code)).map(k=>k.codigo);
+    const codes=new Set([code,...kitsCon]); const cache={}; const costoDe=(c)=>{ if(cache[c]===undefined) cache[c]=Math.round(this.ventaItemCostoVivo(c)||0); return cache[c]; };
+    const tocadas=[]; let nItems=0, antes=0, despues=0;
+    const list=(this.state.ventas||[]).map(v=>{ if(this._esHistorico(v)) return v; let cambio=false;
+      const items=(v.items||[]).map(it=>{ if(!codes.has(it.productoCodigo)) return it; const c=costoDe(it.productoCodigo); if(c<=0||c===(Number(it.costoUnit)||0)) return it; const u=Number(it.unidades)||0; antes+=u*(Number(it.costoUnit)||0); despues+=u*c; cambio=true; nItems++; return {...it,costoUnit:c}; });
+      if(!cambio) return v; const nv={...v,items}; tocadas.push(nv); return nv; });
+    if(!tocadas.length){ this.toast('Ninguna venta tenía un costo distinto al actual'); return; }
+    const msg='Se va a recalcular el costo congelado de '+nItems+' ítem(s) en '+tocadas.length+' venta(s) de '+p.nombre+(kitsCon.length?(' y de los kits '+kitsCon.join(', ')):'')+'.\nCosto total registrado: '+this.fmt(Math.round(antes))+' → '+this.fmt(Math.round(despues))+'.\nEsto cambia el costo de ventas y el margen de esos meses en los informes. ¿Continuar?';
+    if(!window.confirm(msg)) return;
+    this.setState({ventas:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(tocadas);
+    this.toast('Costo recalculado en '+tocadas.length+' venta(s)'); }
   // Diagnóstico de referencias vendidas: producto/kit inexistente, sin estructura o sin costo.
   refDiagnostico(code){ const c=String(code||'').trim(); if(!c) return 'Sin referencia';
     const p=(this.state.productos||[]).find(x=>x.codigo===c);
@@ -15698,6 +15723,8 @@ Instrucciones de respuesta:
     out.formatoOpts=this.formatoOpciones();
     if(st.modal==='producto'){ const d=st.draft;
       out.prodCrearShopify=(d.crearShopify===true);
+      out.prodExiste=(st.productos||[]).some(x=>x.codigo===d.codigo);
+      out.onRecongelarCosto=()=>this.recongelarCostoProducto(d.codigo);
       out.prodYaEnShopify=!!String(d.shopifyProductId||'').trim(); out.prodShopifyId=String(d.shopifyProductId||'');
       out.materiasFormulaOptions=this.ordenarPorCodigo([ ...(st.mezclas||[]).map(mz=>({codigo:mz.codigo,label:'Mezcla · '+mz.nombre+' ('+this.fmt(Math.round(this.mezclaCostoUnit(mz)))+'/ml)'})), ...st.materias.map(m=>({codigo:m.codigo,label:m.codigo+' · '+m.nombre+' ('+this.fmt(m.costo)+'/'+m.unidad+')'})) ]);
       this.combo(out,'matFormPick','_selMateria',out.materiasFormulaOptions);
