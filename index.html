@@ -2764,6 +2764,25 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:48px 20px;text-align:center;color:var(--text-muted);font-size:13px;">Sin consumo de materias en la ventana de análisis. Registra ventas o amplía la ventana para calcular la reposición.</div>
               </sc-if>
               <sc-if value="{{ reoHayRows }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px;max-width:420px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:7px 12px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.2" style="flex-shrink:0;"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                  <input value="{{ reoQ }}" onChange="{{ onReoQ }}" placeholder="Buscar materia, código o proveedor…" style="flex:1;min-width:0;font-family:inherit;font-size:12.5px;border:none;outline:none;background:transparent;color:var(--text-strong);"></input>
+                </div>
+                <select value="{{ reoFiltro }}" onChange="{{ onReoFiltro }}" style="flex-shrink:0;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
+                  <option value="todos">Todos</option>
+                  <option value="ya">Comprar ya</option>
+                  <option value="semana">Pedir esta semana</option>
+                  <option value="ok">Con cobertura</option>
+                  <option value="pt">Se venden como producto (PT)</option>
+                  <option value="mp">Solo materia prima</option>
+                </select>
+                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">{{ reoCountTxt }}</span>
+                <sc-if value="{{ reoHayFiltro }}" hint-placeholder-val="{{ false }}"><button onClick="{{ reoLimpiar }}" title="Limpiar" style="flex-shrink:0;display:flex;align-items:center;font-family:inherit;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:7px 9px;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></sc-if>
+              </div>
+              <sc-if value="{{ reoSinResultados }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:32px 20px;text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:12px;">Nada coincide con la búsqueda o el filtro.</div>
+              </sc-if>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
                 <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1180px;">
                   <thead><tr style="background:var(--surface-raised);text-align:left;">
@@ -2783,7 +2802,7 @@
                     <sc-for list="{{ reoRows }}" as="m" hint-placeholder-count="6">
                       <tr class="oda-row" style="border-top:1px solid var(--border-subtle);">
                         <td style="padding:13px 16px;font-weight:700;color:var(--brand-ink);white-space:nowrap;">{{ m.codigo }}</td>
-                        <td style="padding:13px 16px;font-weight:600;">{{ m.nombre }}</td>
+                        <td style="padding:13px 16px;font-weight:600;">{{ m.nombre }}<sc-if value="{{ m.esPT }}" hint-placeholder-val="{{ false }}"><span title="Esta materia también se vende tal cual como producto terminado" style="display:inline-block;margin-left:8px;font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(63,106,122,0.12);color:#3F6A7A;vertical-align:middle;">PT</span></sc-if></td>
                         <td style="padding:13px 16px;color:var(--text-body);">{{ m.proveedorNombre }}</td>
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ m.consumoTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ m.stockTxt }}</td>
@@ -9226,7 +9245,12 @@ class Component extends DCLogic {
     const dem={}; const add=(c,q)=>{ if(!c||!(q>0)) return; dem[c]=(dem[c]||0)+q; };
     const prodMap={}; (this.state.productos||[]).forEach(p=>{ prodMap[p.codigo]=p; });
     const kitMap={}; (this.state.kits||[]).forEach(k=>{ kitMap[k.codigo]=k; });
-    const addProducto=(code,u)=>{ const p=prodMap[code]; if(!p||p.esReventa) return; (p.formula||[]).forEach(f=>add(f.materiaCodigo,(Number(f.cantidad)||0)*u)); };
+    // Producto de reventa (materia que también se vende tal cual, crearPTDesdeMateria): su venta consume la
+    // materia del mismo código (o su fórmula de 1 unidad). Antes se saltaba y esas materias nunca salían en la hoja.
+    const matSet=new Set((this.state.materias||[]).map(m=>m.codigo));
+    const addProducto=(code,u)=>{ const p=prodMap[code]; if(!p) return;
+      if(p.esReventa){ if((p.formula||[]).length){ (p.formula||[]).forEach(f=>add(f.materiaCodigo,(Number(f.cantidad)||0)*u)); } else if(matSet.has(code)) add(code,u); return; }
+      (p.formula||[]).forEach(f=>add(f.materiaCodigo,(Number(f.cantidad)||0)*u)); };
     (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||!v.fecha||v.fecha<desde) return;
       (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(!u) return; const code=it.productoCodigo||it.referencia; const kis=this.kitItemsEn(code, v.fecha, it);
         if(kis&&kitMap[code]){ kis.forEach(ki=>{ const q=u*(Number(ki.cantidad)||1); if(ki.tipo==='producto') addProducto(ki.codigo,q); else add(ki.codigo,q); }); }
@@ -9249,7 +9273,8 @@ class Component extends DCLogic {
       const compra=Math.max(0,Math.ceil(r*(lead+cob)-proy));
       const fPedir=new Date(hoy+Math.max(0,diasCob-lead-ant)*86400000).toISOString().slice(0,10);
       let nivel='ok'; if(diasCob<=lead) nivel='ya'; else if(diasCob<=lead+ant) nivel='semana';
-      return {m, r, stock, tr, diasCob, rop, minSug, compra, fPedir, nivel};
+      const esPT=(this.state.productos||[]).some(p=>p.codigo===m.codigo);
+      return {m, r, stock, tr, diasCob, rop, minSug, compra, fPedir, nivel, esPT};
     }).sort((a,b)=>a.diasCob-b.diasCob); }
   aplicarReorden(){ const rows=this.reordenRows(); if(!rows.length){ this.toast('No hay consumo registrado en la ventana de análisis'); return; }
     const map={}; rows.forEach(x=>{ map[x.m.codigo]=x.rop; });
@@ -13559,11 +13584,16 @@ Instrucciones de respuesta:
     if(out.showInvReorden){ const cfg=this.reordenCfg();
       out.reoVentana=cfg.ventana; out.reoLead=cfg.lead; out.reoAnticip=cfg.anticip; out.reoCobertura=cfg.cobertura;
       out.onReoVentana=(e)=>this.setReordenCfg('ventana',e.target.value); out.onReoLead=(e)=>this.setReordenCfg('lead',e.target.value); out.onReoAnticip=(e)=>this.setReordenCfg('anticip',e.target.value); out.onReoCobertura=(e)=>this.setReordenCfg('cobertura',e.target.value);
-      const rows=this.reordenRows();
+      const rowsAll=this.reordenRows();
+      const _rq=String(st.reoQ||'').trim().toLowerCase(); const _rf=st.reoFiltro||'todos';
+      const rows=rowsAll.filter(x=>{ if(_rf==='ya'||_rf==='semana'||_rf==='ok'){ if(x.nivel!==_rf) return false; } else if(_rf==='pt'){ if(!x.esPT) return false; } else if(_rf==='mp'){ if(x.esPT) return false; }
+        if(!_rq) return true; return (x.m.codigo+' '+x.m.nombre+' '+(this.provNombre(x.m.proveedorCodigo)||'')).toLowerCase().includes(_rq); });
+      out.reoQ=st.reoQ||''; out.onReoQ=(e)=>this.setState({reoQ:e.target.value}); out.reoFiltro=_rf; out.onReoFiltro=(e)=>this.setState({reoFiltro:e.target.value});
+      out.reoHayFiltro=!!_rq||_rf!=='todos'; out.reoLimpiar=()=>this.setState({reoQ:'',reoFiltro:'todos'}); out.reoCountTxt=rows.length+' de '+rowsAll.length;
       const estilo={ya:{label:'Comprar ya',bg:'rgba(181,80,60,0.12)',fg:'#B5503C'},semana:{label:'Pedir esta semana',bg:'rgba(193,170,129,0.3)',fg:'#7A6035'},ok:{label:'Con cobertura',bg:'rgba(98,123,96,0.14)',fg:'#4C6149'}};
-      out.reoRows=rows.map(x=>{ const es=estilo[x.nivel]; const u=x.m.unidad||''; return { codigo:x.m.codigo, nombre:x.m.nombre, proveedorNombre:this.provNombre(x.m.proveedorCodigo)||'—', consumoTxt:((x.r>=10?String(Math.round(x.r)):x.r.toFixed(2))+' '+u+'/día'), stockTxt:(this.fmtCant(Math.round(x.stock))+' '+u), transitoTxt:(x.tr>0?('+'+this.fmtCant(Math.round(x.tr))+' '+u):'—'), transitoColor:(x.tr>0?'#4C6149':'var(--text-muted)'), cobTxt:((x.diasCob>365?'+365':String(Math.round(x.diasCob)))+' días'), cobColor:(x.nivel==='ya'?'#B5503C':(x.nivel==='semana'?'#7A6035':'var(--text-strong)')), ropTxt:(this.fmtCant(x.rop)+' '+u), minTxt:this.fmtCant(x.minSug), compraTxt:(x.compra>0?(this.fmtCant(x.compra)+' '+u):'—'), fPedirTxt:this.fmtFecha(x.fPedir), esLabel:es.label, esBg:es.bg, esFg:es.fg }; });
-      out.reoVacio=rows.length===0; out.reoHayRows=rows.length>0;
-      out.reoNumYa=rows.filter(x=>x.nivel==='ya').length; out.reoNumSemana=rows.filter(x=>x.nivel==='semana').length; out.reoNumOk=rows.filter(x=>x.nivel==='ok').length;
+      out.reoRows=rows.map(x=>{ const es=estilo[x.nivel]; const u=x.m.unidad||''; return { codigo:x.m.codigo, nombre:x.m.nombre, proveedorNombre:this.provNombre(x.m.proveedorCodigo)||'—', consumoTxt:((x.r>=10?String(Math.round(x.r)):x.r.toFixed(2))+' '+u+'/día'), stockTxt:(this.fmtCant(Math.round(x.stock))+' '+u), transitoTxt:(x.tr>0?('+'+this.fmtCant(Math.round(x.tr))+' '+u):'—'), transitoColor:(x.tr>0?'#4C6149':'var(--text-muted)'), cobTxt:((x.diasCob>365?'+365':String(Math.round(x.diasCob)))+' días'), cobColor:(x.nivel==='ya'?'#B5503C':(x.nivel==='semana'?'#7A6035':'var(--text-strong)')), ropTxt:(this.fmtCant(x.rop)+' '+u), minTxt:this.fmtCant(x.minSug), compraTxt:(x.compra>0?(this.fmtCant(x.compra)+' '+u):'—'), fPedirTxt:this.fmtFecha(x.fPedir), esLabel:es.label, esBg:es.bg, esFg:es.fg, esPT:!!x.esPT }; });
+      out.reoVacio=rowsAll.length===0; out.reoHayRows=rowsAll.length>0; out.reoSinResultados=rowsAll.length>0&&rows.length===0;
+      out.reoNumYa=rowsAll.filter(x=>x.nivel==='ya').length; out.reoNumSemana=rowsAll.filter(x=>x.nivel==='semana').length; out.reoNumOk=rowsAll.filter(x=>x.nivel==='ok').length;
       out.aplicarReorden=()=>this.aplicarReorden();
       out.generarOrdenesReorden=()=>this._withAudit(()=>this.generarOrdenesReorden());
       out.canWriteReorden = acc? (acc.admin || acc.compras==='write' || acc['compras__reorden']==='write') : false;
