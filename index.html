@@ -1217,7 +1217,7 @@
                 </div>
                 <sc-if value="{{ backupHistHay }}" hint-placeholder-val="{{ false }}">
                 <div style="padding:12px 20px;border-bottom:1px solid var(--border-subtle);">
-                  <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;">Historial de copias (últimas 10)</div>
+                  <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;">Historial de copias · <span style="text-transform:none;letter-spacing:0;font-weight:600;">{{ backupHistNota }}</span></div>
                   <div style="display:flex;flex-direction:column;gap:6px;">
                     <sc-for list="{{ backupHist }}" as="h" hint-placeholder-count="0">
                       <div style="display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-raised);">
@@ -7912,6 +7912,7 @@ class Component extends DCLogic {
   componentDidMount(){
     try{ this._odaEstadoInstall(); }catch(e){}
     setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
+    setTimeout(()=>{ try{ this._backupDiario(); }catch(e){} }, 12000);
     let data=null, sess=null;
     try{ data=JSON.parse(localStorage.getItem(this.STORAGE)); }catch(e){}
     try{ sess=JSON.parse(localStorage.getItem(this.SESSION)); }catch(e){}
@@ -7966,7 +7967,12 @@ class Component extends DCLogic {
     try{ const _pd=(window.__resources&&window.__resources.propuestaDoc)||'./propuesta-doc.js'; import(_pd).then(m=>{ this._buildPropDoc=m.buildPropuestaDoc; }).catch(()=>{}); }catch(e){}
   }
 
-  save(d){ try{ this._lsSet(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos,conteos:d.conteos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); const _lb=Number(localStorage.getItem('oda_hub_backup_ts_v1')||0); if(Date.now()-_lb>86400000){ this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); } }catch(e){} }catch(e){} }
+  save(d){ try{ this._lsSet(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos,conteos:d.conteos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); this._backupDiario(); }catch(e){} }catch(e){} }
+  // Una copia por DÍA CALENDARIO de uso (no cada 24 h exactas ni solo al cambiar algo): corre al
+  // guardar y también al abrir la app, así cada día que se abre el Hub deja su copia en el historial.
+  _backupDiario(){ try{ const hoy=new Date().toISOString().slice(0,10);
+    const hist=this.backupHistList(); if(hist.some(h=>String(h._fecha||'').slice(0,10)===hoy)) return;
+    this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); }catch(e){} }
   persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
   respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_conv_v1','oda_hub_agente_v1','oda_hub_movajustes_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
@@ -8000,8 +8006,9 @@ class Component extends DCLogic {
     try{ let hist=[]; try{ hist=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); }catch(_e){ hist=[]; }
       const hoy=fecha.slice(0,10); hist=hist.filter(h=>String(h._fecha||'').slice(0,10)!==hoy); hist.push(foto);
       hist.sort((a,b)=>String(b._fecha).localeCompare(String(a._fecha))); hist=hist.slice(0,10);
-      // Último recurso si aún no cabe: se van soltando las más viejas.
-      let guardado=false; while(!guardado && hist.length){ try{ localStorage.setItem('oda_hub_backup_hist_v1', JSON.stringify(hist)); guardado=true; }catch(qe){ hist=hist.slice(0,hist.length-1); } }
+      // Si no cabe: primero se sueltan las copias viejas SIN comprimir (pesan ~10x), después la más vieja.
+      let guardado=false; while(!guardado && hist.length){ try{ localStorage.setItem('oda_hub_backup_hist_v1', JSON.stringify(hist)); guardado=true; }catch(qe){
+        let i=-1; for(let k=hist.length-1;k>=0;k--){ if(!hist[k].gz){ i=k; break; } } if(i<0) i=hist.length-1; hist.splice(i,1); } }
     }catch(_e){}
   }catch(e){} }
   backupHistList(){ try{ const h=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); return Array.isArray(h)?h:[]; }catch(e){ return []; } }
@@ -14865,8 +14872,9 @@ Instrucciones de respuesta:
       // respaldo de datos
       let _ls=0; try{ _ls=Number(localStorage.getItem('oda_hub_lastsave_v1')||0); }catch(e){}
       out.backupLastSaveFmt=_ls? this.fmtDateTime(_ls) : 'Sin cambios todavía';
-      let _bt=0; try{ const _r=localStorage.getItem('oda_hub_backup_v1'); if(_r){ const _d=JSON.parse(_r); _bt=_d._fecha? Date.parse(_d._fecha):0; } }catch(e){}
-      out.backupAutoHay=!!_bt; out.backupAutoFechaFmt=_bt? this.fmtDateTime(_bt) : 'Se generará con el primer cambio';
+      let _bt=0; try{ const _r=localStorage.getItem('oda_hub_backup_gz_v1')||localStorage.getItem('oda_hub_backup_v1'); if(_r){ const _d=JSON.parse(_r); _bt=_d._fecha? Date.parse(_d._fecha):0; } }catch(e){}
+      out.backupAutoHay=!!_bt; out.backupAutoFechaFmt=_bt? this.fmtDateTime(_bt) : 'Se generará al abrir la app';
+      { const _n=this.backupHistList().length; out.backupHistNota=(_n<10? ('Se guarda una copia por cada día que se abre el Hub · llevas '+_n+' de 10 días') : 'Últimas 10'); }
       out.onDescargarRespaldo=()=>this.descargarRespaldo();
       out.onRestaurarRespaldo=(e)=>this.restaurarRespaldo(e);
       out.onRestaurarAuto=()=>this.restaurarAutoBackup();
