@@ -1999,7 +1999,7 @@
                         <td style="padding:13px 16px;text-align:right;color:var(--text-body);white-space:nowrap;">{{ r.costoFmt }}</td>
                         <td style="padding:13px 16px;text-align:right;font-weight:700;white-space:nowrap;">{{ r.valorFmt }}</td>
                         <td style="padding:13px 16px;"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:{{ r.estadoBg }};color:{{ r.estadoFg }};">{{ r.estadoLabel }}</span></td>
-                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button onClick="{{ r.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:1px solid var(--brand-ink);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);border-color:var(--brand-hover);">Conteo</button><sc-if value="{{ r.verInicial }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onAjustar }}" title="Corregir el saldo inicial (Administrador)" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Inicial</button></sc-if></div></td></sc-if>
+                        <sc-if value="{{ canWriteInv }}" hint-placeholder-val="{{ true }}"><td style="padding:13px 16px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button onClick="{{ r.onConteo }}" title="Registrar un conteo físico" style="font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--brand-ink);border:1px solid var(--brand-ink);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="background:var(--brand-hover);border-color:var(--brand-hover);">Conteo</button><button onClick="{{ r.onProgramar }}" title="Programar un conteo: crea un recordatorio con responsable" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 11h18"></path></svg>Programar</button><button onClick="{{ r.onKardex }}" title="Abrir el kardex de este item en otra pestaña" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"></path></svg>Kardex</button><sc-if value="{{ r.verInicial }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onAjustar }}" title="Corregir el saldo inicial (Administrador)" style="font-family:inherit;font-size:12px;font-weight:700;color:var(--text-muted);background:none;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer;white-space:nowrap;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">Inicial</button></sc-if></div></td></sc-if>
                       </tr>
                     </sc-for>
                   </tbody>
@@ -9538,7 +9538,7 @@ Instrucciones de respuesta:
         const pn=this.pedidoNum(o);
         const exI = (o.shopifyId&&idxByShop.has(String(o.shopifyId))) ? idxByShop.get(String(o.shopifyId)) : (pn&&idxByPed.has(pn)? idxByPed.get(pn) : -1);
         const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0, costoUnit:this._itemConCosto(it, code), kitItems:this._itemKitSnap(it, code, o.fecha) }; });
-        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanal(o.canal||'Página Web'), bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'' };
+        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanal(o.canal||'Página Web'), bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined) };
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
           const ex=list[exI];
@@ -9548,7 +9548,7 @@ Instrucciones de respuesta:
           // para que Shopify no vuelva a descuadrar cuentas ya conciliadas.
           const merged={ ...ex,
             items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, canal:(ex.canal||bruto0.canal), bodega:(ex.bodega||bruto0.bodega),
-            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), id:ex.id };
+            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), atrib:(ex.atrib&&ex.atrib.fuente? ex.atrib : bruto0.atrib), id:ex.id };
           if(o.cancelado){ merged.pagado=0; merged.envio=0; }
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
           touched.add(list[exI].id);
@@ -10318,6 +10318,9 @@ Instrucciones de respuesta:
   _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email;
     this.setState({cloudUser:{id:user.id,email:user.email,nombre}});
     this.cloudSyncMyProfile(user.id,nombre); this.cloudSubscribe(); this.cloudStartAutoRefresh();
+    // Pestaña abierta desde «Kardex» en Existencias: el item viene en el hash. Se aplica de una vez
+    // (la copia local ya suele tener el item) y otra vez cuando bajen materias/productos.
+    if(/kardex=/.test(String(window.location.hash||''))){ this._kardexDesdeUrl(); }
     const tandas=[
       ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); },
       ()=>{ this.cloudLoadMaterias(); this.cloudLoadProveedores(); this.cloudLoadOrdenes(); this.cloudLoadProfiles(); this.cloudLoadLeads(); },
@@ -11244,6 +11247,24 @@ Instrucciones de respuesta:
     if(m) return {tipo:'materia', nombre:m.nombre, unidad:m.unidad||'und', label:this.tipoLabelInv(m.tipo), item:m};
     if(p) return {tipo:'producto', nombre:p.nombre, unidad:'und', label:'Reventa', item:p};
     return null; }
+  // Programar conteo = un recordatorio (módulo Inicio) precargado con el item; el responsable se
+  // elige como invitado en el mismo modal. Guarda la referencia del item en el título/detalle.
+  programarConteo(codigo){ const ref=this._conteoRef(codigo); if(!ref){ this.toast('No se encontró el item'); return; }
+    if(!this.cloudOn()){ this.toast('Programar conteos requiere la nube activa'); return; }
+    const d=new Date(); d.setDate(d.getDate()+1); const fecha=d.toISOString().slice(0,10);
+    const sis=this.conteoSistema? this.conteoSistema(codigo) : null;
+    this.setState({modal:'rec', recVerId:null, draft:{ titulo:'Conteo físico · '+codigo+' · '+ref.nombre,
+      detalle:'Contar '+ref.label.toLowerCase()+' '+codigo+' ('+ref.nombre+')'+(sis!=null? '. Stock en sistema hoy: '+this.fmtCant(Math.round(sis))+' '+ref.unidad:'')+'. Registrar el resultado en Inventario → Existencias → Conteo.',
+      fecha, hora:'09:00', avisoMin:60, invitados:[], _conteoCodigo:codigo }}); }
+  // Kardex en otra pestaña: la URL lleva #kardex=CODIGO; al arrancar, _kardexDesdeUrl lo abre.
+  abrirKardexTab(codigo){ const ref=this._conteoRef(codigo); const tipo=ref? ref.tipo : 'materia';
+    try{ const u=new URL(window.location.href); u.hash='kardex='+encodeURIComponent(codigo)+'&tipo='+tipo; window.open(u.toString(),'_blank','noopener'); }catch(e){ this.toast('No se pudo abrir la pestaña'); } }
+  _kardexDesdeUrl(){ try{ const h=String(window.location.hash||''); const m=h.match(/kardex=([^&]+)/); if(!m) return;
+    const codigo=decodeURIComponent(m[1]); const t=h.match(/tipo=(materia|producto|mezcla)/); const ref=this._conteoRef(codigo); const tipo=(ref&&ref.tipo)||(t?t[1]:'materia');
+    this.setState({module:'inventario', sub:'kardex', kardexTipo:tipo, kardexCodigo:codigo, kardexText:undefined});
+    // Si el item aún no está en la copia local, se vuelve a resolver el tipo cuando lleguen las tablas.
+    if(!ref){ setTimeout(()=>{ const r2=this._conteoRef(codigo); if(r2 && r2.tipo!==this.state.kardexTipo) this.setState({kardexTipo:r2.tipo, kardexCodigo:codigo}); }, 4000); }
+    history.replaceState(null,'',window.location.pathname+window.location.search); }catch(e){} }
   // Un conteo aprobado no mueve plata (no salió del banco) pero SÍ es un resultado del mes:
   // el faltante es una pérdida y el sobrante la reduce. Va al PyG como «Ajustes de inventario».
   // Excepción: «Error de registro anterior» no es una pérdida, es una corrección de digitación.
@@ -14104,6 +14125,19 @@ Instrucciones de respuesta:
       const _kpiAll=this.mktKpis(); if(_conInv.length && _kpiAll.spend>0 && _kpiAll.roas<2) alerts.unshift({tipo:'Cuenta', txt:'ROAS total '+_kpiAll.roas.toFixed(1)+'x en el periodo: la pauta no se está pagando sola.', color:'#B5503C'});
       const _ord={'Cuenta':0,'Sin ventas':1,'Fatiga de anuncio':2,'ROAS bajo':3,'CTR bajo':4,'Pausada con buen retorno':5,'Oportunidad':6}; alerts.sort((a,b)=>(_ord[a.tipo]??9)-(_ord[b.tipo]??9));
       out.mktAlertas=alerts; out.mktAlertasVacio=alerts.length===0;
+      // ---- De dónde vienen los pedidos (atribución por enlace de entrada: UTM / gclid / fbclid / referente) ----
+      { const hoyISO=new Date().toISOString().slice(0,10), ymHoy=hoyISO.slice(0,7);
+        const rango=(f)=>{ if(!f) return false; if(_rk==='today') return f===hoyISO; if(_rk==='mes') return f.slice(0,7)===ymHoy; if(_rk==='mesant') return f.slice(0,7)===this.mesShift(ymHoy,-1); return f.slice(0,4)===hoyISO.slice(0,4); };
+        const FL={google_ads:['Google Ads','#3F6A7A'], meta_ads:['Meta Ads (Facebook · Instagram)','#7A5E36'], tiktok_ads:['TikTok Ads','#4A4550'], google_organico:['Google (búsqueda orgánica)','#4C6149'], redes:['Redes sociales (orgánico)','#8A5A7A'], email:['Correo','#5F7F8F'], whatsapp:['WhatsApp','#3C8F5A'], referido:['Otros sitios (referido)','#8C7A5B'], otro_utm:['Otro enlace con UTM','#8C7A5B'], directo:['Directo / sin rastro','#9b8e78'] };
+        const vs=(this.state.ventas||[]).filter(v=>!v.cancelada && v.origen==='shopify' && !this._esHistorico(v) && rango(this.parseFecha(v.fecha)));
+        const agg={}; let conAtrib=0; vs.forEach(v=>{ const a=v.atrib||{}; let k=a.fuente||'sin_dato'; if(k.startsWith('app_')) k='referido'; if(a.fuente) conAtrib++; if(!agg[k]) agg[k]={k,n:0,ing:0,camp:{}}; agg[k].n++; agg[k].ing+=this.ventaNeta(v); if(a.campana){ agg[k].camp[a.campana]=(agg[k].camp[a.campana]||0)+1; } });
+        const tot=vs.length||1; const rows=Object.values(agg).filter(r=>r.k!=='sin_dato').sort((a,b)=>b.ing-a.ing);
+        out.mktFuentes=rows.map(r=>{ const [l,c]=FL[r.k]||[r.k,'#8C7A5B']; const topCamp=Object.entries(r.camp).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]).join(' · ');
+          return { key:r.k, label:l, color:c, n:String(r.n), ing:this.fmt(Math.round(r.ing)), pct:Math.round(r.n/tot*100)+'%', barW:Math.max(2,Math.round(r.n/tot*100))+'%', camp:topCamp, hayCamp:!!topCamp }; });
+        out.mktFuentesVacio=rows.length===0; out.mktFuentesN=vs.length; out.mktFuentesSin=vs.length-conAtrib;
+        out.mktFuentesNota = vs.length? (conAtrib+' de '+vs.length+' pedidos con rastro de origen'+(vs.length-conAtrib>0? ' · los demás se completan al sincronizar Shopify':'')) : 'Sin pedidos web en el periodo';
+        const gAds=agg.google_ads? agg.google_ads : null; out.mktGoogleHay=!!gAds;
+        out.mktGoogleTxt = gAds? (gAds.n+' pedidos · '+this.fmt(Math.round(gAds.ing))+' desde Google Ads') : 'Todavía no hay pedidos con rastro de Google Ads · cuando la pauta arranque aparecerán aquí solos (gclid).'; }
       // creativos
       const crEst=(e)=>({ganador:{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',t:'Ganador'},activo:{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Activo'},fatiga:{bg:'rgba(181,80,60,0.14)',fg:'#B5503C',t:'Fatiga'}}[e]||{bg:'#EFE9DD',fg:'#A89F8E',t:e});
       out.mktCreativos=this.mktCreativoSource().map(cr=>{ const ep=crEst(cr.estado); const ctr=cr.impresiones>0?cr.clicks/cr.impresiones*100:0; return { nombre:cr.nombre, formato:cr.formato, copy:cr.copy, moodColor:this.metaMoodColor[cr.mood]||'#A78659', moodLabel:this.mktMoodLabel(cr.mood), ctrFmt:ctr.toFixed(2)+'%', spendFmt:this.fmt(cr.spend), impresionesFmt:fmtK(cr.impresiones), resultados:cr.resultados, estBg:ep.bg, estFg:ep.fg, estLabel:ep.t }; });
@@ -14366,7 +14400,7 @@ Instrucciones de respuesta:
         const matRows=mkRows(m=>mpTipos.includes(m.tipo)||esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)).map(m=>{ const cat=catOf(m); return {...m, cat, catLabel:catMeta[cat].label, catBg:catMeta[cat].bg, catFg:catMeta[cat].fg, stockTxt:m.stockActual+' '+(m.unidad||''), subTxt:'mín. '+(Number(m.stockMinimo)||0), valorNum:Math.round(this.materiaValor(m)), verInicial:esAdmin}; });
         const mezRows=(st.mezclas||[]).map(mz=>{ const ml=Math.round(this.mezclaMlStock(mz.codigo)); const val=Math.round(this.mezclaValorStock(mz.codigo)); const cu=ml>0? (val/ml) : this.mezclaCostoMlActual(mz.codigo); const lot=this.mezclaLotesProducidos(mz.codigo); const bajo=ml<=0; return {codigo:mz.codigo, nombre:'Mezcla '+mz.nombre, cat:'mez', catLabel:catMeta.mez.label, catBg:catMeta.mez.bg, catFg:catMeta.mez.fg, stockTxt:this.fmtCant(ml)+' ml', subTxt:Math.round(lot)+' lote(s)', stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu))+'/ml', valorFmt:this.fmt(val), valorNum:val, estadoLabel:bajo?'Sin stock':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', verInicial:false, onConteo:()=>this.nuevoConteo(mz.codigo)}; });
         const ptRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, cat:'pt', catLabel:catMeta.pt.label, catBg:catMeta.pt.bg, catFg:catMeta.pt.fg, stockTxt:stock+' und', subTxt:this.formatoLabel(p.formato), stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), valorNum:Math.round(stock*cu), estadoLabel:bajo?'Sin stock':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', verInicial:false, onConteo:()=>this.nuevoConteo(p.codigo)}; });
-        const todos=matRows.concat(mezRows).concat(ptRows);
+        const todos=matRows.concat(mezRows).concat(ptRows).map(r=>({...r, onProgramar:()=>this.programarConteo(r.codigo), onKardex:()=>this.abrirKardexTab(r.codigo)}));
         const cat=st.invFiltroCat||'todos'; const q=(st.qInv||'').trim().toLowerCase();
         const enCat=(r,c)=> c==='todos'? true : (c==='empenv'? (r.cat==='emp'||r.cat==='env') : r.cat===c);
         const filtradas=todos.filter(r=>enCat(r,cat)).filter(r=>!q || (r.codigo||'').toLowerCase().includes(q) || (r.nombre||'').toLowerCase().includes(q));
