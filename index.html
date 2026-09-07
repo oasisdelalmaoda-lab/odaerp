@@ -9398,7 +9398,9 @@ class Component extends DCLogic {
     // mensaje de regalo). Un producto de Shopify sin SKU con 100% de descuento (#5083, 7-sep: valorUnit 0,
     // valorBruto 109.900, nombre lleno) SÍ es una línea sin producto creado.
     const nom=String(it.producto||it.nombre||'').trim(); const bruto=Number(it.valorBruto)||0;
-    if(!code && !(Number(it.valorUnit)||0) && !bruto && !nom) return;
+    // Mensaje de regalo / nota: sin SKU, sin valor bruto, y el nombre es un emoji o texto de tarjeta (🎁, «mensaje», «tarjeta», «nota»).
+    const esNota=!bruto && (/^[\p{Extended_Pictographic}\s]*$/u.test(nom) || /regalo|mensaje|tarjeta|nota|dedicatoria|gift/i.test(nom));
+    if(!code && !(Number(it.valorUnit)||0) && (!nom || esNota)) return;
     let m=this.refDiag(code);
     // El costo que usa la venta es el congelado (costoUnit) o el vivo; si ambos dan 0 la línea está sin costo
     // aunque el catálogo hoy esté bien (p. ej. se congeló un 0 o el producto se arregló después sin recalcular).
