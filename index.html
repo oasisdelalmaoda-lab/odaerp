@@ -8166,7 +8166,8 @@ class Component extends DCLogic {
       this.setState({loginBusy:false,loginError:'Tu cuenta de nube ('+email+') no está vinculada a un usuario del sistema. La app encontró '+_n+' usuarios registrados'+(_sample?' ('+_sample+')':'')+'. Avísale al administrador.'}); try{ if(this._sb) this._sb.auth.signOut(); }catch(e){} return; }
     this._afterCloudLogin(user);
     const fm=this._firstModuleFor(lu);
-    this.setState({userId:lu.id, view:'app', loginPwd:'', loginEmail:'', loginError:'', loginBusy:false}, ()=>this.goModule(fm));
+    const _kdx=this._kardexPedido();
+    this.setState({userId:lu.id, view:'app', loginPwd:'', loginEmail:'', loginError:'', loginBusy:false}, ()=>{ this.goModule(fm); if(_kdx) this._kardexDesdeUrl(_kdx); });
     try{ localStorage.setItem(this.SESSION,JSON.stringify({userId:lu.id})); }catch(e){}
   }
   selectUser(id){ this.setState({loginStep:'password',loginPendingId:id,loginPwd:'',loginError:''}); }
@@ -10308,7 +10309,7 @@ Instrucciones de respuesta:
   cloudInit(){ const sb=this._sbClient(); if(!sb){ // librería aún no cargó: reintenta
       if((this._cloudTries=(this._cloudTries||0)+1)<40){ setTimeout(()=>this.cloudInit(),250); } return; }
     this.setState({cloudReady:true});
-    sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else this._afterCloudLogin(s.user); } });
+    sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else { this._afterCloudLogin(s.user); const _k=this._kardexPedido(); if(_k) setTimeout(()=>this._kardexDesdeUrl(_k),300); } } });
     try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
   }
   // Al entrar se bajaban ~28 tablas y se abrían ~25 suscripciones EN EL MISMO instante; con esa
@@ -10318,9 +10319,6 @@ Instrucciones de respuesta:
   _afterCloudLogin(user){ const nombre=(user.user_metadata&&user.user_metadata.nombre)||user.email;
     this.setState({cloudUser:{id:user.id,email:user.email,nombre}});
     this.cloudSyncMyProfile(user.id,nombre); this.cloudSubscribe(); this.cloudStartAutoRefresh();
-    // Pestaña abierta desde «Kardex» en Existencias: el item viene en el hash. Se aplica de una vez
-    // (la copia local ya suele tener el item) y otra vez cuando bajen materias/productos.
-    if(/kardex=/.test(String(window.location.hash||''))){ this._kardexDesdeUrl(); }
     const tandas=[
       ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); },
       ()=>{ this.cloudLoadMaterias(); this.cloudLoadProveedores(); this.cloudLoadOrdenes(); this.cloudLoadProfiles(); this.cloudLoadLeads(); },
@@ -11259,12 +11257,17 @@ Instrucciones de respuesta:
   // Kardex en otra pestaña: la URL lleva #kardex=CODIGO; al arrancar, _kardexDesdeUrl lo abre.
   abrirKardexTab(codigo){ const ref=this._conteoRef(codigo); const tipo=ref? ref.tipo : 'materia';
     try{ const u=new URL(window.location.href); u.hash='kardex='+encodeURIComponent(codigo)+'&tipo='+tipo; window.open(u.toString(),'_blank','noopener'); }catch(e){ this.toast('No se pudo abrir la pestaña'); } }
-  _kardexDesdeUrl(){ try{ const h=String(window.location.hash||''); const m=h.match(/kardex=([^&]+)/); if(!m) return;
-    const codigo=decodeURIComponent(m[1]); const t=h.match(/tipo=(materia|producto|mezcla)/); const ref=this._conteoRef(codigo); const tipo=(ref&&ref.tipo)||(t?t[1]:'materia');
-    this.setState({module:'inventario', sub:'kardex', kardexTipo:tipo, kardexCodigo:codigo, kardexText:undefined});
-    // Si el item aún no está en la copia local, se vuelve a resolver el tipo cuando lleguen las tablas.
-    if(!ref){ setTimeout(()=>{ const r2=this._conteoRef(codigo); if(r2 && r2.tipo!==this.state.kardexTipo) this.setState({kardexTipo:r2.tipo, kardexCodigo:codigo}); }, 4000); }
-    history.replaceState(null,'',window.location.pathname+window.location.search); }catch(e){} }
+  // El pedido de kardex viaja en el hash (#kardex=COD&tipo=…). Se captura al arrancar y se
+  // guarda en sessionStorage porque el login puede recargar la vista antes de aplicarlo.
+  _kardexPedido(){ try{ const h=String(window.location.hash||''); const m=h.match(/kardex=([^&]+)/);
+      if(m){ const p={codigo:decodeURIComponent(m[1]), tipo:((h.match(/tipo=(materia|producto|mezcla)/)||[])[1]||'')}; sessionStorage.setItem('oda_hub_kardex_pedido',JSON.stringify(p)); history.replaceState(null,'',window.location.pathname+window.location.search); return p; }
+      const s=sessionStorage.getItem('oda_hub_kardex_pedido'); return s? JSON.parse(s) : null; }catch(e){ return null; } }
+  _kardexDesdeUrl(p, intento){ p=p||this._kardexPedido(); if(!p||!p.codigo) return; intento=intento||0;
+    const ref=this._conteoRef(p.codigo); const tipo=(ref&&ref.tipo)||p.tipo||'materia';
+    this.setState({module:'inventario', sub:'kardex', kardexTipo:tipo, kardexCodigo:p.codigo, kardexText:undefined});
+    // Si el item aún no bajó de la nube, se vuelve a intentar (hasta ~20 s) para fijar el tipo correcto.
+    if(!ref && intento<10){ setTimeout(()=>this._kardexDesdeUrl(p, intento+1), 2000); return; }
+    try{ sessionStorage.removeItem('oda_hub_kardex_pedido'); }catch(e){} }
   // Un conteo aprobado no mueve plata (no salió del banco) pero SÍ es un resultado del mes:
   // el faltante es una pérdida y el sobrante la reduce. Va al PyG como «Ajustes de inventario».
   // Excepción: «Error de registro anterior» no es una pérdida, es una corrección de digitación.
