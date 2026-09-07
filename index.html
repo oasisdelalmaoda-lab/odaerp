@@ -400,6 +400,13 @@
                 <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;">Hola, {{ userName }}</div>
                 <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">{{ inicioFecha }} · esto es lo que tienes pendiente hoy</div>
               </div>
+              <sc-if value="{{ inicioProbShow }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ inicioProbIr }}" style="width:100%;text-align:left;font-family:inherit;display:flex;align-items:center;gap:12px;background:rgba(181,80,60,0.07);border:1px solid rgba(181,80,60,0.32);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:18px;cursor:pointer;color:#B5503C;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+                  <span style="flex:1;min-width:0;"><span style="display:block;font-size:13.5px;font-weight:800;">{{ inicioProbTitulo }}</span><span style="display:block;font-size:12px;color:var(--text-body);margin-top:2px;text-wrap:pretty;">{{ inicioProbDet }}</span></span>
+                  <span style="font-size:12px;font-weight:800;white-space:nowrap;">Ver en Ventas →</span>
+                </button>
+              </sc-if>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:18px;">
                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;">Alertas y recordatorios</h3>
@@ -552,6 +559,27 @@
               </div>
 
               <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Ventas por método de pago</div>
+                  <sc-if value="{{ infMetodosVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-muted);">Sin ventas en el mes.</div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:13px;">
+                    <sc-for list="{{ infMetodos }}" as="c" hint-placeholder-count="3">
+                      <div>
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:5px;">
+                          <div style="font-size:12.5px;font-weight:700;color:var(--text-body);">{{ c.metodo }}</div>
+                          <div style="display:flex;align-items:baseline;gap:8px;white-space:nowrap;">
+                            <span style="font-size:12.5px;font-weight:800;color:var(--text-heading);">{{ c.ing }}</span>
+                            <span style="font-size:10.5px;font-weight:800;color:{{ c.deltaFg }};">{{ c.delta }}</span>
+                          </div>
+                        </div>
+                        <div style="height:6px;background:rgba(167,134,89,0.14);border-radius:99px;overflow:hidden;margin-bottom:4px;">
+                          <div style="height:100%;width:{{ c.barra }};background:var(--brand-primary);border-radius:99px;"></div>
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);">{{ c.ped }} · {{ c.part }} del ingreso</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
                   <div style="font-size:13.5px;font-weight:800;color:var(--text-heading);margin-bottom:14px;">Ventas por canal</div>
                   <sc-if value="{{ infCanalesVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--text-muted);">Sin ventas en el mes.</div></sc-if>
@@ -7909,7 +7937,7 @@ class Component extends DCLogic {
     conteos:[], fConteoEstado:'pendiente',
   };
 
-  componentDidMount(){
+  componentDidMount(){ try{ window.__odaHub=this; }catch(e){}
     try{ this._odaEstadoInstall(); }catch(e){}
     setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
     setTimeout(()=>{ try{ this._backupDiario(); }catch(e){} }, 12000);
@@ -8547,6 +8575,7 @@ class Component extends DCLogic {
       L('Resultado operacional', this.fmt(Math.round(r.d.operacional))),
       L('Clientes', r.d.clientes+' compraron, '+r.d.nuevos+' nuevos y '+r.d.recurrentes+' recurrentes'),
       L('Ventas por canal', r.canales.map(c=>c.canal+' '+this.fmt(Math.round(c.ing))).join(' · ')||'sin datos'),
+      L('Ventas por método de pago', r.metodos.map(c=>c.metodo+' '+this.fmt(Math.round(c.ing))).join(' · ')||'sin datos'),
       L('Ciudades top', r.ciudades.slice(0,5).map(c=>c.ciudad+' '+this.fmt(Math.round(c.ing))).join(' · ')||'sin datos'),
       L('Inversión en pauta', this.fmt(Math.round(r.d.marketing))+(r.d.marketing>0? ' · ROAS '+(r.d.ingresos/r.d.marketing).toFixed(1)+'x · CAC '+this.fmt(Math.round(r.cac)) : '')),
       L('Inventario al cierre', this.fmt(Math.round(r.inv.fin))+' · rotación '+r.inv.rot.toFixed(2)+' veces · '+this.fmt(Math.round(r.inv.total))+' sin rotar hace 90 días'),
@@ -8573,6 +8602,10 @@ class Component extends DCLogic {
     const cAct=grup(d.vs, v=>this.canonCanal(v.canal)), cPrev=grup(dPrev.vs, v=>this.canonCanal(v.canal));
     const canales=Object.keys(cAct).map(k=>({ canal:k, ing:cAct[k].ing, ped:cAct[k].ped,
       part:(d.ingresos>0? cAct[k].ing/d.ingresos*100 : 0), prev:(cPrev[k]? cPrev[k].ing : 0) })).sort((a,b)=>b.ing-a.ing);
+    const _met=(v)=>{ const m=String(v.metodoPago||'').trim(); return m? (this.metodoNombreNorm? (this.metodoNombreNorm(m)||m) : m) : 'Sin método'; };
+    const mAct=grup(d.vs, _met), mPrev=grup(dPrev.vs, _met);
+    const metodos=Object.keys(mAct).map(k=>({ metodo:k, ing:mAct[k].ing, ped:mAct[k].ped,
+      part:(d.ingresos>0? mAct[k].ing/d.ingresos*100 : 0), prev:(mPrev[k]? mPrev[k].ing : 0) })).sort((a,b)=>b.ing-a.ing);
     const ciAct=grup(d.vs, v=>this.canonCiudad? this.canonCiudad(v.ciudad) : v.ciudad);
     const ciudades=Object.keys(ciAct).map(k=>({ ciudad:k, ing:ciAct[k].ing, ped:ciAct[k].ped,
       part:(d.ingresos>0? ciAct[k].ing/d.ingresos*100 : 0) })).sort((a,b)=>b.ing-a.ing);
@@ -8603,7 +8636,7 @@ class Component extends DCLogic {
     const prevFull = hd? this.infMesData(this.mesShift(ym,-1)) : dPrev;
     const yoyFull = hd? this.infMesData(this.mesShift(ym,-12)) : dYoY;
     const alertas=this.infAlertas(d, dPrev, inv, cart, caja);
-    return { ym, hd, d, dPrev, dYoY, prevFull, yoyFull, canales, ciudades, topCli, serie, inv, cart, caja, cac, alertas, gastosRef, diasCaja, proy };
+    return { ym, hd, d, dPrev, dYoY, prevFull, yoyFull, canales, metodos, ciudades, topCli, serie, inv, cart, caja, cac, alertas, gastosRef, diasCaja, proy };
   }
   infExportExcel(){
     if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando, intenta de nuevo'); return; }
@@ -8630,6 +8663,8 @@ class Component extends DCLogic {
       ...(r.hd? [['Proyección de cierre del mes', R(r.proy), R(r.prevFull.ingresos), R(r.yoyFull.ingresos)]] : [])]);
     add('Ventas por canal', [['Canal','Ingreso neto','Pedidos','Participación %','Mes anterior'+_tr],
       ...r.canales.map(c=>[c.canal, R(c.ing), c.ped, +c.part.toFixed(1), R(c.prev)])]);
+    add('Ventas por método de pago', [['Método de pago','Ingreso neto','Pedidos','Participación %','Mes anterior'+_tr],
+      ...r.metodos.map(c=>[c.metodo, R(c.ing), c.ped, +c.part.toFixed(1), R(c.prev)])]);
     add('Ventas por ciudad', [['Ciudad','Ingreso neto','Pedidos','Participación %'],
       ...r.ciudades.map(c=>[c.ciudad, R(c.ing), c.ped, +c.part.toFixed(1)])]);
     add('Clientes del mes', [['Cliente','Ciudad','Pedidos','Total'],
@@ -8709,6 +8744,10 @@ class Component extends DCLogic {
       part:this.infPct(c.part), barra:Math.max(2,Math.round(c.part))+'%',
       delta:this.infDelta(c.ing,c.prev).txt, deltaFg:this.infDelta(c.ing,c.prev).fg }));
     out.infCanalesVacio=r.canales.length===0;
+    out.infMetodos=r.metodos.map(c=>({ key:c.metodo, metodo:c.metodo, ing:this.fmt(R(c.ing)), ped:pedTxt(c.ped),
+      part:this.infPct(c.part), barra:Math.max(2,Math.round(c.part))+'%',
+      delta:this.infDelta(c.ing,c.prev).txt, deltaFg:this.infDelta(c.ing,c.prev).fg }));
+    out.infMetodosVacio=r.metodos.length===0;
     out.infCiudades=r.ciudades.slice(0,8).map(c=>({ key:c.ciudad, ciudad:c.ciudad, ing:this.fmt(R(c.ing)), ped:pedTxt(c.ped), part:this.infPct(c.part) }));
     out.infCiudadesVacio=r.ciudades.length===0;
     const recPct=r.d.clientes>0? r.d.recurrentes/r.d.clientes*100 : 0;
@@ -9331,7 +9370,7 @@ class Component extends DCLogic {
     this.setState({ventas:list,modal:null,draft:{},prodSel:[]},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(tocadas);
     this.toast('Costo recalculado en '+tocadas.length+' venta(s)'); }
   // Diagnóstico de referencias vendidas: producto/kit inexistente, sin estructura o sin costo.
-  refDiagnostico(code){ const c=String(code||'').trim(); if(!c) return 'Sin referencia';
+  refDiagnostico(code){ const c=String(code||'').trim(); if(!c) return 'Sin SKU · producto no creado en la app';
     const p=(this.state.productos||[]).find(x=>x.codigo===c);
     if(p){ if(p.esReventa) return (this.productoCosto(p)>0)? '' : 'Sin costo de compra';
       if(!(p.formula||[]).length) return 'Sin estructura (fórmula)';
@@ -9340,7 +9379,8 @@ class Component extends DCLogic {
     if(k){ if(!(k.items||[]).length) return 'Kit sin componentes';
       return (this.kitCosto(k)>0)? '' : 'Kit sin costo'; }
     return 'No existe en el catálogo'; }
-  _diagKey(){ return ((this.state.productos||[]).length)+':'+((this.state.kits||[]).length)+':'+((this.state.materias||[]).length)+':'+((this.state.ventas||[]).length); }
+  _diagKey(){ const st=this.state; let s=0; (st.materias||[]).forEach(m=>{ s+=(Number(m.costo)||0); }); (st.productos||[]).forEach(p=>{ s+=((p.formula||[]).length+(p.empaques||[]).length)*7; }); (st.kits||[]).forEach(k=>{ s+=(k.items||[]).length*13; });
+    return ((st.productos||[]).length)+':'+((st.kits||[]).length)+':'+((st.materias||[]).length)+':'+((st.ventas||[]).length)+':'+Math.round(s); }
   refDiag(code){ const key=this._diagKey(); if(!this._diagCache || this._diagCache.key!==key) this._diagCache={key, map:{}};
     const c=String(code||''); const m=this._diagCache.map; if(m[c]===undefined) m[c]=this.refDiagnostico(c); return m[c]; }
   // Abre directamente el producto/kit a ajustar; si no existe, precarga la creación con ese código.
@@ -9354,9 +9394,16 @@ class Component extends DCLogic {
     this.setState(st=>({draft:{...st.draft, codigo:c, nombre:(nombre||'')}}));
     this.toast('Crea el producto '+c+' con su estructura y costo'); }
   ventaProblemas(v){ const out=[]; (v&&v.items||[]).forEach(it=>{ const code=String(it.productoCodigo||it.referencia||'').trim();
-    // Líneas sin SKU y sin valor (mensaje de regalo, nota al pedido) no son productos: no generan novedad.
-    if(!code && !(Number(it.valorUnit)||0)) return;
-    const m=this.refDiag(code); if(m) out.push({sku:(code||'—'), nombre:(it.nombre||it.referencia||''), motivo:m}); }); return out; }
+    // Solo se ignora una línea sin SKU si tampoco tiene nombre de producto ni valor bruto (nota al pedido,
+    // mensaje de regalo). Un producto de Shopify sin SKU con 100% de descuento (#5083, 7-sep: valorUnit 0,
+    // valorBruto 109.900, nombre lleno) SÍ es una línea sin producto creado.
+    const nom=String(it.producto||it.nombre||'').trim(); const bruto=Number(it.valorBruto)||0;
+    if(!code && !(Number(it.valorUnit)||0) && !bruto && !nom) return;
+    let m=this.refDiag(code);
+    // El costo que usa la venta es el congelado (costoUnit) o el vivo; si ambos dan 0 la línea está sin costo
+    // aunque el catálogo hoy esté bien (p. ej. se congeló un 0 o el producto se arregló después sin recalcular).
+    if(!m && code && Math.round(this.ventaItemCosto(it)||0)<=0) m='Línea sin costo (recalcular costo en la venta)';
+    if(m) out.push({sku:(code||'—'), nombre:(it.producto||it.nombre||it.referencia||''), motivo:m}); }); return out; }
   ventasConProblemas(){ const key=this._diagKey();
     if(this._probCache && this._probCache.key===key && (Date.now()-this._probCache.t)<4000) return this._probCache.val;
     const refs={}; let nVentas=0; const ventas=[];
@@ -13265,6 +13312,10 @@ Instrucciones de respuesta:
       if(st.sopRemote===undefined && !st.sopCargando){ this.sopCargar(); }
     }
     out.showInicio = st.module==='inicio';
+    if(out.showInicio && this._modHasAccess(this.access()||{}, 'ventas')){ try{ const _al=this.ventasConProblemas(); out.inicioProbShow=_al.nVentas>0;
+      out.inicioProbTitulo=_al.nVentas+' pedido'+(_al.nVentas===1?'':'s')+' con líneas sin producto o sin costo';
+      out.inicioProbDet=_al.refs.slice(0,4).map(r=>r.sku+' · '+r.motivo).join('  ·  ')+(_al.refs.length>4? ('  ·  y '+(_al.refs.length-4)+' más'):'');
+      out.inicioProbIr=()=>this.setState({module:'ventas', sub:'registro'}); }catch(e){ out.inicioProbShow=false; } }
     out.inicioNavBg = out.showInicio? 'rgba(167,134,89,0.18)':'transparent';
     out.inicioNavColor = out.showInicio? '#D9BE92':'rgba(251,248,242,0.85)';
     // ---- Informes gerenciales: visibles solo para el Administrador ----
