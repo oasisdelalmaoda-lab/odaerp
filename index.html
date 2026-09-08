@@ -7968,6 +7968,7 @@ class Component extends DCLogic {
     try{ this._odaEstadoInstall(); }catch(e){}
     setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
     setTimeout(()=>{ try{ this._backupDiario(); }catch(e){} }, 12000);
+    setInterval(()=>{ try{ this._backupDiario(); }catch(e){} }, 10*60*1000);
     let data=null, sess=null;
     try{ data=JSON.parse(localStorage.getItem(this.STORAGE)); }catch(e){}
     try{ sess=JSON.parse(localStorage.getItem(this.SESSION)); }catch(e){}
@@ -8026,8 +8027,15 @@ class Component extends DCLogic {
   save(d){ try{ this._lsSet(this.STORAGE, JSON.stringify({proveedores:d.proveedores,materias:d.materias,ordenes:d.ordenes,productos:d.productos,kits:d.kits,mezclas:d.mezclas,producciones:d.producciones,produccionesMezcla:d.produccionesMezcla,servicios:d.servicios,ventas:[],cotizaciones:d.cotizaciones,tiendas:d.tiendas,remisiones:d.remisiones,cuentasFin:d.cuentasFin,movimientos:d.movimientos,gastosFijos:d.gastosFijos,retenConfig:d.retenConfig,metodosFin:d.metodosFin,liquidaciones:d.liquidaciones,creditos:d.creditos,leads:d.leads,msvc:d.msvc,casos:d.casos,conteos:d.conteos})); try{ localStorage.setItem('oda_hub_lastsave_v1',String(Date.now())); this._backupDiario(); }catch(e){} }catch(e){} }
   // Una copia por DÍA CALENDARIO de uso (no cada 24 h exactas ni solo al cambiar algo): corre al
   // guardar y también al abrir la app, así cada día que se abre el Hub deja su copia en el historial.
-  _backupDiario(){ try{ const hoy=new Date().toISOString().slice(0,10);
-    const hist=this.backupHistList(); if(hist.some(h=>String(h._fecha||'').slice(0,10)===hoy)) return;
+  // La copia del día se toma a HORA FIJA (6:00 a. m. hora local) y no se vuelve a tocar ese día:
+  // así queda blindado el estado de la mañana, antes de los cambios del día. Si el Hub se abre
+  // más tarde, la copia se toma en ese momento (una por día). Si está abierto antes de las 6,
+  // el chequeo periódico la toma al pasar la hora.
+  BACKUP_HORA=6;
+  _hoyLocal(d){ d=d||new Date(); const p=(n)=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+  _backupDiario(){ try{ const now=new Date(); if(now.getHours()<this.BACKUP_HORA) return;
+    const hoy=this._hoyLocal(now);
+    const hist=this.backupHistList(); if(hist.some(h=>this._hoyLocal(new Date(Date.parse(h._fecha)))===hoy)) return;
     this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); }catch(e){} }
   persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
@@ -8060,7 +8068,7 @@ class Component extends DCLogic {
          else { localStorage.setItem('oda_hub_backup_v1', JSON.stringify(foto)); } }catch(e){}
     // Historial: una foto por día (se reemplaza la del mismo día), conservando las últimas 10.
     try{ let hist=[]; try{ hist=JSON.parse(localStorage.getItem('oda_hub_backup_hist_v1')||'[]'); }catch(_e){ hist=[]; }
-      const hoy=fecha.slice(0,10); hist=hist.filter(h=>String(h._fecha||'').slice(0,10)!==hoy); hist.push(foto);
+      const hoy=this._hoyLocal(); hist=hist.filter(h=>this._hoyLocal(new Date(Date.parse(h._fecha)))!==hoy); hist.push(foto);
       hist.sort((a,b)=>String(b._fecha).localeCompare(String(a._fecha))); hist=hist.slice(0,10);
       // Si no cabe: primero se sueltan las copias viejas SIN comprimir (pesan ~10x), después la más vieja.
       let guardado=false; while(!guardado && hist.length){ try{ localStorage.setItem('oda_hub_backup_hist_v1', JSON.stringify(hist)); guardado=true; }catch(qe){
@@ -9676,7 +9684,13 @@ Instrucciones de respuesta:
       // (liquidada, cobros) — así se "desliquidaban" pedidos de Bold.
       if(this.cloudOn()) this.cloudBulkVentas(list.filter(v=>touched.has(v.id)));
       const partes=[]; if(added) partes.push(added+' nuevo(s)'); if(updated) partes.push(updated+' actualizado(s)'); if(cancelados) partes.push(cancelados+' cancelado(s)');
+      // Diagnóstico de la versión desplegada de la función: si ningún pedido trae 'sourceName',
+      // la función «shopify» en Supabase es la versión vieja y los preliminares no se pueden detectar.
+      const _traeSrc=incoming.some(o=>Object.prototype.hasOwnProperty.call(o,'sourceName'));
+      const _nDraft=incoming.filter(o=>o.sourceName==='shopify_draft_order').length;
+      if(_traeSrc && _nDraft) partes.push(_nDraft+' preliminar(es) → WhatsApp');
       this.toast(partes.length? ('Shopify: '+partes.join(' · ')) : 'Shopify: todo al día');
+      if(!_traeSrc) setTimeout(()=>this.toast('La función «shopify» desplegada es una versión vieja: no envía el origen del pedido, así que los preliminares no se marcan como WhatsApp. Vuelve a desplegarla.'), 1800);
       // Auto-WhatsApp "despachado" para pedidos que estrenaron guía (solo si WhatsApp está activado).
       if(this.waConfigurado() && despachados.length){ setTimeout(()=>{ despachados.forEach(id=>{ const v=(this.state.ventas||[]).find(x=>x.id===id); if(v && !v.cancelada && v.celular && !this.waYaEnviado(v,'pedido_despachado')) this.waSendTemplate(v,'pedido_despachado',true); }); }, 500); }
       this._syncLock=false;
@@ -15034,7 +15048,7 @@ Instrucciones de respuesta:
       out.backupLastSaveFmt=_ls? this.fmtDateTime(_ls) : 'Sin cambios todavía';
       let _bt=0; try{ const _r=localStorage.getItem('oda_hub_backup_gz_v1')||localStorage.getItem('oda_hub_backup_v1'); if(_r){ const _d=JSON.parse(_r); _bt=_d._fecha? Date.parse(_d._fecha):0; } }catch(e){}
       out.backupAutoHay=!!_bt; out.backupAutoFechaFmt=_bt? this.fmtDateTime(_bt) : 'Se generará al abrir la app';
-      { const _n=this.backupHistList().length; out.backupHistNota=(_n<10? ('Se guarda una copia por cada día que se abre el Hub · llevas '+_n+' de 10 días') : 'Últimas 10'); }
+      { const _n=this.backupHistList().length; out.backupHistNota=(_n<10? ('Una copia por día, tomada a las 6:00 a. m. (o al abrir el Hub más tarde) · llevas '+_n+' de 10 días') : 'Últimas 10'); }
       out.onDescargarRespaldo=()=>this.descargarRespaldo();
       out.onRestaurarRespaldo=(e)=>this.restaurarRespaldo(e);
       out.onRestaurarAuto=()=>this.restaurarAutoBackup();
