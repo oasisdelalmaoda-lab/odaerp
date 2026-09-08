@@ -10250,12 +10250,31 @@ Instrucciones de respuesta:
   // ---- documento PDF de pedido (mismo diseño que la cotización) ----
   pedidoNombreItem(it){ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||c||'Producto')); }
   pedidoDocHtml(v){ const conIva=this.ventaConIva(v);
-    // Precio "full" de mercado: precio de catálogo + IVA (si el producto grava IVA). Es el precio de lista al público; el descuento se calcula contra este.
-    const marketUnit=(it)=>{ if(it.obsequio===true) return 0; return Number(it.valorUnit)||0; };
-    const filas=(v.items||[]).map(it=>{ const u=Number(it.unidades)||0; const fUnit=marketUnit(it); const fLine=Math.round(u*fUnit); const nombre=this.pedidoNombreItem(it)+((it.obsequio===true)?' <span style="color:#B5503C;font-weight:700;">(obsequio)</span>':'');
-      return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+nombre+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(fUnit)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(fLine)+'</td></tr>'; }).join('');
-    const neto=Math.round(this.ventaNetaProductos(v)); const iva=Math.round(this.ventaIvaTotal(v)); const envio=Number(v.envio)||0; const pagado=Math.round(Number(v.pagado)||0); const ep=this.ventaEstadoPago(v);
-    const subFull=(v.items||[]).reduce((a,it)=>a+Math.round((Number(it.unidades)||0)*(Number(it.valorUnit)||0)),0); const descPctG=Number(v.descuentoPct)||0; const descMonto=Math.round(subFull*descPctG/100); const total=subFull-descMonto+envio; const saldo=Math.max(0, total-pagado);
+    // Descuentos en el documento: si TODAS las líneas llevan el mismo % (descuento masivo) o la venta trae
+    // descuentoPct, es un descuento DEL PEDIDO y se muestra al final; si no, cada línea muestra su propio
+    // descuento (valor unit. = precio full, subtotal de la línea ya con descuento).
+    const dpOf=(it)=>Math.max(0,Math.min(100,Number(it.descPct)||0));
+    const its=(v.items||[]).map(it=>{ const ob=(it.obsequio===true); const u=Number(it.unidades)||0; const neto=ob?0:(Number(it.valorUnit)||0); const bruto=ob?0:Math.max(neto, Number(it.valorBruto)||neto); return {it, u, neto, bruto, dp:dpOf(it), tax:(conIva && it.taxable!==false), fullLine:Math.round(u*bruto), netLine:Math.round(u*neto)}; });
+    const pctG=Math.max(0,Math.min(100,Number(v.descuentoPct)||0));
+    const conDesc=its.filter(x=>x.u>0 && x.neto>0);
+    const sameP=conDesc.length>0 && conDesc[0].dp>0 && conDesc.every(x=>x.dp===conDesc[0].dp);
+    const orderLevel=pctG>0 || sameP;
+    const sinIva=(x,tax)=>tax? x/1.19 : x;
+    const filas=its.map(x=>{ const nombre=this.pedidoNombreItem(x.it)+((x.it.obsequio===true)?' <span style="color:#B5503C;font-weight:700;">(obsequio)</span>':'');
+      const lineShown=orderLevel? x.fullLine : x.netLine; const descNota=(!orderLevel && x.dp>0)? ('<div style="font-size:11px;color:#B5503C;font-weight:700;">−'+x.dp+'%</div>') : '';
+      return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+nombre+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+x.u+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(x.bruto)+descNota+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(lineShown)+'</td></tr>'; }).join('');
+    const envio=Number(v.envio)||0; const pagado=Math.round(Number(v.pagado)||0);
+    let subSinIva=0, descSinIva=0, netSum=0, descIncl=0;
+    its.forEach(x=>{ const shown=orderLevel? x.fullLine : x.netLine; subSinIva+=sinIva(shown,x.tax); netSum+=x.netLine;
+      if(orderLevel){ const dLinea=x.fullLine-x.netLine; const dG=x.netLine*pctG/100; descIncl+=dLinea+dG; descSinIva+=sinIva(dLinea+dG,x.tax); } });
+    const descG=Math.round(netSum*pctG/100); const totalMerc=netSum-descG; const sub2SinIva=subSinIva-descSinIva;
+    const iva=conIva? Math.max(0, totalMerc-Math.round(sub2SinIva)) : 0; const total=totalMerc+envio; const saldo=Math.max(0, total-pagado);
+    const descLabel=(sameP && !pctG)? (' ('+conDesc[0].dp+'%)') : ((pctG && !sameP)? (' ('+pctG+'%)') : '');
+    const row=(l,val,sty)=>'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;'+(sty||'')+'"><span>'+l+'</span><span>'+val+'</span></div>';
+    const totalesHtml=row(conIva?'Subtotal sin IVA':'Subtotal', this.fmt(Math.round(subSinIva)))
+      +(descIncl>0? (row('Descuento'+descLabel, '−'+this.fmt(Math.round(descSinIva)), 'color:#B5503C;font-weight:700;')+row(conIva?'Subtotal con descuento':'Subtotal con descuento', this.fmt(Math.round(sub2SinIva)))) : '')
+      +(conIva? row('IVA (19%)', this.fmt(iva)) : '')
+      +(envio>0? row('Envío', this.fmt(envio)) : '');
     const ths='<tr style="background:#A78659;color:#fff;text-align:left;"><th style="padding:11px 14px;font-weight:600;">Producto</th><th style="padding:11px 14px;text-align:center;font-weight:600;">Unid.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Valor unit.</th><th style="padding:11px 14px;text-align:right;font-weight:600;">Subtotal</th></tr>';
     const num=v.ov||v.pedido||'—'; const metodo=v.metodoPago&&v.metodoPago!=='—'?v.metodoPago:'';
     const html=this._docPrintCss('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+num+'</title></head>'
@@ -10267,11 +10286,8 @@ Instrucciones de respuesta:
       +'<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:22px;line-height:1.6;"><div><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Para</span><br><strong style="font-size:15px;">'+(this.titleCase(v.cliente)||'Cliente')+'</strong><br>'+[this.titleCase(v.ciudad),v.celular].filter(Boolean).join(' · ')+(v.correo?('<br>'+v.correo):'')+'</div><div style="text-align:right;"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;">Detalles</span><br><strong>Fecha:</strong> '+this.fmtFecha(v.fecha)+'<br><strong>Canal:</strong> '+(v.canal||'—')+(metodo?('<br><strong>Pago:</strong> '+metodo):'')+'</div></div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead>'+ths+'</thead><tbody>'+filas+'</tbody></table>'
       +'<div style="margin-top:18px;margin-left:auto;width:300px;font-size:13px;">'
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Subtotal</span><span>'+this.fmt(subFull)+'</span></div>'
-        +(descMonto>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Descuento'+(descPctG>0?(' ('+descPctG+'%)'):'')+'</span><span>−'+this.fmt(descMonto)+'</span></div>'):'')
-        +(envio>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#5A4A33;"><span>Envío</span><span>'+this.fmt(envio)+'</span></div>'):'')
+        +totalesHtml
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
-        +((conIva && iva>0)?('<div style="display:flex;justify-content:space-between;padding:4px 0 0;color:#8A8073;font-size:11.5px;"><span>IVA incluido (19%)</span><span>'+this.fmt(iva)+'</span></div>'):'')
         +(pagado>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#4C6149;font-weight:700;margin-top:4px;"><span>Pagado</span><span>'+this.fmt(pagado)+'</span></div>'):'')
         +(saldo>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Saldo por cobrar</span><span>'+this.fmt(saldo)+'</span></div>'):'')
       +'</div>'
