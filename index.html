@@ -155,7 +155,7 @@
           <svg width="380" height="380" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"></path><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"></path></svg>
         </div>
         <div style="display:flex;align-items:center;gap:13px;position:relative;">
-          <img src="logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
+          <img src="uploads/logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
         </div>
         <div style="position:relative;">
           <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:18px;">Hub Intelligence de Negocio</div>
@@ -203,7 +203,7 @@
       <!-- SIDEBAR -->
       <aside class="oda-sidebar" style="background:#2A2419;color:var(--text-inverse);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;">
         <div class="oda-brandbar" style="height:85px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
-          <img src="logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
+          <img src="uploads/logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
           <div class="oda-brandtext" style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
             <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;color:rgba(251,248,242,0.92);">Hub</div>
             <div style="font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(251,248,242,0.45);margin-top:3px;">Intelligence de Negocio</div>
@@ -4945,6 +4945,35 @@
                   </div>
                 </div>
               </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-top:20px;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                  <div>
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">De dónde vienen los pedidos</h3>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Según el enlace por el que entró cada cliente a la tienda (UTM, Google, Meta, referente) · {{ mktPeriodo }}</div>
+                  </div>
+                  <span style="font-size:12px;color:var(--text-muted);">{{ mktFuentesNota }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                  <sc-for list="{{ mktFuentes }}" as="f" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:minmax(160px,1.2fr) minmax(120px,2fr) 60px 110px;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border-subtle);">
+                      <div style="min-width:0;">
+                        <div style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ f.color }};"></span><span style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ f.label }}</span></div>
+                        <sc-if value="{{ f.hayCamp }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin:2px 0 0 17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ f.camp }}</div></sc-if>
+                      </div>
+                      <div style="height:8px;border-radius:99px;background:var(--surface-page);overflow:hidden;"><div style="height:100%;border-radius:99px;background:{{ f.color }};width:{{ f.barW }};"></div></div>
+                      <div style="font-size:13px;font-weight:700;text-align:right;">{{ f.n }} <span style="font-weight:500;color:var(--text-muted);font-size:11.5px;">{{ f.pct }}</span></div>
+                      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;text-align:right;">{{ f.ing }}</div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ mktFuentesVacio }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:24px 20px;font-size:13px;color:var(--text-muted);text-align:center;text-wrap:pretty;">Todavía no hay pedidos con rastro de origen en este periodo. Sincroniza Shopify (Ventas → Shopify) para completar el origen de los pedidos.</div>
+                  </sc-if>
+                  <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--surface-linen);font-size:12.5px;color:var(--text-body);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3F6A7A" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l3 2"></path></svg>
+                    <span style="font-weight:700;color:#3F6A7A;">Google Ads</span><span style="text-wrap:pretty;">{{ mktGoogleTxt }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </sc-if>
 
@@ -9597,8 +9626,12 @@ Instrucciones de respuesta:
   // Unifica variantes del canal web (con/sin tilde, "Web", "Tienda online", "Shopify"…) en un solo canal "Página Web".
   // El canal «Instagram» pasó a llamarse «WhatsApp» (8-sep): las ventas viejas se renombran al cargar.
   canonCanal(c){ c=String(c==null?'':c).trim(); if(!c) return c; if(/^(p[aá]gina\s*web|sitio\s*web|web|tienda\s*(online|web|virtual)|online\s*store|shopify)$/i.test(c)) return 'Página Web'; if(/^(instagram|ig|whats\s*app|wa)$/i.test(c)) return 'WhatsApp'; return c; }
+  // Canal de una venta completa: los pedidos preliminares de Shopify (creados a mano, sourceName
+  // 'shopify_draft_order') van al canal WhatsApp aunque hayan entrado como «Página Web».
   canonCanalVenta(v){ const c=this.canonCanal(v&&v.canal); if(v && v.sourceName==='shopify_draft_order' && (!c||c==='Página Web')) return 'WhatsApp'; return c; }
-  canalStyle(c){ const m={ 'Página Web':{bg:'rgba(167,134,89,0.2)',fg:'#7A5E36'}, 'WhatsApp':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}, 'Instagram':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}, 'B2B':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Distribuidor':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Ferias':{bg:'rgba(193,170,129,0.3)',fg:'#7A6035'}, 'Tiendas':{bg:'rgba(122,147,121,0.18)',fg:'#4C6149'}, 'Venta Directa':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
+  // Un tono de la paleta de aromas por canal, sin repetir (8-sep): Web=dorado marca, WhatsApp=eucalipto,
+  // B2B=calma (azul), Distribuidor=descansa (azul pizarra), Ferias=naranja, Tiendas=lavanda, Venta Directa=limoncillo.
+  canalStyle(c){ const m={ 'Página Web':{bg:'rgba(167,134,89,0.22)',fg:'#7A5E36'}, 'WhatsApp':{bg:'rgba(63,125,70,0.18)',fg:'#2F6B37'}, 'Instagram':{bg:'rgba(63,125,70,0.18)',fg:'#2F6B37'}, 'B2B':{bg:'rgba(74,140,168,0.2)',fg:'#245C78'}, 'Distribuidor':{bg:'rgba(120,95,160,0.2)',fg:'#5A3F8C'}, 'Ferias':{bg:'rgba(232,150,60,0.26)',fg:'#9A5410'}, 'Tiendas':{bg:'rgba(181,80,60,0.18)',fg:'#8F3A28'}, 'Venta Directa':{bg:'rgba(200,170,40,0.3)',fg:'#7A6410'}, 'MSVC':{bg:'rgba(90,120,120,0.2)',fg:'#3E5F5F'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
   origenLabel(o){ return {shopify:'Shopify',manual:'Manual',historico:'Histórico'}[o]||'Manual'; }
   // Ventas vivas = operación del Hub, que arrancó el 1 de JUNIO de 2026. El archivo histórico
   // va de 2020 a mayo de 2026 y vive SOLO en Ventas → Base de clientes / Histórico:
