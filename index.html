@@ -1139,6 +1139,14 @@
                   <button onClick="{{ onCanonCanales }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:var(--brand-hover);">Unificar canales</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+                  <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Marcar pedidos preliminares como WhatsApp</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Sube la exportación de pedidos de Shopify (CSV o Excel). Solo cambia el CANAL de los pedidos cuya columna «Source» dice «draft» (pedidos preliminares) y que ya existen en el Hub, incluido el histórico. No toca ítems, pagos, OV ni nada más; se reescriben en la nube únicamente los pedidos que cambian.</div></div>
+                  <label style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:var(--surface-linen);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Subir exportación
+                    <input type="file" accept=".xlsx,.xls,.csv" onChange="{{ onMarcarPreliminares }}" style="display:none;">
+                  </label>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
                   <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Borrar todas las órdenes de compra</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Elimina permanentemente todas las órdenes y revierte automáticamente el inventario que fue sumado por sus entregas. Usar para reingresar órdenes correctamente.</div></div>
                   <button onClick="{{ onBorrarTodasOrdenes }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:#B5503C;color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="opacity:0.85;">Borrar todas las órdenes</button>
                 </div>
@@ -7983,6 +7991,7 @@ class Component extends DCLogic {
     try{ if(data && !localStorage.getItem('oda_hub_finseedreset_v1')){ data.cuentasFin=[]; data.metodosFin=[]; localStorage.setItem('oda_hub_finseedreset_v1','1'); } }catch(e){}
     try{ if(data && data.ventas && !localStorage.getItem('oda_hub_ciudadcanon_v1')){ data.ventas=data.ventas.map(v=>({...v, ciudad:this.canonCiudad(v.ciudad)})); localStorage.setItem('oda_hub_ciudadcanon_v1','1'); } }catch(e){}
     try{ if(data && data.ventas && !localStorage.getItem('oda_hub_skuname_v1')){ data.ventas=data.ventas.map(v=>({...v, items:(v.items||[]).map(it=>{ const c=it.productoCodigo||it.referencia; if(this.skuExiste(c,data.productos,data.kits)) return it; const byName=this.resolveSkuByName(it.producto, data.productos, data.kits); if(byName) return {...it, productoCodigo:byName, referencia:byName}; return it; })})); localStorage.setItem('oda_hub_skuname_v1','1'); } }catch(e){}
+    try{ if(data && data.ventas && !localStorage.getItem('oda_hub_canalwa_v1')){ data.ventas=data.ventas.map(v=>({...v, canal:this.canonCanalVenta(v)})); localStorage.setItem('oda_hub_canalwa_v1','1'); } }catch(e){}
     try{ if(data && data.ventas && !localStorage.getItem('oda_hub_canalweb_v1')){ data.ventas=data.ventas.map(v=>({...v, canal:this.canonCanal(v.canal)})); if(Array.isArray(data.leads)) data.leads=data.leads.map(l=>({...l, origen:this.canonCanal(l.origen)})); localStorage.setItem('oda_hub_canalweb_v1','1'); } }catch(e){}
     data=this.migrate(data); this.save(data);
     let savedPerms=null; try{savedPerms=JSON.parse(localStorage.getItem('oda_hub_perms_v1'));}catch(e){}
@@ -9578,8 +9587,10 @@ Instrucciones de respuesta:
   ventaRecaudoBruto(v){ return Math.max(0, this.ventaTotal(v)-this.ventaAbono(v)); }
   ventaEstadoPago(v){ const t=this.ventaTotal(v); const p=Number(v.pagado)||0; const key= p<=0?'pendiente':(p>=t?'pagada':'parcial'); const m={ pendiente:{label:'Por cobrar',bg:'#EFE9DD',fg:'#8A8073'}, parcial:{label:'Abono parcial',bg:'rgba(201,150,47,0.16)',fg:'#9A7320'}, pagada:{label:'Pagada',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} }; const exc=Math.round(p-t); if(key==='pagada'&&exc>0) return {...m.pagada,key,label:'Pagada +'+this.fmt(exc),exceso:exc}; return {...m[key],key,exceso:0}; }
   // Unifica variantes del canal web (con/sin tilde, "Web", "Tienda online", "Shopify"…) en un solo canal "Página Web".
-  canonCanal(c){ c=String(c==null?'':c).trim(); if(!c) return c; if(/^(p[aá]gina\s*web|sitio\s*web|web|tienda\s*(online|web|virtual)|online\s*store|shopify)$/i.test(c)) return 'Página Web'; return c; }
-  canalStyle(c){ const m={ 'Página Web':{bg:'rgba(167,134,89,0.2)',fg:'#7A5E36'}, 'Instagram':{bg:'rgba(156,151,162,0.26)',fg:'#615C6B'}, 'B2B':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Distribuidor':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Ferias':{bg:'rgba(193,170,129,0.3)',fg:'#7A6035'}, 'Tiendas':{bg:'rgba(122,147,121,0.18)',fg:'#4C6149'}, 'Venta Directa':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
+  // El canal «Instagram» pasó a llamarse «WhatsApp» (8-sep): las ventas viejas se renombran al cargar.
+  canonCanal(c){ c=String(c==null?'':c).trim(); if(!c) return c; if(/^(p[aá]gina\s*web|sitio\s*web|web|tienda\s*(online|web|virtual)|online\s*store|shopify)$/i.test(c)) return 'Página Web'; if(/^(instagram|ig|whats\s*app|wa)$/i.test(c)) return 'WhatsApp'; return c; }
+  canonCanalVenta(v){ const c=this.canonCanal(v&&v.canal); if(v && v.sourceName==='shopify_draft_order' && (!c||c==='Página Web')) return 'WhatsApp'; return c; }
+  canalStyle(c){ const m={ 'Página Web':{bg:'rgba(167,134,89,0.2)',fg:'#7A5E36'}, 'WhatsApp':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}, 'Instagram':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'}, 'B2B':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Distribuidor':{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, 'Ferias':{bg:'rgba(193,170,129,0.3)',fg:'#7A6035'}, 'Tiendas':{bg:'rgba(122,147,121,0.18)',fg:'#4C6149'}, 'Venta Directa':{bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
   origenLabel(o){ return {shopify:'Shopify',manual:'Manual',historico:'Histórico'}[o]||'Manual'; }
   // Ventas vivas = operación del Hub, que arrancó el 1 de JUNIO de 2026. El archivo histórico
   // va de 2020 a mayo de 2026 y vive SOLO en Ventas → Base de clientes / Histórico:
@@ -9613,7 +9624,7 @@ Instrucciones de respuesta:
         const pn=this.pedidoNum(o);
         const exI = (o.shopifyId&&idxByShop.has(String(o.shopifyId))) ? idxByShop.get(String(o.shopifyId)) : (pn&&idxByPed.has(pn)? idxByPed.get(pn) : -1);
         const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0, costoUnit:this._itemConCosto(it, code), kitItems:this._itemKitSnap(it, code, o.fecha) }; });
-        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanal(o.canal||'Página Web'), bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined) };
+        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanalVenta({canal:(o.canal||'Página Web'), sourceName:o.sourceName||''}), sourceName:o.sourceName||'', bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined) };
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
           const ex=list[exI];
@@ -9622,7 +9633,7 @@ Instrucciones de respuesta:
           // NUNCA toca la clasificación de pago (método, recaudo, pagado, liquidación) de un pedido ya existente,
           // para que Shopify no vuelva a descuadrar cuentas ya conciliadas.
           const merged={ ...ex,
-            items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, canal:(ex.canal||bruto0.canal), bodega:(ex.bodega||bruto0.bodega),
+            items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, sourceName:(ex.sourceName||bruto0.sourceName||''), canal:this.canonCanalVenta({canal:(ex.canal||bruto0.canal), sourceName:(ex.sourceName||bruto0.sourceName||'')}), bodega:(ex.bodega||bruto0.bodega),
             guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), atrib:(ex.atrib&&ex.atrib.fuente? ex.atrib : bruto0.atrib), id:ex.id };
           if(o.cancelado){ merged.pagado=0; merged.envio=0; }
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
@@ -10000,6 +10011,14 @@ Instrucciones de respuesta:
     if(/^hist(ó|o)rico\s*20\d\d/i.test(String(v.cliente||''))) return true;
     return false; }
   // Limpieza de una sola vez por navegador: una vez borradas de la nube no se vuelve a escanear.
+  // Migración de UNA sola vez por navegador (8-sep): «Instagram» → «WhatsApp» y pedidos preliminares
+  // de Shopify → WhatsApp. Reescribe en la nube SOLO las ventas que cambió y no vuelve a escanear.
+  _canalWaMigrar(list){ try{ if(localStorage.getItem('oda_hub_canalwa_cloud_v1')) return list; }catch(e){ return list; }
+    const changed=[]; const out=list.map(v=>{ const nc=this._canalWaDe(v); if(nc && nc!==v.canal){ const nv={...v, canal:nc}; changed.push(nv); return nv; } return v; });
+    if(changed.length) this.cloudBulkVentas(changed);
+    try{ localStorage.setItem('oda_hub_canalwa_cloud_v1','1'); }catch(e){}
+    return out; }
+  _canalWaDe(v){ const c=String((v&&v.canal)||'').trim(); if(/^instagram$/i.test(c)) return 'WhatsApp'; if(v && v.sourceName==='shopify_draft_order' && (!c||c==='Página Web')) return 'WhatsApp'; return c; }
   _purgaDemo(list){ try{ if(localStorage.getItem('oda_hub_demopurge_v1')) return list; }catch(e){ return list; }
     const demo=list.filter(v=>this._esVentaDemo(v));
     if(demo.length) demo.forEach(v=>this._cloudDelOne('ventas', v.id));
@@ -10769,7 +10788,7 @@ Instrucciones de respuesta:
         from+=page;
       }
       if(all.length){ this._syncSet('ventas', this._maxAct(all)); let vlist=all.map(r=>{ const d=r.data||{}; return {...d, canal:this.canonCanal(d.canal), id:r.id}; });
-        vlist=this._purgaDemo(vlist);
+        vlist=this._purgaDemo(vlist); vlist=this._canalWaMigrar(vlist);
         // Fusión de duplicados también AL CARGAR de la nube (antes solo al sincronizar Shopify):
         // limpia pares como ODA-00249/ODA-00478 del mismo pedido sin esperar otro sync.
         const _dd=this._ventasAutoDedupe(vlist); vlist=_dd.list;
@@ -10792,7 +10811,28 @@ Instrucciones de respuesta:
   openBaseDetalle(dim, key, label){ this.setState({modal:'basedetalle', baseDetDim:dim, baseDetKey:key, baseDetLabel:label}); }
   toggleBaseAnio(y){ if(y==='todos'){ this.setState({baseAnios:[]}); return; } const cur=Array.isArray(this.state.baseAnios)?this.state.baseAnios.slice():[]; const i=cur.indexOf(y); if(i>=0) cur.splice(i,1); else cur.push(y); this.setState({baseAnios:cur}); }
   toggleCliFiltro(key, val){ if(val==='todos'){ this.setState({[key]:[]}); return; } const cur=Array.isArray(this.state[key])?this.state[key].slice():[]; const i=cur.indexOf(val); if(i>=0) cur.splice(i,1); else cur.push(val); this.setState({[key]:cur}); }
-  canonizarCanales(){ const list=(this.state.ventas||[]).slice(); const changed=[]; const out=list.map(v=>{ const nc=this.canonCanal(v.canal); if(nc!==v.canal){ const nv={...v, canal:nc}; changed.push(nv); return nv; } return v; });
+  // Marca como canal WhatsApp SOLO los pedidos preliminares de Shopify ('draft' en la columna Source
+  // de la exportación) que ya existen en el Hub — histórico incluido. No toca nada más del pedido
+  // y sube a la nube únicamente los que cambian (invariante 4). Cirugía puntual, sin reimportar.
+  marcarPreliminaresDesdeArchivo(e){ const f=e.target&&e.target.files&&e.target.files[0]; if(e.target) e.target.value=''; if(!f) return;
+    if(!this.canWriteMod('ventas')){ this.toast('Necesitas permiso de escritura en Ventas'); return; }
+    if(typeof XLSX==='undefined'){ this.toast('El lector de Excel aún está cargando, intenta de nuevo'); return; }
+    const r=new FileReader();
+    r.onload=(ev)=>{ try{ const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',raw:true,cellDates:false}); const ws=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});
+        const drafts=new Set(); let conSource=0;
+        rows.forEach(row=>{ const src=String(this.rowGet(row,['source','source name','sourcename','fuente'])||'').trim(); if(src) conSource++; if(!/draft/i.test(src)) return; const ped=String(this.rowGet(row,['name','pedido','pedido #','order','orden','numero','número'])||'').trim(); const n=this.pedidoNum({pedido:ped}); if(n) drafts.add(n); });
+        if(!conSource){ this.toast('El archivo no trae la columna «Source» de Shopify: exporta los pedidos desde Shopify Admin → Pedidos → Exportar'); return; }
+        if(!drafts.size){ this.toast('El archivo no tiene pedidos preliminares (Source = draft)'); return; }
+        const list=(this.state.ventas||[]).slice(); const changed=[]; let yaOk=0, noHub=drafts.size;
+        const vistos=new Set();
+        const out=list.map(v=>{ const n=this.pedidoNum(v); if(!n||!drafts.has(n)) return v; if(!vistos.has(n)){ vistos.add(n); noHub--; } if(v.canal==='WhatsApp' && v.sourceName==='shopify_draft_order'){ yaOk++; return v; } const nv={...v, canal:'WhatsApp', sourceName:'shopify_draft_order'}; changed.push(nv); return nv; });
+        if(!changed.length){ this.toast(yaOk? 'Los '+yaOk+' pedidos preliminares del archivo ya están en WhatsApp' : 'Ninguno de los '+drafts.size+' preliminares del archivo existe en el Hub'); return; }
+        if(!window.confirm('Se marcarán como canal WhatsApp '+changed.length+' pedidos preliminares (solo cambia el canal; '+yaOk+' ya estaban en WhatsApp'+(noHub>0? ', '+noHub+' del archivo no existen en el Hub':'')+'). ¿Continuar?')) return;
+        this.setState({ventas:out},()=>{ this.persist(); if(this.cloudOn()) this.cloudBulkVentas(changed); this.toast(changed.length+' pedidos preliminares marcados como WhatsApp'); });
+      }catch(err){ this.toast('No se pudo leer el archivo. Verifica que sea .xlsx o .csv'); } };
+    r.readAsArrayBuffer(f);
+  }
+  canonizarCanales(){ const list=(this.state.ventas||[]).slice(); const changed=[]; const out=list.map(v=>{ const nc=this.canonCanalVenta(v); if(nc!==v.canal){ const nv={...v, canal:nc}; changed.push(nv); return nv; } return v; });
     if(!changed.length){ this.toast('Todos los canales ya están unificados'); return; }
     if(!window.confirm('Se corregirán y reescribirán en la nube '+changed.length+' ventas con canales con variantes (ej. «Pagina Web» → «Página Web»). ¿Continuar?')) return;
     this.setState({ventas:out},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(changed); this.toast(changed.length+' canales unificados y guardados en la nube'); }
@@ -12589,9 +12629,9 @@ Instrucciones de respuesta:
     else if(t==='ventas'||t==='ventasHist'){ const list=(this.state.ventas||[]).slice(); const groups={}; const order=[];
       rows.forEach(row=>{ const prod=String(this.rowGet(row,['producto','item','articulo','artículo','lineitem name','lineitemname'])||'').trim(); let ref=String(this.rowGet(row,['referencia','sku','ref','codigo','código','lineitem sku','lineitemsku'])||'').trim(); ref=this.padSku(ref); if((!ref || !this.skuExiste(ref)) && prod){ const byName=this.resolveSkuByName(prod); if(byName) ref=this.padSku(byName); } const u=Number(this.rowGet(row,['unidades','cantidad','qty','unid','lineitem quantity','lineitemquantity'])||0); if((!prod&&!ref)||!u) return;
         const ped=String(this.rowGet(row,['pedido','pedido #','order','orden','numero','número','name'])||'').trim(); const ovKey=String(this.rowGet(row,['ov','orden de venta','ordenventa'])||'').trim(); const key=ped||(ovKey?('ov:'+ovKey):('__'+order.length+'_'+Math.random()));
-        if(!groups[key]){ order.push(key); let canal=(t==='ventas')? 'Página Web' : String(this.rowGet(row,['canal','channel','source'])||'Página Web').trim(); if(/^\d+$/.test(canal)||/draft/i.test(canal)||!canal) canal='Página Web'; canal=this.canonCanal(canal); let fc=String(this.rowGet(row,['fecha','date','created at','createdat'])||'').trim().split(/[ T]/)[0];
+        if(!groups[key]){ order.push(key); const srcRaw=String(this.rowGet(row,['source','source name','sourcename','fuente'])||'').trim(); const esDraft=/draft/i.test(srcRaw); let canal=(t==='ventas')? (esDraft?'WhatsApp':'Página Web') : String(this.rowGet(row,['canal','channel','source'])||'Página Web').trim(); if(/draft/i.test(canal)||esDraft) canal='WhatsApp'; else if(/^\d+$/.test(canal)||!canal) canal='Página Web'; canal=this.canonCanal(canal); const sourceName=esDraft?'shopify_draft_order':(/^(web|pos|iphone|android|\d+)$/i.test(srcRaw)?srcRaw.toLowerCase():''); let fc=String(this.rowGet(row,['fecha','date','created at','createdat'])||'').trim().split(/[ T]/)[0];
           const shipMethod=String(this.rowGet(row,['shipping method','shippingmethod','metodo_envio'])||''); const descCode=String(this.rowGet(row,['discount code','discountcode','codigo_descuento'])||'');
-          groups[key]={ pedido:ped, ov:String(this.rowGet(row,['ov','orden de venta','ordenventa'])||''), fecha:this.parseFecha(fc)||new Date().toISOString().slice(0,10), canal, bodega:String(this.rowGet(row,['bodega','warehouse'])||'Principal'), cliente:this.titleCase(this.rowGet(row,['cliente','customer','nombre','billing name','billingname','shipping name','shippingname'])||'Cliente'), celular:String(this.rowGet(row,['celular','telefono','teléfono','phone','billing phone','billingphone','shipping phone','shippingphone'])||''), correo:String(this.rowGet(row,['correo','email','correo electronico'])||''), ciudad:this.canonCiudad(this.extractCiudad(row)), cancelada:(!!String(this.rowGet(row,['cancelled at','cancelado','cancelled','fecha_cancelacion'])||'').trim() || /void|refund|cancel/i.test(String(this.rowGet(row,['financial status','estado','status','estado_financiero'])||''))), shipCharged:Number(String(this.rowGet(row,['envio','envío','shipping','flete'])||0).toString().replace(/[^\d.-]/g,''))||0, subtotalSh:Number(String(this.rowGet(row,['subtotal','sub total','subtotal price'])||'').toString().replace(/[^\d.-]/g,''))||0, totalSh:Number(String(this.rowGet(row,['total','total price','grand total','order total'])||'').toString().replace(/[^\d.-]/g,''))||0, descTotal:Number(String(this.rowGet(row,['discount amount','discountamount','descuento_total','descuento'])||0).toString().replace(/[^\d.-]/g,''))||0, freeShip:/gratis|free|env[ií]o\s*gratis/i.test(shipMethod+' '+descCode), guia:String(this.rowGet(row,['guia','guía','tracking','numero_guia','numero de guia'])||''), metodoPago:this.metodoFinal(this.rowGet(row,['metodo_pago','método de pago','metodo de pago','payment method','paymentmethod','payment','forma_pago'])||''), pagado:Number(this.rowGet(row,['pago','pagado','paid','abonado'])||0), ordFulfill:this.normKey(this.rowGet(row,['fulfillment status','fulfillment','estado_fulfillment','estado_entrega'])||''), tags:String(this.rowGet(row,['tags','etiquetas','order tags','ordertags','etiquetas_pedido'])||''), items:[] }; }
+          groups[key]={ pedido:ped, ov:String(this.rowGet(row,['ov','orden de venta','ordenventa'])||''), fecha:this.parseFecha(fc)||new Date().toISOString().slice(0,10), canal, sourceName, bodega:String(this.rowGet(row,['bodega','warehouse'])||'Principal'), cliente:this.titleCase(this.rowGet(row,['cliente','customer','nombre','billing name','billingname','shipping name','shippingname'])||'Cliente'), celular:String(this.rowGet(row,['celular','telefono','teléfono','phone','billing phone','billingphone','shipping phone','shippingphone'])||''), correo:String(this.rowGet(row,['correo','email','correo electronico'])||''), ciudad:this.canonCiudad(this.extractCiudad(row)), cancelada:(!!String(this.rowGet(row,['cancelled at','cancelado','cancelled','fecha_cancelacion'])||'').trim() || /void|refund|cancel/i.test(String(this.rowGet(row,['financial status','estado','status','estado_financiero'])||''))), shipCharged:Number(String(this.rowGet(row,['envio','envío','shipping','flete'])||0).toString().replace(/[^\d.-]/g,''))||0, subtotalSh:Number(String(this.rowGet(row,['subtotal','sub total','subtotal price'])||'').toString().replace(/[^\d.-]/g,''))||0, totalSh:Number(String(this.rowGet(row,['total','total price','grand total','order total'])||'').toString().replace(/[^\d.-]/g,''))||0, descTotal:Number(String(this.rowGet(row,['discount amount','discountamount','descuento_total','descuento'])||0).toString().replace(/[^\d.-]/g,''))||0, freeShip:/gratis|free|env[ií]o\s*gratis/i.test(shipMethod+' '+descCode), guia:String(this.rowGet(row,['guia','guía','tracking','numero_guia','numero de guia'])||''), metodoPago:this.metodoFinal(this.rowGet(row,['metodo_pago','método de pago','metodo de pago','payment method','paymentmethod','payment','forma_pago'])||''), pagado:Number(this.rowGet(row,['pago','pagado','paid','abonado'])||0), ordFulfill:this.normKey(this.rowGet(row,['fulfillment status','fulfillment','estado_fulfillment','estado_entrega'])||''), tags:String(this.rowGet(row,['tags','etiquetas','order tags','ordertags','etiquetas_pedido'])||''), items:[] }; }
         const price=Number(String(this.rowGet(row,['valor','precio','valor_unit','price','vr_unitario','lineitem price','lineitemprice'])||0).toString().replace(/[^\d.-]/g,''))||0; const lineDisc=Number(String(this.rowGet(row,['lineitem discount','lineitemdiscount','descuento_linea'])||0).toString().replace(/[^\d.-]/g,''))||0; const taxStr=String(this.rowGet(row,['lineitem taxable','lineitemtaxable','taxable','grava_iva','cobra_iva'])||'').trim();
         const _lf=this.normKey(this.rowGet(row,['lineitem fulfillment status','lineitemfulfillmentstatus','estado_linea','estado_item'])||''); if(groups[key] && groups[key].ordFulfill==='fulfilled' && _lf && _lf!=='fulfilled') return; // línea removida en Shopify (pedido cumplido, ítem sin cumplir): no se importa
         groups[key].items.push({referencia:ref||prod, producto:this.fixTxt(prod||ref), productoCodigo:ref, unidades:u, _price:price, _lineDisc:lineDisc, taxable: taxStr===''? true : !/^(false|no|0|n)$/i.test(taxStr) }); });
@@ -12617,12 +12657,12 @@ Instrucciones de respuesta:
         const mercancia=items.reduce((a,it)=>a+it.unidades*it.valorUnit,0); const esDevol=(mercancia<0); const esObsequio=(mercancia===0 && items.length>0); let canal=g.canal; if(esObsequio) canal='MSVC';
         // Contraentrega (COD) fuera de Cali -> el courier es Coordinadora por defecto.
         const ciudadNorm=this.normKey(g.ciudad||''); const esCod=/cash on delivery|contraentrega|\bcod\b/.test(this.normKey(g.metodoPago||'')); if(esCod && ciudadNorm && !/cali/.test(ciudadNorm)){ g.metodoPago='Coordinadora'; }
-        const nuevaV={ id:'v'+Date.now()+Math.floor(Math.random()*99999), pedido:g.pedido, ov:g.ov, fecha:g.fecha, canal, bodega:g.bodega, cliente:g.cliente, celular:g.celular, correo:g.correo, ciudad:g.ciudad, items, envio:flete, guia:g.guia, tags:(g.tags||''), ordFulfill:(g.ordFulfill||''), metodoPago:g.metodoPago, cancelada:(g.cancelada===true), cuentaRecaudo:(this.metodoNecesitaBanco(g.metodoPago)? this.mapMetodoCuenta(g.metodoPago) : ''), pagado:((g.cancelada!==true) && this.metodoAutoPagado(g.metodoPago)?(mercancia+flete):0), esObsequio, origen:(t==='ventasHist'?'historico':'shopify') };
+        const nuevaV={ id:'v'+Date.now()+Math.floor(Math.random()*99999), pedido:g.pedido, ov:g.ov, fecha:g.fecha, canal, sourceName:(g.sourceName||''), bodega:g.bodega, cliente:g.cliente, celular:g.celular, correo:g.correo, ciudad:g.ciudad, items, envio:flete, guia:g.guia, tags:(g.tags||''), ordFulfill:(g.ordFulfill||''), metodoPago:g.metodoPago, cancelada:(g.cancelada===true), cuentaRecaudo:(this.metodoNecesitaBanco(g.metodoPago)? this.mapMetodoCuenta(g.metodoPago) : ''), pagado:((g.cancelada!==true) && this.metodoAutoPagado(g.metodoPago)?(mercancia+flete):0), esObsequio, origen:(t==='ventasHist'?'historico':'shopify') };
         // Upsert por número de pedido de Shopify: si ya existe, se actualizan datos PERO se conserva lo conciliado (liquidación, cobro, OV, perfil).
         const nuevaVE=this.applyPackagingRules(nuevaV);
         const gPedNum=this.pedidoNum({pedido:g.pedido});
         const exI = (g.pedido) ? list.findIndex(x=>x.pedido && (String(x.pedido)===String(g.pedido) || (gPedNum && this.pedidoNum(x)===gPedNum))) : (g.ov ? list.findIndex(x=>!x.pedido && String(x.ov)===String(g.ov)) : -1);
-        if(exI>=0){ const ex=list[exI]; const conciliada=(ex.liquidada===true)||(Number(ex.pagado)>0 && !this.metodoAutoPagado(ex.metodoPago)); list[exI]={ ...nuevaVE, id:ex.id, origen:(ex.origen==='historico'?'historico':nuevaVE.origen), ov:(ex.ov||nuevaVE.ov), metodoPago:(ex.metodoPago||nuevaVE.metodoPago), cuentaRecaudo:ex.cuentaRecaudo, liqAlt:ex.liqAlt, liqForma:ex.liqForma, liquidada:ex.liquidada, liquidacionId:ex.liquidacionId, pagado:(conciliada? ex.pagado : nuevaVE.pagado), empaques:((ex.empaques&&ex.empaques.length)? ex.empaques : nuevaVE.empaques) }; }
+        if(exI>=0){ const ex=list[exI]; const conciliada=(ex.liquidada===true)||(Number(ex.pagado)>0 && !this.metodoAutoPagado(ex.metodoPago)); list[exI]={ ...nuevaVE, id:ex.id, sourceName:(nuevaVE.sourceName||ex.sourceName||''), origen:(ex.origen==='historico'?'historico':nuevaVE.origen), ov:(ex.ov||nuevaVE.ov), metodoPago:(ex.metodoPago||nuevaVE.metodoPago), cuentaRecaudo:ex.cuentaRecaudo, liqAlt:ex.liqAlt, liqForma:ex.liqForma, liquidada:ex.liquidada, liquidacionId:ex.liquidacionId, pagado:(conciliada? ex.pagado : nuevaVE.pagado), empaques:((ex.empaques&&ex.empaques.length)? ex.empaques : nuevaVE.empaques) }; }
         else { list.unshift(nuevaVE); n++; } });
       this.setState({ventas:list,modal:null,importRows:[]},()=>{ this.persist(); this.assignMissingOV(); }); }
     else if(t==='productos'){ const list=this.state.productos.slice();
@@ -15069,7 +15109,7 @@ Instrucciones de respuesta:
       out.onLimpiarHistorico=()=>this.limpiarHistorico();
       out.onFusionarDuplicados=()=>this.fusionarPedidosDuplicados();
       out.onCorregirOV=()=>this.corregirConsecutivosOV(); out.onCorregirBankDeposit=()=>this.corregirBankDeposit();
-      out.onCanonCanales=()=>this.canonizarCanales();
+      out.onCanonCanales=()=>this.canonizarCanales(); out.onMarcarPreliminares=(e)=>this.marcarPreliminaresDesdeArchivo(e);
       out.onBorrarTodasOrdenes=()=>this.askDelete('borrarordenes',{codigo:'all',nombre:this.state.ordenes.length+' órdenes de compra registradas'});
       out.onApplyEmpaqueTodos=()=>this.applyPackagingToAll();
       out.reBolsa=(st.reBolsaDraft!=null?st.reBolsaDraft:(re.bolsaDefault||'')); out.reBolsaNombre=String(out.reBolsa||'').split(/[,+]/).map(s=>s.trim()).filter(Boolean).map(c=>{ const mm=(st.materias||[]).find(x=>x.codigo===c); return mm?mm.nombre:c; }).join(' + ');
@@ -15099,7 +15139,7 @@ Instrucciones de respuesta:
     }
 
     // ---- VENTAS ----
-    const canalesAll=['B2B','Distribuidor','Ferias','Instagram','Página Web','Tiendas','Venta Directa'];
+    const canalesAll=['B2B','Distribuidor','Ferias','Página Web','Tiendas','Venta Directa','WhatsApp'];
     const metodoBaseOpts=[...new Set([ ...this.metodosFinList().map(m=>m.nombre), 'Bank Deposit','Interrapidísimo','Cash on Delivery (COD)','Coordinadora','Bold','Addi Payment','Efectivo','Nequi / Daviplata','Transferencia bancaria','PSE' ].filter(Boolean))];
     const cuentasOpts=this.cuentasList().map(c=>c.nombre);
     const nombreItem=(it)=>{ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||it.referencia||'—')); };
