@@ -8066,7 +8066,7 @@ class Component extends DCLogic {
     const hoy=this._hoyLocal(now);
     const hist=this.backupHistList(); if(hist.some(h=>this._hoyLocal(new Date(Date.parse(h._fecha)))===hoy)) return;
     this.writeAutoBackup(); localStorage.setItem('oda_hub_backup_ts_v1',String(Date.now())); }catch(e){} }
-  persist(extra){ this._probCache=null; this._diagCache=null; const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
+  persist(extra){ this._probCache=null; this._diagCache=null; if(this._snapArmado) this._snapSoon(8000); const d={ proveedores:this.state.proveedores, materias:this.state.materias, ordenes:this.state.ordenes, productos:this.state.productos, kits:this.state.kits, mezclas:this.state.mezclas, producciones:this.state.producciones, produccionesMezcla:this.state.produccionesMezcla, servicios:this.state.servicios, ventas:this.state.ventas, cotizaciones:this.state.cotizaciones, tiendas:this.state.tiendas, remisiones:this.state.remisiones, cuentasFin:this.state.cuentasFin, movimientos:this.state.movimientos, gastosFijos:this.state.gastosFijos, retenConfig:this.state.retenConfig, metodosFin:this.state.metodosFin, liquidaciones:this.state.liquidaciones, creditos:this.state.creditos, leads:this.state.leads, msvc:this.state.msvc, casos:this.state.casos, conteos:this.state.conteos, ...extra }; this.save(d); }
   // ---- respaldo de datos ----
   respaldoKeys(){ return ['oda_hub_v1','oda_hub_perms_v1','oda_hub_reglas_v1','oda_hub_empaque_v1','oda_hub_reorden_v1','oda_hub_conv_v1','oda_hub_agente_v1','oda_hub_movajustes_v1','oda_hub_propuesta_v1','oda_hub_aikey_v1','oda_hub_ai_gemini_v1','oda_hub_ai_anthropic_v1','oda_hub_ai_provider_v1']; }
   // ---- copias comprimidas (gzip) ----
@@ -11148,6 +11148,9 @@ Instrucciones de respuesta:
       this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); } };
     try{ document.addEventListener('visibilitychange',this._cloudFocus); window.addEventListener('focus',this._cloudFocus); }catch(e){}
     this._cloudPoll=setInterval(()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); } },15000);
+    // Foto del inventario para la app: UNA vez tras la carga inicial y después solo cuando el
+    // usuario guarda algo (persist → _snapSoon con debounce de 8 s). Sin temporizadores.
+    setTimeout(()=>{ this._snapArmado=true; this._snapSoon(1000); }, 25000);
   }
   cloudManualRefresh(){ if(!this.cloudOn()){ return; } this.setState({cloudRefreshing:true}); Promise.resolve(this.cloudLoadLeads()).then(()=>this.cloudLoadCotizaciones()).then(()=>this.cloudLoadProfiles()).finally(()=>{ setTimeout(()=>this.setState({cloudRefreshing:false}),400); }); this.toast('Leads actualizados'); }
   componentWillUnmount(){ try{ if(this._cloudPoll) clearInterval(this._cloudPoll); if(this._cloudFocus){ document.removeEventListener('visibilitychange',this._cloudFocus); window.removeEventListener('focus',this._cloudFocus); } if(this._sbSub) this._sbSub.unsubscribe(); if(this._permSub) this._permSub.unsubscribe(); if(this._provSub) this._provSub.unsubscribe(); if(this._matSub) this._matSub.unsubscribe(); if(this._prodSub) this._prodSub.unsubscribe(); if(this._kitSub) this._kitSub.unsubscribe(); if(this._mezSub) this._mezSub.unsubscribe(); if(this._popSub) this._popSub.unsubscribe(); if(this._pomSub) this._pomSub.unsubscribe(); if(this._venSub) this._venSub.unsubscribe(); if(this._cotSub) this._cotSub.unsubscribe(); if(this._ctaSub) this._ctaSub.unsubscribe(); if(this._movSub) this._movSub.unsubscribe(); if(this._gasSub) this._gasSub.unsubscribe(); if(this._metSub) this._metSub.unsubscribe(); if(this._liqSub) this._liqSub.unsubscribe(); if(this._svcSub) this._svcSub.unsubscribe(); if(this._ordSub) this._ordSub.unsubscribe(); if(this._tieSub) this._tieSub.unsubscribe(); if(this._remSub) this._remSub.unsubscribe(); }catch(e){} }
@@ -11498,7 +11501,7 @@ Instrucciones de respuesta:
     const list=[...(this.state.conteos||[]), row];
     this._conteoSaving=true; setTimeout(()=>{ this._conteoSaving=false; }, 1200);
     this.setState({conteos:list, modal:null, draft:{}},()=>this.persist());
-    if(this.cloudOn()) this.cloudBulkConteos([row]);
+    if(this.cloudOn()){ this.cloudBulkConteos([row]); this._snapSoon(3000); }
     const sg=(dif>0?'+':'')+this.fmtCant(dif);
     this.toast(admin ? ('Conteo aplicado · '+sg+' '+row.unidad+' en '+row.codigo)
                     : ('Conteo enviado a aprobación · '+sg+' '+row.unidad+' en '+row.codigo));
@@ -11512,7 +11515,7 @@ Instrucciones de respuesta:
     const row={...c, estado:'anulado', valor:0, aprobadoPor:this._auditUser(), aprobadoAt:new Date().toISOString()};
     const list=(this.state.conteos||[]).map(x=>x.id===id?row:x);
     this.setState({conteos:list},()=>this.persist());
-    if(this.cloudOn()) this.cloudBulkConteos([row]);
+    if(this.cloudOn()){ this.cloudBulkConteos([row]); this._snapSoon(3000); }
     this.toast('Conteo anulado · stock de '+c.codigo+' recalculado');
   }
   resolverConteo(id, aprobar){
@@ -11533,7 +11536,7 @@ Instrucciones de respuesta:
     }
     const list=(this.state.conteos||[]).map(x=>x.id===id?row:x);
     this.setState({conteos:list},()=>this.persist());
-    if(this.cloudOn()) this.cloudBulkConteos([row]);
+    if(this.cloudOn()){ this.cloudBulkConteos([row]); this._snapSoon(3000); }
     this.toast(aprobar? ('Conteo aprobado · stock de '+c.codigo+' actualizado') : 'Conteo rechazado');
   }
   conteosPendientes(){ return (this.state.conteos||[]).filter(c=>c.estado==='pendiente').length; }
@@ -11550,6 +11553,30 @@ Instrucciones de respuesta:
     estado:r.estado||'pendiente', aprobadoPor:r.aprobado_por||'', aprobadoAt:r.aprobado_at||'' }; }
   async cloudBulkConteos(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ await sb.from('conteos').upsert(list.map(c=>this._conteoToDb(c))); }catch(e){} }
   async cloudLoadConteos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('conteos').select('*'); if(error) throw error; if(data) this.setState({conteos:data.map(r=>this._conteoFromDb(r))},()=>this.persist()); }catch(e){} }
+  // ---- foto del inventario para la OdA App (tabla inventario_snapshot) ----
+  // La app móvil no puede recalcular el stock derivado (órdenes, producciones, kits por fecha,
+  // fórmulas versionadas…), así que el Hub publica una fila por código con stock/mínimo/costo.
+  // Corre UNA vez a los 25 s de entrar (cuando ya bajó todo) y después solo cuando el usuario
+  // guarda algo (`persist`, debounce 8 s) o resuelve un conteo; nunca por reloj. Solo sube si
+  // la firma cambió y solo con escritura en Inventario (no la corre un lector).
+  _snapSoon(ms){ clearTimeout(this._snapT); this._snapT=setTimeout(()=>this.publicarInventarioSnapshot(), ms||20000); }
+  invSnapshotRows(){ const st=this.state; const mpTipos=['aceite esencial','fragancia']; const empTipos=['empaque']; const envTipos=['envase'];
+    const rev=new Set((st.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); const r3=(n)=>Math.round((Number(n)||0)*1000)/1000; const rows=[];
+    (st.materias||[]).forEach(m=>{ if(rev.has(m.codigo)) return; const cat=mpTipos.includes(m.tipo)?'mp':empTipos.includes(m.tipo)?'emp':envTipos.includes(m.tipo)?'env':'ins';
+      rows.push({codigo:m.codigo, nombre:m.nombre||'', clase:'materia', cat, unidad:m.unidad||'und', stock:r3(this.materiaStockActual(m)), minimo:r3(m.stockMinimo), costo:Math.round(Number(m.costo)||0)}); });
+    (st.mezclas||[]).forEach(mz=>{ rows.push({codigo:mz.codigo, nombre:'Mezcla '+(mz.nombre||''), clase:'mezcla', cat:'mez', unidad:'ml', stock:r3(this.mezclaMlStock(mz.codigo)), minimo:0, costo:Math.round((this.mezclaCostoMlActual(mz.codigo)||0)*100)/100}); });
+    (st.productos||[]).forEach(p=>{ rows.push({codigo:p.codigo, nombre:p.nombre||'', clase:'producto', cat:'pt', unidad:'und', stock:r3(this.productoStockActual(p)), minimo:r3(p.stockMinimo), costo:Math.round(this.productoCosto(p)||0)}); });
+    return rows; }
+  async publicarInventarioSnapshot(){ const sb=this._sbClient(); if(!sb||!this.cloudOn()||!this.canWriteMod('inventario')) return;
+    if(!(this.state.materias||[]).length && !(this.state.productos||[]).length) return; // la carga aún no llegó: no publicar ceros
+    let rows; try{ rows=this.invSnapshotRows(); }catch(e){ console.warn('snapshot inventario', e); return; }
+    const sig=JSON.stringify(rows); if(sig===this._snapSig) return; 
+    const ahora=new Date().toISOString(), por=this._auditUser();
+    try{ for(let i=0;i<rows.length;i+=200){ const {error}=await sb.from('inventario_snapshot').upsert(rows.slice(i,i+200).map(r=>Object.assign({},r,{actualizado:ahora, por})),{onConflict:'codigo'}); if(error) throw error; }
+      const vivos=new Set(rows.map(r=>r.codigo)); const {data}=await sb.from('inventario_snapshot').select('codigo'); const muertos=(data||[]).map(r=>r.codigo).filter(c=>!vivos.has(c));
+      if(muertos.length && muertos.length<rows.length) await sb.from('inventario_snapshot').delete().in('codigo', muertos);
+      this._snapSig=sig; }
+    catch(e){ console.warn('snapshot inventario', e); if(!this._snapAviso && /inventario_snapshot|relation|does not exist/i.test(String(e.message||e))){ this._snapAviso=true; this.toast('Para la app móvil falta crear la tabla inventario_snapshot (supabase-inventario-snapshot.sql)'); } } }
   saveAjuste(){ if(!this.isAdminUser()){ this.toast('Solo el Administrador puede ajustar el stock inicial'); return; }
     const d=this.state.draft; const base=Number(d.stockActual)||0; const cost=Number(d.costo)||0; let nuevo=null;
     const list=this.state.materias.map(m=>{ if(m.codigo!==d.codigo) return m; nuevo={...m, stockActual:base, costo:cost}; return nuevo; });
