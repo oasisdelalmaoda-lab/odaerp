@@ -155,7 +155,7 @@
           <svg width="380" height="380" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c0-7 1.5-13 9-17C19.5 14 16 19 12 22Z"></path><path d="M12 22C8 16 3 13 1.5 6C9.5 7.5 12 14 12 22Z" opacity="0.55"></path></svg>
         </div>
         <div style="display:flex;align-items:center;gap:13px;position:relative;">
-          <img src="uploads/logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
+          <img src="logo-wordmark-white.png" alt="Oasis del Alma" style="height:112px;width:auto;display:block;">
         </div>
         <div style="position:relative;">
           <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--brand-primary);margin-bottom:18px;">Hub Intelligence de Negocio</div>
@@ -203,7 +203,7 @@
       <!-- SIDEBAR -->
       <aside class="oda-sidebar" style="background:#2A2419;color:var(--text-inverse);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;">
         <div class="oda-brandbar" style="height:85px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid rgba(251,248,242,0.08);">
-          <img src="uploads/logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
+          <img src="logo-wordmark-white.png" alt="OdA" style="height:30px;width:auto;display:block;flex-shrink:0;image-rendering:auto;">
           <div class="oda-brandtext" style="line-height:1.25;border-left:1px solid rgba(251,248,242,0.14);padding-left:13px;">
             <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;color:rgba(251,248,242,0.92);">Hub</div>
             <div style="font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(251,248,242,0.45);margin-top:3px;">Intelligence de Negocio</div>
@@ -2076,7 +2076,7 @@
                 </button>
               </div>
               </sc-if>
-              <div class="oda-convgrid {{ convGridClass }}" style="display:grid;grid-template-columns:64px minmax(280px,330px) minmax(320px,1fr);position:relative;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;height:calc(100vh - 232px);min-height:520px;">
+              <div class="oda-convgrid {{ convGridClass }}" style="display:grid;grid-template-columns:64px minmax(280px,330px) minmax(320px,1fr);position:relative;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;height:calc(100vh - 232px);min-height:380px;">
 
                 <!-- riel de canales -->
                 <div class="oda-convrail" style="border-right:1px solid var(--border-subtle);padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:10px;">
@@ -11561,24 +11561,20 @@ Instrucciones de respuesta:
   // Corre UNA vez a los 25 s de entrar (cuando ya bajó todo) y después solo cuando el usuario
   // guarda algo (`persist`, debounce 8 s) o resuelve un conteo; nunca por reloj. Solo sube si
   // la firma cambió y solo con escritura en Inventario (no la corre un lector).
-  _snapSoon(ms){ clearTimeout(this._snapT); this._snapT=setTimeout(()=>{ this.publicarInventarioSnapshot(); this.publicarInformeSnapshot(); }, ms||20000); }
+  _snapSoon(ms){ clearTimeout(this._snapT); this._snapT=setTimeout(()=>this.publicarInventarioSnapshot(), ms||20000); }
   // ---- informe gerencial para la OdA App (tabla informe_snapshot) ----
-  // Publica los MISMOS bloques que pinta la pestaña Informes (_buildInformes), ya formateados, para
-  // el mes en curso y el anterior. Misma regla que el inventario: sin relojes, solo si cambió.
-  async publicarInformeSnapshot(){ const sb=this._sbClient(); if(!sb||!this.cloudOn()) return; const acc=this.access(); if(!acc||!(acc.admin||this._modHasAccess(acc,'informes'))) return;
-    if(!(this.state.ventas||[]).length) return;
-    const KEYS=['infMesLabel','infYm','infCompParcial','infCompNota','infKpis','infAlertas','infAlertasHay','infIaTxt','infIaHay','infSerie','infMetodos','infMetodosVacio','infCanales','infCanalesVacio','infCiudades','infCiudadesVacio','infCli','infTopCli','infTopCliVacio','infInv','infInmTotal','infInmHay','infInmN','infInmRows','infCaja','infMkt','infMktNota'];
-    const rows=[]; const ymAct=this.mesActual(); const prevInf=this.state.infMes; const prevMkt=this._mktGastoPedido;
-    try{ [ymAct, this.mesShift(ymAct,-1)].forEach(ym=>{ this.state.infMes=ym; this._mktGastoPedido=ym; /* no pedir gasto a Meta desde aquí: eso lo hace la pestaña Informes */ const out={}; this._buildInformes(out); const data={}; KEYS.forEach(k=>{ if(out[k]!==undefined) data[k]=out[k]; });
-        if(ym!==(prevInf||ymAct)){ data.infIaTxt=''; data.infIaHay=false; } // la lectura IA solo aplica al mes que se generó
-        if(ym===ymAct){ // Finanzas (solo consulta) para la app: saldos por cuenta y ventas por cobrar de HOY
-          try{ data.finCuentas=this.cuentasList().filter(c=>c.tipo!=='tarjeta').map(c=>({ nombre:c.nombre, tipo:(c.tipo==='efectivo'?'Efectivo / billetera':'Banco'), saldo:Math.round(this.cuentaSaldo(c.nombre)) })); data.finSaldoTotal=Math.round(this.cajaSaldoTotal()); }catch(e){ console.warn('fin cuentas', e); }
-          try{ data.finPorCobrar=this.finPorCobrar().map(v=>({ id:v.id, ov:v.ov||v.pedido||'', cliente:v.cliente||'', fecha:this.parseFecha(v.fecha)||'', metodo:this.metodoNombreNorm(v.metodoPago), saldo:Math.round(this.ventaSaldo(v)), dias:this.diasDesde(v.fecha) })).sort((a,b)=>b.dias-a.dias).slice(0,150); }catch(e){ console.warn('fin cobrar', e); } }
-        rows.push({ ym, data }); }); }
-    catch(e){ console.warn('snapshot informe', e); return; } finally{ this.state.infMes=prevInf; this._mktGastoPedido=prevMkt; }
-    const sig=JSON.stringify(rows); if(sig===this._infSnapSig) return;
-    try{ const {error}=await sb.from('informe_snapshot').upsert(rows.map(r=>Object.assign({},r,{actualizado:new Date().toISOString(), por:this._auditUser()})),{onConflict:'ym'}); if(error) throw error; this._infSnapSig=sig; }
-    catch(e){ console.warn('snapshot informe', e); if(!this._infSnapAviso && /informe_snapshot|relation|does not exist/i.test(String(e.message||e))){ this._infSnapAviso=true; this.toast('Para la app móvil falta crear la tabla informe_snapshot (supabase-informe-snapshot.sql)'); } } }
+  // Se publica SOLO cuando el admin tiene abierta la pestaña Informes: toma el `out` que esa vista ya
+  // calculó (cero cálculo extra, cero mutación de estado) y lo sube en diferido si cambió. Así el resto
+  // del Hub no se entera (no volver a llamar _buildInformes fuera del render de Informes).
+  INF_SNAP_KEYS=['infMesLabel','infYm','infCompParcial','infCompNota','infKpis','infAlertas','infAlertasHay','infIaTxt','infIaHay','infSerie','infMetodos','infMetodosVacio','infCanales','infCanalesVacio','infCiudades','infCiudadesVacio','infCli','infTopCli','infTopCliVacio','infInv','infInmTotal','infInmHay','infInmN','infInmRows','infCaja','infMkt','infMktNota'];
+  _infSnapDesdeVista(out){ if(!this.cloudOn()) return; const ym=out.infYm; if(!ym) return; const data={}; this.INF_SNAP_KEYS.forEach(k=>{ if(out[k]!==undefined) data[k]=out[k]; });
+    if(ym===this.mesActual()){ try{ data.finCuentas=this.cuentasList().filter(c=>c.tipo!=='tarjeta').map(c=>({ nombre:c.nombre, tipo:(c.tipo==='efectivo'?'Efectivo / billetera':'Banco'), saldo:Math.round(this.cuentaSaldo(c.nombre)) })); data.finSaldoTotal=Math.round(this.cajaSaldoTotal()); }catch(e){}
+      try{ data.finPorCobrar=this.finPorCobrar().map(v=>({ id:v.id, ov:v.ov||v.pedido||'', cliente:v.cliente||'', fecha:this.parseFecha(v.fecha)||'', metodo:this.metodoNombreNorm(v.metodoPago), saldo:Math.round(this.ventaSaldo(v)), dias:this.diasDesde(v.fecha) })).sort((a,b)=>b.dias-a.dias).slice(0,150); }catch(e){} }
+    const sig=ym+'|'+JSON.stringify(data); if(sig===this._infSnapSig) return; this._infSnapPend={ym, data, sig};
+    clearTimeout(this._infSnapT); this._infSnapT=setTimeout(()=>this.publicarInformeSnapshot(), 4000); }
+  async publicarInformeSnapshot(){ const p=this._infSnapPend; if(!p) return; const sb=this._sbClient(); if(!sb) return;
+    try{ const {error}=await sb.from('informe_snapshot').upsert({ ym:p.ym, data:p.data, actualizado:new Date().toISOString(), por:this._auditUser() },{onConflict:'ym'}); if(error) throw error; this._infSnapSig=p.sig; }
+    catch(e){ console.warn('snapshot informe', e); } }
   invSnapshotRows(){ const st=this.state; const mpTipos=['aceite esencial','fragancia']; const empTipos=['empaque']; const envTipos=['envase'];
     const rev=new Set((st.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); const r3=(n)=>Math.round((Number(n)||0)*1000)/1000; const rows=[];
     (st.materias||[]).forEach(m=>{ if(rev.has(m.codigo)) return; const cat=mpTipos.includes(m.tipo)?'mp':empTipos.includes(m.tipo)?'emp':envTipos.includes(m.tipo)?'env':'ins';
@@ -13499,7 +13495,7 @@ Instrucciones de respuesta:
     out.showInformes = st.module==='informes' && out.canInformes;
     out.informesNavBg = out.showInformes? 'rgba(167,134,89,0.18)':'transparent';
     out.informesNavColor = out.showInformes? '#D9BE92':'rgba(251,248,242,0.85)';
-    if(out.showInformes){ try{ this._buildInformes(out); }catch(e){ out.showInformes=false; console.error('informes', e); } }
+    if(out.showInformes){ try{ this._buildInformes(out); this._infSnapDesdeVista(out); }catch(e){ out.showInformes=false; console.error('informes', e); } }
     // Badge de Inicio: todo lo asignado a esta persona que sigue esperando (recordatorios sin
     // leer, conversaciones, casos por cerrar, leads en curso).
     { const p=this.inicioPendientes(); out.recBadgeShow=p.n>0; out.recBadgeCount=p.n>99?'99+':String(p.n); out.recBadgeTitle=p.detalle; }
