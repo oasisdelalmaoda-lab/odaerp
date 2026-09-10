@@ -59,6 +59,15 @@
   @media (max-width:520px){ .oda-kpi4{grid-template-columns:1fr !important;} }
   @media (max-width:900px){ .oda-grid2{grid-template-columns:1fr !important;} }
   .oda-mobile-only{display:none !important;}
+  /* --- Conversaciones: la fila del grid se fija a la altura del grid y la columna del chat nunca crece con sus
+     mensajes (si crecía, el compositor quedaba fuera del recorte del grid y el chat "no bajaba más"). --- */
+  .oda-convgrid{grid-template-rows:minmax(0,1fr);}
+  .oda-convgrid > *{min-height:0;max-height:100%;}
+  .oda-convchat{height:100%;}
+  /* Respuestas rápidas en UNA fila desplazable (igual que en móvil): con 6+ chips envueltos en 2–3 filas más la
+     cabecera, el compositor quedaba por debajo del borde del grid en portátiles / zoom 125 %. */
+  .oda-convchips{flex-wrap:nowrap !important;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px;}
+  .oda-convchips > button{flex-shrink:0;white-space:nowrap;}
   /* --- Portátil / ventana angosta (821–1360 px): Conversaciones conserva el MISMO diseño de 3 columnas,
      solo se aprieta: lista más angosta, y las acciones del chat bajan a una segunda fila en vez de
      salirse o aplastar el nombre (en otros equipos con pantalla de 1366 px o zoom 125 % se veía distinto). --- */
