@@ -7682,6 +7682,7 @@ class Component extends DCLogic {
     { id:'u2', name:'Oscar Pérez',       email:'oscar.perez@oasisdelalma.co',       role:'Administración y Finanzas', initials:'OP', color:'#6596A6', password:'OdaFin2026'   },
     { id:'u3', name:'Carolina Fandiño', email:'carolina.fandino@oasisdelalma.co',  role:'Mercadeo y Publicidad',   initials:'CF', color:'#9C97A2', password:'OdaMkt2026'   },
     { id:'u4', name:'Pedro Cabrales',  email:'pedro.cabrales@oasisdelalma.co',    role:'Comercial',               initials:'PC', color:'#627B60', password:'OdaCom2026'   },
+    { id:'u5', name:'Alejandra Cobo',  email:'alejandra.cobo@oasisdelalma.co',    role:'Producción y bodega',    initials:'AC', color:'#C9962F', password:'OdaProd2026'  },
   ];
   // access per role: none | read | write  (admin = write everything + aprueba)
   roles = {
@@ -7690,6 +7691,7 @@ class Component extends DCLogic {
     'Mercadeo y Publicidad':    { compras:'none',  desarrollo:'read',  ventas:'read',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'write', conversaciones:'write', informes:'none', admin:false },
     'Personalizado':            { compras:'none',  desarrollo:'none',  ventas:'none',  finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  conversaciones:'none',  informes:'none', admin:false },
     'Comercial':                { compras:'none',  desarrollo:'none',  ventas:'write', finanzas:'none',  produccion:'none',  inventario:'none',  marketing:'none',  conversaciones:'write', informes:'none', admin:false },
+    'Producción y bodega':      { compras:'none',  desarrollo:'read',  ventas:'none',  finanzas:'none',  produccion:'write', inventario:'write', marketing:'none',  conversaciones:'none',  informes:'none', admin:false },
   };
   _usersCfgGet(){ if(!this._usersCfgCache){ let c=null; try{ c=JSON.parse(localStorage.getItem('oda_hub_usuarios_v1')); }catch(e){} if(!c||typeof c!=='object') c={}; this._usersCfgCache={ overrides:(c.overrides||{}), custom:(c.custom||[]), _ts:(Number(c._ts)||0) }; } return this._usersCfgCache; }
   _usersCfgSave(cfg){ cfg._ts=Date.now(); this._usersCfgCache=cfg; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(cfg)); }catch(e){} if(this.cloudOn&&this.cloudOn()) this.cloudSavePermiso('__usuarios__', cfg); this.forceUpdate(); }
@@ -11559,7 +11561,24 @@ Instrucciones de respuesta:
   // Corre UNA vez a los 25 s de entrar (cuando ya bajó todo) y después solo cuando el usuario
   // guarda algo (`persist`, debounce 8 s) o resuelve un conteo; nunca por reloj. Solo sube si
   // la firma cambió y solo con escritura en Inventario (no la corre un lector).
-  _snapSoon(ms){ clearTimeout(this._snapT); this._snapT=setTimeout(()=>this.publicarInventarioSnapshot(), ms||20000); }
+  _snapSoon(ms){ clearTimeout(this._snapT); this._snapT=setTimeout(()=>{ this.publicarInventarioSnapshot(); this.publicarInformeSnapshot(); }, ms||20000); }
+  // ---- informe gerencial para la OdA App (tabla informe_snapshot) ----
+  // Publica los MISMOS bloques que pinta la pestaña Informes (_buildInformes), ya formateados, para
+  // el mes en curso y el anterior. Misma regla que el inventario: sin relojes, solo si cambió.
+  async publicarInformeSnapshot(){ const sb=this._sbClient(); if(!sb||!this.cloudOn()) return; const acc=this.access(); if(!acc||!(acc.admin||this._modHasAccess(acc,'informes'))) return;
+    if(!(this.state.ventas||[]).length) return;
+    const KEYS=['infMesLabel','infYm','infCompParcial','infCompNota','infKpis','infAlertas','infAlertasHay','infIaTxt','infIaHay','infSerie','infMetodos','infMetodosVacio','infCanales','infCanalesVacio','infCiudades','infCiudadesVacio','infCli','infTopCli','infTopCliVacio','infInv','infInmTotal','infInmHay','infInmN','infInmRows','infCaja','infMkt','infMktNota'];
+    const rows=[]; const ymAct=this.mesActual(); const prevInf=this.state.infMes; const prevMkt=this._mktGastoPedido;
+    try{ [ymAct, this.mesShift(ymAct,-1)].forEach(ym=>{ this.state.infMes=ym; this._mktGastoPedido=ym; /* no pedir gasto a Meta desde aquí: eso lo hace la pestaña Informes */ const out={}; this._buildInformes(out); const data={}; KEYS.forEach(k=>{ if(out[k]!==undefined) data[k]=out[k]; });
+        if(ym!==(prevInf||ymAct)){ data.infIaTxt=''; data.infIaHay=false; } // la lectura IA solo aplica al mes que se generó
+        if(ym===ymAct){ // Finanzas (solo consulta) para la app: saldos por cuenta y ventas por cobrar de HOY
+          try{ data.finCuentas=this.cuentasList().filter(c=>c.tipo!=='tarjeta').map(c=>({ nombre:c.nombre, tipo:(c.tipo==='efectivo'?'Efectivo / billetera':'Banco'), saldo:Math.round(this.cuentaSaldo(c.nombre)) })); data.finSaldoTotal=Math.round(this.cajaSaldoTotal()); }catch(e){ console.warn('fin cuentas', e); }
+          try{ data.finPorCobrar=this.finPorCobrar().map(v=>({ id:v.id, ov:v.ov||v.pedido||'', cliente:v.cliente||'', fecha:this.parseFecha(v.fecha)||'', metodo:this.metodoNombreNorm(v.metodoPago), saldo:Math.round(this.ventaSaldo(v)), dias:this.diasDesde(v.fecha) })).sort((a,b)=>b.dias-a.dias).slice(0,150); }catch(e){ console.warn('fin cobrar', e); } }
+        rows.push({ ym, data }); }); }
+    catch(e){ console.warn('snapshot informe', e); return; } finally{ this.state.infMes=prevInf; this._mktGastoPedido=prevMkt; }
+    const sig=JSON.stringify(rows); if(sig===this._infSnapSig) return;
+    try{ const {error}=await sb.from('informe_snapshot').upsert(rows.map(r=>Object.assign({},r,{actualizado:new Date().toISOString(), por:this._auditUser()})),{onConflict:'ym'}); if(error) throw error; this._infSnapSig=sig; }
+    catch(e){ console.warn('snapshot informe', e); if(!this._infSnapAviso && /informe_snapshot|relation|does not exist/i.test(String(e.message||e))){ this._infSnapAviso=true; this.toast('Para la app móvil falta crear la tabla informe_snapshot (supabase-informe-snapshot.sql)'); } } }
   invSnapshotRows(){ const st=this.state; const mpTipos=['aceite esencial','fragancia']; const empTipos=['empaque']; const envTipos=['envase'];
     const rev=new Set((st.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); const r3=(n)=>Math.round((Number(n)||0)*1000)/1000; const rows=[];
     (st.materias||[]).forEach(m=>{ if(rev.has(m.codigo)) return; const cat=mpTipos.includes(m.tipo)?'mp':empTipos.includes(m.tipo)?'emp':envTipos.includes(m.tipo)?'env':'ins';
