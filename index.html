@@ -1047,6 +1047,7 @@
                           <option value="">Poner la misma orden a todos los ítems…</option>
                           <sc-for list="{{ r.ordenes }}" as="o" hint-placeholder-count="2"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
                         </select>
+                        <input value="{{ r.notaHub }}" onInput="{{ r.setNota }}" placeholder="Remisión / nota (opcional)" style="font-family:inherit;font-size:13px;padding:9px 12px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);max-width:100%;box-sizing:border-box;">
                         <div style="font-size:12px;color:var(--text-muted);">{{ r.nSelTxt }}</div>
                         <sc-if value="{{ r.aviso }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#8F3A28;line-height:1.4;">{{ r.aviso }}</div></sc-if>
                         <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -5842,9 +5843,10 @@
                 </div>
                 <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;margin-top:12px;background:var(--surface-card);">
                   <sc-for list="{{ kitItemsDraft }}" as="it" hint-placeholder-count="2">
-                    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border-subtle);font-size:12.5px;opacity:{{ it.filaOpacidad }};">
                       <span style="font-size:9.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 7px;border-radius:99px;background:var(--surface-raised);color:var(--text-muted);white-space:nowrap;">{{ it.tipoLabel }}</span>
-                      <span style="flex:1;min-width:140px;line-height:1.35;">{{ it.nombre }}<sc-if value="{{ it.tieneDesde }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:10.5px;color:var(--text-muted);" title="Este componente hace parte del kit desde esta fecha; los pedidos anteriores no lo descuentan.">En el kit desde {{ it.desdeFmt }}</span></sc-if></span>
+                      <span style="flex:1;min-width:140px;line-height:1.35;">{{ it.nombre }}<sc-if value="{{ it.tieneDesde }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:10.5px;color:var(--text-muted);" title="Este componente hace parte del kit desde esta fecha; los pedidos anteriores no lo descuentan.">En el kit desde {{ it.desdeFmt }}</span></sc-if><sc-if value="{{ it.tieneHasta }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:10.5px;color:var(--oda-sale);font-weight:700;" title="Salió del kit en esta fecha: solo los pedidos anteriores lo descuentan.">Salió del kit el {{ it.hastaFmt }}</span></sc-if></span>
+                      <label style="font-size:10px;color:var(--text-muted);white-space:nowrap;display:flex;align-items:center;gap:5px;" title="Si este componente salió del kit, pon la fecha: los pedidos anteriores lo siguen descontando.">Salió el<input type="date" value="{{ it.hasta }}" onInput="{{ it.onHasta }}" style="font-family:inherit;font-size:11px;padding:4px 6px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--brand-ink);"></label>
                       <span style="color:var(--text-muted);white-space:nowrap;">{{ it.cantidad }} × {{ it.precioUnitFmt }}</span>
                       <span style="color:var(--text-muted);white-space:nowrap;font-size:12px;" title="Costo unitario × cantidad">Costo {{ it.costoTotalFmt }}</span>
                       <span style="font-weight:700;width:92px;text-align:right;">{{ it.subtotalFmt }}</span>
@@ -5856,6 +5858,32 @@
                   </sc-if>
                 </div>
               </div>
+
+              <sc-if value="{{ kitSnapHay }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{ kitSnapAvisos }}" as="a" hint-placeholder-count="1">
+                    <div style="background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.35);border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;">
+                      <span style="font-size:12.5px;color:var(--brand-ink);line-height:1.45;flex:1;min-width:220px;">{{ a.txt }}</span>
+                      <button onClick="{{ a.go }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;border:none;background:{{ a.btnBg }};color:{{ a.btnFg }};cursor:{{ a.btnCur }};white-space:nowrap;">{{ a.btn }}</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ kitVersHay }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:14px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Historial de la estructura</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <sc-for list="{{ kitVersiones }}" as="v" hint-placeholder-count="2">
+                      <div style="display:flex;gap:12px;align-items:baseline;font-size:12px;padding:8px 11px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);">
+                        <span style="font-weight:700;white-space:nowrap;color:{{ v.color }};">{{ v.vigencia }}</span>
+                        <span style="color:var(--text-muted);min-width:0;">{{ v.resumen }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;line-height:1.45;">Las ventas de cada periodo descuentan la estructura que regía ese día.</div>
+                </div>
+              </sc-if>
 
               <div style="margin-top:14px;display:flex;flex-direction:column;gap:5px;align-items:flex-end;padding:0 2px;">
                 <div style="display:flex;justify-content:space-between;gap:24px;width:300px;font-size:13px;color:var(--text-body);"><span style="color:var(--text-muted);">Suma suelto (sin IVA)</span><span style="font-weight:600;">{{ kitSumaFmt }}</span></div>
@@ -9233,8 +9261,11 @@ class Component extends DCLogic {
 
   kitComponentPrecio(it){ if(it.tipo==='producto'){ const p=this.state.productos.find(x=>x.codigo===it.codigo); return p?this.productoPrecioNeto(p):0; } const m=this.state.materias.find(x=>x.codigo===it.codigo); return m?(Number(m.costo)||0):0; }
   kitComponentCosto(it){ if(it.tipo==='producto'){ const p=this.state.productos.find(x=>x.codigo===it.codigo); return p?this.productoCosto(p):0; } const m=this.state.materias.find(x=>x.codigo===it.codigo); return m?(Number(m.costo)||0):0; }
-  kitSuma(k){ return (k.items||[]).reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0); }
-  kitCosto(k){ return (k.items||[]).reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0); }
+  // Precio y costo SIEMPRE sobre los componentes vigentes en la fecha (hoy por defecto): un
+  // componente que solo vive para el histórico (`hasta` pasado) o que aún no entra (`desde`
+  // futuro) no puede inflar el costo de hoy ni el costoUnit que se congela en ventas nuevas.
+  kitSuma(k, fecha){ return this._kitVigentes(k&&k.items, fecha).reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0); }
+  kitCosto(k, fecha){ return this._kitVigentes(k&&k.items, fecha).reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0); }
   kitPrecioNeto(k){ const p=Number(k.precio)||0; return (k&&k.cobraIva===false)? p : Math.round(p/1.19); }
   // El precio guardado de un producto es SIEMPRE el precio final que paga el cliente (con IVA
   // incluido si cobra IVA) — igual que en Shopify, ventas y cotizaciones. Neto = base sin IVA.
@@ -9294,10 +9325,54 @@ class Component extends DCLogic {
       this.setState({ordenes:[],materias:mats,confirmDel:null},()=>this.persist()); if(this.cloudOn()){ this.cloudBulkMaterias(mats); this.cloudClearOrdenes(); } this.toast('Todas las órdenes eliminadas · inventario revertido');
     }
   }
-  addKitItem(){ const d=this.state.draft; if(!d._selKitItem||!d._selCantidad){ this.toast('Elige un componente y la cantidad'); return; } const parts=String(d._selKitItem).split(':'); const items=(d.items||[]).slice(); items.push({tipo:parts[0],codigo:parts[1],cantidad:Number(d._selCantidad)||1, desde:(d._new? undefined : new Date().toISOString().slice(0,10))}); this.setState({draft:{...d,items,_selKitItem:'',_selCantidad:1}}); }
+  addKitItem(){ const d=this.state.draft; if(!d._selKitItem||!d._selCantidad){ this.toast('Elige un componente y la cantidad'); return; } const parts=String(d._selKitItem).split(':'); const items=(d.items||[]).slice(); items.push({tipo:parts[0],codigo:parts[1],cantidad:Number(d._selCantidad)||1}); this.setState({draft:{...d,items,_selKitItem:'',_selCantidad:1}}); }
+  // Marca la fecha en que un componente SALIÓ del kit: los pedidos anteriores a esa fecha lo
+  // siguen descontando, los posteriores no. Sirve para registrar a mano lo que llevaba un kit
+  // antes de un cambio hecho cuando todavía no existía el historial de versiones.
+  setKitItemHasta(i, val){ const d=this.state.draft; const items=(d.items||[]).slice(); if(!items[i]) return; items[i]={...items[i], hasta:(String(val||'').slice(0,10)||undefined)}; this.setState({draft:{...d,items}}); }
+  // Ventas de un kit, anteriores a `hasta`, cuya foto congelada (it.kitItems) NO trae ese
+  // componente: en ellas la marca «Salió el» no aplica (la foto manda, regla 40a), así que hay
+  // que decirlo y ofrecer soltar la foto para que vuelvan a leer la estructura versionada.
+  kitSnapsDesfasados(kitCode, comp, hasta){ const h=String(hasta||'').slice(0,10); if(!kitCode||!comp||!h) return [];
+    return (this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=String(v.fecha||'').slice(0,10); if(!f || f>=h) return false;
+      return (v.items||[]).some(it=>(it.productoCodigo||it.referencia)===kitCode && Array.isArray(it.kitItems) && !it.kitItems.some(ki=>ki.codigo===comp)); }); }
+  soltarSnapsKit(kitCode, comp, hasta){
+    // La reparación es irreversible (borra la foto congelada), así que solo corre contra el kit
+    // YA GUARDADO: si la marca «Salió el» vive solo en el borrador, soltar la foto dejaría los
+    // pedidos sin el componente y sin forma de recuperarlo.
+    const k=(this.state.kits||[]).find(x=>x.codigo===kitCode);
+    const ki=k&&(k.items||[]).find(x=>x.codigo===comp && String(x.hasta||'').slice(0,10)===String(hasta||'').slice(0,10));
+    if(!ki){ this.toast('Primero guarda el kit con la fecha «Salió el» y vuelve a abrirlo para corregir los pedidos'); return; }
+    const vs=this.kitSnapsDesfasados(kitCode, comp, hasta); if(!vs.length){ this.toast('No hay pedidos con estructura congelada por corregir'); return; }
+    // Componentes que solo existen en la foto: al soltarla se pierden, hay que nombrarlos.
+    const vig={}; (this.kitItemsEn(kitCode, hasta, null)||[]).forEach(x=>{ vig[x.codigo]=true; });
+    const perd={}; vs.forEach(v=>(v.items||[]).forEach(it=>{ if((it.productoCodigo||it.referencia)!==kitCode||!Array.isArray(it.kitItems)) return; it.kitItems.forEach(x=>{ if(!vig[x.codigo]) perd[x.codigo]=true; }); }));
+    const perdTxt=Object.keys(perd).map(c=>{ const r=(this.state.productos||[]).find(x=>x.codigo===c)||(this.state.materias||[]).find(x=>x.codigo===c); return (r?r.nombre:c); });
+    if(!window.confirm('Se va a borrar la foto de la estructura en '+vs.length+' pedido(s) anterior(es) al '+hasta+' para que vuelvan a leer la estructura vigente ese día (y descuenten el componente que salió del kit).\n\nEl costo congelado de cada venta NO se toca.'+(perdTxt.length?('\n\n⚠ Estos componentes solo existen en la foto y se van a PERDER en esos pedidos: '+perdTxt.join(', ')+'. Si alguno debe seguir descontándose, agrégalo al kit con su fecha «Salió el» antes de continuar.'):'')+'\n\nEsto no se puede deshacer. ¿Continuar?')) return;
+    const ids={}; vs.forEach(v=>{ ids[v.id]=true; });
+    const list=(this.state.ventas||[]).map(v=>{ if(!ids[v.id]) return v; const items=(v.items||[]).map(it=>{ if((it.productoCodigo||it.referencia)!==kitCode || !Array.isArray(it.kitItems)) return it; const c={...it}; delete c.kitItems; return c; }); return {...v, items}; });
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()) Object.keys(ids).forEach(id=>{ const _cv=list.find(x=>x.id===id); if(_cv) this.cloudSaveVenta(_cv); });
+    this.toast(vs.length+' pedido(s) actualizados · ahora descuentan la estructura que regía ese día'); }
   setKitItemDesde(i, val){ const d=this.state.draft; const items=(d.items||[]).slice(); if(!items[i]) return; items[i]={...items[i], desde:(String(val||'').slice(0,10)||undefined)}; this.setState({draft:{...d,items}}); }
   removeKitItem(i){ const d=this.state.draft; const items=(d.items||[]).slice(); items.splice(i,1); this.setState({draft:{...d,items}}); }
-  saveKit(){ const d=this.state.draft; if(!d.nombre){ this.toast('Escribe el nombre del kit'); return; } if(!(d.items||[]).length){ this.toast('Agrega al menos un componente'); return; } let list=this.state.kits.slice(); const i=list.findIndex(x=>x.codigo===d.codigo); const row={codigo:d.codigo,nombre:d.nombre,precio:Number(d.precio)||0,foto:d.foto||'',items:(d.items||[]).map(it=>({tipo:it.tipo,codigo:it.codigo,cantidad:Number(it.cantidad)||1,desde:(String(it.desde||'').slice(0,10)||undefined)}))}; if(i>=0&&!d._new) list[i]=row; else list.push(row); this.setState({kits:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveKit(row); this.toast('Kit guardado'); }
+  // Cada edición ARCHIVA la estructura anterior con la fecha desde la que rigió (igual que las
+  // mezclas, regla 41): así aguanta cuantos cambios vengan y las ventas viejas siguen viendo —
+  // y descontando — los componentes que se quitaron.
+  saveKit(){ const d=this.state.draft; if(!d.nombre){ this.toast('Escribe el nombre del kit'); return; } if(!(d.items||[]).length){ this.toast('Agrega al menos un componente'); return; }
+    let list=this.state.kits.slice(); const i=list.findIndex(x=>x.codigo===d.codigo); const prev=(i>=0&&!d._new)? list[i] : null;
+    const hoy=new Date().toISOString().slice(0,10);
+    const items=(d.items||[]).map(it=>({tipo:it.tipo,codigo:it.codigo,cantidad:Number(it.cantidad)||1,desde:(String(it.desde||'').slice(0,10)||undefined),hasta:(String(it.hasta||'').slice(0,10)||undefined)}));
+    let versiones=(prev&&prev.versiones)? prev.versiones.slice() : [];
+    let versionDesde=(prev&&prev.versionDesde)||'';
+    const cambio=!!(prev && !this._kitIgual(prev.items, items));
+    if(cambio){ const antes=this._kitNorm(prev.items);
+      if(antes.length && !versiones.some(v=>this._kitIgual(v.items, antes))) versiones.push({desde:String(prev.versionDesde||''), items:antes, guardado:new Date().toISOString()});
+      versionDesde=hoy; }
+    const row={codigo:d.codigo,nombre:d.nombre,precio:Number(d.precio)||0,foto:d.foto||'',items,versiones,versionDesde};
+    if(prev) list[i]=row; else list.push(row);
+    this.setState({kits:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveKit(row);
+    this.toast(cambio? 'Kit guardado · la estructura anterior quedó archivada (lo ya vendido no cambia)' : 'Kit guardado'); }
   formatoLabel(f){ const m={'roll-on':'Roll-on','inhalador':'Inhalador','bruma':'Bruma','vela':'Vela','difusor':'Difusor','aceite':'Aceite esencial'}; return m[f]||f||'—'; }
   formatoFromText(v){ const k=this.normKey(v); if(!k) return ''; if(k.includes('rollon')||k==='roll') return 'roll-on'; if(k.includes('inhalad')) return 'inhalador'; if(k.includes('vela')) return 'vela'; if(k.includes('difus')) return 'difusor'; if(k.includes('aceite')) return 'aceite'; if(k.includes('spray')||k.includes('bruma')) return 'bruma'; if(k.includes('incien')) return 'incienso'; return k; }
   formatoOpciones(){ const base=['roll-on','inhalador','bruma','vela','difusor','aceite']; const usados=(this.state.productos||[]).map(p=>(p.formato||'').trim()).filter(Boolean); const out=[]; base.concat(usados).forEach(f=>{ if(out.indexOf(f)<0) out.push(f); }); return out; }
@@ -9314,13 +9389,36 @@ class Component extends DCLogic {
   // ===== ESTRUCTURA DE KIT VIGENTE =====
   // Un cambio de estructura solo afecta los documentos POSTERIORES. Prioridad:
   //   1) la foto guardada en el ítem del documento (it.kitItems), congelada al crearlo;
-  //   2) la estructura de hoy, descartando los componentes cuya fecha de vigencia
-  //      (ki.desde) es posterior a la fecha del documento.
+  //   2) la VERSIÓN de la estructura vigente ese día (k.versiones + k.versionDesde), igual que
+  //      las mezclas (regla 41). La marca por componente (ki.desde) sigue funcionando como
+  //      respaldo para los kits que se editaron antes de que existiera el historial.
+  _kitNorm(items){ return (items||[]).map(ki=>({tipo:ki.tipo, codigo:ki.codigo, cantidad:Number(ki.cantidad)||1, ...(ki.desde?{desde:String(ki.desde).slice(0,10)}:{}), ...(ki.hasta?{hasta:String(ki.hasta).slice(0,10)}:{})})); }
+  // Componentes vigentes en una fecha: respeta `desde` (entró al kit) y `hasta` (salió del kit).
+  _kitVigentes(items, ref){ const f=String(ref||new Date().toISOString().slice(0,10)).slice(0,10);
+    return this._kitNorm(items).filter(ki=>{ const d=String(ki.desde||''), h=String(ki.hasta||''); return (!d || f>=d) && (!h || f<h); }); }
+  // Solo los componentes VIGENTES HOY definen la estructura: así registrar un componente histórico
+  // (uno que salió del kit, con `hasta`) no se confunde con un cambio de estructura y no archiva
+  // una versión nueva que taparía justamente ese histórico.
+  _kitIgual(a,b){ const key=(x)=>this._kitVigentes(x).map(i=>i.tipo+':'+i.codigo+':'+i.cantidad).sort().join('|'); return key(a)===key(b); }
+  kitVersiones(k){ if(!k) return [];
+    const vs=(k.versiones||[]).map(v=>({desde:String(v.desde||''), items:this._kitNorm(v.items)}))
+      .filter(v=>v.items.length).sort((a,b)=>String(a.desde).localeCompare(String(b.desde)));
+    const act=this._kitNorm(k.items);
+    if(act.length && (!vs.length || !this._kitIgual(vs[vs.length-1].items, act))) vs.push({desde:String(k.versionDesde||''), items:act});
+    return vs; }
   kitItemsEn(code, fecha, it){
     if(it && Array.isArray(it.kitItems)) return it.kitItems;
     const k=(this.state.kits||[]).find(x=>x.codigo===code); if(!k) return null;
-    const fd=String(fecha||'').slice(0,10); if(!fd) return (k.items||[]);
-    return (k.items||[]).filter(ki=>{ const d=String(ki.desde||'').slice(0,10); return (!d || fd>=d); }); }
+    const vs=this.kitVersiones(k); if(!vs.length) return null;
+    const fd=String(fecha||'').slice(0,10);
+    let sel=vs[0];
+    if(fd) for(const v of vs){ if(!v.desde || v.desde<=fd) sel=v; else break; }
+    const items=(sel.items||[]);
+    if(!fd) return this._kitVigentes(items);
+    const vig=this._kitVigentes(items, fd);
+    // NUNCA devolver una estructura vacía: sin componentes el kit no descuenta nada y desaparece
+    // del kardex (14-sep, kit editado dos veces). Si el filtro deja todo fuera, vale la versión completa.
+    return vig.length? vig : items; }
   // Foto de la estructura al crear/guardar el ítem. Nunca pisa una foto ya guardada.
   _itemKitSnap(it, code, fecha){
     if(it && Array.isArray(it.kitItems)) return it.kitItems;
@@ -9467,7 +9565,7 @@ class Component extends DCLogic {
   // El costo de un ítem vendido queda CONGELADO al momento de la venta (costoUnit): cambiar
   // la estructura de un producto o kit solo afecta las ventas posteriores. Si el ítem no tiene
   // snapshot (venta vieja, o costo 0 cuando se creó), se calcula con la estructura actual.
-  ventaItemCostoVivo(code){ const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k); return 0; }
+  ventaItemCostoVivo(code, fecha){ const p=(this.state.productos||[]).find(x=>x.codigo===code); if(p) return this.productoCosto(p); const k=(this.state.kits||[]).find(x=>x.codigo===code); if(k) return this.kitCosto(k, fecha); return 0; }
   // Congela en las ventas YA existentes el costo que tienen hoy, para que un cambio futuro de
   // estructura solo afecte lo posterior. Corre una vez por sesión, solo sobre ítems sin snapshot
   // y con costo actual > 0, y sube a la nube SOLO las ventas que tocó.
@@ -9487,10 +9585,10 @@ class Component extends DCLogic {
     return nItems;
   }
   _congelarCostosSoon(){ clearTimeout(this._ccTo); this._ccTo=setTimeout(()=>{ try{ this.congelarCostosVentas(); }catch(e){} }, 6000); }
-  ventaItemCosto(it){ const snap=Number(it&&it.costoUnit)||0; if(snap>0) return snap; return this.ventaItemCostoVivo(it&&it.productoCodigo); }
+  ventaItemCosto(it, fecha){ const snap=Number(it&&it.costoUnit)||0; if(snap>0) return snap; return this.ventaItemCostoVivo(it&&it.productoCodigo, fecha); }
   // Congela el costo actual en un ítem nuevo. Nunca pisa un snapshot ya guardado y no guarda
   // ceros (una materia sin costo cargado sigue calculándose en vivo hasta que tenga costo).
-  _itemConCosto(it, code){ const prev=Number(it&&it.costoUnit)||0; if(prev>0) return prev; const c=Math.round(this.ventaItemCostoVivo(code)||0); return c>0? c : undefined; }
+  _itemConCosto(it, code, fecha){ const prev=Number(it&&it.costoUnit)||0; if(prev>0) return prev; const c=Math.round(this.ventaItemCostoVivo(code, fecha)||0); return c>0? c : undefined; }
   // Corrección MANUAL del costo congelado de productos SELECCIONADOS (p. ej. la estructura tenía
   // un envase equivocado desde el principio): recongela costoUnit con la estructura ACTUAL en
   // todos los ítems de esos productos y de los kits que los contienen. Solo Admin, con
@@ -11236,15 +11334,16 @@ Instrucciones de respuesta:
     const fecha=r.fecha||new Date().toISOString().slice(0,10);
     let materias=this.state.materias.slice(); let productos=this.state.productos.slice();
     Object.values(porOrden).forEach(g=>g.lineas.forEach(l=>{ const res=this.aplicarIngreso(materias,productos,l.materiaCodigo,l.cantidad,this.itemCostoUnit(l._it),fecha); materias=res.materias; productos=res.productos; }));
-    const nota='Ingreso desde bodega ('+(r.creadoPor||'app')+')'+(r.nota?' · '+r.nota:'');
+    const _notaHub=String(((this.state.recepNota||{})[r.id])||'').trim();
+    const nota='Ingreso desde bodega ('+(r.creadoPor||'app')+')'+(r.nota?' · '+r.nota:'')+(_notaHub?' · '+_notaHub:'');
     const ordenes=this.state.ordenes.map(x=>{ const g=porOrden[x.id]; if(!g) return x; const entregas=(x.entregas||[]).slice(); entregas.push({ fecha, nota, recibidoPor:r.creadoPor||this._auditUser(), items:g.lineas.map(l=>({materiaCodigo:l.materiaCodigo, nombre:l.nombre, cantidad:l.cantidad})) }); const no={...x,entregas}; if(this.ordenEntregaCompleta(no)) no.estado='recibida'; return no; });
     const asignaciones=(r.asignaciones||[]).concat(Object.values(porOrden).map(g=>({ ordenId:g.o.id, ordenNumero:g.o.numero, items:g.lineas.map(l=>({codigo:l.materiaCodigo, cantidad:l.cantidad})), por:this._auditUser(), at:new Date().toISOString() })));
     const nums=Object.values(porOrden).map(g=>g.o.numero||g.o.id);
     const rec= sinOrden.length
       ? {...r, items:sinOrden, itemsOriginales:r.itemsOriginales||items, asignaciones, ordenNumero:asignaciones.map(a=>a.ordenNumero).filter(Boolean).join(', ')}
       : {...r, items:r.itemsOriginales||items, itemsOriginales:undefined, estado:'aplicada', asignaciones, ordenId:asignaciones.length===1?asignaciones[0].ordenId:'', ordenNumero:asignaciones.map(a=>a.ordenNumero).filter(Boolean).join(', '), resueltoPor:this._auditUser(), resueltoAt:new Date().toISOString()};
-    const recepciones=(this.state.recepciones||[]).map(x=>x.id===r.id?rec:x); const recepSel={...(this.state.recepSel||{})}; delete recepSel[r.id];
-    this.setState({ordenes,materias,productos,recepciones,recepSel},()=>this.persist());
+    const recepciones=(this.state.recepciones||[]).map(x=>x.id===r.id?rec:x); const recepSel={...(this.state.recepSel||{})}; delete recepSel[r.id]; const recepNota={...(this.state.recepNota||{})}; delete recepNota[r.id];
+    this.setState({ordenes,materias,productos,recepciones,recepSel,recepNota},()=>this.persist());
     if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); Object.keys(porOrden).forEach(id=>{ const _o=ordenes.find(x=>x.id===id); if(_o) this.cloudSaveOrden(_o); }); this._cloudSaveOne('recepciones', rec); }
     const completas=Object.keys(porOrden).filter(id=>{ const u=ordenes.find(x=>x.id===id); return u&&u.estado==='recibida'; }).length;
     this.toast(conOrden.length+' ítem(s) asignados a '+nums.join(', ')+(completas?' · '+completas+' orden(es) completa(s)':' · entrega parcial')+(sinOrden.length?' · '+sinOrden.length+' siguen pendientes':'')+' · inventario y costo actualizados'); }
@@ -11949,7 +12048,7 @@ Instrucciones de respuesta:
     // Abono inmediato (pago mixto): parte pagada por otro medio que entra YA al banco, aunque el saldo quede como recaudo diferido. Al liquidar, el bruto ya excluye este abono, así que no se duplica.
     (this.state.ventas||[]).forEach(v=>{ if(v.origen==='historico'||v.cancelada) return; const ab=this.ventaAbono(v); if(ab>0 && v.abonoCuenta){ out.push({ id:v.id+'-ab', fecha:this.parseFecha(v.abonoFecha||v.fecha), tipo:'ingreso', cuenta:v.abonoCuenta, monto:ab, categoria:'Abono de venta', concepto:'Abono '+(v.abonoMetodo?(v.abonoMetodo+' '):'')+this.ventaRef(v)+(v.cliente?(' \u00b7 '+v.cliente):''), origen:'venta', editable:false, ventaIds:[v.id] }); } });
     (this.state.ventas||[]).forEach(v=>{ const fe=Number(v.fleteEntrega)||0; if(v.origen!=='historico' && !v.cancelada && fe>0){ out.push({ id:v.id+'-fe', fecha:this.parseFecha(v.fecha), tipo:'egreso', cuenta:(v.fleteCuenta||''), monto:fe, categoria:'Flete de entregas (mensajería)', concepto:'Flete entrega '+this.ventaRef(v)+(v.cliente?(' \u00b7 '+v.cliente):''), origen:'venta', editable:false, ventaIds:[v.id] }); } });
-    (this.state.movimientos||[]).forEach(mv=>{ if(mv.tipo==='traslado'){ const _m=Number(mv.monto)||0; if(_m<=0) return; out.push({ id:mv.id+'-to', fecha:this.parseFecha(mv.fecha), tipo:'egreso', cuenta:mv.cuenta||'', monto:_m, categoria:'Traslado entre cuentas', concepto:(mv.concepto||('Traslado a '+(mv.cuentaDestino||''))), origen:'manual', esTraslado:true, editable:true, trasladoId:mv.id }); out.push({ id:mv.id+'-td', fecha:this.parseFecha(mv.fecha), tipo:'ingreso', cuenta:mv.cuentaDestino||'', monto:_m, categoria:'Traslado entre cuentas', concepto:(mv.concepto||('Traslado desde '+(mv.cuenta||''))), origen:'manual', esTraslado:true, editable:false, trasladoId:mv.id }); return; } out.push({ id:mv.id, fecha:this.parseFecha(mv.fecha), tipo:mv.tipo, cuenta:mv.cuenta||'', monto:Number(mv.monto)||0, categoria:mv.categoria||(mv.tipo==='ingreso'?'Otros ingresos':'Otros egresos'), concepto:mv.concepto||'', origen:'manual', ts:(mv.ts||0), gastoFijoId:mv.gastoFijoId||null, servicioCodigo:mv.servicioCodigo||null, editable:!mv.gastoFijoId, archivo:(mv.archivo||''), archivoNombre:(mv.archivoNombre||'') }); });
+    (this.state.movimientos||[]).forEach(mv=>{ if(mv.tipo==='traslado'){ const _m=Number(mv.monto)||0; if(_m<=0) return; out.push({ id:mv.id+'-to', fecha:this.parseFecha(mv.fecha), tipo:'egreso', cuenta:mv.cuenta||'', monto:_m, categoria:'Traslado entre cuentas', concepto:(mv.concepto||('Traslado a '+(mv.cuentaDestino||''))), origen:'manual', esTraslado:true, editable:true, trasladoId:mv.id }); out.push({ id:mv.id+'-td', fecha:this.parseFecha(mv.fecha), tipo:'ingreso', cuenta:mv.cuentaDestino||'', monto:_m, categoria:'Traslado entre cuentas', concepto:(mv.concepto||('Traslado desde '+(mv.cuenta||''))), origen:'manual', esTraslado:true, editable:false, trasladoId:mv.id }); return; } out.push({ id:mv.id, fecha:this.parseFecha(mv.fecha), tipo:mv.tipo, cuenta:mv.cuenta||'', monto:Number(mv.monto)||0, categoria:mv.categoria||(mv.tipo==='ingreso'?'Otros ingresos':'Otros egresos'), concepto:mv.concepto||'', origen:'manual', ts:(mv.ts||0), gastoFijoId:mv.gastoFijoId||null, servicioCodigo:mv.servicioCodigo||null, iva:mv.iva, editable:!mv.gastoFijoId, archivo:(mv.archivo||''), archivoNombre:(mv.archivoNombre||'') }); });
     (this.state.liquidaciones||[]).forEach(l=>{ const bruto=Number(l.bruto)||0; const ded=Number(l.deduccion)||0; const neto=bruto-ded; if(bruto>0){ out.push({ id:l.id+'-br', fecha:this.parseFecha(l.fecha), tipo:'ingreso', cuenta:l.cuenta||'', monto:neto, categoria:'Recaudo liquidado', concepto:'Liquidación '+(this.liqNumero(l)?this.liqNumero(l)+' ':'')+'neta '+(l.metodo||'')+' · '+((l.ventaIds||[]).length)+' ventas', origen:'liquidacion', editable:false, ventaIds:(l.ventaIds||[]) }); } if(ded>0){ out.push({ id:l.id+'-de', fecha:this.parseFecha(l.fecha), tipo:'egreso', cuenta:l.cuenta||'', monto:ded, categoria:'Comisiones y recaudo', concepto:'Comisión y retenciones '+(this.liqNumero(l)?this.liqNumero(l)+' · ':'')+(l.metodo||''), origen:'liquidacion', editable:false, noBanco:true, ventaIds:(l.ventaIds||[]) }); } });
     // Ajustes manuales del Administrador: sobrescriben el valor calculado del movimiento (el GMF se recalcula sobre el ajuste).
     const _aj=this.movAjustesGet(); if(Object.keys(_aj).length){ for(let i=0;i<out.length;i++){ const a=_aj[out[i].id]; if(!a) continue; const o=out[i];
@@ -12192,6 +12291,15 @@ Instrucciones de respuesta:
     if(m.gastoFijoId){ const g=(this.state.gastosFijos||[]).find(x=>x.id===m.gastoFijoId); return Number(g&&g.iva)||0; }
     return 0; }
   movIva(m){ const p=this.movIvaPct(m); if(!(p>0)) return 0; const t=Number(m.monto)||0; return Math.round(t-t/(1+p/100)); }
+  // IVA contenido en un egreso, SOLO para netear el gasto (el gasto real de la empresa es la base;
+  // el IVA es un impuesto que se recupera y ya se cuenta en el IVA descontable). Distinto de movIva,
+  // que alimenta finIva y por eso devuelve 0 en servicios y órdenes para no contarlos dos veces.
+  movIvaIncluido(m){ if(!m||m.tipo!=='egreso') return 0;
+    if(m.servicioCodigo){ const s=(this.state.servicios||[]).find(x=>x.codigo===m.servicioCodigo); if(!s) return 0;
+      const tot=this.servicioTotal(s), iva=this.servicioIva(s); if(!(tot>0)||!(iva>0)) return 0;
+      const pagado=Number(m.monto)||0; return Math.round(iva*Math.min(1, pagado/tot)); }
+    return this.movIva(m); }
+  movGastoNeto(m){ return (Number(m.monto)||0) - this.movIvaIncluido(m); }
   servicioSaldo(s){ return this.servicioTotal(s) - (Number(s.pagado)||0); }
   finServiciosPorPagar(){ return (this.state.servicios||[]).filter(s=> (Number(s.costo)||0)>0 && this.servicioSaldo(s)>0.5 ); }
   pagarServicio(s){ const saldo=this.servicioSaldo(s); if(saldo<=0){ this.toast('Este servicio ya est\u00e1 pagado'); return; } this.open('pagarsvc',{ _svcCodigo:s.codigo, nombre:(s.nombre||s.codigo), proveedor:(this.provNombre(s.proveedorCodigo)||''), saldoEstim:Math.round(saldo), monto:Math.round(saldo), fecha:new Date().toISOString().slice(0,10), cuenta:this.primeraCuenta() }); }
@@ -12500,13 +12608,13 @@ Instrucciones de respuesta:
   gmfMes(ym){ return this.cajaMovs().filter(m=>m.categoria==='GMF (4x1000)' && this.mesDe(m.fecha)===ym).reduce((a,m)=>a+m.monto,0); }
   movCategoriaReal(m){ if(m&&m.servicioCodigo){ const s=(this.state.servicios||[]).find(x=>x.codigo===m.servicioCodigo); if(s&&s.categoria) return s.categoria; } return (m&&m.categoria)||''; }
   recargasCostoMes(ym){ return (this.state.producciones||[]).filter(op=>op.recarga && this.mesDe(op.fecha)===ym).reduce((a,op)=>{ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); return a+this.productoCostoRecarga(p)*(Number(op.cantidad)||0); },0); }
-  finPyG(ym){ const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const ingresos=ventas.reduce((a,v)=>a+this.ventaNeta(v),0); const costo=ventas.reduce((a,v)=>a+this.ventaCostoVendido(v),0); const bruta=ingresos-costo; const movEgAll=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && m.categoria!=='Pago a proveedor' && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)' && m.categoria!=='Impuestos DIAN' && m.categoria!=='Retención en la fuente' && m.categoria!=='Préstamo otorgado'); const marketingSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Marketing').reduce((a,m)=>a+m.monto,0); const logisticaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Logística').reduce((a,m)=>a+m.monto,0); const nominaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Nómina').reduce((a,m)=>a+m.monto,0); const movEg=movEgAll.filter(m=>this.movCategoriaReal(m)!=='Marketing' && this.movCategoriaReal(m)!=='Logística' && this.movCategoriaReal(m)!=='Nómina'); const gastosOper=movEg.reduce((a,m)=>a+m.monto,0); const fletes=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym).reduce((a,o)=>a+this.ordenFlete(o),0); const obsequios=ventas.reduce((a,v)=>a+this.ventaObsequioCosto(v),0)+this.msvcMes(ym).reduce((a,mv)=>a+this.msvcCosto(mv),0); const gmf=this.gmfMes(ym); const fletesEntrega=ventas.reduce((a,v)=>a+(Number(v.fleteEntrega)||0),0)+logisticaSvc; const rendimientos=this.cajaMovs().filter(m=>m.tipo==='ingreso' && this.mesDe(m.fecha)===ym && m.categoria==='Rendimientos financieros').reduce((a,m)=>a+m.monto,0); const envioNoOper=ventas.reduce((a,v)=>a+(Number(v.envio)||0),0); const dianAjuste=(this.state.movimientos||[]).filter(m=>m.categoria==='Impuestos DIAN' && m.dianDifEstado==='nooper' && this.mesDe(m.fecha)===ym).reduce((a,m)=>a+(Math.round(Number(m.dianDif)||0)),0); const noOperacional=envioNoOper+rendimientos+dianAjuste; const recargas=this.recargasCostoMes(ym); const ajusteInv=this.ajusteInvMes(ym); const gastos=gastosOper+fletes+fletesEntrega+obsequios+recargas+gmf+marketingSvc+nominaSvc+ajusteInv; const operacional=bruta-gastos; return {ingresos,costo,bruta,gastos,gastosOper,fletes,fletesEntrega,obsequios,recargas,ajusteInv,gmf,marketing:marketingSvc,nomina:nominaSvc,rendimientos,envioNoOper,dianAjuste,noOperacional,operacional,resultado:operacional+noOperacional, nVentas:ventas.length}; }
+  finPyG(ym){ const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const ingresos=ventas.reduce((a,v)=>a+this.ventaNeta(v),0); const costo=ventas.reduce((a,v)=>a+this.ventaCostoVendido(v),0); const bruta=ingresos-costo; const movEgAll=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && m.categoria!=='Pago a proveedor' && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)' && m.categoria!=='Impuestos DIAN' && m.categoria!=='Retención en la fuente' && m.categoria!=='Préstamo otorgado'); const marketingSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Marketing').reduce((a,m)=>a+this.movGastoNeto(m),0); const logisticaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Logística').reduce((a,m)=>a+this.movGastoNeto(m),0); const nominaSvc=movEgAll.filter(m=>this.movCategoriaReal(m)==='Nómina').reduce((a,m)=>a+this.movGastoNeto(m),0); const movEg=movEgAll.filter(m=>this.movCategoriaReal(m)!=='Marketing' && this.movCategoriaReal(m)!=='Logística' && this.movCategoriaReal(m)!=='Nómina'); const gastosOper=movEg.reduce((a,m)=>a+this.movGastoNeto(m),0); const fletes=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym).reduce((a,o)=>a+this.ordenFlete(o),0); const obsequios=ventas.reduce((a,v)=>a+this.ventaObsequioCosto(v),0)+this.msvcMes(ym).reduce((a,mv)=>a+this.msvcCosto(mv),0); const gmf=this.gmfMes(ym); const fletesEntrega=ventas.reduce((a,v)=>a+(Number(v.fleteEntrega)||0),0)+logisticaSvc; const rendimientos=this.cajaMovs().filter(m=>m.tipo==='ingreso' && this.mesDe(m.fecha)===ym && m.categoria==='Rendimientos financieros').reduce((a,m)=>a+m.monto,0); const envioNoOper=ventas.reduce((a,v)=>a+(Number(v.envio)||0),0); const dianAjuste=(this.state.movimientos||[]).filter(m=>m.categoria==='Impuestos DIAN' && m.dianDifEstado==='nooper' && this.mesDe(m.fecha)===ym).reduce((a,m)=>a+(Math.round(Number(m.dianDif)||0)),0); const noOperacional=envioNoOper+rendimientos+dianAjuste; const recargas=this.recargasCostoMes(ym); const ajusteInv=this.ajusteInvMes(ym); const gastos=gastosOper+fletes+fletesEntrega+obsequios+recargas+gmf+marketingSvc+nominaSvc+ajusteInv; const operacional=bruta-gastos; return {ingresos,costo,bruta,gastos,gastosOper,fletes,fletesEntrega,obsequios,recargas,ajusteInv,gmf,marketing:marketingSvc,nomina:nominaSvc,rendimientos,envioNoOper,dianAjuste,noOperacional,operacional,resultado:operacional+noOperacional, nVentas:ventas.length}; }
   finPyGDetalle(ym, key, cat){ const byF=(arr)=>arr.slice().sort((a,b)=>(b._f||'').localeCompare(a._f||'')); const ventas=(this.state.ventas||[]).filter(v=>!v.cancelada && this.mesDe(v.fecha)===ym); const cli=(v)=>(this.fixTxt&&this.fixTxt(v.cliente))||v.cliente||'\u2014';
     if(key==='ventas'){ const fs=byF(ventas.map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:this.ventaNeta(v)}))).filter(x=>x.val!==0); return {titulo:'Ventas netas (sin IVA)', nota:'Base gravable de cada venta del mes, sin IVA ni envío.', filas:fs, totalLabel:fs.length+' ventas', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='costo'){ const fs=byF(ventas.map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:this.ventaCostoVendido(v)}))).filter(x=>x.val>0); return {titulo:'Costo de la mercancía vendida', nota:'Costo de los productos despachados en cada venta.', filas:fs, neg:true, totalLabel:fs.length+' ventas con costo', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
-    if(key==='gastosop'){ const movEgAll=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && m.categoria!=='Pago a proveedor' && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)' && m.categoria!=='Impuestos DIAN' && m.categoria!=='Retención en la fuente' && m.categoria!=='Préstamo otorgado'); const movEg=movEgAll.filter(m=>this.movCategoriaReal(m)!=='Marketing' && this.movCategoriaReal(m)!=='Logística' && this.movCategoriaReal(m)!=='Nómina'); if(cat){ const fs=byF(movEg.filter(m=>(this.movCategoriaReal(m)||'Sin categoría')===cat).map(m=>({_f:m.fecha||'', label:m.concepto||cat, sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0, onClick:()=>{}, cursor:'default', hoverStyle:''}))); return {titulo:'Gastos operativos \u00b7 '+cat, nota:'Egresos de la categoría \u00ab'+cat+'\u00bb en el mes.', filas:fs, neg:true, totalLabel:fs.length+' egreso'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0), catActive:cat}; } const byCat={}; movEg.forEach(m=>{ const c=this.movCategoriaReal(m)||'Sin categoría'; if(!byCat[c]) byCat[c]={monto:0,n:0,f:''}; byCat[c].monto+=Number(m.monto)||0; byCat[c].n++; if(!byCat[c].f||String(m.fecha||'')>byCat[c].f) byCat[c].f=m.fecha||''; }); const fs=Object.keys(byCat).map(c=>({_f:byCat[c].f, label:c, sub:byCat[c].n+' egreso'+(byCat[c].n===1?'':'s')+' este mes \u00b7 clic para ver el detalle', val:byCat[c].monto, onClick:()=>this.setState({pgDetCat:c}), cursor:'pointer', hoverStyle:'background:var(--surface-raised);'})).sort((a,b)=>b.val-a.val); return {titulo:'Gastos operativos por categoría', nota:'Egresos de caja del mes (gastos fijos, servicios contratados y egresos manuales, sin Marketing ni Logística) agrupados por categoría. Clic para ver el detalle.', filas:fs, neg:true, totalLabel:movEg.length+' egresos \u00b7 '+fs.length+' categorías', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }if(key==='fletes'){ const ords=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym && this.ordenFlete(o)>0); const fs=byF(ords.map(o=>({_f:(o.factura&&o.factura.fecha)||o.fecha||'', label:(o.numero||'\u2014'), sub:(this.provNombre(o.proveedorCodigo)||'\u2014')+' \u00b7 '+this.fmtFecha((o.factura&&o.factura.fecha)||o.fecha), val:this.ordenFlete(o)}))); return {titulo:'Flete y transporte (compras)', nota:'Flete pagado en las órdenes de compra del mes.', filas:fs, neg:true, totalLabel:fs.length+' órdenes', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
+    if(key==='gastosop'){ const movEgAll=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && m.categoria!=='Pago a proveedor' && m.categoria!=='Flete de entregas (mensajería)' && m.categoria!=='Traslado entre cuentas' && m.categoria!=='GMF (4x1000)' && m.categoria!=='Impuestos DIAN' && m.categoria!=='Retención en la fuente' && m.categoria!=='Préstamo otorgado'); const movEg=movEgAll.filter(m=>this.movCategoriaReal(m)!=='Marketing' && this.movCategoriaReal(m)!=='Logística' && this.movCategoriaReal(m)!=='Nómina'); if(cat){ const fs=byF(movEg.filter(m=>(this.movCategoriaReal(m)||'Sin categoría')===cat).map(m=>({_f:m.fecha||'', label:m.concepto||cat, sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:this.movGastoNeto(m), onClick:()=>{}, cursor:'default', hoverStyle:''}))); return {titulo:'Gastos operativos \u00b7 '+cat, nota:'Egresos de la categoría \u00ab'+cat+'\u00bb en el mes.', filas:fs, neg:true, totalLabel:fs.length+' egreso'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0), catActive:cat}; } const byCat={}; movEg.forEach(m=>{ const c=this.movCategoriaReal(m)||'Sin categoría'; if(!byCat[c]) byCat[c]={monto:0,n:0,f:''}; byCat[c].monto+=this.movGastoNeto(m); byCat[c].n++; if(!byCat[c].f||String(m.fecha||'')>byCat[c].f) byCat[c].f=m.fecha||''; }); const fs=Object.keys(byCat).map(c=>({_f:byCat[c].f, label:c, sub:byCat[c].n+' egreso'+(byCat[c].n===1?'':'s')+' este mes \u00b7 clic para ver el detalle', val:byCat[c].monto, onClick:()=>this.setState({pgDetCat:c}), cursor:'pointer', hoverStyle:'background:var(--surface-raised);'})).sort((a,b)=>b.val-a.val); return {titulo:'Gastos operativos por categoría', nota:'Egresos de caja del mes (gastos fijos, servicios contratados y egresos manuales, sin Marketing ni Logística) agrupados por categoría. Clic para ver el detalle.', filas:fs, neg:true, totalLabel:movEg.length+' egresos \u00b7 '+fs.length+' categorías', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }if(key==='fletes'){ const ords=(this.state.ordenes||[]).filter(o=>o.estado!=='rechazada' && this.ordenMes(o)===ym && this.ordenFlete(o)>0); const fs=byF(ords.map(o=>({_f:(o.factura&&o.factura.fecha)||o.fecha||'', label:(o.numero||'\u2014'), sub:(this.provNombre(o.proveedorCodigo)||'\u2014')+' \u00b7 '+this.fmtFecha((o.factura&&o.factura.fecha)||o.fecha), val:this.ordenFlete(o)}))); return {titulo:'Flete y transporte (compras)', nota:'Flete pagado en las órdenes de compra del mes.', filas:fs, neg:true, totalLabel:fs.length+' órdenes', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='fletesentrega'){ const fsV=ventas.filter(v=>(Number(v.fleteEntrega)||0)>0).map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:Number(v.fleteEntrega)||0})); const movLog=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && this.movCategoriaReal(m)==='Logística'); const fsL=movLog.map(m=>({_f:m.fecha||'', label:m.concepto||'Servicio logístico', sub:'Servicio \u00b7 '+(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0})); const fs=byF([...fsV,...fsL]); return {titulo:'Logística (flete de entregas + servicios)', nota:'Flete pagado por entregar cada pedido al cliente, más servicios logísticos contratados del mes.', filas:fs, neg:true, totalLabel:fs.length+' movimiento'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
-    if(key==='marketing'){ const movMkt=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && this.movCategoriaReal(m)==='Marketing'); const fs=byF(movMkt.map(m=>({_f:m.fecha||'', label:m.concepto||'Marketing', sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0}))); return {titulo:'Marketing', nota:'Servicios y egresos de marketing del mes.', filas:fs, neg:true, totalLabel:fs.length+' egreso'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
+    if(key==='marketing'){ const movMkt=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && this.movCategoriaReal(m)==='Marketing'); const fs=byF(movMkt.map(m=>({_f:m.fecha||'', label:m.concepto||'Marketing', sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:this.movGastoNeto(m)}))); return {titulo:'Marketing', nota:'Servicios y egresos de marketing del mes.', filas:fs, neg:true, totalLabel:fs.length+' egreso'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='nomina'){ const movNom=this.cajaMovs().filter(m=>m.tipo==='egreso' && this.mesDe(m.fecha)===ym && this.movCategoriaReal(m)==='Nómina'); const fs=byF(movNom.map(m=>({_f:m.fecha||'', label:m.concepto||'Nómina', sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0}))); return {titulo:'Nómina', nota:'Pagos de nómina del mes.', filas:fs, neg:true, totalLabel:fs.length+' egreso'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='obsequios'){ const fs=byF([ ...ventas.map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:this.ventaObsequioCosto(v)})), ...this.msvcMes(ym).map(mv=>({_f:mv.fecha||'', label:(mv.numero||'MSVC'), sub:(mv.destinatario||'')+(mv.motivo?(' \u00b7 '+mv.motivo):'')+' \u00b7 '+this.fmtFecha(mv.fecha), val:this.msvcCosto(mv)})) ]).filter(x=>x.val>0); return {titulo:'Obsequios / muestras (MSVC)', nota:'Costo de las muestras sin valor comercial: las entregadas dentro de una venta y las registradas como documento MSVC.', filas:fs, neg:true, totalLabel:fs.length+' registros', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='recargas'){ const ops=(this.state.producciones||[]).filter(op=>op.recarga && this.mesDe(op.fecha)===ym); const fs=byF(ops.map(op=>{ const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); return {_f:op.fecha||'', label:op.numero+' \u00b7 '+(p?p.nombre:op.productoCodigo), sub:(Number(op.cantidad)||0)+' und \u00b7 '+this.fmtFecha(op.fecha), val:this.productoCostoRecarga(p)*(Number(op.cantidad)||0)}; })).filter(x=>x.val>0); return {titulo:'Recargas (envase del cliente)', nota:'Costo de la mezcla y aceites usados al recargar envases tra\u00eddos por los clientes. No suman al stock de PT.', filas:fs, neg:true, totalLabel:fs.length+' recarga'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
@@ -12575,7 +12683,7 @@ Instrucciones de respuesta:
     const mv={ id:(d._yaId||('mv'+Date.now())), ts:Date.now(), tipo:'egreso', fecha:d.fecha||new Date().toISOString().slice(0,10), cuenta:d.cuenta, monto, categoria:'Impuestos DIAN', concepto:'IVA + retenciones · bimestre '+(d.label||''), dianSug:sug, dianDif:dif, dianDifEstado:estado }; let movs=(this.state.movimientos||[]).slice(); const mi=movs.findIndex(x=>x.id===mv.id); if(mi>=0) movs[mi]=mv; else movs.unshift(mv); this.setState({movimientos:movs, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveMovimiento(mv); this.toast('Pago DIAN registrado · '+(d.label||'')); }
   nuevoRetenConfig(){ const c=this.retenCfg(); this.open('retenconfig',{ fuenteCompras:c.fuenteCompras, fuenteServicios:c.fuenteServicios, reteIva:c.reteIva, reteIca:c.reteIca }); }
   saveRetenConfig(){ const d=this.state.draft; const cfg={ fuenteCompras:Number(d.fuenteCompras)||0, fuenteServicios:Number(d.fuenteServicios)||0, reteIva:Number(d.reteIva)||0, reteIca:Number(d.reteIca)||0 }; this.setState({retenConfig:cfg,modal:null,draft:{}},()=>this.persist()); this.toast('Tasas actualizadas'); }
-  finGastosCat(ym){ const map={}; this.cajaMovs().forEach(m=>{ if(m.tipo==='egreso' && this.mesDe(m.fecha)===ym){ map[m.categoria]=(map[m.categoria]||0)+m.monto; } }); (this.state.ordenes||[]).forEach(o=>{ if(o.estado!=='rechazada' && !this.ordenAnulada(o) && this.ordenMes(o)===ym && this.ordenFlete(o)>0){ map['Flete / transporte']=(map['Flete / transporte']||0)+this.ordenFlete(o); } }); const obseq=(this.state.ventas||[]).filter(v=>this.mesDe(v.fecha)===ym).reduce((a,v)=>a+this.ventaObsequioCosto(v),0); if(obseq>0) map['Obsequios / muestras (MSVC)']=(map['Obsequios / muestras (MSVC)']||0)+obseq; const gmf=this.gmfMes(ym); if(gmf>0) map['4x1000 (GMF)']=(map['4x1000 (GMF)']||0)+gmf; return Object.keys(map).map(k=>({categoria:k, monto:map[k]})).sort((a,b)=>b.monto-a.monto); }
+  finGastosCat(ym){ const map={}; this.cajaMovs().forEach(m=>{ if(m.tipo==='egreso' && this.mesDe(m.fecha)===ym){ const _c=this.movCategoriaReal(m)||m.categoria; map[_c]=(map[_c]||0)+this.movGastoNeto(m); } }); (this.state.ordenes||[]).forEach(o=>{ if(o.estado!=='rechazada' && !this.ordenAnulada(o) && this.ordenMes(o)===ym && this.ordenFlete(o)>0){ map['Flete / transporte']=(map['Flete / transporte']||0)+this.ordenFlete(o); } }); const obseq=(this.state.ventas||[]).filter(v=>this.mesDe(v.fecha)===ym).reduce((a,v)=>a+this.ventaObsequioCosto(v),0); if(obseq>0) map['Obsequios / muestras (MSVC)']=(map['Obsequios / muestras (MSVC)']||0)+obseq; const gmf=this.gmfMes(ym); if(gmf>0) map['4x1000 (GMF)']=(map['4x1000 (GMF)']||0)+gmf; return Object.keys(map).map(k=>({categoria:k, monto:map[k]})).sort((a,b)=>b.monto-a.monto); }
   finCajaMes(ym){ const movs=this.cajaMovs().filter(m=>this.mesDe(m.fecha)===ym && !m.noBanco); const ing=movs.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0); const eg=movs.filter(m=>m.tipo==='egreso').reduce((a,m)=>a+m.monto,0); return {ing, eg, neto:ing-eg, movs}; }
 
   // ---- ordenes ----
@@ -13886,6 +13994,7 @@ Instrucciones de respuesta:
         const yaAsig=(r.asignaciones||[]).map(a=>a.ordenNumero||a.ordenId).filter(Boolean);
         return { id:r.id, titulo:(r.proveedor||'Sin proveedor')+' · '+(r.items||[]).length+' ítem(s)'+(yaAsig.length?' por asignar':''), sub:'Llegó el '+this.fmtFecha(r.fecha)+' · registrado por '+(r.creadoPor||'app')+(yaAsig.length?' · ya asignados otros ítems a '+yaAsig.join(', '):''), nota:r.nota||'',
           items:(r.items||[]).map(i=>{ const ops=this.recepOrdenesParaItem(i.codigo); return {codigo:i.codigo, nombre:i.nombre||this.refNombre(i.codigo)||i.codigo, cantTxt:this.fmtCant(Number(i.cantidad)||0)+' '+(i.unidad||''), ordenes:ops, ordenSel:sel[i.codigo]||'', sinOrdenes:ops.length===0, setOrden:(e)=>this.recepSetItemOrden(r,i.codigo,e.target.value)}; }),
+          notaHub:((st.recepNota||{})[r.id]||''), setNota:(e)=>this.setState({recepNota:{...(this.state.recepNota||{}), [r.id]:e.target.value}}),
           ordenes, setTodos:(e)=>this.recepSetTodos(r,e.target.value), nSelTxt: nSel? nSel+' de '+(r.items||[]).length+' ítem(s) con orden' : 'Elige la orden de cada ítem (puede ser distinta)',
           aviso: ordenes.length? '' : 'No hay órdenes de compra abiertas por recibir. Crea la orden primero y luego asigna este ingreso.',
           btnBg: nSel? 'var(--brand-primary)' : 'var(--border-strong)', asignar:()=>this.recepAsignar(r), rechazar:()=>this.recepRechazar(r) }; }); }
@@ -16271,10 +16380,29 @@ Instrucciones de respuesta:
     if(st.modal==='kit'){ const d=st.draft;
       out.kitComponentOptions=this.ordenarPorCodigo([ ...st.productos.map(p=>({value:'producto:'+p.codigo, label:'Producto · '+p.nombre+' ('+this.fmt(p.precio)+')'})), ...st.materias.filter(m=>m.tipo==='insumo'||m.tipo==='empaque').map(m=>({value:'materia:'+m.codigo, label:(m.tipo==='empaque'?'Empaque':'Insumo')+' · '+m.nombre+' ('+this.fmt(m.costo)+')'})) ]);
       this.combo(out,'kitPick','_selKitItem',out.kitComponentOptions);
-      out.kitItemsDraft=(d.items||[]).map((it,i)=>{ const isP=it.tipo==='producto'; const ref=isP?st.productos.find(x=>x.codigo===it.codigo):st.materias.find(x=>x.codigo===it.codigo); const precioU=isP?(ref?Number(ref.precio)||0:0):(ref?Number(ref.costo)||0:0); const cant=Number(it.cantidad)||1; const costoU=this.kitComponentCosto(it); return {nombre:ref?ref.nombre:it.codigo, tipoLabel:isP?'Producto':(ref&&ref.tipo==='empaque'?'Empaque':'Insumo'), cantidad:cant, precioUnitFmt:this.fmt(precioU), costoUnitFmt:this.fmt(costoU), costoTotalFmt:this.fmt(Math.round(costoU*cant)), subtotalFmt:this.fmt(precioU*cant), desde:String(it.desde||'').slice(0,10), tieneDesde:!!it.desde, desdeFmt:(it.desde?String(it.desde).slice(0,10).split('-').reverse().join('/'):''), onDesde:(e)=>this.setKitItemDesde(i, e.target.value), onRemove:()=>this.removeKitItem(i)}; });
+      out.kitItemsDraft=(d.items||[]).map((it,i)=>{ const isP=it.tipo==='producto'; const ref=isP?st.productos.find(x=>x.codigo===it.codigo):st.materias.find(x=>x.codigo===it.codigo); const precioU=isP?(ref?Number(ref.precio)||0:0):(ref?Number(ref.costo)||0:0); const cant=Number(it.cantidad)||1; const costoU=this.kitComponentCosto(it); return {nombre:ref?ref.nombre:it.codigo, tipoLabel:isP?'Producto':(ref&&ref.tipo==='empaque'?'Empaque':'Insumo'), cantidad:cant, precioUnitFmt:this.fmt(precioU), costoUnitFmt:this.fmt(costoU), costoTotalFmt:this.fmt(Math.round(costoU*cant)), subtotalFmt:this.fmt(precioU*cant), desde:String(it.desde||'').slice(0,10), tieneDesde:!!it.desde, desdeFmt:(it.desde?String(it.desde).slice(0,10).split('-').reverse().join('/'):''), onDesde:(e)=>this.setKitItemDesde(i, e.target.value), hasta:String(it.hasta||'').slice(0,10), tieneHasta:!!it.hasta, hastaFmt:(it.hasta?String(it.hasta).slice(0,10).split('-').reverse().join('/'):''), onHasta:(e)=>this.setKitItemHasta(i, e.target.value), filaOpacidad:(it.hasta?0.62:1), onRemove:()=>this.removeKitItem(i)}; });
       out.kitItemsVacio=(d.items||[]).length===0;
-      const suma=(d.items||[]).reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0);
-      const costo=(d.items||[]).reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0);
+      { const _kPrev=(st.kits||[]).find(x=>x.codigo===d.codigo); const _kvs=(_kPrev&&!d._new)? this.kitVersiones(_kPrev) : [];
+        out.kitVersHay=_kvs.length>1;
+        const _kfin=_kvs.map((v,k)=>(_kvs[k+1]? _kvs[k+1].desde : ''));
+        out.kitVersiones=_kvs.map((v,k)=>({ v, hasta:_kfin[k] })).reverse().map(({v,hasta},ix)=>({
+          vigencia:(ix===0? ('Actual'+(v.desde? ' · desde '+v.desde : '')) : ((v.desde? 'Del '+v.desde : 'Original')+(hasta? ' al '+hasta : ''))),
+          color:(ix===0? 'var(--brand-ink)' : 'var(--text-muted)'),
+          resumen:(v.items||[]).map(ki=>{ const r=(ki.tipo==='producto'? st.productos.find(x=>x.codigo===ki.codigo) : st.materias.find(x=>x.codigo===ki.codigo)); return (r?r.nombre:ki.codigo)+' ×'+(Number(ki.cantidad)||1); }).join(' · ') })); }
+      { // Aviso: componentes marcados «Salió el» cuyos pedidos anteriores tienen la estructura congelada sin ese componente.
+        const _kGuard=(st.kits||[]).find(x=>x.codigo===d.codigo);
+        const _sal=(d.items||[]).filter(it=>it.hasta);
+        const _av=_sal.map(it=>{ const vs=this.kitSnapsDesfasados(d.codigo, it.codigo, it.hasta); if(!vs.length) return null;
+          const r=(it.tipo==='producto'? st.productos.find(x=>x.codigo===it.codigo) : st.materias.find(x=>x.codigo===it.codigo));
+          const _guardado=!!(_kGuard&&(_kGuard.items||[]).some(x=>x.codigo===it.codigo && String(x.hasta||'').slice(0,10)===String(it.hasta).slice(0,10)));
+          return { txt:vs.length+' pedido(s) anteriores al '+String(it.hasta).split('-').reverse().join('/')+' tienen la estructura congelada SIN «'+(r?r.nombre:it.codigo)+'», así que no lo van a descontar.'+(_guardado?'':' Guarda el kit para poder corregirlos.'),
+            btn:(_guardado? 'Corregir esos '+vs.length+' pedido(s)' : 'Guarda el kit primero'),
+            btnBg:(_guardado? 'var(--oda-sale)' : 'transparent'), btnFg:(_guardado? '#FFF' : 'var(--brand-ink)'), btnCur:(_guardado? 'pointer' : 'not-allowed'),
+            go:()=>this.soltarSnapsKit(d.codigo, it.codigo, it.hasta) }; }).filter(Boolean);
+        out.kitSnapAvisos=_av; out.kitSnapHay=_av.length>0; }
+      const _vigD=this._kitVigentes(d.items);
+      const suma=_vigD.reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0);
+      const costo=_vigD.reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0);
       const precio=Number(d.precio)||0; const precioNeto=(d.cobraIva===false? precio : Math.round(precio/1.19)); const ahorro=suma-precioNeto; const margen=precioNeto-costo;
       out.kitSumaFmt=this.fmt(suma); out.kitPrecioFmt=this.fmt(precio); out.kitPrecioNetoFmt=this.fmt(precioNeto); out.kitAhorroFmt=this.fmt(ahorro); out.kitCostoFmt=this.fmt(costo); out.kitMargenFmt=this.fmt(margen);
       out.kitAhorroPct=(suma>0?ahorro/suma*100:0).toFixed(0)+'%';
