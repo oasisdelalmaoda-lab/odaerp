@@ -1024,19 +1024,30 @@
                       <div style="min-width:0;">
                         <div style="font-weight:700;font-size:14px;">{{ r.titulo }}</div>
                         <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">{{ r.sub }}</div>
-                        <div style="display:flex;flex-direction:column;gap:4px;margin-top:10px;">
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
                           <sc-for list="{{ r.items }}" as="it" hint-placeholder-count="2">
-                            <div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ it.nombre }} <span style="color:var(--text-muted);font-size:11.5px;">{{ it.codigo }}</span></span><span style="font-weight:700;white-space:nowrap;">{{ it.cantTxt }}</span></div>
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(180px,220px);gap:10px;align-items:center;font-size:13px;">
+                              <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ it.nombre }} <span style="color:var(--text-muted);font-size:11.5px;">{{ it.codigo }}</span></span>
+                              <span style="font-weight:700;white-space:nowrap;">{{ it.cantTxt }}</span>
+                              <sc-if value="{{ recepPuede }}" hint-placeholder-val="{{ true }}">
+                                <select value="{{ it.ordenSel }}" onChange="{{ it.setOrden }}" title="Orden de compra para este ítem" style="font-family:inherit;font-size:12px;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);min-width:0;max-width:100%;">
+                                  <option value="">Sin orden…</option>
+                                  <sc-for list="{{ it.ordenes }}" as="o" hint-placeholder-count="1"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+                                </select>
+                              </sc-if>
+                            </div>
+                            <sc-if value="{{ it.sinOrdenes }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#8F3A28;margin-top:-2px;">Ninguna orden abierta tiene este código pendiente.</div></sc-if>
                           </sc-for>
                         </div>
                         <sc-if value="{{ r.nota }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Nota de bodega: {{ r.nota }}</div></sc-if>
                       </div>
                       <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;">
                         <sc-if value="{{ recepPuede }}" hint-placeholder-val="{{ true }}">
-                        <select value="{{ r.ordenSel }}" onChange="{{ r.setOrden }}" style="font-family:inherit;font-size:13px;padding:9px 12px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);max-width:100%;">
-                          <option value="">Elegir orden de compra por recibir…</option>
+                        <select value="" onChange="{{ r.setTodos }}" style="font-family:inherit;font-size:13px;padding:9px 12px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);max-width:100%;">
+                          <option value="">Poner la misma orden a todos los ítems…</option>
                           <sc-for list="{{ r.ordenes }}" as="o" hint-placeholder-count="2"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
                         </select>
+                        <div style="font-size:12px;color:var(--text-muted);">{{ r.nSelTxt }}</div>
                         <sc-if value="{{ r.aviso }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#8F3A28;line-height:1.4;">{{ r.aviso }}</div></sc-if>
                         <div style="display:flex;gap:8px;flex-wrap:wrap;">
                           <button onClick="{{ r.asignar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border:none;border-radius:var(--radius-pill);background:{{ r.btnBg }};color:var(--text-on-brand);cursor:pointer;">Asignar a la orden</button>
@@ -5438,7 +5449,10 @@
                 </sc-for>
                 <sc-if value="{{ recibirSinPendientes }}" hint-placeholder-val="{{ false }}"><div style="padding:14px;font-size:12.5px;color:var(--text-muted);text-align:center;">No quedan ítems pendientes; la orden solo se marcará como recibida.</div></sc-if>
               </div>
-              <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);max-width:260px;">Fecha de recibo<input name="fecha" type="date" value="{{ draft.fecha }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Fecha de recibo<input name="fecha" type="date" value="{{ draft.fecha }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Remisión / nota (opcional)<input name="nota" value="{{ draft.nota }}" onInput="{{ onDraftInput }}" placeholder="N° de remisión, observación…" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+              </div>
             </sc-if>
 
             <!-- CORREGIR FECHA DE UNA RECEPCIÓN -->
@@ -8265,7 +8279,8 @@ class Component extends DCLogic {
   // Una orden solo cierra si tiene su factura ADJUNTA (el documento cargado). Sin factura adjunta queda pendiente.
   ordenTieneFacturaAdjunta(o){ return !!(o && o.factura && o.factura.archivo); }
   // Algunas compras (ej. Amazon) no traen factura para subir: pueden cerrar sin factura adjunta.
-  ordenNoRequiereFactura(o){ if(o && o.sinFactura===true) return true; const p=(this.state.proveedores||[]).find(x=>x.codigo===(o&&o.proveedorCodigo)); return !!(p && /amazon|temu/i.test(p.nombre||'')); }
+  // Temu y Amazon (marketplaces) no emiten factura colombiana: la OC cierra recibida+pagada sin adjunto.
+  ordenNoRequiereFactura(o){ if(!o) return false; if(o.sinFactura===true) return true; const p=(this.state.proveedores||[]).find(x=>x.codigo===o.proveedorCodigo); const txt=((p&&p.nombre)||'')+' '+(o.proveedorNombre||'')+' '+(o.proveedorCodigo||''); return /amazon|temu/i.test(txt); }
   ordenCerrada(o){ return o.estado==='recibida' && this.ordenPagada(o) && (this.ordenTieneFacturaAdjunta(o) || this.ordenNoRequiereFactura(o)); }
   // Una orden CANCELADA queda en el historial (con quién y cuándo la canceló) pero no produce
   // ningún efecto: no suma inventario, no genera cuenta por pagar, no mueve caja ni IVA.
@@ -8583,7 +8598,7 @@ class Component extends DCLogic {
   // ===================== INFORMES GERENCIALES (solo Administrador) =====================
   // Corte mensual. Todo se calcula con los mismos helpers que usan Ventas, Finanzas e
   // Inventario, para que ningún número contradiga al módulo de origen.
-  infMes(){ return this.state.infMes || this.mesActual(); }
+  infMes(){ return this._infYmForce || this.state.infMes || this.mesActual(); }
   infShift(n){ this.setState({infMes:this.mesShift(this.infMes(), n), infIaTxt:'', infIaErr:''}); }
   _infKeyCli(v){ return String(v.celular||v.correo||v.cliente||'').trim().toLowerCase(); }
   // Fecha de la PRIMERA compra de cada cliente (para separar nuevos de recurrentes).
@@ -11196,22 +11211,40 @@ Instrucciones de respuesta:
       .map(o=>{ const coinciden=(o.items||[]).filter(it=>cods.has(it.materiaCodigo)).length; return {o, coinciden}; })
       .sort((a,b)=>b.coinciden-a.coinciden || this.ordenNumSort(b.o)-this.ordenNumSort(a.o))
       .map(x=>({ id:x.o.id, label:(x.o.numero||x.o.id)+' · '+this.provNombre(x.o.proveedorCodigo)+(x.coinciden?' · '+x.coinciden+' ítem(s) coinciden':' · sin ítems en común') })); }
+  // Órdenes abiertas que contienen ESE código con saldo por recibir (para el select por ítem).
+  recepOrdenesParaItem(codigo){
+    return (this.state.ordenes||[]).filter(o=>this.ordenAbierta(o) && o.estado!=='recibida' && (o.items||[]).some(it=>it.materiaCodigo===codigo && Math.max(0,(Number(it.cantidad)||0)-this.ordenRecibido(o,it.materiaCodigo))>0))
+      .sort((a,b)=>this.ordenNumSort(b)-this.ordenNumSort(a))
+      .map(o=>{ const it=(o.items||[]).find(x=>x.materiaCodigo===codigo); const pend=Math.max(0,(Number(it.cantidad)||0)-this.ordenRecibido(o,codigo)); return { id:o.id, label:(o.numero||o.id)+' · '+this.provNombre(o.proveedorCodigo)+' · faltan '+this.fmtCant(pend) }; }); }
+  // Selección por ítem: recepSel[r.id] = { [codigo]: ordenId }. Compatibilidad: si es string, aplica a todos.
+  _recepSelDe(r){ const s=(this.state.recepSel||{})[r.id]; if(!s) return {}; if(typeof s==='string'){ const m={}; (r.items||[]).forEach(i=>{ m[i.codigo]=s; }); return m; } return s; }
+  recepSetItemOrden(r, codigo, oid){ const cur=this._recepSelDe(r); const nx={...cur}; if(oid) nx[codigo]=oid; else delete nx[codigo]; this.setState({recepSel:{...(this.state.recepSel||{}), [r.id]:nx}}); }
+  recepSetTodos(r, oid){ const nx={}; if(oid) (r.items||[]).forEach(i=>{ if(this.recepOrdenesParaItem(i.codigo).some(x=>x.id===oid)) nx[i.codigo]=oid; }); this.setState({recepSel:{...(this.state.recepSel||{}), [r.id]:nx}}); }
+  // Cada ítem puede ir a una OC distinta. Los ítems sin OC elegida se quedan en la recepción
+  // (estado pendiente) para asignarlos después; la recepción se marca aplicada cuando no queda ninguno.
   recepAsignar(r){ if(!this.recepPuede()){ this.toast('No tienes permiso para asignar ingresos'); return; }
-    const oid=(this.state.recepSel||{})[r.id]; const o=this.state.ordenes.find(x=>x.id===oid); if(!o){ this.toast('Elige la orden de compra a la que pertenece'); return; }
-    const enOrden=[], fuera=[];
-    (r.items||[]).forEach(i=>{ const it=(o.items||[]).find(x=>x.materiaCodigo===i.codigo); if(it) enOrden.push({materiaCodigo:i.codigo, nombre:it.nombre||i.nombre, cantidad:Number(i.cantidad)||0, _it:it}); else fuera.push(i.nombre||i.codigo); });
-    if(!enOrden.length){ this.toast('Ninguno de los ítems recibidos está en '+(o.numero||'esa orden')); return; }
-    if(fuera.length && !confirm(fuera.length+' ítem(s) no están en la orden y NO se van a ingresar: '+fuera.join(', ')+'.\n¿Asignar de todas formas los '+enOrden.length+' que sí coinciden?')) return;
+    const sel=this._recepSelDe(r); const items=(r.items||[]);
+    const conOrden=items.filter(i=>sel[i.codigo]); const sinOrden=items.filter(i=>!sel[i.codigo]);
+    if(!conOrden.length){ this.toast('Elige la orden de compra de al menos un ítem'); return; }
+    const porOrden={}; const fuera=[];
+    conOrden.forEach(i=>{ const o=this.state.ordenes.find(x=>x.id===sel[i.codigo]); const it=o&&(o.items||[]).find(x=>x.materiaCodigo===i.codigo); if(!o||!it){ fuera.push(i.nombre||i.codigo); return; } (porOrden[o.id]=porOrden[o.id]||{o, lineas:[]}).lineas.push({materiaCodigo:i.codigo, nombre:it.nombre||i.nombre, cantidad:Number(i.cantidad)||0, _it:it}); });
+    if(fuera.length){ this.toast('Estos ítems no están en la orden elegida: '+fuera.join(', ')); return; }
+    if(sinOrden.length && !confirm(sinOrden.length+' ítem(s) quedan sin orden y seguirán pendientes: '+sinOrden.map(i=>i.nombre||i.codigo).join(', ')+'.\n¿Asignar ahora los '+conOrden.length+' que sí tienen orden?')) return;
     const fecha=r.fecha||new Date().toISOString().slice(0,10);
     let materias=this.state.materias.slice(); let productos=this.state.productos.slice();
-    enOrden.forEach(l=>{ const res=this.aplicarIngreso(materias,productos,l.materiaCodigo,l.cantidad,this.itemCostoUnit(l._it),fecha); materias=res.materias; productos=res.productos; });
-    const entrega={ fecha, nota:'Ingreso desde bodega ('+(r.creadoPor||'app')+')'+(r.nota?' · '+r.nota:''), recibidoPor:r.creadoPor||this._auditUser(), items:enOrden.map(l=>({materiaCodigo:l.materiaCodigo, nombre:l.nombre, cantidad:l.cantidad})) };
-    const ordenes=this.state.ordenes.map(x=>{ if(x.id!==o.id) return x; const entregas=(x.entregas||[]).slice(); entregas.push(entrega); const no={...x,entregas}; if(this.ordenEntregaCompleta(no)) no.estado='recibida'; return no; });
-    const rec={...r, estado:'aplicada', ordenId:o.id, ordenNumero:o.numero, resueltoPor:this._auditUser(), resueltoAt:new Date().toISOString(), itemsFuera:fuera};
-    const recepciones=(this.state.recepciones||[]).map(x=>x.id===r.id?rec:x);
-    this.setState({ordenes,materias,productos,recepciones},()=>this.persist());
-    if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); const _o=ordenes.find(x=>x.id===o.id); if(_o) this.cloudSaveOrden(_o); this._cloudSaveOne('recepciones', rec); }
-    const upd=ordenes.find(x=>x.id===o.id); this.toast('Ingreso asignado a '+(o.numero||'la orden')+(upd&&upd.estado==='recibida'?' · orden completa':' · entrega parcial')+' · inventario y costo actualizados'); }
+    Object.values(porOrden).forEach(g=>g.lineas.forEach(l=>{ const res=this.aplicarIngreso(materias,productos,l.materiaCodigo,l.cantidad,this.itemCostoUnit(l._it),fecha); materias=res.materias; productos=res.productos; }));
+    const nota='Ingreso desde bodega ('+(r.creadoPor||'app')+')'+(r.nota?' · '+r.nota:'');
+    const ordenes=this.state.ordenes.map(x=>{ const g=porOrden[x.id]; if(!g) return x; const entregas=(x.entregas||[]).slice(); entregas.push({ fecha, nota, recibidoPor:r.creadoPor||this._auditUser(), items:g.lineas.map(l=>({materiaCodigo:l.materiaCodigo, nombre:l.nombre, cantidad:l.cantidad})) }); const no={...x,entregas}; if(this.ordenEntregaCompleta(no)) no.estado='recibida'; return no; });
+    const asignaciones=(r.asignaciones||[]).concat(Object.values(porOrden).map(g=>({ ordenId:g.o.id, ordenNumero:g.o.numero, items:g.lineas.map(l=>({codigo:l.materiaCodigo, cantidad:l.cantidad})), por:this._auditUser(), at:new Date().toISOString() })));
+    const nums=Object.values(porOrden).map(g=>g.o.numero||g.o.id);
+    const rec= sinOrden.length
+      ? {...r, items:sinOrden, itemsOriginales:r.itemsOriginales||items, asignaciones, ordenNumero:asignaciones.map(a=>a.ordenNumero).filter(Boolean).join(', ')}
+      : {...r, items:r.itemsOriginales||items, itemsOriginales:undefined, estado:'aplicada', asignaciones, ordenId:asignaciones.length===1?asignaciones[0].ordenId:'', ordenNumero:asignaciones.map(a=>a.ordenNumero).filter(Boolean).join(', '), resueltoPor:this._auditUser(), resueltoAt:new Date().toISOString()};
+    const recepciones=(this.state.recepciones||[]).map(x=>x.id===r.id?rec:x); const recepSel={...(this.state.recepSel||{})}; delete recepSel[r.id];
+    this.setState({ordenes,materias,productos,recepciones,recepSel},()=>this.persist());
+    if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); Object.keys(porOrden).forEach(id=>{ const _o=ordenes.find(x=>x.id===id); if(_o) this.cloudSaveOrden(_o); }); this._cloudSaveOne('recepciones', rec); }
+    const completas=Object.keys(porOrden).filter(id=>{ const u=ordenes.find(x=>x.id===id); return u&&u.estado==='recibida'; }).length;
+    this.toast(conOrden.length+' ítem(s) asignados a '+nums.join(', ')+(completas?' · '+completas+' orden(es) completa(s)':' · entrega parcial')+(sinOrden.length?' · '+sinOrden.length+' siguen pendientes':'')+' · inventario y costo actualizados'); }
   recepRechazar(r){ if(!this.recepPuede()){ this.toast('No tienes permiso para rechazar ingresos'); return; }
     const motivo=prompt('¿Por qué se rechaza este ingreso? (la bodeguera lo verá en su app)'); if(motivo===null) return;
     const rec={...r, estado:'rechazada', motivo:String(motivo||'').trim(), resueltoPor:this._auditUser(), resueltoAt:new Date().toISOString()};
@@ -11237,6 +11270,25 @@ Instrucciones de respuesta:
     // Foto del inventario para la app: UNA vez tras la carga inicial y después solo cuando el
     // usuario guarda algo (persist → _snapSoon con debounce de 8 s). Sin temporizadores.
     setTimeout(()=>{ this._snapArmado=true; this._snapSoon(1000); }, 25000);
+    // Informe gerencial para la app SIN depender de que alguien abra la pestaña Informes: una
+    // corrida 60 s después de entrar y luego cada 6 h, solo si la foto en la nube tiene más de 6 h.
+    setTimeout(()=>this._infAutoPublicar(), 60000);
+  }
+  // Publica el informe del mes actual en segundo plano reutilizando el MISMO constructor de la
+  // vista (_buildInformes sobre un `out` desechable, mes forzado con _infYmForce — nunca se toca
+  // state.infMes, lección del 10-sep). Antes de calcular consulta `actualizado` en la nube para
+  // que varios Hubs abiertos no recalculen todos. Solo admin o quien tenga permiso de Informes.
+  async _infAutoPublicar(){
+    clearTimeout(this._infAutoT); this._infAutoT=setTimeout(()=>this._infAutoPublicar(), 6*3600e3);
+    try{
+      if(!this.cloudOn()) return; const acc=this.access(); if(!(this.isAdminUser() || this._modHasAccess(acc,'informes'))) return;
+      if(!(this.state.ventas||[]).length) return; // la carga aún no llegó: no publicar ceros
+      const sb=this._sbClient(); if(!sb) return; const ym=this.mesActual();
+      const {data}=await sb.from('informe_snapshot').select('actualizado').eq('ym',ym).maybeSingle();
+      if(data && data.actualizado && (Date.now()-Date.parse(data.actualizado))<6*3600e3) return;
+      const out={}; this._infYmForce=ym;
+      try{ this._buildInformes(out); this._infSnapDesdeVista(out); } finally{ this._infYmForce=null; }
+    }catch(e){ this._infYmForce=null; console.warn('informe auto', e); }
   }
   cloudManualRefresh(){ if(!this.cloudOn()){ return; } this.setState({cloudRefreshing:true}); Promise.resolve(this.cloudLoadLeads()).then(()=>this.cloudLoadCotizaciones()).then(()=>this.cloudLoadProfiles()).finally(()=>{ setTimeout(()=>this.setState({cloudRefreshing:false}),400); }); this.toast('Leads actualizados'); }
   componentWillUnmount(){ try{ if(this._cloudPoll) clearInterval(this._cloudPoll); if(this._cloudFocus){ document.removeEventListener('visibilitychange',this._cloudFocus); window.removeEventListener('focus',this._cloudFocus); } if(this._sbSub) this._sbSub.unsubscribe(); if(this._permSub) this._permSub.unsubscribe(); if(this._provSub) this._provSub.unsubscribe(); if(this._matSub) this._matSub.unsubscribe(); if(this._prodSub) this._prodSub.unsubscribe(); if(this._kitSub) this._kitSub.unsubscribe(); if(this._mezSub) this._mezSub.unsubscribe(); if(this._popSub) this._popSub.unsubscribe(); if(this._pomSub) this._pomSub.unsubscribe(); if(this._venSub) this._venSub.unsubscribe(); if(this._cotSub) this._cotSub.unsubscribe(); if(this._ctaSub) this._ctaSub.unsubscribe(); if(this._movSub) this._movSub.unsubscribe(); if(this._gasSub) this._gasSub.unsubscribe(); if(this._metSub) this._metSub.unsubscribe(); if(this._liqSub) this._liqSub.unsubscribe(); if(this._svcSub) this._svcSub.unsubscribe(); if(this._ordSub) this._ordSub.unsubscribe(); if(this._tieSub) this._tieSub.unsubscribe(); if(this._remSub) this._remSub.unsubscribe(); }catch(e){} }
@@ -11656,6 +11708,13 @@ Instrucciones de respuesta:
       try{ data.finPorCobrar=this.finPorCobrar().map(v=>({ id:v.id, ov:v.ov||v.pedido||'', cliente:v.cliente||'', fecha:this.parseFecha(v.fecha)||'', metodo:this.metodoNombreNorm(v.metodoPago), saldo:Math.round(this.ventaSaldo(v)), dias:this.diasDesde(v.fecha) })).sort((a,b)=>b.dias-a.dias).slice(0,150); }catch(e){} }
     const sig=ym+'|'+JSON.stringify(data); if(sig===this._infSnapSig) return; this._infSnapPend={ym, data, sig};
     clearTimeout(this._infSnapT); this._infSnapT=setTimeout(()=>this.publicarInformeSnapshot(), 4000); }
+  // Marketing → app: una fila por rango (today/mes/mesant/year) en `marketing_snapshot`. Diferido y solo si cambió.
+  _mktSnapDesdeVista(data){ if(!this.cloudOn()) return; const rango=data&&data.rango; if(!rango) return;
+    const sig=rango+'|'+JSON.stringify(Object.assign({}, data, {syncTs:null})); if(sig===this._mktSnapSig) return; this._mktSnapPend={rango, data, sig};
+    clearTimeout(this._mktSnapT); this._mktSnapT=setTimeout(()=>this.publicarMarketingSnapshot(), 4000); }
+  async publicarMarketingSnapshot(){ const p=this._mktSnapPend; if(!p) return; const sb=this._sbClient(); if(!sb) return;
+    try{ const {error}=await sb.from('marketing_snapshot').upsert({ rango:p.rango, data:p.data, actualizado:new Date().toISOString(), por:this._auditUser() },{onConflict:'rango'}); if(error) throw error; this._mktSnapSig=p.sig; this._mktSnapPend=null; }
+    catch(e){ console.warn('snapshot marketing', e); } }
   async publicarInformeSnapshot(){ const p=this._infSnapPend; if(!p) return; const sb=this._sbClient(); if(!sb) return;
     try{ const {error}=await sb.from('informe_snapshot').upsert({ ym:p.ym, data:p.data, actualizado:new Date().toISOString(), por:this._auditUser() },{onConflict:'ym'}); if(error) throw error; this._infSnapSig=p.sig; }
     catch(e){ console.warn('snapshot informe', e); } }
@@ -12695,7 +12754,7 @@ Instrucciones de respuesta:
   recibir(id){ const o=this.state.ordenes.find(x=>x.id===id); if(!o) return; const pend=(o.items||[]).map(it=>{ const ya=this.ordenRecibido(o,it.materiaCodigo); return {nombre:(it.nombre||this.refNombre(it.materiaCodigo)||it.materiaCodigo), cantidad:Math.max(0,(Number(it.cantidad)||0)-ya)}; }).filter(x=>x.cantidad>0); this.open('recibirorden',{ _id:id, _numero:o.numero, _proveedor:this.provNombre(o.proveedorCodigo), fecha:new Date().toISOString().slice(0,10), _pendientes:pend }); }
   confirmarRecibirOrden(){ const d=this.state.draft; const id=d._id; const o=this.state.ordenes.find(x=>x.id===id); if(!o){ this.toast('Orden no encontrada'); return; } if(!d.fecha){ this.toast('Confirma la fecha de recibo'); return; } const fecha=d.fecha; let materias=this.state.materias.slice(); let productos=this.state.productos.slice(); const lineas=[];
     (o.items||[]).forEach(it=>{ const ya=this.ordenRecibido(o,it.materiaCodigo); const pend=Math.max(0,(Number(it.cantidad)||0)-ya); if(pend>0){ const r=this.aplicarIngreso(materias,productos,it.materiaCodigo,pend,this.itemCostoUnit(it),fecha); materias=r.materias; productos=r.productos; lineas.push({materiaCodigo:it.materiaCodigo, nombre:it.nombre, cantidad:pend}); } });
-    const ordenes=this.state.ordenes.map(x=>{ if(x.id!==id) return x; const entregas=(x.entregas||[]).slice(); if(lineas.length) entregas.push({fecha, nota:'Recepci\u00f3n total', recibidoPor:this._auditUser(), items:lineas}); return {...x, estado:'recibida', entregas}; });
+    const ordenes=this.state.ordenes.map(x=>{ if(x.id!==id) return x; const entregas=(x.entregas||[]).slice(); const _nota=String(d.nota||'').trim(); if(lineas.length) entregas.push({fecha, nota:'Recepci\u00f3n total'+(_nota?' \u00b7 '+_nota:''), recibidoPor:this._auditUser(), items:lineas}); return {...x, estado:'recibida', entregas}; });
     this.setState({ordenes, materias, productos, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudBulkMaterias(materias); this.cloudBulkProductos(productos); const _o=ordenes.find(x=>x.id===id); if(_o) this.cloudSaveOrden(_o); } this.toast('Orden recibida el '+this.fmtFecha(fecha)+' \u00b7 inventario y costo actualizados'); }
 
   openFactura(o){ this.open('factura',{ _id:o.id, _numero:o.numero, _proveedor:this.provNombre(o.proveedorCodigo), _totalFmt:this.fmt(this.ordenTotal(o)), facturaNumero:(o.factura&&o.factura.numero)||'', facturaFecha:(o.factura&&o.factura.fecha)||new Date().toISOString().slice(0,10), _archivo:(o.factura&&o.factura.archivo)||'', _archivoNombre:(o.factura&&o.factura.archivoNombre)||'' }); }
@@ -13797,12 +13856,13 @@ Instrucciones de respuesta:
     out.showOrdenes = onComp && st.sub==='ordenes';
     out.recepNavN=this.recepPendientes().length; out.recepNavHay=out.recepNavN>0;
     if(out.showOrdenes){ const pend=this.recepPendientes(); out.recepPendN=pend.length; out.recepPendHay=pend.length>0; out.recepPuede=this.recepPuede(); out.recepSoloVer=!out.recepPuede;
-      out.recepPend=pend.map(r=>{ const sel=(st.recepSel||{})[r.id]||''; const ordenes=this.recepOrdenesPara(r);
-        return { id:r.id, titulo:(r.proveedor||'Sin proveedor')+' · '+(r.items||[]).length+' ítem(s)', sub:'Llegó el '+this.fmtFecha(r.fecha)+' · registrado por '+(r.creadoPor||'app'), nota:r.nota||'',
-          items:(r.items||[]).map(i=>({codigo:i.codigo, nombre:i.nombre||this.refNombre(i.codigo)||i.codigo, cantTxt:this.fmtCant(Number(i.cantidad)||0)+' '+(i.unidad||'')})),
-          ordenes, ordenSel:sel, setOrden:(e)=>this.setState({recepSel:{...(this.state.recepSel||{}), [r.id]:e.target.value}}),
+      out.recepPend=pend.map(r=>{ const sel=this._recepSelDe(r); const ordenes=this.recepOrdenesPara(r); const nSel=(r.items||[]).filter(i=>sel[i.codigo]).length;
+        const yaAsig=(r.asignaciones||[]).map(a=>a.ordenNumero||a.ordenId).filter(Boolean);
+        return { id:r.id, titulo:(r.proveedor||'Sin proveedor')+' · '+(r.items||[]).length+' ítem(s)'+(yaAsig.length?' por asignar':''), sub:'Llegó el '+this.fmtFecha(r.fecha)+' · registrado por '+(r.creadoPor||'app')+(yaAsig.length?' · ya asignados otros ítems a '+yaAsig.join(', '):''), nota:r.nota||'',
+          items:(r.items||[]).map(i=>{ const ops=this.recepOrdenesParaItem(i.codigo); return {codigo:i.codigo, nombre:i.nombre||this.refNombre(i.codigo)||i.codigo, cantTxt:this.fmtCant(Number(i.cantidad)||0)+' '+(i.unidad||''), ordenes:ops, ordenSel:sel[i.codigo]||'', sinOrdenes:ops.length===0, setOrden:(e)=>this.recepSetItemOrden(r,i.codigo,e.target.value)}; }),
+          ordenes, setTodos:(e)=>this.recepSetTodos(r,e.target.value), nSelTxt: nSel? nSel+' de '+(r.items||[]).length+' ítem(s) con orden' : 'Elige la orden de cada ítem (puede ser distinta)',
           aviso: ordenes.length? '' : 'No hay órdenes de compra abiertas por recibir. Crea la orden primero y luego asigna este ingreso.',
-          btnBg: sel? 'var(--brand-primary)' : 'var(--border-strong)', asignar:()=>this.recepAsignar(r), rechazar:()=>this.recepRechazar(r) }; }); }
+          btnBg: nSel? 'var(--brand-primary)' : 'var(--border-strong)', asignar:()=>this.recepAsignar(r), rechazar:()=>this.recepRechazar(r) }; }); }
     out.showAdmin = st.module==='admin';
     out.showAdminTablero = st.module==='admin' && st.sub==='tablero';
     out.showAdminUsuarios = st.module==='admin' && st.sub!=='tablero';
@@ -14448,6 +14508,12 @@ Instrucciones de respuesta:
       const _kpiAll=this.mktKpis(); if(_conInv.length && _kpiAll.spend>0 && _kpiAll.roas<2) alerts.unshift({tipo:'Cuenta', txt:'ROAS total '+_kpiAll.roas.toFixed(1)+'x en el periodo: la pauta no se está pagando sola.', color:'#B5503C'});
       const _ord={'Cuenta':0,'Sin ventas':1,'Fatiga de anuncio':2,'ROAS bajo':3,'CTR bajo':4,'Pausada con buen retorno':5,'Oportunidad':6}; alerts.sort((a,b)=>(_ord[a.tipo]??9)-(_ord[b.tipo]??9));
       out.mktAlertas=alerts; out.mktAlertasVacio=alerts.length===0;
+      // Resumen de marketing para la app: se publica SOLO desde el render de Marketing → Resumen,
+      // con datos reales de Meta (nunca la demo), reutilizando lo ya calculado (misma regla que el informe).
+      if(out.showMktResumen && live){ try{ this._mktSnapDesdeVista({ rango:_rk, periodo:out.mktPeriodo, syncTs:st.mktLiveTs||null,
+        kpis:{ spend:Math.round(K.spend), ingresos:Math.round(K.ingresos), roas:Number(K.roas.toFixed(2)), roasTotal:Number(K.roasTotal.toFixed(2)), cpa:Math.round(K.cpa), resultados:K.resultados, ctr:Number(K.ctr.toFixed(2)), alcance:Math.round(K.alcance), impresiones:Math.round(K.impresiones), clicks:Math.round(K.clicks), cpm:Math.round(K.cpm) },
+        top:_conInv.slice(0,10).map(c=>({ nombre:c.nombre, objetivo:c.objetivo, estado:c.estado, spend:Math.round(c.spend), ingresos:Math.round(c.ingresos||0), roas:Number(this.mktRoas(c).toFixed(2)), resultados:c.resultados, ctr:Number(this.mktCtr(c).toFixed(2)), frecuencia:Number((c.frecuencia||0).toFixed(1)) })),
+        topNota:out.mktTopNota, alertas:alerts.map(a=>({tipo:a.tipo, txt:a.txt, color:a.color})), tendencia:tr.map(v=>Math.round(v)) }); }catch(e){ console.warn('snapshot marketing', e); } }
       // ---- De dónde vienen los pedidos (atribución por enlace de entrada: UTM / gclid / fbclid / referente) ----
       { const hoyISO=new Date().toISOString().slice(0,10), ymHoy=hoyISO.slice(0,7);
         const rango=(f)=>{ if(!f) return false; if(_rk==='today') return f===hoyISO; if(_rk==='mes') return f.slice(0,7)===ymHoy; if(_rk==='mesant') return f.slice(0,7)===this.mesShift(ymHoy,-1); return f.slice(0,4)===hoyISO.slice(0,4); };
@@ -14576,8 +14642,8 @@ Instrucciones de respuesta:
           canApprove: isAdmin && o.estado==='pendiente',
           canEdit: canWrite && (o.estado==='pendiente' || isAdmin),
           waitApprove: !isAdmin && o.estado==='pendiente',
-          canFactura: canWrite && (o.estado==='aprobada'||o.estado==='recibida') && !hasFactura,
-          canAdjuntarFactura: canWrite && hasFactura && !(o.factura && o.factura.archivo),
+          canFactura: canWrite && (o.estado==='aprobada'||o.estado==='recibida') && !hasFactura && !this.ordenNoRequiereFactura(o),
+          canAdjuntarFactura: canWrite && hasFactura && !(o.factura && o.factura.archivo) && !this.ordenNoRequiereFactura(o),
           onAdjuntarFactura:()=>this.adjuntarFacturaPick(o),
           canPago: false, // Los pagos a proveedores se registran solo en Finanzas · Cuentas por pagar
           canRecibir: canWrite && o.estado==='aprobada',
