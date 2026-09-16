@@ -248,7 +248,7 @@
               <sc-if value="{{ vC_mat }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.materias }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMat.c }};background:{{ subMat.bg }};border-left:2px solid {{ subMat.b }};">Materias e insumos</div></sc-if>
               <sc-if value="{{ vC_reorden }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.reorden }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subReorden.c }};background:{{ subReorden.bg }};border-left:2px solid {{ subReorden.b }};"><span>Reposición</span><sc-if value="{{ reoBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ reoBadgeCount }}</span></sc-if></div></sc-if>
               <sc-if value="{{ vC_svc }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.servicios }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subSvc.c }};background:{{ subSvc.bg }};border-left:2px solid {{ subSvc.b }};">Servicios</div></sc-if>
-              <sc-if value="{{ vC_ord }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.ordenes }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subOrd.c }};background:{{ subOrd.bg }};border-left:2px solid {{ subOrd.b }};"><span>Órdenes y pagos</span><span style="display:flex;gap:4px;"><sc-if value="{{ recepNavHay }}" hint-placeholder-val="{{ false }}"><span title="Mercancía recibida en bodega por asignar a una orden" style="background:#C9962F;color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">▤{{ recepNavN }}</span></sc-if><sc-if value="{{ aprobarBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ aprobarCount }}</span></sc-if></span></div></sc-if>
+              <sc-if value="{{ vC_ord }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnav.ordenes }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subOrd.c }};background:{{ subOrd.bg }};border-left:2px solid {{ subOrd.b }};"><span>Órdenes</span><span style="display:flex;gap:4px;"><sc-if value="{{ recepNavHay }}" hint-placeholder-val="{{ false }}"><span title="Mercancía recibida en bodega por asignar a una orden" style="background:#C9962F;color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">▤{{ recepNavN }}</span></sc-if><sc-if value="{{ aprobarBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:var(--oda-warning);color:#2A2419;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ aprobarCount }}</span></sc-if></span></div></sc-if>
             </div>
           </sc-if>
 
@@ -350,6 +350,7 @@
           <sc-if value="{{ showMarketingSub }}" hint-placeholder-val="{{ false }}">
             <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
               <sc-if value="{{ vM_resumen }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.resumen }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktResumen.c }};background:{{ subMktResumen.bg }};border-left:2px solid {{ subMktResumen.b }};">Resumen</div></sc-if>
+              <sc-if value="{{ vM_wa }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.wa }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktWa.c }};background:{{ subMktWa.bg }};border-left:2px solid {{ subMktWa.b }};">Campañas WhatsApp</div></sc-if>
               <sc-if value="{{ vM_conexion }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavMkt.conexion }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subMktConexion.c }};background:{{ subMktConexion.bg }};border-left:2px solid {{ subMktConexion.b }};">Conexión Meta</div></sc-if>
             </div>
           </sc-if>
@@ -2163,7 +2164,7 @@
                   </div>
                   <div style="padding:9px 14px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:8px;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.2" style="flex-shrink:0;"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-                    <input value="{{ convQ }}" onChange="{{ onConvQ }}" placeholder="Buscar por nombre, celular o texto del chat…" style="flex:1;min-width:0;font-family:inherit;font-size:12.5px;padding:6px 0;border:none;outline:none;background:transparent;color:var(--text-strong);"></input>
+                    <input value="{{ convQ }}" onChange="{{ onConvQ }}" placeholder="Buscar por nombre, celular o texto del chat…" style="flex:1;min-width:0;font-family:inherit;font-size:12.5px;padding:6px 0;border:none;outline:none;background:transparent;color:var(--text-strong);">
                     <sc-if value="{{ convQHay }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onConvQClear }}" title="Limpiar" style="font-family:inherit;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;cursor:pointer;border:1px solid var(--border-subtle);background:transparent;color:var(--text-muted);">{{ convQN }} · ×</button></sc-if>
                   </div>
                   <sc-if value="{{ convAutoHay }}" hint-placeholder-val="{{ false }}">
@@ -2605,6 +2606,27 @@
 
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Campañas de WhatsApp</h3>
+                  <span style="font-size:11.5px;color:var(--text-muted);">{{ campLogResumen }}</span>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Cada campaña masiva enviada desde Marketing, agrupada por plantilla. El detalle número por número queda en la tabla de envíos del servidor.</p>
+                <sc-if value="{{ campLogVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">Todavía no se ha enviado ninguna campaña masiva.</div></sc-if>
+                <div style="display:flex;flex-direction:column;gap:0;">
+                  <sc-for list="{{ campLog }}" as="c" hint-placeholder-count="0">
+                    <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-subtle);">
+                      <span style="font-size:11px;color:var(--text-muted);width:104px;flex-shrink:0;line-height:1.5;">{{ c.cuando }}</span>
+                      <div style="flex:1;min-width:0;">
+                        <div style="font-size:12.5px;font-weight:700;line-height:1.4;">{{ c.plantilla }}</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.45;">{{ c.detalle }}</div>
+                      </div>
+                      <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:{{ c.bg }};color:{{ c.fg }};flex-shrink:0;">{{ c.estado }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Envíos automáticos</h3>
                   <span style="font-size:11.5px;color:var(--text-muted);">{{ autoEnviosResumen }}</span>
                   <button onClick="{{ autoCorrer }}" style="font-family:inherit;font-size:12px;font-weight:800;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:#8A6F49;">{{ autoCorrerTxt }}</button>
@@ -2838,7 +2860,7 @@
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                 <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px;max-width:420px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:7px 12px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.2" style="flex-shrink:0;"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-                  <input value="{{ reoQ }}" onChange="{{ onReoQ }}" placeholder="Buscar materia, código o proveedor…" style="flex:1;min-width:0;font-family:inherit;font-size:12.5px;border:none;outline:none;background:transparent;color:var(--text-strong);"></input>
+                  <input value="{{ reoQ }}" onChange="{{ onReoQ }}" placeholder="Buscar materia, código o proveedor…" style="flex:1;min-width:0;font-family:inherit;font-size:12.5px;border:none;outline:none;background:transparent;color:var(--text-strong);">
                 </div>
                 <select value="{{ reoFiltro }}" onChange="{{ onReoFiltro }}" style="flex-shrink:0;font-family:inherit;font-size:12px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);background:var(--surface-card);color:var(--text-strong);cursor:pointer;">
                   <option value="todos">Todos</option>
@@ -5036,6 +5058,233 @@
                     <span style="font-weight:700;color:#3F6A7A;">Google Ads</span><span style="text-wrap:pretty;">{{ mktGoogleTxt }}</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== MARKETING · CAMPAÑAS DE WHATSAPP ===== -->
+          <sc-if value="{{ showMktWa }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:1120px;">
+              <p style="font-size:13px;color:var(--text-muted);margin:0 0 18px;line-height:1.55;max-width:640px;text-wrap:pretty;">Dos pasos: creas la plantilla acá y Meta la revisa; cuando quede aprobada, eliges a quién le llega y el Hub la envía por lotes. Nunca se envía a quien pidió detener promociones.</p>
+
+              <sc-if value="{{ cwSoloVer }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(212,150,80,0.12);border:1px solid rgba(212,150,80,0.35);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:#9A6B2E;">Puedes ver las campañas, pero crear plantillas y enviar requiere permiso de escritura en Marketing.</div>
+              </sc-if>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;margin-bottom:16px;">
+
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
+                  <div style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:5px;">Paso 1</div>
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0 0 4px;">Montar la plantilla</h3>
+                  <p style="font-size:12px;color:var(--text-muted);margin:0 0 18px;line-height:1.5;">Meta aprueba cada promoción por separado. Nombre con fecha, cuerpo sin links ajenos y la foto del encabezado.</p>
+
+                  <div style="display:flex;flex-direction:column;gap:13px;">
+                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Nombre en Meta
+                      <input value="{{ cwNombre }}" onInput="{{ onCwNombre }}" placeholder="promo_2026_09" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                    </label>
+                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Categoría
+                      <select value="{{ cwCat }}" onChange="{{ onCwCat }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;">
+                        <option value="MARKETING">Marketing · promoción (requiere opt-in)</option>
+                        <option value="UTILITY">Utility · aviso de un pedido existente</option>
+                      </select>
+                    </label>
+                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Cuerpo del mensaje <span style="font-weight:400;color:var(--text-muted);">· usa <code style="font-family:ui-monospace,monospace;font-size:11.5px;">{</code><code style="font-family:ui-monospace,monospace;font-size:11.5px;">{1}</code><code style="font-family:ui-monospace,monospace;font-size:11.5px;">}</code> para el nombre</span>
+                      <textarea value="{{ cwCuerpo }}" onInput="{{ onCwCuerpo }}" rows="7" placeholder="{{ cwCuerpoPh }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;line-height:1.55;padding:10px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;resize:vertical;"></textarea>
+                    </label>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:-6px;">{{ cwCuerpoLen }} de 1024 caracteres</div>
+
+                    <div style="border-top:1px solid var(--border-subtle);padding-top:13px;">
+                      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:9px;">Foto del encabezado</div>
+                      <sc-if value="{{ cwHayImg }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                          <div role="img" aria-label="Encabezado de la campaña" style="width:74px;height:74px;border-radius:var(--radius-md);border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ cwImgCss }};"></div>
+                          <div style="flex:1;min-width:0;">
+                            <div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ cwImgNombre }}</div>
+                            <button onClick="{{ onCwImgQuitar }}" style="margin-top:6px;font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-muted);cursor:pointer;">Quitar</button>
+                          </div>
+                        </div>
+                      </sc-if>
+                      <label style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-family:inherit;font-size:12px;font-weight:700;padding:8px 15px;border:1px dashed var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-linen);color:var(--text-body);cursor:pointer;">
+                        Subir imagen
+                        <input type="file" accept="image/*" onChange="{{ onCwImg }}" style="display:none;" />
+                      </label>
+                      <sc-if value="{{ cwImgSubiendo }}" hint-placeholder-val="{{ false }}"><span style="margin-left:10px;font-size:12px;color:var(--brand-primary);">Subiendo…</span></sc-if>
+                    </div>
+
+                    <div style="border-top:1px solid var(--border-subtle);padding-top:13px;display:flex;flex-direction:column;gap:11px;">
+                      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Botones</div>
+                      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px;">
+                        <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Texto del botón
+                          <input value="{{ cwBtnTexto }}" onInput="{{ onCwBtnTexto }}" placeholder="Ver la colección" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                        </label>
+                        <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Enlace
+                          <input value="{{ cwBtnUrl }}" onInput="{{ onCwBtnUrl }}" placeholder="https://oasisdelalma.co/collections/kits" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                        </label>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:11px;">
+                        <div onClick="{{ cwOptTog.on }}" style="width:42px;height:22px;border-radius:999px;background:{{ cwOptTog.bg }};position:relative;cursor:pointer;flex-shrink:0;transition:background 180ms;">
+                          <div style="position:absolute;top:2px;left:{{ cwOptTog.x }};width:18px;height:18px;border-radius:999px;background:#FFF;transition:left 180ms;"></div>
+                        </div>
+                        <div style="font-size:12.5px;color:var(--text-body);line-height:1.45;">Incluir el botón <strong>Detener promociones</strong><div style="font-size:11.5px;color:var(--text-muted);">Al pulsarlo, el cliente queda fuera de toda campaña futura.</div></div>
+                      </div>
+                    </div>
+
+                    <button onClick="{{ onCwCrear }}" disabled="{{ cwSoloVer }}" style="margin-top:4px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#FFF;cursor:pointer;">Crear plantilla en Meta</button>
+                    <sc-if value="{{ cwCreando }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--brand-primary);">Enviando a Meta…</div></sc-if>
+                    <sc-if value="{{ cwHayMsg }}" hint-placeholder-val="{{ false }}">
+                      <div style="background:rgba(98,123,96,0.12);border:1px solid rgba(98,123,96,0.3);border-radius:var(--radius-md);padding:11px 14px;font-size:12.5px;color:#4C6149;line-height:1.5;">{{ cwMsg }}</div>
+                    </sc-if>
+                  </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                  <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
+                    <div style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:12px;">Como le llega al cliente</div>
+                    <div style="background:#EAE2D4;border-radius:var(--radius-lg);padding:16px;">
+                      <div style="background:#FBF8F2;border-radius:14px;border-top-left-radius:4px;padding:12px;box-shadow:0 1px 3px rgba(58,51,38,0.12);">
+                        <sc-if value="{{ cwHayImg }}" hint-placeholder-val="{{ false }}">
+                          <div role="img" aria-label="Encabezado de la campaña" style="width:100%;height:150px;border-radius:10px;margin-bottom:10px;background-color:#EAE2D4;background-size:cover;background-position:center;background-image:{{ cwImgCss }};"></div>
+                        </sc-if>
+                        <div style="font-size:13px;line-height:1.55;color:var(--text-strong);white-space:pre-wrap;">{{ cwPrevia }}</div>
+                        <sc-if value="{{ cwPreviaHayBtn }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:11px;border-top:1px solid var(--border-subtle);padding-top:9px;text-align:center;font-size:12.5px;font-weight:700;color:#3F6A7A;">{{ cwPreviaBtn }}</div>
+                        </sc-if>
+                        <sc-if value="{{ cwPreviaOpt }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:7px;border-top:1px solid var(--border-subtle);padding-top:9px;text-align:center;font-size:12.5px;font-weight:700;color:#3F6A7A;">Detener promociones</div>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                      <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Plantillas de promoción</h3>
+                      <button onClick="{{ onCwRefrescar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Refrescar</button>
+                    </div>
+                    <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Estado real en Meta. Solo las aprobadas se pueden enviar. Toca una para elegirla.</p>
+                    <sc-if value="{{ cwTplsLoading }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--brand-primary);">Consultando Meta…</div></sc-if>
+                    <sc-if value="{{ cwTplsHayErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-sm);padding:10px 13px;font-size:12px;color:#B5503C;">{{ cwTplsErr }}</div></sc-if>
+                    <sc-if value="{{ cwTplsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;font-size:12.5px;color:var(--text-muted);">Todavía no hay plantillas de promoción en la cuenta.</div></sc-if>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                      <sc-for list="{{ cwTpls }}" as="t" hint-placeholder-count="0">
+                        <div onClick="{{ t.elegir }}" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-raised);border:1px solid {{ t.borde }};border-radius:var(--radius-md);padding:10px 13px;cursor:pointer;">
+                          <div style="flex:1;min-width:150px;">
+                            <div style="font-size:12.5px;font-weight:700;color:var(--text-strong);">{{ t.nombre }}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">{{ t.cat }} · {{ t.extra }}</div>
+                          </div>
+                          <span style="font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:4px 10px;border-radius:999px;background:{{ t.estBg }};color:{{ t.estFg }};">{{ t.estado }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
+                <div style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:5px;">Paso 2</div>
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0 0 4px;">Enviar la campaña</h3>
+                <sc-if value="{{ cwHaySel }}" hint-placeholder-val="{{ false }}">
+                  <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;">Vas a enviar <strong style="color:var(--brand-primary);">{{ cwSel }}</strong> — {{ cwSelEstadoTxt }}.</p>
+                </sc-if>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:12px;margin-bottom:16px;">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Días sin comprar (mínimo)
+                    <input type="number" min="0" step="15" value="{{ cwDias }}" onInput="{{ onCwDias }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                  </label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">No repetir en (días)
+                    <input type="number" min="0" step="5" value="{{ cwNoRep }}" onInput="{{ onCwNoRep }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                  </label>
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Tope de envíos <span style="font-weight:400;color:var(--text-muted);">· 0 = sin tope</span>
+                    <input type="number" min="0" step="25" value="{{ cwLimite }}" onInput="{{ onCwLimite }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                  </label>
+                </div>
+
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:9px;">Segmentos</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                  <sc-for list="{{ cwSegs }}" as="s" hint-placeholder-count="8">
+                    <button onClick="{{ s.on }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid {{ s.borde }};border-radius:var(--radius-pill);background:{{ s.bg }};color:{{ s.fg }};cursor:pointer;">{{ s.label }}</button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ cwSegTodos }}" hint-placeholder-val="{{ true }}"><div style="font-size:11.5px;color:var(--text-muted);margin-bottom:14px;">Sin segmentos marcados = todos los clientes que cumplan los filtros.</div></sc-if>
+
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin:4px 0 9px;">Canal de venta</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                  <sc-for list="{{ cwCanales }}" as="k" hint-placeholder-count="4">
+                    <button onClick="{{ k.on }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid {{ k.borde }};border-radius:var(--radius-pill);background:{{ k.bg }};color:{{ k.fg }};cursor:pointer;">{{ k.label }}</button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ cwCanTodos }}" hint-placeholder-val="{{ true }}"><div style="font-size:11.5px;color:var(--text-muted);margin-bottom:16px;">Sin canal marcado = clientes de todos los canales.</div></sc-if>
+
+                <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:11px;">
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--brand-primary);line-height:1;">{{ cwDestN }}</span>
+                    <span style="font-size:12.5px;color:var(--text-body);">clientes con WhatsApp en este filtro</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <sc-for list="{{ cwDestPrev }}" as="d" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+                        <span style="flex:1;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ d.nombre }}</span>
+                        <span style="color:var(--text-muted);">{{ d.tel }}</span>
+                        <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ d.segBg }};color:{{ d.segFg }};">{{ d.seg }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ cwDestHayMas }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">y {{ cwDestMas }} más…</div></sc-if>
+                </div>
+
+                <sc-if value="{{ cwFaltaFoto }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-md);padding:11px 14px;font-size:12.5px;color:#B5503C;margin-bottom:14px;line-height:1.5;">Esta plantilla lleva foto en el encabezado y no hay ninguna cargada: sube la imagen en el Paso 1 antes de enviar.</div>
+                </sc-if>
+
+                <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--border-subtle);">
+                  <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Prueba a mi número
+                    <input value="{{ cwPruebaTel }}" onInput="{{ onCwPruebaTel }}" placeholder="313 406 3259" style="display:block;width:150px;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-raised);color:var(--text-strong);font-weight:400;" />
+                  </label>
+                  <button onClick="{{ onCwProbar }}" disabled="{{ cwSoloVer }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:10px 16px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Enviar prueba</button>
+                  <sc-if value="{{ cwProbando }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--brand-primary);">Enviando prueba…</span></sc-if>
+                  <div style="flex:1;"></div>
+                  <button onClick="{{ onCwPreparar }}" disabled="{{ cwSoloVer }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#FFF;cursor:pointer;">Revisar y enviar</button>
+                </div>
+                <sc-if value="{{ cwPreparando }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font-size:12px;color:var(--brand-primary);">Revisando opt-out y envíos recientes…</div></sc-if>
+
+                <sc-if value="{{ cwConfirmShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--brand-primary);border-radius:var(--radius-md);padding:18px 20px;">
+                    <h4 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 8px;">Vas a enviar {{ cwConfN }} mensajes</h4>
+                    <p style="font-size:12.5px;color:var(--text-body);margin:0 0 10px;line-height:1.55;">Plantilla <strong>{{ cwConfTpl }}</strong> · sale por lotes de 20 con pausa, unos {{ cwConfMin }} minutos. Puedes detenerla en cualquier momento.</p>
+                    <sc-if value="{{ cwConfHayOmit }}" hint-placeholder-val="{{ false }}">
+                      <p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;line-height:1.5;">Quedan por fuera {{ cwConfOpt }} con promociones detenidas y {{ cwConfRep }} contactados hace menos de {{ cwConfNoRep }} días.</p>
+                    </sc-if>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                      <button onClick="{{ onCwConfirmar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#FFF;cursor:pointer;">Sí, enviar ahora</button>
+                      <button onClick="{{ onCwCancelar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-muted);cursor:pointer;">Cancelar</button>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ cwRunShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:18px 20px;">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+                      <div style="flex:1;min-width:160px;font-size:13px;font-weight:700;color:var(--text-strong);">{{ cwRunHechos }} de {{ cwRunTotal }} · {{ cwRunOk }} enviados · {{ cwRunFallo }} con problema</div>
+                      <sc-if value="{{ cwRunCorriendo }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ onCwDetener }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 15px;border:1px solid rgba(181,80,60,0.4);border-radius:var(--radius-pill);background:transparent;color:#B5503C;cursor:pointer;">Detener</button>
+                      </sc-if>
+                      <sc-if value="{{ cwRunFin }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ onCwCerrarRun }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 15px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-muted);cursor:pointer;">Cerrar</button>
+                      </sc-if>
+                    </div>
+                    <div style="height:8px;border-radius:999px;background:#E4DBCC;overflow:hidden;margin-bottom:10px;">
+                      <div style="height:100%;width:{{ cwRunPct }};background:var(--brand-primary);transition:width 300ms;"></div>
+                    </div>
+                    <sc-if value="{{ cwRunCorriendo }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">Último: {{ cwRunUltimo }} · deja esta pestaña abierta hasta que termine.</div></sc-if>
+                    <sc-if value="{{ cwRunDetenida }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#9A6B2E;font-weight:700;">Campaña detenida a mano.</div></sc-if>
+                    <sc-if value="{{ cwRunHayErrores }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:10px;border-top:1px solid var(--border-subtle);padding-top:10px;display:flex;flex-direction:column;gap:4px;">
+                        <sc-for list="{{ cwRunErrores }}" as="e" hint-placeholder-count="0">
+                          <div style="font-size:11.5px;color:#B5503C;">{{ e.t }}</div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
               </div>
             </div>
           </sc-if>
@@ -7859,7 +8108,7 @@ class Component extends DCLogic {
     ventas:     [{key:'registro',label:'Ventas'},{key:'base',label:'Base de datos'},{key:'cotizador',label:'Leads'},{key:'servicio',label:'Servicio al cliente'}],
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'informe',label:'Informe'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'finbold',label:'Bold'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
-    marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktconexion',label:'Conexión Meta'}],
+    marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktwa',label:'Campañas WhatsApp'},{key:'mktconexion',label:'Conexión Meta'}],
     informes:   [{key:'gerencial',label:'Informe gerencial'}]
   };
 
@@ -8513,8 +8762,9 @@ class Component extends DCLogic {
   // Clave interna de la automatización que tocó un mensaje. La plantilla guardada puede venir
   // con el nombre aprobado en Meta (o vacía, si se mandó texto libre): en ese caso se deduce.
   _autoKey(meta){ const m=meta||{}; const p=String(m.plantilla||'').trim();
-    const known={pedido_despachado:1, recordatorio_pago:1, pedido_contraentrega:1, postventa:1, carrito_abandonado:1};
+    const known={pedido_despachado:1, recordatorio_pago:1, pedido_contraentrega:1, postventa:1, carrito_abandonado:1, campana:1};
     if(known[p]) return p;
+    if(m.campana || /^promo/i.test(p)) return 'campana';
     if(m.carrito) return 'carrito_abandonado';
     if(/carrito/i.test(p)) return 'carrito_abandonado';
     if(/postventa/i.test(p)) return 'postventa';
@@ -10108,9 +10358,12 @@ Instrucciones de respuesta:
   async cargarWaEnvios(){
     try{
       const sb=this._sbClient(); if(!sb){ this.setState({waEnvios:[]}); return; }
-      const { data, error } = await sb.from('wa_envios').select('*').order('creado_at',{ascending:false}).limit(60);
-      this.setState({waEnvios: (error? [] : (data||[]))});
-    }catch(_e){ this.setState({waEnvios:[]}); }
+      // Los envíos de campaña van aparte: una sola campaña puede traer cientos de filas y
+      // dejaría fuera del listado a las automatizaciones. Acá se agrupan por plantilla.
+      const { data, error } = await sb.from('wa_envios').select('*').neq('tipo','campana').order('creado_at',{ascending:false}).limit(60);
+      let camp=[]; try{ const r=await sb.from('wa_envios').select('clave,destino,ok,detalle,creado_at').eq('tipo','campana').order('creado_at',{ascending:false}).limit(2000); camp=r.data||[]; }catch(_e){}
+      this.setState({waEnvios: (error? [] : (data||[])), waCampLog: camp});
+    }catch(_e){ this.setState({waEnvios:[], waCampLog:[]}); }
   }
   async cargarEnvLog(){
     try{
@@ -10155,6 +10408,269 @@ Instrucciones de respuesta:
   carritoNota(c){ const k=this._carritoKey(c); return (this.state.carritosNotas||{})[k]||''; }
   setCarritoNota(c, txt){ const k=this._carritoKey(c); if(!k) return; const m={...(this.state.carritosNotas||{})}; if(txt) m[k]=txt; else delete m[k]; this.setState({carritosNotas:m}); try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(m)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({carNotas:m}); }
   _marcarCampEnviada(k){ if(!k) return; const m={...(this.state.campContactados||{})}; m[k]=Date.now(); this.setState({campContactados:m}); try{ localStorage.setItem('oda_hub_camp_sent_v1', JSON.stringify(m)); }catch(e){} }
+  // ================= CAMPAÑAS DE WHATSAPP (Marketing → Campañas WhatsApp) =================
+  // Dos pasos: (1) crear la plantilla en Meta desde el Hub, (2) enviarla en masa cuando
+  // quede APROBADA. Salvaguardas: opt-out (wa_optout), no repetir al mismo celular en X días,
+  // envío por lotes con pausa, prueba a un número propio y confirmación con el conteo exacto.
+  // Cada mensaje que sale queda registrado en Conversaciones (invariante 32).
+  campWaGet(){ if(this._campWa) return this._campWa;
+    let d={}; try{ d=JSON.parse(localStorage.getItem('oda_hub_campwa_v1')||'{}')||{}; }catch(e){}
+    const h=new Date(); const ym=h.getFullYear()+'_'+String(h.getMonth()+1).padStart(2,'0');
+    this._campWa={ nombre:d.nombre||('promo_'+ym), categoria:d.categoria||'MARKETING',
+      cuerpo:(d.cuerpo!=null?d.cuerpo:'{{1}}, llegó el mes de celebrar a quien amas ♥️🍃\n\nArmamos kits de bienestar para tu pareja, tu mejor amiga o esa persona que se merece un respiro. Todos vienen con regalo incluido y tarjeta personalizada, para que no tengas que preocuparte por nada más.'),
+      imgUrl:d.imgUrl||'', imgNombre:d.imgNombre||'',
+      btnTexto:(d.btnTexto!=null?d.btnTexto:'Ver la colección'), btnUrl:(d.btnUrl!=null?d.btnUrl:'https://oasisdelalma.co/collections/kits'),
+      optout:d.optout!==false, envTpl:d.envTpl||'', envSegs:Array.isArray(d.envSegs)?d.envSegs:[],
+      envCanales:Array.isArray(d.envCanales)?d.envCanales:[],
+      envDias:Number(d.envDias)||0, envNoRep:(d.envNoRep==null?30:Number(d.envNoRep)), envLimite:Number(d.envLimite)||0,
+      pruebaTel:d.pruebaTel||'' };
+    return this._campWa; }
+  campWaSet(patch){ this._campWa={...this.campWaGet(), ...patch};
+    try{ localStorage.setItem('oda_hub_campwa_v1', JSON.stringify(this._campWa)); }catch(e){}
+    this.forceUpdate(); }
+  campWaPuede(){ const a=this.access()||{}; if(a.admin) return true;
+    const k='marketing__mktwa'; const eff=(k in a)? a[k] : (a.marketing||'none'); return eff==='write'; }
+  campWaSegs(){ return ['Campeón','Alto valor','Fiel','Nuevo','Ocasional','En riesgo','Dormido','Por reactivar']; }
+  campWaToggleSeg(s){ const c=this.campWaGet(); const cur=c.envSegs||[];
+    this.campWaSet({envSegs: cur.includes(s)? cur.filter(x=>x!==s) : [...cur,s]}); }
+  // Foto de encabezado: va a Storage (adjuntos/campanas) y se verifica que la URL responda,
+  // porque getPublicUrl devuelve URL incluso si el bucket no es público (lección del 14-sep).
+  onCampWaImg(e){ const f=e.target.files&&e.target.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type||'')){ this.toast('La foto del encabezado debe ser una imagen'); return; }
+    if(f.size>5*1024*1024){ this.toast('La imagen no puede pasar de 5 MB'); return; }
+    this.setState({campWaImgSubiendo:true});
+    this.cloudUploadArchivo(f,'campanas',(url,nombre)=>{
+      if(/^data:/.test(String(url||''))){ this.setState({campWaImgSubiendo:false}); this.toast('No se pudo subir la foto a la nube. Corre supabase-adjuntos.sql y vuelve a intentar.'); return; }
+      fetch(url,{method:'HEAD'}).then(r=>{ this.setState({campWaImgSubiendo:false});
+        if(!r.ok){ this.toast('La foto subió pero su URL no es pública (HTTP '+r.status+'). Revisa el bucket «adjuntos».'); return; }
+        this.campWaSet({imgUrl:url, imgNombre:nombre||''}); })
+        .catch(()=>{ this.setState({campWaImgSubiendo:false}); this.toast('La foto subió pero no se pudo verificar su URL pública.'); });
+    }); }
+  async campWaCargarPlantillas(force){ if(this._campTplLoad) return;
+    if(this.state.campWaTpls && !force) return;
+    this._campTplLoad=true; this.setState({campWaTplsLoading:true});
+    try{ const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
+      const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillas' } });
+      if(error){ let d=''; try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) d=' · '+j.error; } }catch(_e){} throw new Error('No se pudo leer las plantillas'+d); }
+      if(data&&data.error) throw new Error(data.error);
+      // La función vieja ignora el modo y devuelve el diagnóstico completo: sin esta guarda el
+      // Hub diría «no hay plantillas» cuando la verdad es que falta redesplegar `canales`.
+      if(data && !Array.isArray(data.items) && (data.plantillas||data.whatsapp)) throw new Error('La función «canales» está desactualizada: vuelve a desplegarla para ver y enviar plantillas.');
+      this.setState({campWaTpls:(data&&data.items)||[], campWaTplsLoading:false, campWaTplsErr:''});
+    }catch(e){ this.setState({campWaTpls:[], campWaTplsLoading:false, campWaTplsErr:(e&&e.message)||'error'}); }
+    finally{ this._campTplLoad=false; } }
+  async campWaCrear(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para crear plantillas'); return; }
+    const c=this.campWaGet();
+    const nombre=String(c.nombre||'').trim().toLowerCase().replace(/[^a-z0-9_]/g,'_');
+    const cuerpo=String(c.cuerpo||'').trim();
+    if(!nombre){ this.toast('Ponle nombre a la plantilla (ej. promo_2026_09)'); return; }
+    if(!cuerpo){ this.toast('Escribe el cuerpo del mensaje'); return; }
+    const urls=cuerpo.match(/https?:\/\/[^\s]+|[a-z0-9-]+\.[a-z]{2,}\/[^\s]*/gi)||[];
+    const ajenos=urls.filter(u=>!/oasisdelalma\.co/i.test(u));
+    if(ajenos.length){ this.toast('El cuerpo tiene un link que no es de oasisdelalma.co: '+ajenos[0]); return; }
+    const btnUrl=String(c.btnUrl||'').trim();
+    if(btnUrl && !/^https:\/\/(www\.)?oasisdelalma\.co/i.test(btnUrl)){ this.toast('El botón solo puede apuntar a oasisdelalma.co'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
+    const botones=[];
+    if(String(c.btnTexto||'').trim() && btnUrl) botones.push({tipo:'URL', texto:String(c.btnTexto).trim(), url:btnUrl});
+    if(c.optout) botones.push({tipo:'QUICK_REPLY', texto:'Detener promociones'});
+    const ejemplo=/\{\{1\}\}/.test(cuerpo)? ['María'] : [];
+    this.setState({campWaCreando:true, campWaMsg:''});
+    try{
+      const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillaCrear', plantilla:{
+        name:nombre, category:c.categoria||'MARKETING', language:'es', body:cuerpo, ejemplo, botones,
+        headerImageUrl:String(c.imgUrl||'') } } });
+      let err=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) err=j.error; } }catch(_e){} err=err||'La función no respondió'; }
+      else if(data&&data.error) err=data.error;
+      if(err) throw new Error(err);
+      const aviso=(data&&data.avisoFoto)||'';
+      this.setState({campWaCreando:false, campWaMsg:'Plantilla «'+nombre+'» enviada a Meta · estado '+((data&&data.status)||'PENDING')+'. La aprobación tarda entre minutos y 24 h.'+(aviso?(' ⚠️ La foto no subió: '+aviso+' — agrégala en WhatsApp Manager antes de enviar.'):'')});
+      this.campWaSet({nombre, envTpl:nombre});
+      this.campWaCargarPlantillas(true);
+    }catch(e){ this.setState({campWaCreando:false, campWaMsg:''}); this.toast('No se creó la plantilla: '+((e&&e.message)||'error')); } }
+  // Canales tal como vienen en las ventas: clientesData() filtra por el valor crudo de v.canal.
+  campWaCanales(){ const s={}; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const c=String(v.canal||'').trim(); if(c && c!=='MSVC') s[c]=(s[c]||0)+1; });
+    return Object.keys(s).sort((a,b)=>s[b]-s[a]); }
+  campWaToggleCanal(k){ const c=this.campWaGet(); const cur=c.envCanales||[];
+    this.campWaSet({envCanales: cur.includes(k)? cur.filter(x=>x!==k) : [...cur,k]}); }
+  campWaDestinos(){ const c=this.campWaGet(); const segs=c.envSegs||[]; const dias=Number(c.envDias)||0;
+    const cans=(c.envCanales||[]);
+    let arr=this.clientesData(cans.length? {canal:cans} : undefined).filter(x=>this.waNumber(x.celular));
+    if(segs.length) arr=arr.filter(x=>segs.includes(x.segmento));
+    if(dias>0) arr=arr.filter(x=>x.diasDesde>=dias);
+    arr.sort((a,b)=>b.total-a.total);
+    const lim=Number(c.envLimite)||0; if(lim>0) arr=arr.slice(0,lim);
+    const vistos={}; return arr.filter(x=>{ const n=this.waNumber(x.celular); if(vistos[n]) return false; vistos[n]=1; return true; }); }
+  campWaTplSel(){ const c=this.campWaGet(); return (this.state.campWaTpls||[]).find(t=>t.nombre===c.envTpl)||null; }
+  async campWaProbar(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
+    const c=this.campWaGet(); const t=this.campWaTplSel();
+    if(!t){ this.toast('Elige primero una plantilla aprobada'); return; }
+    const tel=this.waNumber(c.pruebaTel); if(!tel){ this.toast('Escribe tu número para la prueba'); return; }
+    if(t.tieneImagen && !String(c.imgUrl||'').trim()){ this.toast('Esta plantilla lleva foto: súbela arriba antes de probar'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
+    this.setState({campWaProbando:true});
+    const r=await this._campWaUno(sb, t, String(c.imgUrl||''), tel, 'Prueba', true);
+    this.setState({campWaProbando:false});
+    this.toast(r.ok? ('Prueba enviada a '+tel+' · revisa tu WhatsApp') : ('La prueba falló: '+r.detalle)); }
+  async campWaPreparar(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
+    const c=this.campWaGet(); const t=this.campWaTplSel();
+    if(!t){ this.toast('Elige la plantilla aprobada que vas a enviar'); return; }
+    if(t.estado!=='APPROVED'){ this.toast('Esa plantilla está en '+t.estado+': Meta no la deja enviar todavía'); return; }
+    const imgUrl=String(c.imgUrl||'').trim();
+    if(t.tieneImagen && !imgUrl){ this.toast('Esta plantilla lleva foto en el encabezado: súbela antes de enviar'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
+    const destinos=this.campWaDestinos();
+    if(!destinos.length){ this.toast('El filtro no deja ningún cliente con WhatsApp'); return; }
+    this.setState({campWaPreparando:true});
+    const optout=new Set();
+    try{ const {data}=await sb.from('wa_optout').select('contacto').limit(5000);
+      (data||[]).forEach(r=>{ const n=String(r.contacto||'').replace(/\D/g,''); if(n){ optout.add(n); optout.add(n.replace(/^57/,'')); } }); }catch(e){}
+    const recientes=new Set(); const noRep=Number(c.envNoRep)||0;
+    if(noRep>0){ try{ const desde=new Date(Date.now()-noRep*86400000).toISOString();
+      const {data}=await sb.from('wa_envios').select('destino,creado_at,tipo').eq('tipo','campana').gte('creado_at',desde).limit(5000);
+      (data||[]).forEach(r=>{ const n=String(r.destino||'').replace(/\D/g,''); if(n){ recientes.add(n); recientes.add(n.replace(/^57/,'')); } }); }catch(e){} }
+    const listos=[]; let omOpt=0, omRep=0;
+    destinos.forEach(d=>{ const n=this.waNumber(d.celular); const n10=n.replace(/^57/,'');
+      if(optout.has(n)||optout.has(n10)){ omOpt++; return; }
+      if(recientes.has(n)||recientes.has(n10)){ omRep++; return; }
+      listos.push({nombre:d.cliente, tel:n, seg:d.segmento}); });
+    this.setState({campWaPreparando:false});
+    if(!listos.length){ this.toast('Todos quedaron por fuera · '+omOpt+' con promociones detenidas, '+omRep+' contactados hace menos de '+noRep+' días'); return; }
+    this.setState({ campWaConfirm:{ tpl:t, imgUrl, listos, omOpt, omRep, noRep } }); }
+  campWaCancelar(){ this.setState({campWaConfirm:null}); }
+  campWaDetener(){ this._campStop=true; this.toast('Deteniendo… no saldrán más mensajes'); }
+  async campWaDisparar(){ const cf=this.state.campWaConfirm; if(!cf) return;
+    const sb=this._sbClient(); if(!sb) return;
+    this._campStop=false;
+    const LOTE=20, PAUSA=3000, ENTRE=700;
+    this.setState({ campWaConfirm:null, campWaRun:{ total:cf.listos.length, hechos:0, ok:0, fallo:0, corriendo:true, ultimo:'', errores:[], tpl:cf.tpl.nombre } });
+    for(let i=0;i<cf.listos.length;i++){
+      if(this._campStop) break;
+      const d=cf.listos[i];
+      const r=await this._campWaUno(sb, cf.tpl, cf.imgUrl, d.tel, d.nombre, false);
+      this.setState(s=>{ const run=s.campWaRun||{}; const errores=(run.errores||[]).slice();
+        if(!r.ok && errores.length<10) errores.push((d.nombre||d.tel)+' · '+r.detalle);
+        return { campWaRun:{ ...run, hechos:(run.hechos||0)+1, ok:(run.ok||0)+(r.ok?1:0), fallo:(run.fallo||0)+(r.ok?0:1), ultimo:(d.nombre||d.tel), errores } }; });
+      await new Promise(res=>setTimeout(res, ENTRE));
+      if((i+1)%LOTE===0 && i+1<cf.listos.length) await new Promise(res=>setTimeout(res, PAUSA));
+    }
+    const det=this._campStop;
+    this.setState(s=>({ campWaRun:{...(s.campWaRun||{}), corriendo:false, fin:true, detenida:det}, waEnvios:null }));
+    const run=this.state.campWaRun||{};
+    this.toast((det?'Campaña detenida · ':'Campaña terminada · ')+(run.ok||0)+' enviados, '+(run.fallo||0)+' con problema'); }
+  // Un envío: reserva la clave (nunca dos veces la misma campaña al mismo número), manda
+  // la plantilla con su foto y variables, cierra el registro y deja el mensaje en el chat.
+  async _campWaUno(sb, t, imgUrl, tel, nombre, esPrueba){
+    const primer=(String(nombre||'').trim().split(/\s+/)[0]||'hola');
+    const components=[];
+    if(t.tieneImagen && imgUrl) components.push({ type:'header', parameters:[{ type:'image', image:{ link:imgUrl } }] });
+    if(Number(t.variables)>0){ const vars=[primer]; for(let k=1;k<Number(t.variables);k++) vars.push('');
+      components.push({ type:'body', parameters:vars.map(v=>({type:'text', text:String(v)})) }); }
+    const clave='camp|'+t.nombre+'|'+tel;
+    let reservado=false;
+    if(!esPrueba){
+      try{ const {error}=await sb.from('wa_envios').insert({clave, tipo:'campana', destino:tel, ok:false, detalle:'enviando…'});
+        if(error) return {ok:false, detalle:'ya se le había enviado esta campaña'};
+        reservado=true;
+      }catch(e){ return {ok:false, detalle:'no se pudo reservar el envío'}; }
+    }
+    try{
+      const {data,error}=await sb.functions.invoke('whatsapp',{ body:{ to:tel, template:t.nombre, lang:(t.idioma||'es'), ...(components.length?{components}:{}), origen:(esPrueba?'campana-prueba':'campana') } });
+      let msg=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) msg=j.error; } }catch(_e){} msg=msg||'WhatsApp no respondió'; }
+      else if(data&&data.error) msg=data.error;
+      const ok=!msg;
+      if(reservado){ try{ await sb.from('wa_envios').update({ok, detalle:String(msg||'enviado').slice(0,300)}).eq('clave',clave); }catch(e){} }
+      if(ok && !esPrueba) this._campWaRegistrar(sb, t, imgUrl, tel, nombre, primer);
+      return {ok, detalle:msg};
+    }catch(e){ const msg=(e&&e.message)||'error';
+      if(reservado){ try{ await sb.from('wa_envios').update({ok:false, detalle:String(msg).slice(0,300)}).eq('clave',clave); }catch(_e){} }
+      return {ok:false, detalle:msg}; } }
+  async _campWaRegistrar(sb, t, imgUrl, tel, nombre, primer){ try{
+    const cuerpo=String(t.cuerpo||this.campWaGet().cuerpo||'').replace(/\{\{1\}\}/g, primer||'');
+    const texto=(imgUrl?('[IMG:'+imgUrl+']\n'):'')+cuerpo;
+    const id='wa_'+tel; const ahora=new Date().toISOString();
+    await sb.from('conversaciones').upsert({ id, canal:'whatsapp', cliente:(nombre||tel), telefono:tel,
+      ultimo_mensaje:cuerpo.slice(0,160), ultimo_at:ahora }, { onConflict:'id' });
+    await sb.from('mensajes').insert({ conversacion_id:id, de:'bot', texto,
+      meta:{ automatico:true, plantilla:'campana', template:t.nombre, campana:t.nombre } });
+  }catch(e){} }
+  _buildCampWa(out, st){ const c=this.campWaGet(); const puede=this.campWaPuede();
+    out.cwPuede=puede; out.cwSoloVer=!puede;
+    out.cwNombre=c.nombre; out.onCwNombre=(e)=>this.campWaSet({nombre:e.target.value});
+    out.cwCat=c.categoria; out.onCwCat=(e)=>this.campWaSet({categoria:e.target.value});
+    out.cwCuerpo=c.cuerpo; out.onCwCuerpo=(e)=>this.campWaSet({cuerpo:e.target.value});
+    // El placeholder se expone desde acá: escrito en el template, «{{1}}» se resolvería como hole.
+    out.cwCuerpoPh='{{1}}, llegó el mes de celebrar a quien amas…';
+    out.cwCuerpoLen=String(c.cuerpo||'').length;
+    out.cwBtnTexto=c.btnTexto; out.onCwBtnTexto=(e)=>this.campWaSet({btnTexto:e.target.value});
+    out.cwBtnUrl=c.btnUrl; out.onCwBtnUrl=(e)=>this.campWaSet({btnUrl:e.target.value});
+    out.cwOptTog={ bg:c.optout?'var(--brand-primary)':'#D9D2C3', x:c.optout?'22px':'2px', on:()=>this.campWaSet({optout:!c.optout}) };
+    // La URL de la foto NO va como src en el template: un hole sin resolver dispararía una
+    // petición a la cadena literal mientras la plantilla se transmite. Va como background-image.
+    out.cwImgCss=c.imgUrl? ('url("'+String(c.imgUrl).replace(/"/g,'%22')+'")') : 'none';
+    out.cwImgUrl=c.imgUrl||''; out.cwHayImg=!!c.imgUrl; out.cwImgNombre=c.imgNombre||'foto del encabezado';
+    out.cwImgSubiendo=!!st.campWaImgSubiendo;
+    out.onCwImg=(e)=>this.onCampWaImg(e); out.onCwImgQuitar=()=>this.campWaSet({imgUrl:'', imgNombre:''});
+    out.cwPrevia=String(c.cuerpo||'').replace(/\{\{1\}\}/g,'María')||'Escribe el cuerpo y aquí verás cómo le llega.';
+    out.cwPreviaBtn=String(c.btnTexto||'').trim(); out.cwPreviaHayBtn=!!(String(c.btnTexto||'').trim() && String(c.btnUrl||'').trim());
+    out.cwPreviaOpt=c.optout;
+    out.cwCreando=!!st.campWaCreando; out.onCwCrear=()=>this.campWaCrear();
+    out.cwMsg=st.campWaMsg||''; out.cwHayMsg=!!st.campWaMsg;
+    // plantillas de Meta
+    if(st.campWaTpls===null||st.campWaTpls===undefined){ setTimeout(()=>{ if(this.state.sub==='mktwa') this.campWaCargarPlantillas(); },0); }
+    const tpls=st.campWaTpls||[];
+    out.cwTplsLoading=!!st.campWaTplsLoading;
+    out.cwTplsErr=st.campWaTplsErr||''; out.cwTplsHayErr=!!st.campWaTplsErr;
+    out.onCwRefrescar=()=>this.campWaCargarPlantillas(true);
+    const estiloEstado=(e)=>e==='APPROVED'?{bg:'rgba(98,123,96,0.18)',fg:'#4C6149'}:(e==='REJECTED'?{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'}:{bg:'rgba(212,150,80,0.2)',fg:'#9A6B2E'});
+    const promos=tpls.filter(t=>/^promo/i.test(t.nombre)||t.categoria==='MARKETING');
+    out.cwTpls=promos.map(t=>{ const s=estiloEstado(t.estado); return { nombre:t.nombre, estado:t.estado, estBg:s.bg, estFg:s.fg,
+      cat:t.categoria, extra:(t.tieneImagen?'con foto · ':'')+(Number(t.variables)>0?(t.variables+' variable'+(t.variables===1?'':'s')):'sin variables'),
+      sel:t.nombre===c.envTpl, elegir:()=>this.campWaSet({envTpl:t.nombre}),
+      borde:(t.nombre===c.envTpl?'var(--brand-primary)':'var(--border-subtle)') }; });
+    // Un error ya explica por qué la lista está vacía: el estado vacío no debe sumarse encima.
+    out.cwTplsVacio=promos.length===0 && !st.campWaTplsLoading && !st.campWaTplsErr;
+    // envío
+    const sel=this.campWaTplSel();
+    out.cwSel=sel? sel.nombre : ''; out.cwHaySel=!!sel;
+    out.cwSelAprob=!!(sel&&sel.estado==='APPROVED');
+    out.cwSelEstadoTxt=sel? (sel.estado==='APPROVED'?'aprobada por Meta':('en '+sel.estado+' · Meta no la deja enviar todavía')) : '';
+    out.cwSelPideFoto=!!(sel&&sel.tieneImagen);
+    out.cwFaltaFoto=!!(sel&&sel.tieneImagen&&!c.imgUrl);
+    out.cwSegs=this.campWaSegs().map(s=>{ const on=(c.envSegs||[]).includes(s); const sty=this.segmentoStyle(s);
+      return { label:s, bg:on?sty.bg:'transparent', fg:on?sty.fg:'var(--text-muted)', borde:on?sty.fg:'var(--border-strong)', on:()=>this.campWaToggleSeg(s) }; });
+    out.cwSegTodos=(c.envSegs||[]).length===0;
+    out.cwCanales=this.campWaCanales().map(k=>{ const on=(c.envCanales||[]).includes(k);
+      return { label:k, bg:on?'var(--brand-primary)':'transparent', fg:on?'#FFF':'var(--text-muted)', borde:on?'var(--brand-primary)':'var(--border-strong)', on:()=>this.campWaToggleCanal(k) }; });
+    out.cwCanTodos=(c.envCanales||[]).length===0;
+    out.cwDias=c.envDias; out.onCwDias=(e)=>this.campWaSet({envDias:Number(e.target.value)||0});
+    out.cwNoRep=c.envNoRep; out.onCwNoRep=(e)=>this.campWaSet({envNoRep:Number(e.target.value)||0});
+    out.cwLimite=c.envLimite; out.onCwLimite=(e)=>this.campWaSet({envLimite:Number(e.target.value)||0});
+    const dest=this.campWaDestinos();
+    out.cwDestN=dest.length;
+    out.cwDestPrev=dest.slice(0,8).map(d=>{ const sty=this.segmentoStyle(d.segmento);
+      return { nombre:d.cliente, tel:this.waNumber(d.celular), seg:d.segmento, segBg:sty.bg, segFg:sty.fg, dias:d.diasDesde }; });
+    out.cwDestMas=dest.length>8? (dest.length-8) : 0; out.cwDestHayMas=dest.length>8;
+    out.cwPruebaTel=c.pruebaTel; out.onCwPruebaTel=(e)=>this.campWaSet({pruebaTel:e.target.value});
+    out.cwProbando=!!st.campWaProbando; out.onCwProbar=()=>this.campWaProbar();
+    out.cwPreparando=!!st.campWaPreparando; out.onCwPreparar=()=>this.campWaPreparar();
+    // confirmación
+    const cf=st.campWaConfirm;
+    out.cwConfirmShow=!!cf;
+    if(cf){ out.cwConfN=cf.listos.length; out.cwConfTpl=cf.tpl.nombre; out.cwConfOpt=cf.omOpt; out.cwConfRep=cf.omRep; out.cwConfNoRep=cf.noRep;
+      out.cwConfHayOmit=(cf.omOpt+cf.omRep)>0;
+      out.cwConfMin=Math.max(1,Math.round(cf.listos.length*0.7/60));
+      out.onCwConfirmar=()=>this.campWaDisparar(); out.onCwCancelar=()=>this.campWaCancelar(); }
+    // progreso
+    const run=st.campWaRun;
+    out.cwRunShow=!!run;
+    if(run){ out.cwRunTotal=run.total; out.cwRunHechos=run.hechos; out.cwRunOk=run.ok; out.cwRunFallo=run.fallo;
+      out.cwRunPct=run.total? Math.round(run.hechos/run.total*100)+'%' : '0%';
+      out.cwRunCorriendo=!!run.corriendo; out.cwRunFin=!!run.fin; out.cwRunUltimo=run.ultimo||'';
+      out.cwRunDetenida=!!run.detenida;
+      out.cwRunErrores=(run.errores||[]).map(t=>({t})); out.cwRunHayErrores=(run.errores||[]).length>0;
+      out.onCwDetener=()=>this.campWaDetener(); out.onCwCerrarRun=()=>this.setState({campWaRun:null}); }
+  }
   _buildCartAuto(out){ const cfg=this.agenteCfgGet();
     out.campCarritosTog={ v:!!cfg.campCarritosOn, bg:cfg.campCarritosOn?'var(--brand-primary)':'#D9D2C3', x:cfg.campCarritosOn?'22px':'2px', on:()=>this.setAgenteCfg('campCarritosOn',!cfg.campCarritosOn) };
     out.campHoras=cfg.campCarritoHoras||1; out.onCampHoras=(e)=>this.setAgenteCfg('campCarritoHoras',Number(e.target.value)||1);
@@ -13234,7 +13750,14 @@ Instrucciones de respuesta:
       {de:'cliente', texto:'Listo, ya lo compré. Gracias!', hora:'11:48'},
       {de:'bot', texto:'¡Gracias por tu compra, Julián! Te llegará en 2-4 días hábiles. Bienestar en cada respiro 🤍', hora:'11:49'}]},
   ];
-  convList(){ const base=this.state.convsCloud? this.state.convsCloud : (this.state.conversaciones || this.DEMO_CONVS); return this._convNombresReales(base); }
+  convList(){ const base=this.state.convsCloud? this.state.convsCloud : (this.state.conversaciones || this.DEMO_CONVS);
+    // Una campaña masiva NO abre conversación en la bandeja: el chat aparece cuando el cliente
+    // responde (ahí ya trae el mensaje de la campaña como contexto). El registro del envío
+    // vive en Conversaciones → Canales → Campañas de WhatsApp.
+    return this._convNombresReales(base).filter(c=>!this._convSoloCampana(c)); }
+  _convSoloCampana(c){ const ms=(c&&c.mensajes)||[]; if(!ms.length) return false;
+    if(ms.some(m=>m.de==='cliente')) return false;
+    return ms.every(m=>m.auto==='campana'); }
   // El nombre que manda Meta es el del perfil de WhatsApp y suele ser un alias ("Mac").
   // Aquí se reemplaza por el nombre REAL del cliente cruzando el celular con las ventas
   // (y con los leads si no hay venta). El alias queda en clienteAlias.
@@ -13753,7 +14276,7 @@ Instrucciones de respuesta:
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=false; out.vV_svc=subVis('ventas','servicio');
     out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_bold=subVis('finanzas','finbold'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
     // un módulo se muestra solo si tiene al menos un subgrupo visible
-    out.vM_resumen=subVis('marketing','mktresumen'); out.vM_camp=false; out.vM_recom=false; out.vM_creativos=false; out.vM_publicos=false; out.vM_conexion=subVis('marketing','mktconexion');
+    out.vM_resumen=subVis('marketing','mktresumen'); out.vM_wa=subVis('marketing','mktwa'); out.vM_camp=false; out.vM_recom=false; out.vM_creativos=false; out.vM_publicos=false; out.vM_conexion=subVis('marketing','mktconexion');
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
 
     // ===== INICIO (resumen personal de pendientes) =====
@@ -14024,8 +14547,8 @@ Instrucciones de respuesta:
     out.mktNavBg = onMkt? 'rgba(167,134,89,0.18)':'transparent';
     out.mktNavColor = onMkt? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyM=(k)=>{ const a=onMkt&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subMktResumen=subStyM('mktresumen'); out.subMktCamp=subStyM('mktcampanas'); out.subMktRecom=subStyM('mktrecom'); out.subMktCreativos=subStyM('mktcreativos'); out.subMktPublicos=subStyM('mktpublicos'); out.subMktConexion=subStyM('mktconexion');
-    out.subnavMkt={ resumen:()=>this.setState({module:'marketing',sub:'mktresumen'}), campanas:()=>this.setState({module:'marketing',sub:'mktcampanas'}), recom:()=>this.setState({module:'marketing',sub:'mktrecom'}), creativos:()=>this.setState({module:'marketing',sub:'mktcreativos'}), publicos:()=>this.setState({module:'marketing',sub:'mktpublicos'}), conexion:()=>this.setState({module:'marketing',sub:'mktconexion'}) };
+    out.subMktResumen=subStyM('mktresumen'); out.subMktCamp=subStyM('mktcampanas'); out.subMktRecom=subStyM('mktrecom'); out.subMktCreativos=subStyM('mktcreativos'); out.subMktPublicos=subStyM('mktpublicos'); out.subMktConexion=subStyM('mktconexion'); out.subMktWa=subStyM('mktwa');
+    out.subnavMkt={ resumen:()=>this.setState({module:'marketing',sub:'mktresumen'}), campanas:()=>this.setState({module:'marketing',sub:'mktcampanas'}), recom:()=>this.setState({module:'marketing',sub:'mktrecom'}), creativos:()=>this.setState({module:'marketing',sub:'mktcreativos'}), publicos:()=>this.setState({module:'marketing',sub:'mktpublicos'}), conexion:()=>this.setState({module:'marketing',sub:'mktconexion'}), wa:()=>this.setState({module:'marketing',sub:'mktwa'}) };
     const mktAcc = this._modLevel(acc,'marketing');
     out.canWriteMkt = mktAcc==='write';
 
@@ -14238,6 +14761,21 @@ Instrucciones de respuesta:
             estado:(e.ok?'Enviado':'Falló'), bg:(e.ok?'rgba(98,123,96,0.16)':'rgba(181,80,60,0.14)'), fg:(e.ok?'#4C6149':'#8E3F2F'),
             detalle:(e.ok? '' : String(e.detalle||'')) }; });
         out.autoEnviosVacio = st.waEnvios!==null && rows.length===0;
+        // Campañas masivas: una línea por plantilla con sus totales.
+        { const cl=(st.waCampLog||[]); const g={};
+          cl.forEach(e=>{ const p=String(e.clave||'').split('|')[1]||'(sin plantilla)';
+            const x=g[p]=g[p]||{plantilla:p, n:0, ok:0, fallo:0, ult:''};
+            x.n++; if(e.ok) x.ok++; else x.fallo++;
+            if(e.creado_at && (!x.ult || e.creado_at>x.ult)) x.ult=e.creado_at; });
+          const arr=Object.values(g).sort((a,b)=>String(b.ult).localeCompare(String(a.ult)));
+          out.campLog=arr.map(x=>{ const d=x.ult? new Date(x.ult):null; const bien=x.fallo===0;
+            return { plantilla:x.plantilla,
+              cuando: d? d.toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—',
+              detalle: x.ok+' enviados'+(x.fallo? (' · '+x.fallo+' con error'):'')+' · '+x.n+' destinatarios',
+              estado: bien? 'Enviada':'Con errores',
+              bg: bien? 'rgba(98,123,96,0.16)':'rgba(212,150,80,0.2)', fg: bien? '#4C6149':'#9A6B2E' }; });
+          out.campLogVacio = st.waCampLog!==undefined && st.waCampLog!==null && arr.length===0;
+          out.campLogResumen = arr.length? (arr.length+' campaña'+(arr.length===1?'':'s')+' · '+cl.filter(e=>e.ok).length+' mensajes entregados a Meta') : ''; }
         out.autoEnviosResumen = rows.length? (rows.filter(r=>r.ok).length+' enviados · '+rows.filter(r=>!r.ok).length+' con error') : '';
         out.autoEnviosRefrescar=()=>{ this.setState({waEnvios:null}); this.cargarWaEnvios(); };
         out.autoCorrerTxt=st.autoCorriendo? 'Revisando Shopify…' : 'Correr ahora';
@@ -14360,7 +14898,7 @@ Instrucciones de respuesta:
           onSel:()=>this.setState({convCanalSel:k}) }; });
       let base=convs.filter(c=> canalSel==='todos' || c.canal===canalSel);
       // ---- filtro por automatización: qué plantilla tocó la conversación ----
-      const AUTOL={pedido_despachado:'Despachado', recordatorio_pago:'Recordatorio de pago', pedido_contraentrega:'Contraentrega', postventa:'Postventa', carrito_abandonado:'Carrito abandonado'};
+      const AUTOL={pedido_despachado:'Despachado', recordatorio_pago:'Recordatorio de pago', pedido_contraentrega:'Contraentrega', postventa:'Postventa', carrito_abandonado:'Carrito abandonado', campana:'Campaña'};
       const _autos=(c)=>[...new Set(((c.mensajes||[]).map(m=>m.auto).filter(Boolean)))];
       const autoSel=st.convAutoSel||'todos';
       { const cuenta={}; base.forEach(c=>_autos(c).forEach(k=>{ cuenta[k]=(cuenta[k]||0)+1; }));
@@ -14607,6 +15145,8 @@ Instrucciones de respuesta:
     out.showMktCreativos = false;
     out.showMktPublicos = onMkt && st.sub==='mktpublicos';
     out.showMktConexion = onMkt && st.sub==='mktconexion';
+    out.showMktWa = onMkt && st.sub==='mktwa';
+    if(out.showMktWa) this._buildCampWa(out, st);
     out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
     if(st.module==='soporte'){ out.crumb='ODA Labs'; out.pageTitle='Soporte ODA'; }
     else if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
@@ -14619,7 +15159,7 @@ Instrucciones de respuesta:
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
     else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',finbold:'Bold · pagos y conciliación',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
-    else if(onMkt){ out.crumb='Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
+    else if(onMkt){ out.crumb=(st.sub==='mktwa')?'Marketing · WhatsApp':'Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktwa:'Campañas de WhatsApp',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
     else { out.crumb='Hub Intelligence'; out.pageTitle=modNames[st.module]||'Módulo'; }
     out.prontoNombre=modNames[st.module]||'Módulo';
     const prontoDescs={desarrollo:'Fichas de producto, fórmulas y costeo.',ventas:'Pedidos, canales y sincronización con Shopify.',finanzas:'Flujo de caja, cuentas por pagar y por cobrar.',produccion:'Órdenes de producción y consumo de materias.',inventario:'Existencias, movimientos y kardex por bodega.'};
