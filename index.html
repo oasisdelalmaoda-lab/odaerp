@@ -10364,7 +10364,9 @@ Instrucciones de respuesta:
   // envía y PLANTILLAS-WHATSAPP.md exige (pedido_recibido) — borrarlos rompería producción.
   waTemplatesReservadas(){ const s={};
     Object.keys(this.waTemplates()).forEach(k=>s[k]=1);
-    ['pedido_recibido','carrito_abierto','pedidos_contraentrega'].forEach(k=>s[k]=1);
+    // 17-sep: `pedidos_contraentrega` salió de la lista — el usuario confirmó que ninguna
+    // automatización la envía (estaba solo por la advertencia de PLANTILLAS-WHATSAPP.md).
+    ['pedido_recibido','carrito_abierto'].forEach(k=>s[k]=1);
     const cfg=this.agenteCfgGet(); const c1=String(cfg.campPlantillaCarrito||''); if(c1) s[c1]=1;
     return s; }
   canTplProtegida(nombre){ const n=String(nombre||''); if(!n) return false;
