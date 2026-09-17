@@ -2696,7 +2696,7 @@
                     <span style="font-size:11.5px;color:var(--text-muted);">{{ canalesPlantResumen }}</span>
                     <button onClick="{{ canalesVerTodasTog }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-strong);cursor:pointer;white-space:nowrap;">{{ canalesVerTodasL }}</button>
                   </div>
-                  <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Solo las plantillas aprobadas se pueden enviar fuera de la ventana de 24 h. Las marcadas en rojo apuntan a un dominio que no es tuyo — hay que recrearlas con links propios.</p>
+                  <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Solo las plantillas aprobadas se pueden enviar fuera de la ventana de 24 h. Las marcadas en rojo apuntan a un dominio que no es tuyo — hay que recrearlas con links propios. Las que usa el Hub no se pueden borrar; las demás sí, y Meta las borra en todos sus idiomas.</p>
                   <sc-if value="{{ canalesPlantVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;">No hay plantillas en esta cuenta.</div></sc-if>
                   <sc-if value="{{ canalesVerTodas }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;gap:8px;">
@@ -2707,6 +2707,8 @@
                           <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">{{ t.meta }}</div>
                         </div>
                         <sc-if value="{{ t.hayExternos }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:rgba(181,80,60,0.14);color:#8E3F2F;">Migrar · {{ t.externos }}</span></sc-if>
+                        <sc-if value="{{ t.esDelHub }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:700;color:var(--text-muted);white-space:nowrap;">La usa el Hub</span></sc-if>
+                        <sc-if value="{{ t.puedeBorrar }}" hint-placeholder-val="{{ false }}"><button onClick="{{ t.onBorrar }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ t.borrarBg }};color:{{ t.borrarFg }};cursor:pointer;white-space:nowrap;">{{ t.borrarL }}</button></sc-if>
                         <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:{{ t.estBg }};color:{{ t.estFg }};flex-shrink:0;">{{ t.estado }}</span>
                       </div>
                     </sc-for>
@@ -10355,6 +10357,40 @@ Instrucciones de respuesta:
       this.cargarWaEnvios();
     }catch(e){ this.setState({autoCorriendo:false}); this.toast((e&&e.message)||'No se pudo correr la automatización'); }
   }
+  // Borra una plantilla de Meta. Solo admin, solo las que ninguna automatización usa, y en dos
+  // toques (el primero pide confirmación). Meta borra todos los idiomas de ese nombre.
+  // ÚNICA fuente de verdad de lo que no es una plantilla de campaña ni se puede borrar.
+  // Incluye nombres que el waTemplates() de esta versión ya no trae pero el Hub DESPLEGADO sí
+  // envía y PLANTILLAS-WHATSAPP.md exige (pedido_recibido) — borrarlos rompería producción.
+  waTemplatesReservadas(){ const s={};
+    Object.keys(this.waTemplates()).forEach(k=>s[k]=1);
+    ['pedido_recibido','carrito_abierto','pedidos_contraentrega'].forEach(k=>s[k]=1);
+    const cfg=this.agenteCfgGet(); const c1=String(cfg.campPlantillaCarrito||''); if(c1) s[c1]=1;
+    return s; }
+  canTplProtegida(nombre){ const n=String(nombre||''); if(!n) return false;
+    if(this.waTemplatesReservadas()[n]) return true;
+    if(n===String(this.campWaGet().envTpl||'')) return true;
+    return false; }
+  async canTplBorrar(nombre){
+    if(!this.isAdminUser()){ this.toast('Solo un administrador puede borrar plantillas'); return; }
+    if(this.canTplProtegida(nombre)){ this.toast('Esa plantilla la usa el Hub: no se puede borrar'); return; }
+    if(this.state.canTplDel!==nombre){ this.setState({canTplDel:nombre}); return; }
+    this.setState({canTplDel:null, canTplBorrando:nombre});
+    try{ const sb=this._sbClient(); if(!sb) throw new Error('Servidor no listo');
+      const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillaBorrar', plantilla:{ name:nombre } } });
+      let err=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) err=j.error; } }catch(_e){} err=err||'La función no respondió'; }
+      else if(data&&data.error) err=data.error;
+      if(err) throw new Error(err);
+      this.setState({canTplBorrando:''});
+      // Se cae de la lista sin esperar el próximo diagnóstico completo.
+      this.setState(s=>{ const D=s.canDiag; if(!D||!D.plantillas) return {};
+        const items=(D.plantillas.items||[]).filter(t=>t.nombre!==nombre);
+        return { canDiag:{...D, plantillas:{...D.plantillas, items, total:items.length,
+          aprobadas:items.filter(t=>t.estado==='APPROVED').length,
+          conExternos:items.filter(t=>(t.externos||[]).length).length}} }; });
+      if(this.state.campWaTpls) this.setState(s=>({campWaTpls:(s.campWaTpls||[]).filter(t=>t.nombre!==nombre)}));
+      this.toast('Plantilla «'+nombre+'» borrada de Meta');
+    }catch(e){ this.setState({canTplBorrando:''}); this.toast('No se pudo borrar: '+((e&&e.message)||'error')); } }
   async cargarWaEnvios(){
     try{
       const sb=this._sbClient(); if(!sb){ this.setState({waEnvios:[]}); return; }
@@ -10623,7 +10659,10 @@ Instrucciones de respuesta:
     out.cwTplsErr=st.campWaTplsErr||''; out.cwTplsHayErr=!!st.campWaTplsErr;
     out.onCwRefrescar=()=>this.campWaCargarPlantillas(true);
     const estiloEstado=(e)=>e==='APPROVED'?{bg:'rgba(98,123,96,0.18)',fg:'#4C6149'}:(e==='REJECTED'?{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'}:{bg:'rgba(212,150,80,0.2)',fg:'#9A6B2E'});
-    const promos=tpls.filter(t=>/^promo/i.test(t.nombre)||t.categoria==='MARKETING');
+    // Solo plantillas de campaña: las de automatización (postventa, carrito…) tienen variables
+    // que el envío masivo no sabe llenar — mandarlas vacías las rechaza Meta.
+    const _res=this.waTemplatesReservadas();
+    const promos=tpls.filter(t=>!_res[t.nombre] && (/^promo/i.test(t.nombre)||t.categoria==='MARKETING'));
     out.cwTpls=promos.map(t=>{ const s=estiloEstado(t.estado); return { nombre:t.nombre, estado:t.estado, estBg:s.bg, estFg:s.fg,
       cat:t.categoria, extra:(t.tieneImagen?'con foto · ':'')+(Number(t.variables)>0?(t.variables+' variable'+(t.variables===1?'':'s')):'sin variables'),
       sel:t.nombre===c.envTpl, elegir:()=>this.campWaSet({envTpl:t.nombre}),
@@ -14705,9 +14744,15 @@ Instrucciones de respuesta:
 
       const tItems=(T&&T.items)||[];
       const estMeta=(s)=>s==='APPROVED'?{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',l:'Aprobada'}:(s==='REJECTED'?{bg:'rgba(181,80,60,0.14)',fg:'#8E3F2F',l:'Rechazada'}:{bg:'rgba(196,146,63,0.16)',fg:'#8A6522',l:(s||'—')});
+      const _esAdmin=this.isAdminUser();
       out.canalesPlantillas=tItems.map(t=>{ const em=estMeta(t.estado); const ext=(t.externos||[]);
+        const prot=this.canTplProtegida(t.nombre); const pidiendo=(st.canTplDel===t.nombre); const borrando=(st.canTplBorrando===t.nombre);
         return { nombre:t.nombre, meta:(t.categoria||'')+' · '+(t.idioma||''), estado:em.l, estBg:em.bg, estFg:em.fg,
-                 hayExternos:ext.length>0, externos:ext.join(', '), borde: ext.length? 'rgba(181,80,60,0.3)':'var(--border-subtle)' }; });
+                 hayExternos:ext.length>0, externos:ext.join(', '), borde: (pidiendo? 'rgba(181,80,60,0.6)' : (ext.length? 'rgba(181,80,60,0.3)':'var(--border-subtle)')),
+                 puedeBorrar:(_esAdmin && !prot && !borrando), esDelHub:prot,
+                 borrarL:(borrando? 'Borrando…' : (pidiendo? '¿Seguro? Sí, borrar' : 'Borrar')),
+                 borrarBg:(pidiendo? 'rgba(181,80,60,0.14)':'transparent'), borrarFg:(pidiendo? '#8E3F2F':'var(--text-muted)'),
+                 onBorrar:()=>this.canTplBorrar(t.nombre) }; });
       // Cruce: las plantillas que el Hub necesita vs. lo que hay aprobado en Meta
       { const req=this.waTemplates(); const keys=Object.keys(req); let faltan=0;
         out.canalesReq=keys.map(k=>{ const m=tItems.find(t=>t.nombre===k);
