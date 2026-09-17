@@ -5107,8 +5107,17 @@
 
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
                   <div style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:5px;">Paso 1</div>
-                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0 0 4px;">Montar la plantilla</h3>
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0 0 4px;">{{ cwPaso1Titulo }}</h3>
                   <p style="font-size:12px;color:var(--text-muted);margin:0 0 18px;line-height:1.5;">Meta aprueba cada promoción por separado. Nombre con fecha, cuerpo sin links ajenos y la foto del encabezado.</p>
+                  <sc-if value="{{ cwEditando }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(167,134,89,0.09);border:1px solid var(--border-brand);border-radius:var(--radius-md);padding:11px 14px;margin:-8px 0 16px;">
+                      <span style="flex:1;min-width:170px;font-size:12px;color:var(--text-body);line-height:1.5;">{{ cwEditNota }}</span>
+                      <button onClick="{{ onCwEditCancelar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-muted);cursor:pointer;">Cancelar edición</button>
+                    </div>
+                    <sc-if value="{{ cwEditPideFoto }}" hint-placeholder-val="{{ false }}">
+                      <div style="background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-md);padding:11px 14px;font-size:12.5px;color:#B5503C;margin:0 0 16px;line-height:1.5;">Esta plantilla tiene foto de encabezado y Meta no la conserva al editar: vuelve a subirla abajo antes de guardar.</div>
+                    </sc-if>
+                  </sc-if>
 
                   <div style="display:flex;flex-direction:column;gap:13px;">
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Nombre en Meta
@@ -5161,7 +5170,12 @@
                       </div>
                     </div>
 
-                    <button onClick="{{ onCwCrear }}" disabled="{{ cwSoloVer }}" style="margin-top:4px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#FFF;cursor:pointer;">Crear plantilla en Meta</button>
+                    <sc-if value="{{ cwEditando }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ onCwGuardarEdicion }}" disabled="{{ cwSoloVer }}" style="margin-top:4px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-ink);color:var(--text-on-brand);cursor:pointer;">Guardar cambios en Meta</button>
+                    </sc-if>
+                    <sc-if value="{{ cwNoEditando }}" hint-placeholder-val="{{ true }}">
+                      <button onClick="{{ onCwCrear }}" disabled="{{ cwSoloVer }}" style="margin-top:4px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#FFF;cursor:pointer;">Crear plantilla en Meta</button>
+                    </sc-if>
                     <sc-if value="{{ cwCreando }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--brand-primary);">Enviando a Meta…</div></sc-if>
                     <sc-if value="{{ cwHayMsg }}" hint-placeholder-val="{{ false }}">
                       <div style="background:rgba(98,123,96,0.12);border:1px solid rgba(98,123,96,0.3);border-radius:var(--radius-md);padding:11px 14px;font-size:12.5px;color:#4C6149;line-height:1.5;">{{ cwMsg }}</div>
@@ -5190,21 +5204,31 @@
 
                   <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-                      <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">Plantillas de promoción</h3>
+                      <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0;flex:1;">{{ cwFamTitulo }}</h3>
                       <button onClick="{{ onCwRefrescar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Refrescar</button>
                     </div>
-                    <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Estado real en Meta. Solo las aprobadas se pueden enviar. Toca una para elegirla.</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;">
+                      <sc-for list="{{ cwFams }}" as="f" hint-placeholder-count="3">
+                        <button onClick="{{ f.on }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid {{ f.borde }};border-radius:var(--radius-pill);background:{{ f.bg }};color:{{ f.fg }};cursor:pointer;">{{ f.label }}</button>
+                      </sc-for>
+                    </div>
+                    <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">{{ cwFamNota }}</p>
                     <sc-if value="{{ cwTplsLoading }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:var(--brand-primary);">Consultando Meta…</div></sc-if>
                     <sc-if value="{{ cwTplsHayErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-sm);padding:10px 13px;font-size:12px;color:#B5503C;">{{ cwTplsErr }}</div></sc-if>
-                    <sc-if value="{{ cwTplsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;font-size:12.5px;color:var(--text-muted);">Todavía no hay plantillas de promoción en la cuenta.</div></sc-if>
+                    <sc-if value="{{ cwTplsVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;font-size:12.5px;color:var(--text-muted);">No hay plantillas de este tipo en la cuenta.</div></sc-if>
                     <div style="display:flex;flex-direction:column;gap:8px;">
                       <sc-for list="{{ cwTpls }}" as="t" hint-placeholder-count="0">
-                        <div onClick="{{ t.elegir }}" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-raised);border:1px solid {{ t.borde }};border-radius:var(--radius-md);padding:10px 13px;cursor:pointer;">
-                          <div style="flex:1;min-width:150px;">
-                            <div style="font-size:12.5px;font-weight:700;color:var(--text-strong);">{{ t.nombre }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ t.cat }} · {{ t.extra }}</div>
+                        <div style="background:var(--surface-raised);border:1px solid {{ t.borde }};border-radius:var(--radius-md);padding:11px 13px;">
+                          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <div style="flex:1;min-width:150px;">
+                              <div style="font-size:12.5px;font-weight:700;color:var(--text-strong);">{{ t.nombre }}</div>
+                              <div style="font-size:11px;color:var(--text-muted);">{{ t.cat }} · {{ t.extra }}</div>
+                            </div>
+                            <span style="font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:4px 10px;border-radius:999px;background:{{ t.estBg }};color:{{ t.estFg }};">{{ t.estado }}</span>
+                            <sc-if value="{{ t.puedeEditar }}" hint-placeholder-val="{{ false }}"><button onClick="{{ t.onEditar }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Editar</button></sc-if>
+                            <sc-if value="{{ t.puedeUsar }}" hint-placeholder-val="{{ false }}"><button onClick="{{ t.elegir }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--brand-primary);cursor:pointer;">Usar</button></sc-if>
                           </div>
-                          <span style="font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:4px 10px;border-radius:999px;background:{{ t.estBg }};color:{{ t.estFg }};">{{ t.estado }}</span>
+                          <div style="font-size:11.5px;color:var(--text-muted);margin-top:7px;line-height:1.5;text-wrap:pretty;">{{ t.cuerpo }}</div>
                         </div>
                       </sc-for>
                     </div>
@@ -8346,7 +8370,8 @@ class Component extends DCLogic {
   // Botón pausar/activar de un objeto de Meta (campaña, conjunto o anuncio).
   mktCtrl(tipo, o){ const act=(o.estadoRaw? o.estadoRaw!=='pausada' : o.estado!=='pausada');
     const cl='estado|'+(o.id||''); const pidiendo=(this.state.mktConfirm===cl); const enCurso=(this.state.mktAccionEnCurso===cl);
-    return { puede:(this.mktPuedeEscribir() && !!o.id), activa:act,
+    // Con datos de demostración los ids no existen en Meta: el botón no debe aparecer.
+    return { puede:(this.mktPuedeEscribir() && !!o.id && !!this.state.mktUsingLive), activa:act,
       label:(enCurso?'…':(pidiendo?(act?'¿Pausar?':'¿Activar?'):(act?'Pausar':'Activar'))),
       bg:(pidiendo?'rgba(181,80,60,0.14)':'transparent'),
       fg:(pidiendo?'#8E3F2F':(act?'var(--text-muted)':'#4C6149')),
@@ -10733,6 +10758,76 @@ Instrucciones de respuesta:
       this.setState({campWaTpls:(data&&data.items)||[], campWaTplsLoading:false, campWaTplsErr:''});
     }catch(e){ this.setState({campWaTpls:[], campWaTplsLoading:false, campWaTplsErr:(e&&e.message)||'error'}); }
     finally{ this._campTplLoad=false; } }
+  // Familias de plantillas: promoción (campañas masivas) y pedido/envío (las que manda el Hub
+  // solo). Se clasifica por la categoría real de Meta + la lista de reservadas del Hub.
+  CAMPWA_FAMILIAS(){ return [{key:'promo',label:'Promoción'},{key:'pedido',label:'Pedido y envío'},{key:'todas',label:'Todas'}]; }
+  campWaFamiliaDe(t){ const res=this.waTemplatesReservadas();
+    if(res[t.nombre]) return 'pedido';
+    if(String(t.categoria||'').toUpperCase()==='MARKETING' || /^promo/i.test(t.nombre)) return 'promo';
+    return 'pedido'; }
+  // Carga una plantilla existente en el Paso 1 para verla o editarla.
+  // Sesión de edición de plantilla: vive en su PROPIA llave, nunca dentro del borrador de la
+  // campaña. Persistida para que una recarga no deje el formulario a medias ni pise el borrador.
+  CAMPWA_EDITK = 'oda_hub_campwa_edit_v1';
+  campWaEditGet(){ if(this._campWaEd!==undefined) return this._campWaEd;
+    let d=null; try{ d=JSON.parse(localStorage.getItem(this.CAMPWA_EDITK)||'null'); }catch(e){}
+    this._campWaEd=(d&&d.id)?d:null; return this._campWaEd; }
+  campWaEditPut(d){ this._campWaEd=d||null;
+    try{ if(d&&d.id) localStorage.setItem(this.CAMPWA_EDITK, JSON.stringify(d)); else localStorage.removeItem(this.CAMPWA_EDITK); }catch(e){}
+    this.forceUpdate(); }
+  campWaForm(){ const ed=this.campWaEditGet(); return (ed&&ed.form)? ed.form : this.campWaGet(); }
+  campWaFormSet(patch){ const ed=this.campWaEditGet();
+    if(ed&&ed.form) return this.campWaEditPut({...ed, form:{...ed.form, ...patch}});
+    return this.campWaSet(patch); }
+  // Un ejemplo plausible por variable: Meta exige tantas muestras como {{n}} tenga el cuerpo.
+  CAMPWA_EJEMPLOS(){ return ['María','ODA-00123','Coordinadora','1234567890','2 de octubre','Kit Calma','$150.000','10%']; }
+  campWaEjemplos(cuerpo){ let n=0; for(const m of String(cuerpo||'').matchAll(/\{\{(\d+)\}\}/g)) n=Math.max(n, Number(m[1])||0);
+    const E=this.CAMPWA_EJEMPLOS(); return Array.from({length:n}, (_,i)=>E[i]||('dato '+(i+1))); }
+  campWaEditar(t){ if(!t) return;
+    const btnUrl=(t.botones||[]).find(b=>b.tipo==='URL')||null;
+    const optout=(t.botones||[]).some(b=>b.tipo==='QUICK_REPLY' && /detener/i.test(b.texto||''));
+    this.campWaEditPut({ id:t.id||'', nombre:t.nombre, estado:t.estado||'', foto:!!t.tieneImagen,
+      form:{ nombre:t.nombre, categoria:(t.categoria||'MARKETING'), cuerpo:t.cuerpo||'', imgUrl:'', imgNombre:'',
+        btnTexto:(btnUrl?btnUrl.texto:''), btnUrl:(btnUrl?btnUrl.url:''), optout:!!optout } });
+    this.setState({ campWaMsg:'' });
+    this.toast('«'+t.nombre+'» abierta para editar · tu borrador de campaña queda intacto'); }
+  campWaEditCancelar(){ this.campWaEditPut(null); this.setState({ campWaMsg:'' }); }
+  async campWaGuardarEdicion(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para editar plantillas', 'error'); return; }
+    const ed=this.campWaEditGet(); if(!ed){ this.toast('No hay ninguna plantilla abierta para editar', 'error'); return; }
+    const c=this.campWaForm();
+    const cuerpo=String(c.cuerpo||'').trim();
+    if(!cuerpo){ this.toast('Escribe el cuerpo del mensaje', 'error'); return; }
+    // La regla «solo oasisdelalma.co» es de las promociones. Las de pedido/envío llevan links de
+    // la transportadora a propósito (guía de Coordinadora, TCC…): ahí se avisa, no se bloquea.
+    const esMkt=String(c.categoria||'').toUpperCase()==='MARKETING';
+    const urls=cuerpo.match(/https?:\/\/[^\s]+|[a-z0-9-]+\.[a-z]{2,}\/[^\s]*/gi)||[];
+    const ajenos=urls.filter(u=>!/oasisdelalma\.co/i.test(u));
+    if(ajenos.length && esMkt){ this.toast('El cuerpo tiene un link que no es de oasisdelalma.co: '+ajenos[0], 'error'); return; }
+    // Meta no conserva la foto al editar: hay que volver a subirla o el encabezado se pierde.
+    if(ed.foto && !String(c.imgUrl||'').trim()){
+      this.toast('Esta plantilla lleva foto de encabezado. Vuelve a subirla arriba: Meta no la conserva al editar.', 'error'); return; }
+    const btnUrl=String(c.btnUrl||'').trim();
+    if(btnUrl && esMkt && !/^https:\/\/(www\.)?oasisdelalma\.co/i.test(btnUrl)){ this.toast('El botón solo puede apuntar a oasisdelalma.co', 'error'); return; }
+    if(btnUrl && !esMkt && !/^https:\/\//i.test(btnUrl)){ this.toast('El botón debe apuntar a una dirección https://', 'error'); return; }
+    const botones=[];
+    if(String(c.btnTexto||'').trim() && btnUrl) botones.push({tipo:'URL', texto:String(c.btnTexto).trim(), url:btnUrl});
+    if(c.optout) botones.push({tipo:'QUICK_REPLY', texto:'Detener promociones'});
+    const ejemplo=this.campWaEjemplos(cuerpo);
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo', 'error'); return; }
+    this.setState({campWaCreando:true, campWaMsg:''});
+    try{
+      const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillaEditar', plantilla:{
+        id:ed.id, body:cuerpo, ejemplo, botones, headerImageUrl:String(c.imgUrl||'') } } });
+      let err=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) err=j.error; } }catch(_e){} err=err||'La función no respondió'; }
+      else if(data&&data.error) err=data.error;
+      if(err) throw new Error(err);
+      if(!data || data.ok!==true) throw new Error('La función «canales» está desactualizada: vuelve a desplegarla para poder editar plantillas.');
+      const aviso=(data&&data.avisoFoto)||'';
+      this.campWaEditPut(null);   // cierra la edición; el borrador de campaña nunca se tocó
+      this.setState({campWaCreando:false,
+        campWaMsg:'Cambios enviados a Meta. La plantilla vuelve a revisión (PENDING) y no se puede enviar hasta que la aprueben.'+(aviso?(' ⚠️ La foto no subió: '+aviso):'')});
+      this.campWaCargarPlantillas(true);
+    }catch(e){ this.setState({campWaCreando:false, campWaMsg:''}); this.toast('No se guardó el cambio: '+((e&&e.message)||'error'), 'error'); } }
   async campWaCrear(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para crear plantillas'); return; }
     const c=this.campWaGet();
     const nombre=String(c.nombre||'').trim().toLowerCase().replace(/[^a-z0-9_]/g,'_');
@@ -10748,7 +10843,7 @@ Instrucciones de respuesta:
     const botones=[];
     if(String(c.btnTexto||'').trim() && btnUrl) botones.push({tipo:'URL', texto:String(c.btnTexto).trim(), url:btnUrl});
     if(c.optout) botones.push({tipo:'QUICK_REPLY', texto:'Detener promociones'});
-    const ejemplo=/\{\{1\}\}/.test(cuerpo)? ['María'] : [];
+    const ejemplo=this.campWaEjemplos(cuerpo);
     this.setState({campWaCreando:true, campWaMsg:''});
     try{
       const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillaCrear', plantilla:{
@@ -10873,25 +10968,29 @@ Instrucciones de respuesta:
       meta:{ automatico:true, plantilla:'campana', template:t.nombre, campana:t.nombre } });
   }catch(e){} }
   _buildCampWa(out, st){ const c=this.campWaGet(); const puede=this.campWaPuede();
+    // El Paso 1 lee del FORMULARIO: es el borrador de la campaña, salvo cuando se está editando
+    // una plantilla existente — ahí es un buffer aparte, así abrir una plantilla nunca pisa el
+    // borrador (ni con una recarga de la página en medio).
+    const f=this.campWaForm(); const fset=(p)=>this.campWaFormSet(p);
     out.cwPuede=puede; out.cwSoloVer=!puede;
-    out.cwNombre=c.nombre; out.onCwNombre=(e)=>this.campWaSet({nombre:e.target.value});
-    out.cwCat=c.categoria; out.onCwCat=(e)=>this.campWaSet({categoria:e.target.value});
-    out.cwCuerpo=c.cuerpo; out.onCwCuerpo=(e)=>this.campWaSet({cuerpo:e.target.value});
+    out.cwNombre=f.nombre; out.onCwNombre=(e)=>fset({nombre:e.target.value});
+    out.cwCat=f.categoria; out.onCwCat=(e)=>fset({categoria:e.target.value});
+    out.cwCuerpo=f.cuerpo; out.onCwCuerpo=(e)=>fset({cuerpo:e.target.value});
     // El placeholder se expone desde acá: escrito en el template, «{{1}}» se resolvería como hole.
     out.cwCuerpoPh='{{1}}, llegó el mes de celebrar a quien amas…';
-    out.cwCuerpoLen=String(c.cuerpo||'').length;
-    out.cwBtnTexto=c.btnTexto; out.onCwBtnTexto=(e)=>this.campWaSet({btnTexto:e.target.value});
-    out.cwBtnUrl=c.btnUrl; out.onCwBtnUrl=(e)=>this.campWaSet({btnUrl:e.target.value});
-    out.cwOptTog={ bg:c.optout?'var(--brand-primary)':'#D9D2C3', x:c.optout?'22px':'2px', on:()=>this.campWaSet({optout:!c.optout}) };
+    out.cwCuerpoLen=String(f.cuerpo||'').length;
+    out.cwBtnTexto=f.btnTexto; out.onCwBtnTexto=(e)=>fset({btnTexto:e.target.value});
+    out.cwBtnUrl=f.btnUrl; out.onCwBtnUrl=(e)=>fset({btnUrl:e.target.value});
+    out.cwOptTog={ bg:f.optout?'var(--brand-primary)':'#D9D2C3', x:f.optout?'22px':'2px', on:()=>fset({optout:!f.optout}) };
     // La URL de la foto NO va como src en el template: un hole sin resolver dispararía una
     // petición a la cadena literal mientras la plantilla se transmite. Va como background-image.
-    out.cwImgCss=c.imgUrl? ('url("'+String(c.imgUrl).replace(/"/g,'%22')+'")') : 'none';
-    out.cwImgUrl=c.imgUrl||''; out.cwHayImg=!!c.imgUrl; out.cwImgNombre=c.imgNombre||'foto del encabezado';
+    out.cwImgCss=f.imgUrl? ('url("'+String(f.imgUrl).replace(/"/g,'%22')+'")') : 'none';
+    out.cwImgUrl=f.imgUrl||''; out.cwHayImg=!!f.imgUrl; out.cwImgNombre=f.imgNombre||'foto del encabezado';
     out.cwImgSubiendo=!!st.campWaImgSubiendo;
-    out.onCwImg=(e)=>this.onCampWaImg(e); out.onCwImgQuitar=()=>this.campWaSet({imgUrl:'', imgNombre:''});
-    out.cwPrevia=String(c.cuerpo||'').replace(/\{\{1\}\}/g,'María')||'Escribe el cuerpo y aquí verás cómo le llega.';
-    out.cwPreviaBtn=String(c.btnTexto||'').trim(); out.cwPreviaHayBtn=!!(String(c.btnTexto||'').trim() && String(c.btnUrl||'').trim());
-    out.cwPreviaOpt=c.optout;
+    out.onCwImg=(e)=>this.onCampWaImg(e); out.onCwImgQuitar=()=>fset({imgUrl:'', imgNombre:''});
+    out.cwPrevia=String(f.cuerpo||'').replace(/\{\{(\d+)\}\}/g,(m,n)=>this.CAMPWA_EJEMPLOS()[Number(n)-1]||m)||'Escribe el cuerpo y aquí verás cómo le llega.';
+    out.cwPreviaBtn=String(f.btnTexto||'').trim(); out.cwPreviaHayBtn=!!(String(f.btnTexto||'').trim() && String(f.btnUrl||'').trim());
+    out.cwPreviaOpt=f.optout;
     out.cwCreando=!!st.campWaCreando; out.onCwCrear=()=>this.campWaCrear();
     out.cwMsg=st.campWaMsg||''; out.cwHayMsg=!!st.campWaMsg;
     // plantillas de Meta
@@ -10903,14 +11002,34 @@ Instrucciones de respuesta:
     const estiloEstado=(e)=>e==='APPROVED'?{bg:'rgba(98,123,96,0.18)',fg:'#4C6149'}:(e==='REJECTED'?{bg:'rgba(181,80,60,0.14)',fg:'#B5503C'}:{bg:'rgba(212,150,80,0.2)',fg:'#9A6B2E'});
     // Solo plantillas de campaña: las de automatización (postventa, carrito…) tienen variables
     // que el envío masivo no sabe llenar — mandarlas vacías las rechaza Meta.
-    const _res=this.waTemplatesReservadas();
-    const promos=tpls.filter(t=>!_res[t.nombre] && (/^promo/i.test(t.nombre)||t.categoria==='MARKETING'));
-    out.cwTpls=promos.map(t=>{ const s=estiloEstado(t.estado); return { nombre:t.nombre, estado:t.estado, estBg:s.bg, estFg:s.fg,
+    const _fam=st.campWaFam||'promo';
+    out.cwFams=this.CAMPWA_FAMILIAS().map(f=>{ const on=(f.key===_fam); const n=tpls.filter(t=>f.key==='todas'||this.campWaFamiliaDe(t)===f.key).length;
+      return { label:f.label+' · '+n, bg:on?'var(--brand-primary)':'transparent', fg:on?'#FFF':'var(--text-muted)',
+        borde:on?'var(--brand-primary)':'var(--border-strong)', on:()=>this.setState({campWaFam:f.key}) }; });
+    out.cwFamTitulo=(_fam==='promo'?'Plantillas de promoción':(_fam==='pedido'?'Plantillas de pedido y envío':'Todas las plantillas'));
+    out.cwFamNota=(_fam==='promo'?'Estado real en Meta. Solo las aprobadas se pueden enviar en una campaña. Toca «Usar» para elegirla.'
+      :(_fam==='pedido'?'Las que el Hub envía solo: confirmación de pedido, despacho, postventa, carrito. No se usan en campañas masivas — acá se revisan y se editan.'
+      :'Todas las plantillas de la cuenta de WhatsApp, con su estado real en Meta.'));
+    const vis=tpls.filter(t=>_fam==='todas'||this.campWaFamiliaDe(t)===_fam);
+    out.cwTpls=vis.map(t=>{ const s=estiloEstado(t.estado); const esPromo=this.campWaFamiliaDe(t)==='promo';
+      const editable=(t.estado==='APPROVED'||t.estado==='REJECTED');
+      return { nombre:t.nombre, estado:t.estado, estBg:s.bg, estFg:s.fg,
       cat:t.categoria, extra:(t.tieneImagen?'con foto · ':'')+(Number(t.variables)>0?(t.variables+' variable'+(t.variables===1?'':'s')):'sin variables'),
+      cuerpo:String(t.cuerpo||'').slice(0,160),
       sel:t.nombre===c.envTpl, elegir:()=>this.campWaSet({envTpl:t.nombre}),
+      puedeUsar:(esPromo && puede), puedeEditar:(editable && puede), onEditar:()=>this.campWaEditar(t),
       borde:(t.nombre===c.envTpl?'var(--brand-primary)':'var(--border-subtle)') }; });
     // Un error ya explica por qué la lista está vacía: el estado vacío no debe sumarse encima.
-    out.cwTplsVacio=promos.length===0 && !st.campWaTplsLoading && !st.campWaTplsErr;
+    out.cwTplsVacio=vis.length===0 && !st.campWaTplsLoading && !st.campWaTplsErr;
+    // modo edición del Paso 1
+    const _ed=this.campWaEditGet();
+    out.cwEditando=!!_ed; out.cwNoEditando=!_ed;
+    out.cwEditNombre=(_ed&&_ed.nombre)||'';
+    out.cwEditNota='Editas una plantilla existente. El nombre y el idioma no se pueden cambiar'+((_ed&&_ed.estado==='APPROVED')?', y al guardar vuelve a revisión de Meta':'')+'. Tu borrador de campaña está aparte: no se toca.';
+    out.cwEditPideFoto=!!(_ed&&_ed.foto) && !String(f.imgUrl||'').trim();
+    out.onCwEditCancelar=()=>this.campWaEditCancelar();
+    out.onCwGuardarEdicion=()=>this.campWaGuardarEdicion();
+    out.cwPaso1Titulo=out.cwEditando? ('Editar «'+out.cwEditNombre+'»') : 'Montar la plantilla';
     // envío
     const sel=this.campWaTplSel();
     out.cwSel=sel? sel.nombre : ''; out.cwHaySel=!!sel;
@@ -15556,7 +15675,7 @@ Instrucciones de respuesta:
           hayLink:!!cr.permalink, link:(cr.permalink||'#') }; });
       out.mkcVacio=out.mkcAds.length===0;
       // Controles de escritura del detalle
-      out.mkcPuede=this.mktPuedeEscribir();
+      out.mkcPuede=this.mktPuedeEscribir() && !!st.mktUsingLive;
       out.mkcCtrl=_c? this.mktCtrl('la campaña', _c) : { puede:false, label:'', bg:'transparent', fg:'var(--text-muted)', on:()=>{} };
       out.mkcDiarioFmt=(_c && _c.diario>0)? this.fmt(Math.round(_c.diario)) : '—';
       out.mkcDiarioNota=(_c && _c.diario>0)? 'presupuesto de la campaña' : 'el presupuesto vive en los conjuntos';
