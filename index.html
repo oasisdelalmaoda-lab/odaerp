@@ -4949,7 +4949,7 @@
                   <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">ventas desde anuncios</div>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px;">
+              <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:24px;">
                 <div style="background:var(--surface-linen);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:15px 18px;">
                   <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Ventas</div>
                   <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-top:7px;">{{ mktKpiVentas }}</div>
@@ -5002,7 +5002,7 @@
                   <path d="{{ mktSparkPath }}" fill="none" stroke="var(--brand-primary)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></path>
                 </svg>
               </div>
-              <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;">
+              <div style="display:flex;flex-direction:column;gap:20px;">
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
                   <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Campañas</h3>
@@ -7990,7 +7990,7 @@
     <!-- TOAST -->
     <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
       <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:80;background:#2A2419;color:var(--text-inverse);font-size:13.5px;font-weight:600;padding:13px 22px;border-radius:var(--radius-pill);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:9px;animation:odaPop 240ms var(--ease-out);">
-        <span style="color:var(--brand-primary);display:flex;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span>{{ toastMsg }}
+        <span style="color:{{ toastIconColor }};display:flex;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ toastIconPath }}"></path></svg></span><span style="max-width:520px;">{{ toastMsg }}</span>
       </div>
     </sc-if>
 
@@ -8317,7 +8317,7 @@ class Component extends DCLogic {
   }
   // Un solo camino para los tres tipos de cambio: confirma, escribe, registra y refresca.
   async mktAccion(accion, payload, etiqueta){
-    if(!this.mktPuedeEscribir()){ this.toast('No tienes permiso de escritura en Marketing'); return; }
+    if(!this.mktPuedeEscribir()){ this.toast('No tienes permiso de escritura en Marketing', 'error'); return; }
     const clave=accion+'|'+(payload.id||'');
     if(this.state.mktConfirm!==clave){ this.setState({ mktConfirm:clave }); return; }
     return this._mktAplicar(accion, payload, etiqueta);
@@ -8326,7 +8326,7 @@ class Component extends DCLogic {
   // (el presupuesto se escribe en un campo y se guarda; ahí el candado sobraba y, peor, leía el
   // estado antes de que React lo actualizara y el primer intento no hacía nada).
   async _mktAplicar(accion, payload, etiqueta){
-    if(!this.mktPuedeEscribir()){ this.toast('No tienes permiso de escritura en Marketing'); return; }
+    if(!this.mktPuedeEscribir()){ this.toast('No tienes permiso de escritura en Marketing', 'error'); return; }
     const clave=accion+'|'+(payload.id||'');
     this.setState({ mktConfirm:null, mktAccionEnCurso:clave });
     try{
@@ -8341,7 +8341,7 @@ class Component extends DCLogic {
       this.setState({ mktAccionEnCurso:'' });
       this.toast(etiqueta);
       if(this.state.mktUsingLive) this.mktSyncReal();   // los números se releen de Meta
-    }catch(e){ this.setState({ mktAccionEnCurso:'' }); this.toast('Meta no aplicó el cambio: '+((e&&e.message)||'error')); }
+    }catch(e){ this.setState({ mktAccionEnCurso:'' }); this.toast('Meta no aplicó el cambio: '+((e&&e.message)||'error'), 'error'); }
   }
   // Botón pausar/activar de un objeto de Meta (campaña, conjunto o anuncio).
   mktCtrl(tipo, o){ const act=(o.estadoRaw? o.estadoRaw!=='pausada' : o.estado!=='pausada');
@@ -8362,7 +8362,7 @@ class Component extends DCLogic {
   mktPresuCerrar(){ this.setState({ mktPresuFor:'', mktPresuVal:'' }); }
   mktPresuGuardar(tipo, id, nombre){
     const n=Math.round(Number(String(this.state.mktPresuVal||'').replace(/[^\d]/g,''))||0);
-    if(n<=0){ this.toast('Escribe un monto válido'); return; }
+    if(n<=0){ this.toast('Escribe un monto válido', 'error'); return; }
     this.setState({ mktPresuFor:'', mktPresuVal:'' });
     return this._mktAplicar('presupuesto', { id, diario:n }, 'Presupuesto diario de '+tipo+' «'+nombre+'» → '+this.fmt(n));
   }
@@ -8825,7 +8825,11 @@ class Component extends DCLogic {
   ordenNumSort(o){ const m=String(o.numero||'').match(/(\d+)\s*$/); return m? Number(m[1]) : 0; }
   provNombre(c){ const p=this.state.proveedores.find(x=>x.codigo===c); return p? p.nombre : (c||'—'); }
 
-  toast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:null}),2300); }
+  // Los avisos largos (errores de Meta, explicaciones) no alcanzan a leerse en 2,3 s.
+  // `tono` es explícito ('error'|'ok'); sin él se adivina por el texto (los ~100 avisos viejos).
+  toast(m, tono){ const dur=(String(m||'').length>90)?6500:2300;
+    this.setState({toast:m, toastTono:tono||''}); clearTimeout(this._t);
+    this._t=setTimeout(()=>this.setState({toast:null, toastTono:''}),dur); }
 
   // ---- session ----
   login(id){ this.setState({userId:id,view:'app',module:'compras',sub:'resumen',loginStep:'select',loginPendingId:null,loginPwd:'',loginError:''}); try{localStorage.setItem(this.SESSION,JSON.stringify({userId:id}));}catch(e){} }
@@ -10612,6 +10616,9 @@ Instrucciones de respuesta:
       let err=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) err=j.error; } }catch(_e){} err=err||'La función no respondió'; }
       else if(data&&data.error) err=data.error;
       if(err) throw new Error(err);
+      // La función vieja ignora el modo y responde el diagnóstico completo sin error: sin esta
+      // comprobación el Hub decía «borrada» y en Meta la plantilla seguía ahí.
+      if(!data || data.ok!==true) throw new Error('La función «canales» está desactualizada: vuelve a desplegarla para poder borrar plantillas.');
       this.setState({canTplBorrando:''});
       // Se cae de la lista sin esperar el próximo diagnóstico completo.
       this.setState(s=>{ const D=s.canDiag; if(!D||!D.plantillas) return {};
@@ -10621,7 +10628,7 @@ Instrucciones de respuesta:
           conExternos:items.filter(t=>(t.externos||[]).length).length}} }; });
       if(this.state.campWaTpls) this.setState(s=>({campWaTpls:(s.campWaTpls||[]).filter(t=>t.nombre!==nombre)}));
       this.toast('Plantilla «'+nombre+'» borrada de Meta');
-    }catch(e){ this.setState({canTplBorrando:''}); this.toast('No se pudo borrar: '+((e&&e.message)||'error')); } }
+    }catch(e){ this.setState({canTplBorrando:''}); this.toast('No se pudo borrar: '+((e&&e.message)||'error'), 'error'); } }
   async cargarWaEnvios(){
     try{
       const sb=this._sbClient(); if(!sb){ this.setState({waEnvios:[]}); return; }
@@ -10754,7 +10761,7 @@ Instrucciones de respuesta:
       this.setState({campWaCreando:false, campWaMsg:'Plantilla «'+nombre+'» enviada a Meta · estado '+((data&&data.status)||'PENDING')+'. La aprobación tarda entre minutos y 24 h.'+(aviso?(' ⚠️ La foto no subió: '+aviso+' — agrégala en WhatsApp Manager antes de enviar.'):'')});
       this.campWaSet({nombre, envTpl:nombre});
       this.campWaCargarPlantillas(true);
-    }catch(e){ this.setState({campWaCreando:false, campWaMsg:''}); this.toast('No se creó la plantilla: '+((e&&e.message)||'error')); } }
+    }catch(e){ this.setState({campWaCreando:false, campWaMsg:''}); this.toast('No se creó la plantilla: '+((e&&e.message)||'error'), 'error'); } }
   // Canales tal como vienen en las ventas: clientesData() filtra por el valor crudo de v.canal.
   campWaCanales(){ const s={}; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const c=String(v.canal||'').trim(); if(c && c!=='MSVC') s[c]=(s[c]||0)+1; });
     return Object.keys(s).sort((a,b)=>s[b]-s[a]); }
@@ -10772,13 +10779,17 @@ Instrucciones de respuesta:
   async campWaProbar(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const c=this.campWaGet(); const t=this.campWaTplSel();
     if(!t){ this.toast('Elige primero una plantilla aprobada'); return; }
+    // Meta rechaza cualquier envío (incluso la prueba) mientras la plantilla no esté APPROVED:
+    // devuelve #132001 «Template name does not exist in the translation», que no se entiende.
+    if(String(t.estado||'').toUpperCase()!=='APPROVED'){
+      this.toast('«'+t.nombre+'» está en '+(t.estado||'revisión')+': Meta no permite enviarla, ni de prueba. Espera la aprobación (minutos a 24 h).', 'error'); return; }
     const tel=this.waNumber(c.pruebaTel); if(!tel){ this.toast('Escribe tu número para la prueba'); return; }
     if(t.tieneImagen && !String(c.imgUrl||'').trim()){ this.toast('Esta plantilla lleva foto: súbela arriba antes de probar'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     this.setState({campWaProbando:true});
     const r=await this._campWaUno(sb, t, String(c.imgUrl||''), tel, 'Prueba', true);
     this.setState({campWaProbando:false});
-    this.toast(r.ok? ('Prueba enviada a '+tel+' · revisa tu WhatsApp') : ('La prueba falló: '+r.detalle)); }
+    this.toast(r.ok? ('Prueba enviada a '+tel+' · revisa tu WhatsApp') : ('La prueba falló: '+r.detalle), r.ok?'ok':'error'); }
   async campWaPreparar(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const c=this.campWaGet(); const t=this.campWaTplSel();
     if(!t){ this.toast('Elige la plantilla aprobada que vas a enviar'); return; }
@@ -17438,6 +17449,12 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.entregaSinPendientes=(d._lineas||[]).every(l=>Math.max(0,(Number(l.ordenada)||0)-(Number(l.yaRecibida)||0))<=0);
     }
     out.toastShow=!!st.toast; out.toastMsg=st.toast||'';
+    // Un aviso de error con chulo verde se lee como éxito: el ícono sigue al tono del mensaje.
+    { const m=String(st.toast||'').toLowerCase();
+      const mal=(st.toastTono==='error') || (st.toastTono!=='ok' &&
+        /no se pudo|no se |falló|fallo|error|rechaz|no aplicó|no respondió|necesita el permiso|#\d{4,}|no tienes permiso|no permite|desactualizada|inválid|invalid|escribe |elige |espera la aprobación/.test(m));
+      out.toastIconColor=mal?'#E3A08C':'var(--brand-primary)';
+      out.toastIconPath=mal?'M12 8v5M12 16.5v.5M12 3 2 20h20L12 3z':'M20 6 9 17l-5-5'; }
     out.confirmDelOpen=!!st.confirmDel;
     out.confirmDelNombre=(st.confirmDel&&st.confirmDel.nombre)||'';
     out.confirmDelTipo=(()=>{ const t=st.confirmDel&&st.confirmDel.tipo; if(t==='kit') return 'este kit'; if(t==='materia') return 'esta materia / insumo'; if(t==='orden') return 'esta orden de compra'; if(t==='borrarordenes') return 'TODAS las órdenes'; if(t==='lead') return 'este lead'; if(t==='liquidacion') return 'este recaudo (se revierte el cruce y se borra el movimiento en banco)'; return 'este producto'; })();
