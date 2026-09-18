@@ -14237,13 +14237,20 @@ Instrucciones de respuesta:
       {de:'bot', texto:'¡Gracias por tu compra, Julián! Te llegará en 2-4 días hábiles. Bienestar en cada respiro 🤍', hora:'11:49'}]},
   ];
   convList(){ const base=this.state.convsCloud? this.state.convsCloud : (this.state.conversaciones || this.DEMO_CONVS);
-    // Una campaña masiva NO abre conversación en la bandeja: el chat aparece cuando el cliente
-    // responde (ahí ya trae el mensaje de la campaña como contexto). El registro del envío
-    // vive en Conversaciones → Canales → Campañas de WhatsApp.
-    return this._convNombresReales(base).filter(c=>!this._convSoloCampana(c)); }
-  _convSoloCampana(c){ const ms=(c&&c.mensajes)||[]; if(!ms.length) return false;
-    if(ms.some(m=>m.de==='cliente')) return false;
-    return ms.every(m=>m.auto==='campana'); }
+    // Ningún mensaje AUTOMÁTICO saliente abre conversación en la bandeja: el chat aparece
+    // cuando el cliente responde (ahí ya trae el automático como contexto). El registro de los
+    // envíos vive en Conversaciones → Canales (automatizaciones y campañas).
+    return this._convNombresReales(base).filter(c=>!this._convSoloAutomatico(c)); }
+  // Regla general (antes solo para campañas): un chat que SOLO tiene mensajes automáticos
+  // salientes (campaña, carrito abandonado, postventa, despacho, recordatorio de pago,
+  // contraentrega) no aparece en la bandeja — el mensaje SÍ queda guardado, y el chat se
+  // muestra completo en cuanto el cliente responde (con el automático como contexto).
+  // Excepción: si hay un aviso del sistema (entrega fallida, reglas 16/21/34) sí se muestra,
+  // porque eso necesita que alguien actúe.
+  _convSoloAutomatico(c){ const ms=(c&&c.mensajes)||[]; if(!ms.length) return false;
+    if(ms.some(m=>m.de==='cliente' || m.de==='sistema' || m.noEntregado)) return false;
+    return ms.every(m=>!!m.auto); }
+  _convSoloCampana(c){ return this._convSoloAutomatico(c); }
   // El nombre que manda Meta es el del perfil de WhatsApp y suele ser un alias ("Mac").
   // Aquí se reemplaza por el nombre REAL del cliente cruzando el celular con las ventas
   // (y con los leads si no hay venta). El alias queda en clienteAlias.
