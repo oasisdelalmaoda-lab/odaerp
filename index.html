@@ -4977,21 +4977,6 @@
                   <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-top:7px;">{{ mktKpiCpm }}</div>
                 </div>
               </div>
-              <sc-if value="{{ mktPuedeEscribir }}" hint-placeholder-val="{{ false }}">
-                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;">
-                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Cambios hechos desde el Hub</div>
-                  <sc-if value="{{ mktLogVacio }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;color:var(--text-muted);">Ninguno todavía. Al pausar, activar, cambiar presupuesto o duplicar una campaña, el cambio queda registrado acá.</div></sc-if>
-                  <div style="display:flex;flex-direction:column;gap:0;">
-                    <sc-for list="{{ mktLog }}" as="l" hint-placeholder-count="0">
-                      <div style="display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--border-subtle);font-size:12px;">
-                        <span style="color:var(--text-muted);width:104px;flex-shrink:0;">{{ l.cuando }}</span>
-                        <span style="flex:1;min-width:0;">{{ l.txt }}</span>
-                        <span style="color:var(--text-muted);flex-shrink:0;">{{ l.quien }}</span>
-                      </div>
-                    </sc-for>
-                  </div>
-                </div>
-              </sc-if>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:20px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
                   <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Resultados por día</h3>
@@ -5019,7 +5004,7 @@
                               <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;flex-shrink:0;background:{{ c.estBg }};color:{{ c.estFg }};">{{ c.estLabel }}</span>
                               <sc-if value="{{ c.ctrl.puede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.ctrl.on }}" style="font-family:inherit;font-size:10.5px;font-weight:700;padding:3px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ c.ctrl.bg }};color:{{ c.ctrl.fg }};cursor:pointer;flex-shrink:0;">{{ c.ctrl.label }}</button></sc-if>
                             </span>
-                            <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:1px;">{{ c.objetivo }} · inversión {{ c.spendFmt }}</span>
+                            <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:1px;">{{ c.objetivo }} · inversión {{ c.spendFmt }} · <span style="font-weight:700;color:var(--brand-primary);">{{ c.verLabel }}</span></span>
                           </span>
                           <span style="text-align:right;flex-shrink:0;">
                             <span style="display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;line-height:1;color:{{ c.roasColor }};">{{ c.roasFmt }}</span>
@@ -5037,6 +5022,91 @@
                           <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Alcance</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.alcanceFmt }}</span></span>
                           <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Frecuencia</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;color:{{ c.frecColor }};">{{ c.frecuencia }}</span></span>
                         </div>
+                        <sc-if value="{{ c.abierto }}" hint-placeholder-val="{{ false }}">
+                          <div onClick="{{ mktStop }}" style="margin:14px 0 2px 21px;border-top:1px solid var(--border-subtle);padding-top:14px;cursor:default;">
+                            <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:12px;">{{ c.det.mkcPeriodo }} · {{ c.det.mkcNota }}</div>
+                            <sc-if value="{{ c.det.mkcPuede }}" hint-placeholder-val="{{ false }}">
+                              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:rgba(167,134,89,0.08);border:1px solid var(--border-brand);border-radius:var(--radius-md);padding:11px 14px;margin-bottom:16px;">
+                                <span style="font-size:11.5px;color:var(--text-muted);flex:1;min-width:150px;">Presupuesto diario <strong style="color:var(--text-strong);">{{ c.det.mkcDiarioFmt }}</strong> · {{ c.det.mkcDiarioNota }}</span>
+                                <sc-if value="{{ c.det.mkcEnCampana }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.det.mkcOnPresu }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Cambiar presupuesto</button></sc-if>
+                                <sc-if value="{{ c.det.mkcPresuAbierto }}" hint-placeholder-val="{{ false }}">
+                                  <span style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+                                    <input value="{{ c.det.mkcPresuVal }}" onInput="{{ c.det.mkcOnPresuVal }}" inputmode="numeric" placeholder="Diario en pesos" style="font-family:inherit;font-size:12px;padding:6px 10px;width:130px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);">
+                                    <button onClick="{{ c.det.mkcOnPresuGuardar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:none;border-radius:var(--radius-pill);background:var(--brand-ink);color:var(--text-on-brand);cursor:pointer;">Guardar</button>
+                                    <button onClick="{{ c.det.mkcOnPresuCancel }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 11px;border:none;border-radius:var(--radius-pill);background:transparent;color:var(--text-muted);cursor:pointer;">Cancelar</button>
+                                  </span>
+                                </sc-if>
+                                <button onClick="{{ c.det.mkcOnDup }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ c.det.mkcDupBg }};color:var(--text-body);cursor:pointer;">{{ c.det.mkcDupL }}</button>
+                              </div>
+                            </sc-if>
+                            <sc-if value="{{ c.det.mkcHaySets }}" hint-placeholder-val="{{ false }}">
+                              <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:9px;">Conjuntos de anuncios</div>
+                              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                                <sc-for list="{{ c.det.mkcSets }}" as="s" hint-placeholder-count="0">
+                                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 14px;background:var(--surface-card);">
+                                    <span style="flex:1;min-width:150px;">
+                                      <span style="display:block;font-size:12.5px;font-weight:700;">{{ s.nombre }}</span>
+                                      <span style="display:block;font-size:11px;color:var(--text-muted);margin-top:1px;">{{ s.ubicacion }} · {{ s.edad }} años · invertido {{ s.spendFmt }}</span>
+                                    </span>
+                                    <span style="font-size:11.5px;font-weight:700;color:{{ s.estFg }};">{{ s.estLabel }}</span>
+                                    <span style="font-size:11.5px;color:var(--text-muted);">Diario {{ s.diarioFmt }}</span>
+                                    <sc-if value="{{ s.ctrl.puede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ s.onPresu }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Presupuesto</button></sc-if>
+                                    <sc-if value="{{ s.presuAbierto }}" hint-placeholder-val="{{ false }}">
+                                      <span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                        <input value="{{ s.presuVal }}" onInput="{{ s.onPresuVal }}" inputmode="numeric" placeholder="Diario en pesos" style="font-family:inherit;font-size:12px;padding:5px 9px;width:120px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);">
+                                        <button onClick="{{ s.onPresuGuardar }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:none;border-radius:var(--radius-pill);background:var(--brand-ink);color:var(--text-on-brand);cursor:pointer;">Guardar</button>
+                                        <button onClick="{{ s.onPresuCancel }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 9px;border:none;border-radius:var(--radius-pill);background:transparent;color:var(--text-muted);cursor:pointer;">Cancelar</button>
+                                      </span>
+                                    </sc-if>
+                                    <sc-if value="{{ s.ctrl.puede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ s.ctrl.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ s.ctrl.bg }};color:{{ s.ctrl.fg }};cursor:pointer;">{{ s.ctrl.label }}</button></sc-if>
+                                  </div>
+                                </sc-for>
+                              </div>
+                            </sc-if>
+                            <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:9px;">Anuncios de esta campaña</div>
+                            <sc-if value="{{ c.det.mkcVacio }}" hint-placeholder-val="{{ false }}">
+                              <div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;text-wrap:pretty;">Sin anuncios para mostrar.</div>
+                            </sc-if>
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                              <sc-for list="{{ c.det.mkcAds }}" as="a" hint-placeholder-count="0">
+                                <div style="display:flex;gap:14px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 15px;background:var(--surface-card);">
+                                  <sc-if value="{{ a.hayThumb }}" hint-placeholder-val="{{ false }}">
+                                    <div role="img" aria-label="Vista del anuncio" style="width:64px;height:64px;flex-shrink:0;border-radius:10px;border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ a.thumbCss }};"></div>
+                                  </sc-if>
+                                  <div style="flex:1;min-width:0;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                      <span style="font-size:13px;font-weight:700;">{{ a.nombre }}</span>
+                                      <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:{{ a.estBg }};color:{{ a.estFg }};">{{ a.estLabel }}</span>
+                                      <span style="font-size:11px;color:var(--text-muted);">{{ a.formato }} · {{ a.conjunto }}</span>
+                                    </div>
+                                    <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;line-height:1.45;text-wrap:pretty;">{{ a.copy }}</div>
+                                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(94px,1fr));gap:8px 12px;margin-top:10px;">
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Inversión</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.spendFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">ROAS</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;color:{{ a.roasColor }};">{{ a.roasFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Compras</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.compras }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Costo / compra</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.cpaFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Carritos</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.carritosFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Pagos inic.</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.checkoutsFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Costo / pago inic.</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.cpChFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Cierre</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.cierreFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CTR</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.ctrFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Alcance</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.alcanceFmt }}</span></span>
+                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Frecuencia</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.frecuencia }}</span></span>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;">
+                                      <sc-if value="{{ a.hayLink }}" hint-placeholder-val="{{ false }}">
+                                        <a href="{{ a.link }}" target="_blank" rel="noopener" style="font-size:11.5px;font-weight:700;color:var(--brand-primary);">Ver la publicación →</a>
+                                      </sc-if>
+                                      <sc-if value="{{ a.ctrl.puede }}" hint-placeholder-val="{{ false }}">
+                                        <button onClick="{{ a.ctrl.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ a.ctrl.bg }};color:{{ a.ctrl.fg }};cursor:pointer;">{{ a.ctrl.label }}</button>
+                                      </sc-if>
+                                    </div>
+                                  </div>
+                                </div>
+                              </sc-for>
+                            </div>
+                          </div>
+                        </sc-if>
                       </div>
                     </sc-for>
                     <sc-if value="{{ mktTopVacio }}" hint-placeholder-val="{{ false }}">
@@ -5044,6 +5114,21 @@
                     </sc-if>
                   </div>
                 </div>
+                <sc-if value="{{ mktPuedeEscribir }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 20px;">
+                    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;">Cambios hechos desde el Hub</div>
+                    <sc-if value="{{ mktLogVacio }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;color:var(--text-muted);">Ninguno todavía. Al pausar, activar, cambiar presupuesto o duplicar una campaña, el cambio queda registrado acá.</div></sc-if>
+                    <div style="display:flex;flex-direction:column;gap:0;">
+                      <sc-for list="{{ mktLog }}" as="l" hint-placeholder-count="0">
+                        <div style="display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--border-subtle);font-size:12px;">
+                          <span style="color:var(--text-muted);width:104px;flex-shrink:0;">{{ l.cuando }}</span>
+                          <span style="flex:1;min-width:0;">{{ l.txt }}</span>
+                          <span style="color:var(--text-muted);flex-shrink:0;">{{ l.quien }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
                   <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:9px;">
                     <span style="color:var(--oda-sale);display:flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-9-15.5a1 1 0 0 0-1.7 0L2.3 18a1 1 0 0 0 .9 1.5h17.6a1 1 0 0 0 .9-1.5Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></span>
@@ -8391,7 +8476,8 @@ class Component extends DCLogic {
     this.setState({ mktPresuFor:'', mktPresuVal:'' });
     return this._mktAplicar('presupuesto', { id, diario:n }, 'Presupuesto diario de '+tipo+' «'+nombre+'» → '+this.fmt(n));
   }
-  abrirMktCamp(id, nombre){ this.setState({ modal:'mktcamp', mktCampId:id||'', mktCampNombre:nombre||'' }); }
+  // Abrir una campaña despliega sus conjuntos y anuncios EN LA MISMA LISTA (acordeón), sin modal.
+  abrirMktCamp(id, nombre){ const cur=this.state.mktExpId||''; this.setState({ mktExpId:(cur===id? '' : (id||'')), mktExpNombre:nombre||'' }); }
   // Anuncios de UNA campaña. La función nueva trae campanaId; para datos guardados por la versión
   // vieja (sin vínculo) se cae al nombre del anuncio, y si nada calza se avisa en la vista.
   mktCreativosDeCampana(id, nombre){
@@ -15621,7 +15707,7 @@ Instrucciones de respuesta:
       // mapper de campaña
       const estPill=(e)=>({activa:{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',t:'Activa'},pausada:{bg:'#EFE9DD',fg:'#A89F8E',t:'Pausada'}}[e]||{bg:'#EFE9DD',fg:'#A89F8E',t:e});
       const objColor=(o)=>({Ventas:'#4C6149',Reconocimiento:'#3F6A7A',Mensajes:'#7A5E36'}[o]||'#7A5E36');
-      const mapCamp=(c)=>{ const roas=this.mktRoas(c); const ep=estPill(c.estado); return { onAbrir:()=>this.abrirMktCamp(c.id, c.nombre), ctrl:this.mktCtrl('la campaña', c), nombre:c.nombre, objetivo:c.objetivo, objColor:objColor(c.objetivo), moodLabel:this.mktMoodLabel(c.mood), moodColor:this.metaMoodColor[c.mood]||'#A78659',
+      const mapCamp=(c)=>{ const roas=this.mktRoas(c); const ep=estPill(c.estado); return { id:c.id, abierto:((st.mktExpId||'')===c.id), verLabel:(((st.mktExpId||'')===c.id)?'Ocultar detalle':'Ver conjuntos y anuncios'), onAbrir:()=>this.abrirMktCamp(c.id, c.nombre), ctrl:this.mktCtrl('la campaña', c), nombre:c.nombre, objetivo:c.objetivo, objColor:objColor(c.objetivo), moodLabel:this.mktMoodLabel(c.mood), moodColor:this.metaMoodColor[c.mood]||'#A78659',
         spendFmt:this.fmt(c.spend), ingresosFmt:c.ingresos>0?this.fmt(c.ingresos):'—', roasFmt:c.objetivo==='Ventas'?roas.toFixed(1)+'x':'—', roasColor: c.objetivo!=='Ventas'?'var(--text-muted)':(roas>=3?'#4C6149':(roas>=2?'#7A5E36':'#B5503C')),
         cpaFmt:(c.resultados>0&&c.objetivo==='Ventas')?this.fmt(Math.round(this.mktCpa(c))):'—', ctrFmt:this.mktCtr(c).toFixed(2)+'%', cpmFmt:this.fmt(Math.round(this.mktCpm(c))), resultados:c.resultados,
         resLabel:c.objetivo==='Mensajes'?'conversaciones':(c.objetivo==='Reconocimiento'?'reconocimiento':'compras'),
@@ -15642,12 +15728,15 @@ Instrucciones de respuesta:
       out.mktTopVacio=!_conInv.length;
     // Controles de escritura (pausar/activar, presupuesto, duplicar).
     out.mktPuedeEscribir=this.mktPuedeEscribir();
+    out.mktStop=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); };
     out.mktLog=(st.mktLog||this._mktLogGet()).slice(0,8).map(r=>({ txt:r.txt, quien:r.quien||'—',
       cuando:(r.ts? new Date(r.ts).toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '') }));
     out.mktLogVacio=out.mktLog.length===0;
     // Detalle de una campaña: sus anuncios con el mismo embudo.
-    if(st.modal==='mktcamp'){
-      const _id=st.mktCampId, _nom=st.mktCampNombre;
+    const _expId=st.mktExpId||'';
+    if(st.modal==='mktcamp' || _expId){
+      const _esModal=(st.modal==='mktcamp');
+      const _id=_esModal? st.mktCampId : _expId, _nom=_esModal? st.mktCampNombre : (st.mktExpNombre||'');
       const _c=(_src||[]).find(x=>(_id && x.id===_id)) || (_src||[]).find(x=>x.nombre===_nom);
       const _det=this.mktCreativosDeCampana(_id, _nom);
       out.mkcNombre=_nom||(_c&&_c.nombre)||'Campaña';
@@ -15708,6 +15797,9 @@ Instrucciones de respuesta:
       out.mkcNota=out.mkcAds.length? (out.mkcAds.length+(out.mkcAds.length===1?' anuncio':' anuncios')+' · ordenados por inversión')
         : (st.mktUsingLive? 'Los anuncios guardados no traen el vínculo con la campaña — vuelve a sincronizar con Meta (y redespliega la función «meta»).' : 'Conéctate con Meta para ver los anuncios reales de esta campaña.');
     }
+      // La fila desplegada lleva su propio detalle (mismas claves mkc*, leídas como c.det.mkcX).
+      if(_expId){ const _d={}; Object.keys(out).forEach(k=>{ if(k.indexOf('mkc')===0) _d[k]=out[k]; });
+        (out.mktTop||[]).forEach(r=>{ if(r.id===_expId) r.det=_d; }); }
       const _sinInv=_src.length-_conInv.length, _masInv=Math.max(0,_conInv.length-10);
       out.mktTopNota=(_conInv.length? _conInv.length+(_conInv.length===1?' campaña con inversión':' campañas con inversión') : 'sin inversión en el periodo')
         +(_masInv? ' · mostrando las 10 principales' : '')+(_sinInv? ' · '+_sinInv+' sin inversión' : '');
