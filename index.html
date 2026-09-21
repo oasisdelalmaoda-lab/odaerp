@@ -67,7 +67,7 @@
   /* Respuestas rápidas en UNA fila desplazable (igual que en móvil): con 6+ chips envueltos en 2–3 filas más la
      cabecera, el compositor quedaba por debajo del borde del grid en portátiles / zoom 125 %. */
   .oda-convchips{flex-wrap:nowrap !important;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px;}
-  .oda-convchips > button{flex-shrink:0;white-space:nowrap;}
+  .oda-convchips > button,.oda-convchips > span{flex-shrink:0;white-space:nowrap;}
   /* --- Portátil / ventana angosta (821–1360 px): Conversaciones conserva el MISMO diseño de 3 columnas,
      solo se aprieta: lista más angosta, y las acciones del chat bajan a una segunda fila en vez de
      salirse o aplastar el nombre (en otros equipos con pantalla de 1366 px o zoom 125 % se veía distinto). --- */
@@ -115,10 +115,10 @@
     #oda-chat-scroll{padding:12px !important;}
     #oda-chat-scroll [style*="max-width: 72%"]{max-width:86% !important;}
     .oda-convchips{flex-wrap:nowrap !important;overflow-x:auto;padding-bottom:2px;}
-    .oda-convchips > button{flex-shrink:0;}
+    .oda-convchips > button,.oda-convchips > span{flex-shrink:0;}
     .oda-convchips > div[style*="flex: 1"]{display:none !important;}
     .oda-convgrid .oda-convchat > div:last-child{padding:8px 10px 10px !important;}
-    .oda-convgrid .oda-convchat > div:last-child input{font-size:14px !important;padding:10px 14px !important;}
+    .oda-convgrid .oda-convchat > div:last-child input,.oda-convgrid .oda-convchat > div:last-child textarea{font-size:14px !important;padding:10px 14px !important;}
     /* Cabecera del chat en una sola fila: volver · avatar · nombre · estado · ⋯ ; las acciones bajan al abrir ⋯ */
     .oda-convhead{flex-wrap:wrap;}
     .oda-convhead > div[style*="flex: 1 1 auto"]{flex:1 1 0% !important;}
@@ -2271,6 +2271,11 @@
                   </div>
                   <div style="flex-shrink:0;padding:11px 18px 14px;border-top:1px solid var(--border-subtle);background:var(--surface-card);">
                     <div class="oda-convchips oda-scroll" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px;">
+                      <button onClick="{{ convAdjToggle }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;background:{{ convAdjBg }};color:{{ convAdjFg }};border:1px solid var(--border-subtle);" style-hover="background:var(--surface-raised);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>Adjuntar</button>
+                      <button onClick="{{ convKitToggle }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;background:{{ convKitBg }};color:{{ convKitFg }};border:1px solid var(--border-subtle);" style-hover="background:var(--surface-raised);">✦ Respuesta de kit</button>
+                      <sc-if value="{{ convAdjHay }}" hint-placeholder-val="{{ false }}">
+                        <span style="display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;background:rgba(98,123,96,0.14);color:#4C6B4A;">{{ convAdjNombre }}<button onClick="{{ convAdjQuitarBtn }}" title="Quitar el adjunto" style="background:none;border:none;color:inherit;cursor:pointer;font-family:inherit;font-weight:800;padding:0;line-height:1;">×</button></span>
+                      </sc-if>
                       <sc-for list="{{ convChips }}" as="ch" hint-placeholder-count="4">
                         <button onClick="{{ ch.onUse }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;background:{{ ch.bg }};color:{{ ch.fg }};border:{{ ch.bd }};" style-hover="background:var(--surface-raised);">{{ ch.l }}</button>
                       </sc-for>
@@ -2279,8 +2284,43 @@
                       <button onClick="{{ convCasoBtn }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border:1px solid var(--border-subtle);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">Crear caso</button>
                       <button onClick="{{ convLeadBtn }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border:1px solid var(--border-subtle);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">Crear lead</button>
                     </div>
+                    <sc-if value="{{ convAdjOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-bottom:10px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-raised);padding:12px;max-height:190px;overflow-y:auto;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                          <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;flex:1;">Piezas guardadas en Agente IA</span>
+                          <button onClick="{{ convAdjSubirBtn }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">{{ convAdjSubirTxt }}</button>
+                        </div>
+                        <sc-if value="{{ convAdjVacio }}" hint-placeholder-val="{{ true }}">
+                          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Aún no hay piezas guardadas. Se cargan en Agente IA · Modos de uso, o sube una del computador con el botón de arriba.</div>
+                        </sc-if>
+                        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:3px;" class="oda-scroll">
+                          <sc-for list="{{ convAdjList }}" as="p" hint-placeholder-count="3">
+                            <button onClick="{{ p.onUse }}" title="{{ p.prod }}" style="flex-shrink:0;width:104px;padding:0;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--surface-card);cursor:pointer;overflow:hidden;text-align:left;font-family:inherit;" style-hover="border-color:var(--brand-primary);">
+                              <div style="width:104px;height:78px;background-image:url('{{ p.url }}');background-size:cover;background-position:center;background-color:var(--surface-linen);"></div>
+                              <div style="padding:6px 8px;font-size:10.5px;font-weight:700;color:var(--text-body);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.prod }}</div>
+                            </button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ convKitOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-bottom:10px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-raised);padding:12px;max-height:190px;overflow-y:auto;">
+                        <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:9px;">Kits · se carga al campo para que lo edites antes de enviar</div>
+                        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                          <sc-for list="{{ convKitList }}" as="k" hint-placeholder-count="3">
+                            <button onClick="{{ k.onUse }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 13px;border-radius:99px;cursor:pointer;background:{{ k.bg }};color:{{ k.fg }};border:1px solid {{ k.bd }};" style-hover="border-color:var(--brand-primary);">{{ k.nombre }} · {{ k.precioFmt }}<sc-if value="{{ k.guardado }}" hint-placeholder-val="{{ false }}"><span title="Tiene texto propio guardado" style="margin-left:6px;opacity:0.65;">✓</span></sc-if></button>
+                          </sc-for>
+                        </div>
+                        <sc-if value="{{ convKitSelHay }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:1px solid var(--border-subtle);">
+                            <span style="font-size:11.5px;color:var(--text-muted);flex:1;min-width:180px;line-height:1.45;">Edita el texto abajo y guárdalo para que la próxima vez {{ convKitSelNombre }} salga así.</span>
+                            <button onClick="{{ convKitGuardar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-ink);color:#fff;cursor:pointer;">Guardar texto de {{ convKitSelNombre }}</button>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
                     <div style="display:flex;gap:10px;align-items:center;">
-                      <input value="{{ convMsgDraft }}" onInput="{{ onConvMsgDraft }}" onKeyDown="{{ onConvMsgKey }}" placeholder="Escribe tu respuesta como asesor…" style="flex:1;font-family:inherit;font-size:13px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:22px;background:var(--surface-page);color:var(--text-strong);">
+                      <textarea value="{{ convMsgDraft }}" onInput="{{ onConvMsgDraft }}" onKeyDown="{{ onConvMsgKey }}" rows="{{ convMsgRows }}" placeholder="Escribe tu respuesta como asesor…" style="flex:1;font-family:inherit;font-size:13px;line-height:1.5;padding:12px 16px;border:1px solid var(--border-strong);border-radius:22px;background:var(--surface-page);color:var(--text-strong);resize:none;max-height:150px;overflow-y:auto;"></textarea>
                       <button onClick="{{ convEnviarBtn }}" style="font-family:inherit;width:44px;height:44px;border:none;border-radius:99px;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-hover="background:#8A6F49;" title="Enviar">
                         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
                       </button>
@@ -9988,6 +10028,35 @@ class Component extends DCLogic {
     const dmin=String(desde||'').slice(0,10);
     return (this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=String(v.fecha||'').slice(0,10); if(!f || f>=h) return false; if(dmin && f<dmin) return false;
       return (v.items||[]).some(it=>(it.productoCodigo||it.referencia)===kitCode && Array.isArray(it.kitItems) && !it.kitItems.some(ki=>ki.codigo===comp)); }); }
+  // Caso espejo del anterior: un componente que ENTRÓ al kit en una fecha pasada (sea por su
+  // marca «Entró el» o porque la versión de la estructura rige desde atrás) no se descuenta en los
+  // pedidos de esos días si esos pedidos ya habían congelado su copia sin él — la copia manda
+  // (regla 40a) y el componente nuevo nunca aparece en el kardex (21-sep, 009013 Anillo Sensorial:
+  // la estructura se cambió con vigencia 15-sep y el kardex quedó sin un solo movimiento).
+  // `hasta` acota por arriba: si el componente después SALIÓ del kit, en los pedidos posteriores a
+  // esa fecha su ausencia es CORRECTA y no hay nada que corregir.
+  kitSnapsSinComp(kitCode, comp, desde, hasta){ const h=String(desde||'').slice(0,10); if(!kitCode||!comp||!h) return [];
+    const hmax=String(hasta||'').slice(0,10);
+    return (this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=String(v.fecha||'').slice(0,10); if(!f || f<h) return false; if(hmax && f>=hmax) return false;
+      return (v.items||[]).some(it=>(it.productoCodigo||it.referencia)===kitCode && Array.isArray(it.kitItems) && !it.kitItems.some(ki=>ki.codigo===comp)); }); }
+  // Fecha desde la que rige un componente: su marca propia o, si no tiene, la de la versión vigente.
+  kitCompDesde(k, it){ const d=String((it&&it.desde)||'').slice(0,10); if(d) return d;
+    return String((k&&k.versionDesde)||'').slice(0,10); }
+  soltarSnapsComp(kitCode, comp, desde, hasta){
+    const vs=this.kitSnapsSinComp(kitCode, comp, desde, hasta); if(!vs.length){ this.toast('No hay pedidos por corregir'); return; }
+    const r=(this.state.productos||[]).find(x=>x.codigo===comp)||(this.state.materias||[]).find(x=>x.codigo===comp);
+    const vig={}; (this.kitItemsEn(kitCode, new Date().toISOString().slice(0,10), null)||[]).forEach(x=>{ vig[x.codigo]=true; });
+    const perd={}; vs.forEach(v=>(v.items||[]).forEach(it=>{ if((it.productoCodigo||it.referencia)!==kitCode||!Array.isArray(it.kitItems)) return; it.kitItems.forEach(x=>{ if(!vig[x.codigo]) perd[x.codigo]=true; }); }));
+    const perdTxt=Object.keys(perd).map(c=>{ const q=(this.state.productos||[]).find(x=>x.codigo===c)||(this.state.materias||[]).find(x=>x.codigo===c); return (q?q.nombre:c); });
+    const _rango=hasta? ('entre el '+this.fmtFecha(desde)+' y el '+this.fmtFecha(hasta)) : ('del '+this.fmtFecha(desde)+' en adelante');
+    if(!window.confirm('Se van a actualizar '+vs.length+' pedido(s) '+_rango+': en vez de la copia de la composición que guardaron al venderse (que no incluye «'+((r&&r.nombre)||comp)+'»), van a leer la composición que rige desde esa fecha — así el componente empieza a descontarse y aparece en el kardex.\n\nEl valor de la venta y su costo NO cambian.'+(perdTxt.length?('\n\n⚠ Estos componentes están SOLO en la copia guardada de esos pedidos y se van a perder: '+perdTxt.join(', ')):'')+'\n\nEsto no se puede deshacer.')) return;
+    const ids={}; vs.forEach(v=>{ ids[v.id]=true; });
+    const list=(this.state.ventas||[]).map(v=>{ if(!ids[v.id]) return v;
+      const items=(v.items||[]).map(it=>{ if((it.productoCodigo||it.referencia)!==kitCode || !Array.isArray(it.kitItems)) return it; const c={...it}; delete c.kitItems; return c; });
+      return {...v, items}; });
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()) Object.keys(ids).forEach(id=>{ const _cv=list.find(x=>x.id===id); if(_cv) this.cloudSaveVenta(_cv); });
+    this.toast(vs.length+' pedido(s) corregidos · «'+((r&&r.nombre)||comp)+'» ya se descuenta y aparece en el kardex'); }
   soltarSnapsKit(kitCode, comp, hasta){ // `desde` se lee del componente guardado (ki.desde) más abajo
     // La reparación es irreversible (borra la foto congelada), así que solo corre contra el kit
     // YA GUARDADO: si la marca «Salió el» vive solo en el borrador, soltar la foto dejaría los
@@ -10028,7 +10097,10 @@ class Component extends DCLogic {
       }
       if(antes.length && !versiones.some(v=>this._kitIgual(v.items, antes))) versiones.push({desde:String(prev.versionDesde||''), items:antes, guardado:new Date().toISOString()});
       versionDesde=pedida||hoy; }
-    const row={codigo:d.codigo,nombre:d.nombre,precio:Number(d.precio)||0,foto:d.foto||'',items,versiones,versionDesde};
+    // Se parte del kit anterior para no perder campos que no viven en este formulario
+    // (p. ej. `chatTexto`, la respuesta prelista del chat): reconstruir la fila desde cero
+    // los borraba en silencio en la siguiente edición de estructura.
+    const row={...(prev||{}), codigo:d.codigo,nombre:d.nombre,precio:Number(d.precio)||0,foto:d.foto||'',items,versiones,versionDesde};
     if(prev) list[i]=row; else list.push(row);
     this.setState({kits:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveKit(row);
     this.toast(cambio? ('Kit guardado · la estructura anterior quedó archivada, la nueva rige desde '+this.fmtFecha(versionDesde)) : 'Kit guardado');
@@ -14601,9 +14673,78 @@ Instrucciones de respuesta:
     this.toast('Conversación borrada · el próximo mensaje entra como nueva');
   }
   convResolver(id){ this.convUpdate(id, c=>({...c, estado:'resuelta', noLeidos:0})); this.cloudSaveConv(id,{estado:'resuelta', no_leidos:0}); this.toast('Conversación marcada como resuelta'); }
-  convResponder(id){ const txt=String(this.state.convMsgDraft||'').trim(); if(!txt) return; const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId;
+  // ===== ADJUNTOS Y RESPUESTAS DE KIT EN EL CHAT =====
+  // El adjunto viaja DENTRO del texto del borrador como una etiqueta al inicio ([IMG:url] o
+  // [DOC:url|nombre]) — igual que en la app y que los mensajes del bot. Así el asesor puede
+  // escribir el pie de foto después, editarlo y verlo antes de enviar; `convResponder` la separa
+  // al momento de mandar y el hilo la guarda completa para poder pintarla.
+  _convSplitAdjunto(txt){ const s=String(txt||'');
+    const m=/^\s*\[(IMG|DOC):([^\]\|]+)(?:\|([^\]]*))?\]\s*/.exec(s);
+    if(!m) return {texto:s.trim(), imagen:'', archivo:'', nombre:''};
+    const resto=s.slice(m[0].length).trim();
+    return (m[1]==='IMG')
+      ? {texto:resto, imagen:m[2].trim(), archivo:'', nombre:''}
+      : {texto:resto, imagen:'', archivo:m[2].trim(), nombre:(m[3]||'archivo').trim()}; }
+  convAdjLista(){ const ag=this.agenteCfgGet()||{};
+    return (ag.modosUso||[]).map((u,i)=>({i, url:String(u&&u.img||''), prod:String(u&&u.prod||'').trim()||'Sin producto'}))
+      .filter(u=>u.url); }
+  convAdjPoner(url, nombre){ const cur=String(this.state.convMsgDraft||'').replace(/^\s*\[(IMG|DOC):[^\]]+\]\s*/,'');
+    const et=nombre? ('[DOC:'+url+'|'+nombre+']') : ('[IMG:'+url+']');
+    this.setState({convMsgDraft:et+(cur?('\n'+cur):''), convAdjOpen:false}); }
+  convAdjQuitar(){ this.setState({convMsgDraft:String(this.state.convMsgDraft||'').replace(/^\s*\[(IMG|DOC):[^\]]+\]\s*/,'')}); }
+  // Sube por la función `agente` (service role): el Storage tiene RLS y el cliente anónimo no
+  // puede escribir. Antes de usarla se verifica que la URL responda (lección del 14-sep: Meta
+  // rechazaba en silencio las URLs que no existían).
+  convAdjSubir(){ const inp=document.createElement('input'); inp.type='file';
+    inp.accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv';
+    inp.onchange=async()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
+      const esImg=/^image\//.test(f.type||'');
+      const tope=esImg? 5*1024*1024 : 25*1024*1024;
+      if(f.size>tope){ this.toast(esImg?'La imagen pesa más de 5 MB':'El archivo pesa más de 25 MB'); return; }
+      this.setState({convAdjSubiendo:true});
+      try{
+        const b64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]||''); r.onerror=rej; r.readAsDataURL(f); });
+        const resp=await fetch(this.CLOUD_URL+'/functions/v1/agente',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},
+          body:JSON.stringify({mode:'subirPieza', imagenB64:b64, imagenMime:f.type||'application/octet-stream', carpeta:'chat', nombre:f.name||''})});
+        const j=await resp.json().catch(()=>({}));
+        if(!resp.ok||!j.url) throw new Error(j.error||('HTTP '+resp.status));
+        let ok=true; try{ const hd=await fetch(j.url,{method:'HEAD'}); ok=hd.ok; }catch(e){ ok=false; }
+        if(!ok) throw new Error('el archivo se subió pero su enlace no responde — revisa que el bucket sea público');
+        this.convAdjPoner(j.url, esImg? '' : (f.name||'archivo'));
+        this.toast(esImg?'Foto lista para enviar':'Archivo listo para enviar');
+      }catch(e){ this.toast('No se pudo subir: '+(e.message||e)); }
+      this.setState({convAdjSubiendo:false}); };
+    inp.click(); }
+  // Respuesta prelista de un kit: si alguien ya guardó el texto de ese kit se usa tal cual;
+  // si no, se arma con lo que el Hub ya sabe (nombre, precio y composición vigente HOY).
+  kitChatTexto(k){ if(!k) return '';
+    if(String(k.chatTexto||'').trim()) return String(k.chatTexto);
+    const hoy=new Date().toISOString().slice(0,10);
+    const comp=(this.kitItemsEn(k.codigo, hoy, null)||k.items||[]).map(ki=>{
+      const r=(ki.tipo==='producto'? (this.state.productos||[]) : (this.state.materias||[])).find(x=>x.codigo===ki.codigo);
+      const n=(r&&r.nombre)||ki.codigo; const c=Number(ki.cantidad)||1;
+      return '• '+n+(c>1? (' ×'+c) : ''); });
+    const L=['✦ '+(k.nombre||k.codigo)+' — '+this.fmt(Number(k.precio)||0)];
+    if(comp.length){ L.push('', 'Trae:'); comp.forEach(c=>L.push(c)); }
+    L.push('', 'Lo pides acá: oasisdelalma.co');
+    return L.join('\n'); }
+  convKitUsar(codigo){ const k=(this.state.kits||[]).find(x=>x.codigo===codigo); if(!k) return;
+    const txt=this.kitChatTexto(k);
+    const con=(k.foto? ('[IMG:'+k.foto+']\n') : '')+txt;
+    this.setState({convMsgDraft:con, convKitSel:codigo}); }
+  // Guarda el texto tal como quedó en el campo para ese kit (sin la foto: esa sale del kit).
+  convKitGuardarTexto(){ const code=this.state.convKitSel; if(!code){ this.toast('Elige primero un kit'); return; }
+    if(!this.canWriteMod('desarrollo') && !this.isAdminUser()){ this.toast('Necesitas permiso de escritura en Desarrollo para guardar el texto del kit'); return; }
+    const a=this._convSplitAdjunto(this.state.convMsgDraft||'');
+    if(!a.texto.trim()){ this.toast('Escribe el texto antes de guardarlo'); return; }
+    const list=(this.state.kits||[]).map(k=> k.codigo===code? {...k, chatTexto:a.texto.trim()} : k);
+    this.setState({kits:list},()=>this.persist());
+    const row=list.find(k=>k.codigo===code); if(this.cloudOn()&&row) this.cloudSaveKit(row);
+    this.toast('Texto guardado para '+((row&&row.nombre)||code)+' · la próxima vez sale así'); }
+  convResponder(id){ const _draft=String(this.state.convMsgDraft||'').trim(); if(!_draft) return; const adj=this._convSplitAdjunto(_draft);
+    const txt=_draft; const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId;
     this.convUpdate(id, c=>{ const _now=new Date().toISOString(); c.mensajes.push({de:'asesor', texto:txt, at:_now, fecha:this._convFechaDe(_now), hora:this.convHoraTxt()}); return {...c, estado:'humano', asignadoA:c.asignadoA||me, noLeidos:0}; });
-    this.setState({convMsgDraft:''});
+    this.setState({convMsgDraft:'', convKitSel:'', convAdjOpen:false, convKitOpen:false});
     const c=this.convList().find(x=>x.id===id);
     const sb=this._sbClient();
     if(sb && this.state.convsCloud){
@@ -14611,10 +14752,10 @@ Instrucciones de respuesta:
       sb.from('conversaciones').update({estado:'humano', asignado_a:(c&&c.asignadoA)||me, no_leidos:0, ultimo_mensaje:txt, ultimo_at:new Date().toISOString()}).eq('id',id).then(()=>{});
       if(c && c.canal==='whatsapp'){
         if(!c.telefono){ this.toast('Esta conversación de WhatsApp no tiene número: el mensaje quedó guardado pero no se pudo enviar'); }
-        else fetch(this.CLOUD_URL+'/functions/v1/whatsapp',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({to:c.telefono, text:txt})}).then(r=>r.json()).then(d=>{ if(d&&d.error) this.toast('WhatsApp no envió: '+d.error); else this.toast('Enviado por WhatsApp'); }).catch(()=>this.toast('Sin conexión: el mensaje no salió a WhatsApp'));
+        else fetch(this.CLOUD_URL+'/functions/v1/whatsapp',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({to:c.telefono, text:adj.texto, ...(adj.imagen?{imageUrl:adj.imagen}:{}), ...(adj.archivo?{documentUrl:adj.archivo, filename:adj.nombre}:{})})}).then(r=>r.json()).then(d=>{ if(d&&d.error) this.toast('WhatsApp no envió: '+d.error); else this.toast('Enviado por WhatsApp'); }).catch(()=>this.toast('Sin conexión: el mensaje no salió a WhatsApp'));
       } else if(c && (c.canal==='instagram'||c.canal==='messenger')){
         const _cl=(c.canal==='instagram'?'Instagram':'Messenger');
-        fetch(this.CLOUD_URL+'/functions/v1/meta-send',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({conversacionId:id, canal:c.canal, texto:txt})}).then(r=>r.json()).then(d=>{ if(d&&d.error){ this.toast(_cl+' no envió: '+d.error); this.convAvisoNoEntregado(id, _cl, d.error); } else this.toast('Enviado por '+_cl); }).catch(()=>{ this.toast('Sin conexión: el mensaje no salió a '+_cl); this.convAvisoNoEntregado(id, _cl, 'sin conexión con el servidor'); });
+        fetch(this.CLOUD_URL+'/functions/v1/meta-send',{method:'POST',headers:{'content-type':'application/json',apikey:this.CLOUD_KEY,authorization:'Bearer '+this.CLOUD_KEY},body:JSON.stringify({conversacionId:id, canal:c.canal, texto:adj.texto, ...(adj.imagen?{imagenUrl:adj.imagen}:{}), ...(adj.archivo?{archivoUrl:adj.archivo}:{})})}).then(r=>r.json()).then(d=>{ if(d&&d.error){ this.toast(_cl+' no envió: '+d.error); this.convAvisoNoEntregado(id, _cl, d.error); } else this.toast('Enviado por '+_cl); }).catch(()=>{ this.toast('Sin conexión: el mensaje no salió a '+_cl); this.convAvisoNoEntregado(id, _cl, 'sin conexión con el servidor'); });
       } else if(c && c.canal==='web'){ this.toast('Enviado al chat de la web · el visitante lo ve en unos segundos'); }
     } }
   // Invariante 16 (mismo criterio que meta-inbound para el bot): si Meta rechaza el envío
@@ -15568,7 +15709,7 @@ Instrucciones de respuesta:
       out.tabSinBg=_tbg(tab==='sin'); out.tabSinFg=_tfg(tab==='sin');
       out.tabTodosBg=_tbg(tab==='todos'); out.tabTodosFg=_tfg(tab==='todos');
       const _row=(c)=>{ const last=_last(c); const asigN=c.asignadoA? this.leadUName(c.asignadoA):''; const esp=_esperando(c);
-        const q=(last.de==='bot'?'Oda: ':(last.de==='asesor'? ((this.leadUName(last.asesor||c.asignadoA)||'Asesor')+': ') : '')); const t0=String(last.texto||'').replace(/^\[IMG:.*\]$/,'📷 imagen').replace(/^\[DOC:[^|\]]+\|?([^\]]*)\]$/,(_,n)=>'📎 '+(n||'archivo')); const prev=q+t0;
+        const q=(last.de==='bot'?'Oda: ':(last.de==='asesor'? ((this.leadUName(last.asesor||c.asignadoA)||'Asesor')+': ') : '')); const t0=String(last.texto||'').replace(/^\[IMG:[^\]]+\]\s*/,'📷 ').replace(/^\[DOC:[^|\]]+\|?([^\]]*)\]\s*/,(_,n)=>'📎 '+(n||'archivo')+' ').trim()||'📷 imagen'; const prev=q+t0;
         return { esRow:true, id:c.id, cliente:c.cliente||c.id, esWa:c.canal==='whatsapp', esIg:c.canal==='instagram', esMs:c.canal==='messenger', esWeb:c.canal==='web', logoBg:_logoBg(c.canal),
           tiempo:(esp? (_minTxt(_esperaMin(c))||last.hora||'') : (last.hora||'')), tiempoFg:(esp?'#B5503C':'var(--text-muted)'),
           preview:prev.slice(0,58)+(prev.length>58?'…':''), online:(c.canal==='web' && _wo.indexOf(String(c.id))>=0),
@@ -15623,7 +15764,7 @@ Instrucciones de respuesta:
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, cerrAuto:!!cc.cerradaAuto, sinResp:!!cc.sinRespuesta, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
           esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
-          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:(.+)\]$/.exec(String(m.texto||'').trim()); const dc=im?null:/^\[DOC:([^|\]]+)\|?([^\]]*)\]$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); const _cita=String(m.respondeA||'').trim(); const _citaIm=/^\[IMG:(.+)\]$/.exec(_cita); return { hayCita:!!_cita, citaTxt:(_citaIm?'📷 Foto que le enviamos':_cita.slice(0,180)), citaEsImg:!!_citaIm, citaImg:_citaIm?_citaIm[1]:'', texto:(im||dc)?'':m.texto, esImg:!!im, img:im?im[1]:'', esDoc:!!dc, docUrl:dc?dc[1]:'#', docNombre:dc?(dc[2]||decodeURIComponent(dc[1].split('/').pop()||'archivo').replace(/^\d+_\d+_/,'')):'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?(m.limiteMkt?'var(--text-muted)':'#8A4A3C'):(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?(m.limiteMkt?'1px dashed var(--border-strong)':'1px dashed rgba(181,80,60,0.45)'):(esCliente?'1px solid var(--border-subtle)':'none'), noEntregado:!!(esSys&&m.noEntregado), canalL:this._convCanalNativo(cc.canal).l, nativoUrl:this._convCanalNativo(cc.canal).url, onManual:()=>this.convMarcarManual(cc.id) }; }) };
+          mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:([^\]]+)\]\s*([\s\S]*)$/.exec(String(m.texto||'').trim()); const dc=im?null:/^\[DOC:([^|\]]+)\|?([^\]]*)\]\s*([\s\S]*)$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); const _cita=String(m.respondeA||'').trim(); const _citaIm=/^\[IMG:(.+)\]$/.exec(_cita); return { hayCita:!!_cita, citaTxt:(_citaIm?'📷 Foto que le enviamos':_cita.slice(0,180)), citaEsImg:!!_citaIm, citaImg:_citaIm?_citaIm[1]:'', texto:(im? (im[2]||'') : (dc? (dc[3]||'') : m.texto)), esImg:!!im, img:im?im[1]:'', esDoc:!!dc, docUrl:dc?dc[1]:'#', docNombre:dc?(dc[2]||decodeURIComponent(dc[1].split('/').pop()||'archivo').replace(/^\d+_\d+_/,'')):'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?(m.limiteMkt?'var(--text-muted)':'#8A4A3C'):(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?(m.limiteMkt?'1px dashed var(--border-strong)':'1px dashed rgba(181,80,60,0.45)'):(esCliente?'1px solid var(--border-subtle)':'none'), noEntregado:!!(esSys&&m.noEntregado), canalL:this._convCanalNativo(cc.canal).l, nativoUrl:this._convCanalNativo(cc.canal).url, onManual:()=>this.convMarcarManual(cc.id) }; }) };
         out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
         // vacía y el desplegable parece no tener gente. Se cae a correo y luego al id corto.
@@ -15655,6 +15796,31 @@ Instrucciones de respuesta:
           {l:'Envíos y tiempos', txt:'Enviamos a todo Colombia: 2 a 4 días hábiles, y el envío es gratis desde $150.000.'},
           {l:'Link de pago', txt:'Te dejo el link para completar tu compra: oasisdelalma.co — cualquier duda me escribes por acá 💛'}
         ].map(ch=>({ l:ch.l, bg:(ch.destacado?'rgba(167,134,89,0.14)':'transparent'), fg:(ch.destacado?'#7A5E36':'var(--text-strong)'), bd:(ch.destacado?'none':'1px solid var(--border-subtle)'), onUse:()=>_setDraft(ch.txt) }));
+        { // Adjuntos (piezas de Agente IA o subida del momento) y respuestas prelistas de kit.
+          const _adj=this._convSplitAdjunto(st.convMsgDraft||'');
+          out.convAdjHay=!!(_adj.imagen||_adj.archivo);
+          out.convAdjNombre=_adj.imagen? '📷 Foto adjunta' : ('📎 '+(_adj.nombre||'archivo'));
+          out.convAdjQuitarBtn=()=>this.convAdjQuitar();
+          out.convAdjOpen=!!st.convAdjOpen; out.convKitOpen=!!st.convKitOpen;
+          out.convAdjToggle=()=>this.setState({convAdjOpen:!st.convAdjOpen, convKitOpen:false});
+          out.convKitToggle=()=>this.setState({convKitOpen:!st.convKitOpen, convAdjOpen:false});
+          out.convAdjBg=st.convAdjOpen?'rgba(167,134,89,0.14)':'transparent'; out.convAdjFg=st.convAdjOpen?'#7A5E36':'var(--text-muted)';
+          out.convKitBg=st.convKitOpen?'rgba(167,134,89,0.14)':'transparent'; out.convKitFg=st.convKitOpen?'#7A5E36':'var(--text-muted)';
+          const _pz=this.convAdjLista();
+          out.convAdjList=_pz.map(p=>({ url:p.url, prod:p.prod, onUse:()=>this.convAdjPoner(p.url,'') }));
+          out.convAdjVacio=_pz.length===0;
+          out.convAdjSubirBtn=()=>this.convAdjSubir();
+          out.convAdjSubirTxt=st.convAdjSubiendo? 'Subiendo…' : 'Subir del computador';
+          out.convKitList=(st.kits||[]).slice().sort((a,b)=>String(a.nombre||'').localeCompare(String(b.nombre||''))).map(k=>({
+            nombre:k.nombre||k.codigo, precioFmt:this.fmt(Number(k.precio)||0), guardado:!!String(k.chatTexto||'').trim(),
+            bg:(st.convKitSel===k.codigo?'rgba(167,134,89,0.14)':'var(--surface-card)'),
+            fg:(st.convKitSel===k.codigo?'#7A5E36':'var(--text-strong)'),
+            bd:(st.convKitSel===k.codigo?'var(--brand-primary)':'var(--border-subtle)'),
+            onUse:()=>this.convKitUsar(k.codigo) }));
+          const _ks=(st.kits||[]).find(k=>k.codigo===st.convKitSel);
+          out.convKitSelHay=!!_ks; out.convKitSelNombre=(_ks&&(_ks.nombre||_ks.codigo))||'';
+          out.convKitGuardar=()=>this.convKitGuardarTexto();
+          out.convMsgRows=Math.min(6, Math.max(1, String(st.convMsgDraft||'').split('\n').length)); }
         const _d10=(x)=>{ const d=String(x||'').replace(/\D/g,''); return d.length>=10? d.slice(-10) : ''; };
         const _t10=_d10(cc.telefono || String(cc.id||'').replace(/^wa_/,''));
         const _cmail=String(cc.correo||'').trim().toLowerCase();
@@ -17724,7 +17890,22 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
             btn:(_guardado? 'Corregir esos '+vs.length+' pedido(s)' : 'Guarda el kit primero'),
             btnBg:(_guardado? 'var(--oda-sale)' : 'transparent'), btnFg:(_guardado? '#FFF' : 'var(--brand-ink)'), btnCur:(_guardado? 'pointer' : 'not-allowed'),
             go:()=>this.soltarSnapsKit(d.codigo, it.codigo, it.hasta) }; }).filter(Boolean);
-        out.kitSnapAvisos=_av; out.kitSnapHay=_av.length>0; }
+        // …y el espejo: componentes que ENTRARON con fecha pasada y los pedidos de esos días
+        // no los descuentan porque ya tenían su copia congelada sin ellos.
+        const _ent=(d.items||[]).map(it=>{ if(it.hasta) return null; // ya lo cubre el aviso de «salió el»
+          const dsd=this.kitCompDesde(_kGuard||d, it); if(!dsd) return null;
+          const hoy=new Date().toISOString().slice(0,10); if(dsd>=hoy) return null;
+          const _hst='';
+          const vs=this.kitSnapsSinComp(d.codigo, it.codigo, dsd, _hst); if(!vs.length) return null;
+          const r=(it.tipo==='producto'? st.productos.find(x=>x.codigo===it.codigo) : st.materias.find(x=>x.codigo===it.codigo));
+          const _guardado=!!(_kGuard&&(_kGuard.items||[]).some(x=>x.codigo===it.codigo));
+          const _ven=_hst? ('entre el '+dsd.split('-').reverse().join('/')+' y el '+_hst.split('-').reverse().join('/')) : ('del '+dsd.split('-').reverse().join('/')+' en adelante');
+          return { txt:'«'+(r?r.nombre:it.codigo)+'» rige en el kit desde el '+dsd.split('-').reverse().join('/')+', pero '+vs.length+' pedido(s) '+_ven+' guardaron su propia copia de la composición sin él: hoy no lo descuentan de inventario y por eso no aparece en el kardex. Al corregirlos leen la composición vigente y sí lo descuentan. El valor y el costo de cada venta no cambian.'+(_guardado?'':' Guarda el kit primero para poder corregirlos.'),
+            btn:(_guardado? 'Corregir esos '+vs.length+' pedido(s)' : 'Guarda el kit primero'),
+            btnBg:(_guardado? 'var(--oda-sale)' : 'transparent'), btnFg:(_guardado? '#FFF' : 'var(--brand-ink)'), btnCur:(_guardado? 'pointer' : 'not-allowed'),
+            go:()=>{ if(!_guardado){ this.toast('Guarda el kit primero'); return; } this.soltarSnapsComp(d.codigo, it.codigo, dsd, _hst); } }; }).filter(Boolean);
+        const _todos=_av.concat(_ent);
+        out.kitSnapAvisos=_todos; out.kitSnapHay=_todos.length>0; }
       const _vigD=this._kitVigentes(d.items);
       const suma=_vigD.reduce((a,it)=>a+this.kitComponentPrecio(it)*(Number(it.cantidad)||1),0);
       const costo=_vigD.reduce((a,it)=>a+this.kitComponentCosto(it)*(Number(it.cantidad)||1),0);
