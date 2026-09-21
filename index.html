@@ -5396,10 +5396,27 @@
                 </div>
                 <sc-if value="{{ cwPreparando }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font-size:12px;color:var(--brand-primary);">Revisando opt-out y envíos recientes…</div></sc-if>
 
+                <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border-subtle);">
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Probar las plantillas de pedido y envío</div>
+                  <p style="font-size:12.5px;color:var(--text-body);margin:0 0 12px;line-height:1.55;max-width:70ch;">Las que salen solas con cada pedido. Se mandan al número de prueba de arriba, con los datos de un pedido real reciente, para que veas exactamente cómo le llegan al cliente. No tocan el pedido ni quedan en su historial.</p>
+                  <sc-if value="{{ cwTxSinVentas }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12px;color:var(--text-muted);">Todavía no hay pedidos con los que armar el ejemplo.</div>
+                  </sc-if>
+                  <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                    <sc-for list="{{ cwTxPruebas }}" as="p" hint-placeholder-count="5">
+                      <button onClick="{{ p.onClick }}" disabled="{{ p.off }}" title="{{ p.detalle }}" style="font-family:inherit;text-align:left;font-size:12.5px;font-weight:700;padding:10px 15px;border:1px solid var(--border-strong);border-radius:var(--radius-md);background:var(--surface-raised);color:var(--text-strong);cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:170px;">
+                        <span>{{ p.label }}</span>
+                        <span style="font-size:11px;font-weight:400;color:var(--text-muted);">{{ p.detalle }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ cwTxEnviando }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font-size:12px;color:var(--brand-primary);">Enviando {{ cwTxEnviandoLabel }}…</div></sc-if>
+                </div>
+
                 <sc-if value="{{ cwConfirmShow }}" hint-placeholder-val="{{ false }}">
                   <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--brand-primary);border-radius:var(--radius-md);padding:18px 20px;">
                     <h4 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 8px;">Vas a enviar {{ cwConfN }} mensajes</h4>
-                    <p style="font-size:12.5px;color:var(--text-body);margin:0 0 10px;line-height:1.55;">Plantilla <strong>{{ cwConfTpl }}</strong> · sale por lotes de 20 con pausa, unos {{ cwConfMin }} minutos. Puedes detenerla en cualquier momento.</p>
+                    <p style="font-size:12.5px;color:var(--text-body);margin:0 0 10px;line-height:1.55;">Plantilla <strong>{{ cwConfTpl }}</strong> · quedan en cola y salen desde el servidor, unos {{ cwConfMin }} minutos. Puedes cerrar el Hub: siguen saliendo solos. Y puedes detenerla en cualquier momento.</p>
                     <sc-if value="{{ cwConfHayOmit }}" hint-placeholder-val="{{ false }}">
                       <p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;line-height:1.5;">Quedan por fuera {{ cwConfOpt }} con promociones detenidas y {{ cwConfRep }} contactados hace menos de {{ cwConfNoRep }} días.</p>
                     </sc-if>
@@ -5413,7 +5430,7 @@
                 <sc-if value="{{ cwRunShow }}" hint-placeholder-val="{{ false }}">
                   <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:18px 20px;">
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-                      <div style="flex:1;min-width:160px;font-size:13px;font-weight:700;color:var(--text-strong);">{{ cwRunHechos }} de {{ cwRunTotal }} · {{ cwRunOk }} enviados · {{ cwRunFallo }} con problema</div>
+                      <div style="flex:1;min-width:160px;font-size:13px;font-weight:700;color:var(--text-strong);">{{ cwRunHechos }} de {{ cwRunTotal }} · {{ cwRunOk }} enviados · {{ cwRunFallo }} con problema<sc-if value="{{ cwRunHayOmitido }}" hint-placeholder-val="{{ false }}"> · {{ cwRunOmitido }} omitidos</sc-if></div>
                       <sc-if value="{{ cwRunCorriendo }}" hint-placeholder-val="{{ false }}">
                         <button onClick="{{ onCwDetener }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 15px;border:1px solid rgba(181,80,60,0.4);border-radius:var(--radius-pill);background:transparent;color:#B5503C;cursor:pointer;">Detener</button>
                       </sc-if>
@@ -5424,7 +5441,8 @@
                     <div style="height:8px;border-radius:999px;background:#E4DBCC;overflow:hidden;margin-bottom:10px;">
                       <div style="height:100%;width:{{ cwRunPct }};background:var(--brand-primary);transition:width 300ms;"></div>
                     </div>
-                    <sc-if value="{{ cwRunCorriendo }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">Último: {{ cwRunUltimo }} · deja esta pestaña abierta hasta que termine.</div></sc-if>
+                    <sc-if value="{{ cwRunCorriendo }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">{{ cwRunUltimo }} · van saliendo desde el servidor, puedes cerrar esta pestaña.</div></sc-if>
+                    <sc-if value="{{ cwRunEncolando }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--brand-primary);">Armando la cola…</div></sc-if>
                     <sc-if value="{{ cwRunDetenida }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#9A6B2E;font-weight:700;">Campaña detenida a mano.</div></sc-if>
                     <sc-if value="{{ cwRunHayErrores }}" hint-placeholder-val="{{ false }}">
                       <div style="margin-top:10px;border-top:1px solid var(--border-subtle);padding-top:10px;display:flex;flex-direction:column;gap:4px;">
@@ -10980,6 +10998,34 @@ Instrucciones de respuesta:
     const r=await this._campWaUno(sb, t, String(c.imgUrl||''), tel, 'Prueba', true);
     this.setState({campWaProbando:false});
     this.toast(r.ok? ('Prueba enviada a '+tel+' · revisa tu WhatsApp') : ('La prueba falló: '+r.detalle), r.ok?'ok':'error'); }
+  // PRUEBA DE LAS PLANTILLAS TRANSACCIONALES (despachado, recordatorio, contraentrega,
+  // postventa, carrito): se manda al número de prueba con los datos de un pedido REAL
+  // reciente — así se ve tal cual le llega al cliente. No escribe waLog ni toca el pedido,
+  // y no crea el cupón en Shopify (es solo para ver el mensaje).
+  campWaVentaEjemplo(key){
+    const vs=(this.state.ventas||[]).filter(v=>!v.cancelada && (v.items||[]).length);
+    if(!vs.length) return null;
+    const ord=vs.slice().sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
+    const buscar=(f)=>ord.find(f);
+    if(key==='pedido_despachado') return buscar(v=>String(v.guia||'').trim()) || ord[0];
+    if(key==='recordatorio_pago') return buscar(v=>this.ventaSaldo(v)>0) || ord[0];
+    if(key==='pedido_contraentrega') return buscar(v=>/contraentrega/i.test(String(v.metodoPago||''))) || ord[0];
+    return ord[0]; }
+  async campWaProbarTx(key){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
+    const t=this.waTemplates()[key]; if(!t){ this.toast('Plantilla no encontrada'); return; }
+    const tel=this.waNumber(this.campWaGet().pruebaTel); if(!tel){ this.toast('Escribe tu número para la prueba'); return; }
+    const v=this.campWaVentaEjemplo(key); if(!v){ this.toast('Todavía no hay pedidos con los que armar el ejemplo'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
+    this.setState({campWaProbTx:key});
+    let msg='';
+    try{
+      let variables=[]; try{ variables=t.vars(v)||[]; }catch(e){ variables=[]; }
+      const {data,error}=await sb.functions.invoke('whatsapp',{ body:{ to:tel, template:key, lang:t.lang, variables, origen:'prueba-transaccional' } });
+      if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) msg=j.error; } }catch(_e){} msg=msg||'WhatsApp no respondió'; }
+      else if(data&&data.error) msg=String(data.error);
+    }catch(e){ msg=(e&&e.message)||'error'; }
+    this.setState({campWaProbTx:''});
+    this.toast(msg? ('La prueba de «'+t.label+'» falló: '+msg) : ('Prueba de «'+t.label+'» enviada a '+tel+' · revisa tu WhatsApp'), msg?'error':'ok'); }
   async campWaPreparar(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const c=this.campWaGet(); const t=this.campWaTplSel();
     if(!t){ this.toast('Elige la plantilla aprobada que vas a enviar'); return; }
@@ -11006,26 +11052,61 @@ Instrucciones de respuesta:
     if(!listos.length){ this.toast('Todos quedaron por fuera · '+omOpt+' con promociones detenidas, '+omRep+' contactados hace menos de '+noRep+' días'); return; }
     this.setState({ campWaConfirm:{ tpl:t, imgUrl, listos, omOpt, omRep, noRep } }); }
   campWaCancelar(){ this.setState({campWaConfirm:null}); }
-  campWaDetener(){ this._campStop=true; this.toast('Deteniendo… no saldrán más mensajes'); }
+  // El envío NO corre en el navegador: se encola en `campana_cola` y la Edge Function
+  // `campanas` (cron cada minuto) la drena sola. Detener = marcar los pendientes.
+  async campWaDetener(){ const run=this.state.campWaRun||{}; const camp=run.campana; if(!camp) return;
+    const sb=this._sbClient(); if(!sb) return;
+    const {error}=await sb.from('campana_cola').update({estado:'detenida', detalle:'detenida a mano'}).eq('campana',camp).in('estado',['pendiente']);
+    if(error){ this.toast('No se pudo detener: '+error.message,'error'); return; }
+    this.toast('Campaña detenida · no saldrán más mensajes');
+    this.setState(s=>({campWaRun:{...(s.campWaRun||{}), detenida:true}}));
+    this._campColaTick(camp); }
   async campWaDisparar(){ const cf=this.state.campWaConfirm; if(!cf) return;
     const sb=this._sbClient(); if(!sb) return;
-    this._campStop=false;
-    const LOTE=20, PAUSA=3000, ENTRE=700;
-    this.setState({ campWaConfirm:null, campWaRun:{ total:cf.listos.length, hechos:0, ok:0, fallo:0, corriendo:true, ultimo:'', errores:[], tpl:cf.tpl.nombre } });
-    for(let i=0;i<cf.listos.length;i++){
-      if(this._campStop) break;
-      const d=cf.listos[i];
-      const r=await this._campWaUno(sb, cf.tpl, cf.imgUrl, d.tel, d.nombre, false);
-      this.setState(s=>{ const run=s.campWaRun||{}; const errores=(run.errores||[]).slice();
-        if(!r.ok && errores.length<10) errores.push((d.nombre||d.tel)+' · '+r.detalle);
-        return { campWaRun:{ ...run, hechos:(run.hechos||0)+1, ok:(run.ok||0)+(r.ok?1:0), fallo:(run.fallo||0)+(r.ok?0:1), ultimo:(d.nombre||d.tel), errores } }; });
-      await new Promise(res=>setTimeout(res, ENTRE));
-      if((i+1)%LOTE===0 && i+1<cf.listos.length) await new Promise(res=>setTimeout(res, PAUSA));
+    const t=cf.tpl, campana=t.nombre;
+    this.setState({ campWaConfirm:null, campWaRun:{ campana, tpl:campana, total:cf.listos.length, hechos:0, ok:0, fallo:0, omitido:0, corriendo:true, encolando:true, errores:[] } });
+    const base={ campana, plantilla:t.nombre, idioma:(t.idioma||'es'), img_url:(cf.imgUrl||null),
+      variables:Number(t.variables)||0, tiene_imagen:!!t.tieneImagen,
+      cuerpo:String(t.cuerpo||this.campWaGet().cuerpo||'') };
+    let encolados=0;
+    for(let i=0;i<cf.listos.length;i+=200){
+      const chunk=cf.listos.slice(i,i+200).map(d=>({...base, destino:d.tel, nombre:d.nombre||''}));
+      const {data,error}=await sb.from('campana_cola').upsert(chunk,{onConflict:'campana,destino', ignoreDuplicates:true}).select('id');
+      if(error){ this.toast('No se pudo encolar la campaña: '+error.message,'error');
+        this.setState(s=>({campWaRun:{...(s.campWaRun||{}), encolando:false, corriendo:false, fin:true, errores:[String(error.message)]}})); return; }
+      encolados+=(data||[]).length;
     }
-    const det=this._campStop;
-    this.setState(s=>({ campWaRun:{...(s.campWaRun||{}), corriendo:false, fin:true, detenida:det}, waEnvios:null }));
-    const run=this.state.campWaRun||{};
-    this.toast((det?'Campaña detenida · ':'Campaña terminada · ')+(run.ok||0)+' enviados, '+(run.fallo||0)+' con problema'); }
+    if(!encolados){ this.toast('Esta campaña ya se le había enviado a todos esos números'); 
+      this.setState(s=>({campWaRun:{...(s.campWaRun||{}), encolando:false, corriendo:false, fin:true}})); return; }
+    try{ await sb.functions.invoke('campanas',{body:{}}); }catch(e){}
+    this.toast(encolados+' mensajes en cola · salen solos, ya puedes cerrar el Hub','ok');
+    this._campColaSeguir(campana); }
+  // Sigue la cola desde el servidor (no depende de que el envío corra acá).
+  _campColaSeguir(campana){ this._campColaStop();
+    this._campColaTick(campana);
+    this._campPoll=setInterval(()=>{ if(document.visibilityState==='visible') this._campColaTick(campana); }, 8000); }
+  _campColaStop(){ if(this._campPoll){ clearInterval(this._campPoll); this._campPoll=null; } }
+  async _campColaTick(campana){ const sb=this._sbClient(); if(!sb) return;
+    const {data,error}=await sb.from('campana_cola').select('estado,nombre,destino,detalle').eq('campana',campana).limit(20000);
+    if(error||!data) return;
+    let ok=0,fallo=0,om=0,pend=0,det=0; const errores=[];
+    data.forEach(r=>{ const e=r.estado;
+      if(e==='enviado') ok++;
+      else if(e==='fallo'){ fallo++; if(errores.length<10) errores.push((r.nombre||r.destino)+' · '+(r.detalle||'sin detalle')); }
+      else if(e==='omitido') om++;
+      else if(e==='detenida') det++;
+      else pend++; });
+    const fin=pend===0;
+    if(fin) this._campColaStop();
+    this.setState(s=>({ campWaRun:{ ...(s.campWaRun||{}), campana, tpl:campana, encolando:false,
+      total:data.length, hechos:data.length-pend, ok, fallo, omitido:om, pendientes:pend,
+      corriendo:!fin, fin, detenida:det>0, errores },
+      ...(fin?{waEnvios:null}:{}) })); }
+  // Al abrir la pestaña, si quedó una campaña andando en el servidor se retoma el panel.
+  async _campColaRetomar(){ if(this._campColaCheck) return; this._campColaCheck=true;
+    const sb=this._sbClient(); if(!sb) return;
+    const {data}=await sb.from('campana_cola').select('campana').in('estado',['pendiente','enviando']).order('id',{ascending:false}).limit(1);
+    const camp=data&&data[0]&&data[0].campana; if(camp) this._campColaSeguir(camp); }
   // Un envío: reserva la clave (nunca dos veces la misma campaña al mismo número), manda
   // la plantilla con su foto y variables, cierra el registro y deja el mensaje en el chat.
   async _campWaUno(sb, t, imgUrl, tel, nombre, esPrueba){
@@ -11148,23 +11229,37 @@ Instrucciones de respuesta:
     out.cwDestMas=dest.length>8? (dest.length-8) : 0; out.cwDestHayMas=dest.length>8;
     out.cwPruebaTel=c.pruebaTel; out.onCwPruebaTel=(e)=>this.campWaSet({pruebaTel:e.target.value});
     out.cwProbando=!!st.campWaProbando; out.onCwProbar=()=>this.campWaProbar();
+    // Pruebas de las plantillas transaccionales (pedido y envío)
+    { const reqs=this.waTemplates(); const enviando=st.campWaProbTx||'';
+      out.cwTxEnviando=!!enviando; out.cwTxEnviandoLabel=(reqs[enviando]||{}).label||'';
+      let hay=false;
+      out.cwTxPruebas=Object.keys(reqs).map(k=>{ const v=this.campWaVentaEjemplo(k); if(v) hay=true;
+        return { key:k, label:reqs[k].label,
+          detalle: v? ('con '+this.ventaRef(v)) : 'sin pedido de ejemplo',
+          off: puede? (!v || !!enviando) : true,
+          onClick:()=>this.campWaProbarTx(k) }; });
+      out.cwTxSinVentas=!hay; }
     out.cwPreparando=!!st.campWaPreparando; out.onCwPreparar=()=>this.campWaPreparar();
     // confirmación
     const cf=st.campWaConfirm;
     out.cwConfirmShow=!!cf;
     if(cf){ out.cwConfN=cf.listos.length; out.cwConfTpl=cf.tpl.nombre; out.cwConfOpt=cf.omOpt; out.cwConfRep=cf.omRep; out.cwConfNoRep=cf.noRep;
       out.cwConfHayOmit=(cf.omOpt+cf.omRep)>0;
-      out.cwConfMin=Math.max(1,Math.round(cf.listos.length*0.7/60));
+      out.cwConfMin=Math.max(1,Math.ceil(cf.listos.length/40));
       out.onCwConfirmar=()=>this.campWaDisparar(); out.onCwCancelar=()=>this.campWaCancelar(); }
-    // progreso
+    // progreso (lo reporta la cola del servidor, no el navegador)
+    if(!st.campWaRun) this._campColaRetomar();
     const run=st.campWaRun;
     out.cwRunShow=!!run;
-    if(run){ out.cwRunTotal=run.total; out.cwRunHechos=run.hechos; out.cwRunOk=run.ok; out.cwRunFallo=run.fallo;
-      out.cwRunPct=run.total? Math.round(run.hechos/run.total*100)+'%' : '0%';
-      out.cwRunCorriendo=!!run.corriendo; out.cwRunFin=!!run.fin; out.cwRunUltimo=run.ultimo||'';
+    if(run){ out.cwRunTotal=run.total||0; out.cwRunHechos=run.hechos||0; out.cwRunOk=run.ok||0; out.cwRunFallo=run.fallo||0;
+      out.cwRunOmitido=run.omitido||0; out.cwRunHayOmitido=(run.omitido||0)>0;
+      out.cwRunPct=run.total? Math.round((run.hechos||0)/run.total*100)+'%' : '0%';
+      out.cwRunCorriendo=!!run.corriendo; out.cwRunFin=!!run.fin;
+      out.cwRunEncolando=!!run.encolando;
+      out.cwRunUltimo=(run.pendientes||0)+' por salir';
       out.cwRunDetenida=!!run.detenida;
       out.cwRunErrores=(run.errores||[]).map(t=>({t})); out.cwRunHayErrores=(run.errores||[]).length>0;
-      out.onCwDetener=()=>this.campWaDetener(); out.onCwCerrarRun=()=>this.setState({campWaRun:null}); }
+      out.onCwDetener=()=>this.campWaDetener(); out.onCwCerrarRun=()=>{ this._campColaStop(); this.setState({campWaRun:null}); }; }
   }
   _buildCartAuto(out){ const cfg=this.agenteCfgGet();
     out.campCarritosTog={ v:!!cfg.campCarritosOn, bg:cfg.campCarritosOn?'var(--brand-primary)':'#D9D2C3', x:cfg.campCarritosOn?'22px':'2px', on:()=>this.setAgenteCfg('campCarritosOn',!cfg.campCarritosOn) };
