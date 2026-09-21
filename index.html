@@ -6346,6 +6346,7 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Código<input name="codigo" value="{{ draft.codigo }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Precio final del kit · manual (COP)<input name="precio" type="number" value="{{ draft.precio }}" onInput="{{ onDraftInput }}" placeholder="49900" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Nombre del kit<input name="nombre" value="{{ draft.nombre }}" onInput="{{ onDraftInput }}" placeholder="Kit Inhala" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+                <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Esta estructura rige desde<input name="_vigenteDesde" type="date" value="{{ draft._vigenteDesde }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);color:var(--brand-ink);"><span style="display:block;margin-top:5px;font-size:11px;font-weight:400;color:var(--text-muted);line-height:1.5;">Solo se usa si cambias los componentes. Los pedidos desde esa fecha descuentan la estructura nueva; los anteriores siguen con la vieja. Vacío = desde hoy.</span></label>
               </div>
 
               <div style="margin-top:16px;">
@@ -9919,7 +9920,7 @@ class Component extends DCLogic {
   // incluido si cobra IVA) — igual que en Shopify, ventas y cotizaciones. Neto = base sin IVA.
   productoPrecioNeto(p){ const pr=Number(p&&p.precio)||0; return (p&&p.cobraIva===false)? pr : Math.round(pr/1.19); }
   nuevoKit(){ this.open('kit',{ codigo:this.nextCode('KIT-',this.state.kits), nombre:'', precio:'', foto:'', items:[], _selKitItem:'', _selCantidad:1, _new:true }); }
-  editKit(k){ this.open('kit',{...k, items:(k.items||[]).slice(), _selKitItem:'', _selCantidad:1}); }
+  editKit(k){ this.open('kit',{...k, items:(k.items||[]).slice(), _selKitItem:'', _selCantidad:1, _vigenteDesde:''}); }
   askDelete(tipo,item){ this.setState({confirmDel:{tipo, codigo:item.codigo, nombre:item.nombre}}); }
   confirmDeleteItem(){
     const cd=this.state.confirmDel; if(!cd) return;
@@ -10015,12 +10016,36 @@ class Component extends DCLogic {
     let versionDesde=(prev&&prev.versionDesde)||'';
     const cambio=!!(prev && !this._kitIgual(prev.items, items));
     if(cambio){ const antes=this._kitNorm(prev.items);
+      // Fecha desde la que rige la estructura nueva: la que escriba el usuario (el cambio pudo
+      // empezar días antes de registrarlo) o, si la deja vacía, hoy.
+      const pedida=String(d._vigenteDesde||'').slice(0,10);
+      if(pedida){
+        if(pedida>hoy){ this.toast('La fecha de vigencia no puede ser futura'); return; }
+        if(String(prev.versionDesde||'') && pedida<String(prev.versionDesde).slice(0,10)){ this.toast('La fecha debe ser igual o posterior a la de la estructura anterior ('+this.fmtFecha(prev.versionDesde)+')'); return; }
+      }
       if(antes.length && !versiones.some(v=>this._kitIgual(v.items, antes))) versiones.push({desde:String(prev.versionDesde||''), items:antes, guardado:new Date().toISOString()});
-      versionDesde=hoy; }
+      versionDesde=pedida||hoy; }
     const row={codigo:d.codigo,nombre:d.nombre,precio:Number(d.precio)||0,foto:d.foto||'',items,versiones,versionDesde};
     if(prev) list[i]=row; else list.push(row);
     this.setState({kits:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveKit(row);
-    this.toast(cambio? 'Kit guardado · la estructura anterior quedó archivada (lo ya vendido no cambia)' : 'Kit guardado'); }
+    this.toast(cambio? ('Kit guardado · la estructura anterior quedó archivada, la nueva rige desde '+this.fmtFecha(versionDesde)) : 'Kit guardado');
+    // Si la vigencia se fechó hacia atrás, los pedidos de esos días ya tienen la foto de la
+    // estructura VIEJA congelada y la foto manda: hay que ofrecer soltarla.
+    if(cambio && versionDesde && versionDesde<hoy) setTimeout(()=>this._soltarSnapsDesde(d.codigo, versionDesde), 60); }
+  _soltarSnapsDesde(kitCode, desde){
+    const h=String(desde||'').slice(0,10); if(!kitCode||!h) return;
+    const vs=(this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=String(v.fecha||'').slice(0,10);
+      if(!f || f<h) return false;
+      return (v.items||[]).some(it=>(it.productoCodigo||it.referencia)===kitCode && Array.isArray(it.kitItems)); });
+    if(!vs.length) return;
+    if(!window.confirm('Hay '+vs.length+' pedido(s) desde el '+this.fmtFecha(h)+' con la estructura ANTERIOR del kit congelada. Como la estructura nueva rige desde esa fecha, esos pedidos deberían descontar la nueva.\n\n¿Soltar la foto de esos pedidos para que lean la estructura vigente?\n\nEl costo congelado de cada venta NO se toca. Esto no se puede deshacer.')) return;
+    const ids={}; vs.forEach(v=>{ ids[v.id]=true; });
+    const list=(this.state.ventas||[]).map(v=>{ if(!ids[v.id]) return v;
+      const items=(v.items||[]).map(it=>{ if((it.productoCodigo||it.referencia)!==kitCode || !Array.isArray(it.kitItems)) return it; const c={...it}; delete c.kitItems; return c; });
+      return {...v, items}; });
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()) list.forEach(v=>{ if(ids[v.id]) this.cloudSaveVenta(v); });
+    this.toast(vs.length+' pedido(s) corregidos · ahora descuentan la estructura vigente'); }
   formatoLabel(f){ const m={'roll-on':'Roll-on','inhalador':'Inhalador','bruma':'Bruma','vela':'Vela','difusor':'Difusor','aceite':'Aceite esencial'}; return m[f]||f||'—'; }
   formatoFromText(v){ const k=this.normKey(v); if(!k) return ''; if(k.includes('rollon')||k==='roll') return 'roll-on'; if(k.includes('inhalad')) return 'inhalador'; if(k.includes('vela')) return 'vela'; if(k.includes('difus')) return 'difusor'; if(k.includes('aceite')) return 'aceite'; if(k.includes('spray')||k.includes('bruma')) return 'bruma'; if(k.includes('incien')) return 'incienso'; return k; }
   formatoOpciones(){ const base=['roll-on','inhalador','bruma','vela','difusor','aceite']; const usados=(this.state.productos||[]).map(p=>(p.formato||'').trim()).filter(Boolean); const out=[]; base.concat(usados).forEach(f=>{ if(out.indexOf(f)<0) out.push(f); }); return out; }
