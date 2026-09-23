@@ -13039,8 +13039,30 @@ Instrucciones de respuesta:
   _infSnapDesdeVista(out){ if(!this.cloudOn()) return; const ym=out.infYm; if(!ym) return; const data={}; this.INF_SNAP_KEYS.forEach(k=>{ if(out[k]!==undefined) data[k]=out[k]; });
     if(ym===this.mesActual()){ try{ data.finCuentas=this.cuentasList().filter(c=>c.tipo!=='tarjeta').map(c=>({ nombre:c.nombre, tipo:(c.tipo==='efectivo'?'Efectivo / billetera':'Banco'), saldo:Math.round(this.cuentaSaldo(c.nombre)) })); data.finSaldoTotal=Math.round(this.cajaSaldoTotal()); }catch(e){}
       try{ data.finPorCobrar=this.finPorCobrar().map(v=>({ id:v.id, ov:v.ov||v.pedido||'', cliente:v.cliente||'', fecha:this.parseFecha(v.fecha)||'', metodo:this.metodoNombreNorm(v.metodoPago), saldo:Math.round(this.ventaSaldo(v)), dias:this.diasDesde(v.fecha) })).sort((a,b)=>b.dias-a.dias).slice(0,150); }catch(e){} }
+    try{ data.pyg=this._pygSnap(ym); }catch(e){}
     const sig=ym+'|'+JSON.stringify(data); if(sig===this._infSnapSig) return; this._infSnapPend={ym, data, sig};
     clearTimeout(this._infSnapT); this._infSnapT=setTimeout(()=>this.publicarInformeSnapshot(), 4000); }
+  // PyG → app: las MISMAS líneas y etiquetas de Finanzas → PyG (finPyG), ya calculadas; la app no recalcula nada.
+  _pygSnap(ym){ const p=this.finPyG(ym), pp=this.finPyG(this.mesShift(ym,-1)); const R=(v)=>Math.round(Number(v)||0); const f=[];
+    const L=(label,val,signo,key)=>f.push({label,val:R(val),signo,key}); const T=(label,val,margen,key)=>f.push({label,val:R(val),total:true,margen,key});
+    L('Ventas netas (sin IVA)',p.ingresos,'','ventas'); L('(\u2212) Costo de la mercancía vendida',p.costo,'-','costo');
+    T('Utilidad bruta',p.bruta,(p.ingresos>0?Math.round(p.bruta/p.ingresos*100):0)+'%','bruta');
+    L('(\u2212) Gastos operativos',p.gastosOper,'-','gastosop');
+    if((p.marketing||0)>0) L('(\u2212) Marketing',p.marketing,'-','marketing');
+    if((p.nomina||0)>0) L('(\u2212) Nómina',p.nomina,'-','nomina');
+    L('(\u2212) Flete y transporte (compras)',p.fletes,'-','fletes');
+    if((p.fletesEntrega||0)>0) L('(\u2212) Logística (flete de entregas + servicios)',p.fletesEntrega,'-','fletesentrega');
+    if((p.obsequios||0)>0) L('(\u2212) Obsequios / muestras (MSVC)',p.obsequios,'-','obsequios');
+    if((p.recargas||0)>0) L('(\u2212) Recargas (envase del cliente)',p.recargas,'-','recargas');
+    { const aj=R(p.ajusteInv); if(aj!==0) L(aj>=0?'(\u2212) Ajustes de inventario (faltantes)':'(+) Ajustes de inventario (sobrantes)',Math.abs(aj),aj>=0?'-':'+','ajusteinv'); }
+    if((p.gmf||0)>0) L('(\u2212) 4×1000 (GMF) sobre movimientos bancarios',p.gmf,'-','gmf');
+    T('Utilidad operacional',p.operacional,(p.ingresos>0?Math.round(p.operacional/p.ingresos*100):0)+'%','operacional');
+    L('(+) Envíos cobrados al cliente',p.envioNoOper,'+','envios');
+    if((p.rendimientos||0)>0) L('(+) Rendimientos financieros',p.rendimientos,'+','rendimientos');
+    { const da=R(p.dianAjuste); if(da!==0) L(da>=0?'(+) Ajuste de impuestos DIAN':'(\u2212) Ajuste de impuestos DIAN',Math.abs(da),da>=0?'+':'-','dianajuste'); }
+    T('Resultado del periodo',p.resultado,'','resultado');
+    return { ym, mesLabel:this.mesLabel(ym), prevLabel:this.mesLabel(this.mesShift(ym,-1)), nVentas:p.nVentas||0, ingresos:R(p.ingresos), operacional:R(p.operacional), resultado:R(p.resultado),
+      prev:{ ingresos:R(pp.ingresos), operacional:R(pp.operacional), resultado:R(pp.resultado) }, filas:f }; }
   // Marketing → app: una fila por rango (today/mes/mesant/year) en `marketing_snapshot`. Diferido y solo si cambió.
   _mktSnapDesdeVista(data){ if(!this.cloudOn()) return; const rango=data&&data.rango; if(!rango) return;
     const sig=rango+'|'+JSON.stringify(Object.assign({}, data, {syncTs:null})); if(sig===this._mktSnapSig) return; this._mktSnapPend={rango, data, sig};
@@ -16147,13 +16169,10 @@ Instrucciones de respuesta:
       out.mktAlertas=alerts; out.mktAlertasVacio=alerts.length===0;
       // Resumen de marketing para la app: se publica SOLO desde el render de Marketing → Resumen,
       // con datos reales de Meta (nunca la demo), reutilizando lo ya calculado (misma regla que el informe).
-      if(out.showMktResumen && live){ try{ this._mktSnapDesdeVista({ rango:_rk, periodo:out.mktPeriodo, syncTs:st.mktLiveTs||null,
-        kpis:{ spend:Math.round(K.spend), ingresos:Math.round(K.ingresos), roas:Number(K.roas.toFixed(2)), roasTotal:Number(K.roasTotal.toFixed(2)), cpa:Math.round(K.cpa), resultados:K.resultados, ctr:Number(K.ctr.toFixed(2)), alcance:Math.round(K.alcance), impresiones:Math.round(K.impresiones), clicks:Math.round(K.clicks), cpm:Math.round(K.cpm) },
-        top:_conInv.slice(0,10).map(c=>({ nombre:c.nombre, objetivo:c.objetivo, estado:c.estado, spend:Math.round(c.spend), ingresos:Math.round(c.ingresos||0), roas:Number(this.mktRoas(c).toFixed(2)), resultados:c.resultados, ctr:Number(this.mktCtr(c).toFixed(2)), frecuencia:Number((c.frecuencia||0).toFixed(1)) })),
-        topNota:out.mktTopNota, alertas:alerts.map(a=>({tipo:a.tipo, txt:a.txt, color:a.color})), tendencia:tr.map(v=>Math.round(v)) }); }catch(e){ console.warn('snapshot marketing', e); } }
       // ---- De dónde vienen los pedidos (atribución por enlace de entrada: UTM / gclid / fbclid / referente) ----
       { const hoyISO=new Date().toISOString().slice(0,10), ymHoy=hoyISO.slice(0,7);
-        const rango=(f)=>{ if(!f) return false; if(_rk==='today') return f===hoyISO; if(_rk==='mes') return f.slice(0,7)===ymHoy; if(_rk==='mesant') return f.slice(0,7)===this.mesShift(ymHoy,-1); return f.slice(0,4)===hoyISO.slice(0,4); };
+        const _vc=(_rk==='d4'||_rk==='d7')? this.mktVentanaCerrada(_rk==='d4'?4:7) : null;
+        const rango=(f)=>{ if(!f) return false; if(_vc) return f>=_vc.since && f<=_vc.until; if(_rk==='today') return f===hoyISO; if(_rk==='mes') return f.slice(0,7)===ymHoy; if(_rk==='mesant') return f.slice(0,7)===this.mesShift(ymHoy,-1); return f.slice(0,4)===hoyISO.slice(0,4); };
         const FL={google_ads:['Google Ads','#3F6A7A'], meta_ads:['Meta Ads (Facebook · Instagram)','#7A5E36'], tiktok_ads:['TikTok Ads','#4A4550'], google_organico:['Google (búsqueda orgánica)','#4C6149'], redes:['Redes sociales (orgánico)','#8A5A7A'], email:['Correo','#5F7F8F'], whatsapp:['WhatsApp','#3C8F5A'], referido:['Otros sitios (referido)','#8C7A5B'], otro_utm:['Otro enlace con UTM','#8C7A5B'], directo:['Directo / sin rastro','#9b8e78'] };
         const vs=(this.state.ventas||[]).filter(v=>!v.cancelada && v.origen==='shopify' && !this._esHistorico(v) && rango(this.parseFecha(v.fecha)));
         const agg={}; let conAtrib=0; vs.forEach(v=>{ const a=v.atrib||{}; let k=a.fuente||'sin_dato'; if(k.startsWith('app_')) k='referido'; if(a.fuente) conAtrib++; if(!agg[k]) agg[k]={k,n:0,ing:0,camp:{}}; agg[k].n++; agg[k].ing+=this.ventaNeta(v); if(a.campana){ agg[k].camp[a.campana]=(agg[k].camp[a.campana]||0)+1; } });
@@ -16164,6 +16183,12 @@ Instrucciones de respuesta:
         out.mktFuentesNota = vs.length? (conAtrib+' de '+vs.length+' pedidos con rastro de origen'+(vs.length-conAtrib>0? ' · los demás se completan al sincronizar Shopify':'')) : 'Sin pedidos web en el periodo';
         const gAds=agg.google_ads? agg.google_ads : null; out.mktGoogleHay=!!gAds;
         out.mktGoogleTxt = gAds? (gAds.n+' pedidos · '+this.fmt(Math.round(gAds.ing))+' desde Google Ads') : 'Todavía no hay pedidos con rastro de Google Ads · cuando la pauta arranque aparecerán aquí solos (gclid).'; }
+      if(out.showMktResumen && live){ try{ this._mktSnapDesdeVista({ rango:_rk, periodo:out.mktPeriodo, syncTs:st.mktLiveTs||null,
+        kpis:{ spend:Math.round(K.spend), ingresos:Math.round(K.ingresos), roas:Number(K.roas.toFixed(2)), roasTotal:Number(K.roasTotal.toFixed(2)), cpa:Math.round(K.cpa), resultados:K.resultados, ctr:Number(K.ctr.toFixed(2)), alcance:Math.round(K.alcance), impresiones:Math.round(K.impresiones), clicks:Math.round(K.clicks), cpm:Math.round(K.cpm) },
+        top:_conInv.slice(0,10).map(c=>({ nombre:c.nombre, objetivo:c.objetivo, estado:c.estado, spend:Math.round(c.spend), ingresos:Math.round(c.ingresos||0), roas:Number(this.mktRoas(c).toFixed(2)), resultados:c.resultados, ctr:Number(this.mktCtr(c).toFixed(2)), frecuencia:Number((c.frecuencia||0).toFixed(1)),
+          cpa:Math.round(this.mktCpa(c)), cpm:Math.round(this.mktCpm(c)), alcance:Math.round(c.alcance||0), carritos:(c.carritos==null?null:Math.round(c.carritos)), checkouts:(c.checkouts==null?null:Math.round(c.checkouts)), cpCheckout:Math.round(this.mktCpCheckout(c)), cierre:Number(this.mktCierre(c).toFixed(0)) })),
+        fuentes:(out.mktFuentes||[]).map(r=>({ key:r.key, label:r.label, color:r.color, n:Number(r.n)||0, ing:r.ing, pct:r.pct, camp:r.camp||'' })), fuentesNota:out.mktFuentesNota||'', fuentesN:out.mktFuentesN||0,
+        topNota:out.mktTopNota, alertas:alerts.map(a=>({tipo:a.tipo, txt:a.txt, color:a.color})), tendencia:tr.map(v=>Math.round(v)) }); }catch(e){ console.warn('snapshot marketing', e); } }
       // creativos
       const crEst=(e)=>({ganador:{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',t:'Ganador'},activo:{bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Activo'},fatiga:{bg:'rgba(181,80,60,0.14)',fg:'#B5503C',t:'Fatiga'}}[e]||{bg:'#EFE9DD',fg:'#A89F8E',t:e});
       out.mktCreativos=this.mktCreativoSource().map(cr=>{ const ep=crEst(cr.estado); const ctr=cr.impresiones>0?cr.clicks/cr.impresiones*100:0; return { nombre:cr.nombre, formato:cr.formato, copy:cr.copy, moodColor:this.metaMoodColor[cr.mood]||'#A78659', moodLabel:this.mktMoodLabel(cr.mood), ctrFmt:ctr.toFixed(2)+'%', spendFmt:this.fmt(cr.spend), impresionesFmt:fmtK(cr.impresiones), resultados:cr.resultados, estBg:ep.bg, estFg:ep.fg, estLabel:ep.t }; });
