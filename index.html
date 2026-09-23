@@ -4134,11 +4134,11 @@
                 </div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border-subtle);">
                   <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Inventario inicial</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;">{{ invIniFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">al comenzar el mes</div></div>
-                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#4C6149;">(+) Entradas</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:#4C6149;">{{ invEntFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">compras + producción</div></div>
-                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--oda-sale);">(−) Salidas</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:var(--oda-sale);">{{ invSalFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">costo de lo vendido</div></div>
+                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#4C6149;">(+) Entradas</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:#4C6149;">{{ invEntFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.45;">{{ invEntSub }}</div></div>
+                  <div style="background:var(--surface-card);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--oda-sale);">(−) Salidas</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:var(--oda-sale);">{{ invSalFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.45;">{{ invSalSub }}</div></div>
                   <div style="background:var(--surface-raised);padding:16px 18px;"><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand-primary);">Inventario final</div><div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;margin-top:7px;color:var(--brand-primary);">{{ invFinFmt }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">variación {{ invVarFmt }}</div></div>
                 </div>
-                <div style="padding:11px 20px;background:var(--surface-raised);border-top:1px solid var(--border-subtle);font-size:11.5px;color:var(--text-muted);line-height:1.5;">Reconstruido desde los movimientos registrados (compras recibidas, producción y ventas). Usa el selector de mes de arriba para revisar otros cierres.</div>
+                <div style="padding:11px 20px;background:var(--surface-raised);border-top:1px solid var(--border-subtle);font-size:11.5px;color:var(--text-muted);line-height:1.5;display:grid;gap:4px;"><span>{{ invProdNota }}</span><span>Reconstruido desde los movimientos registrados (compras recibidas, producción, ventas, muestras, remisiones y conteos aprobados). Usa el selector de mes de arriba para revisar otros cierres.</span></div>
               </div>
 
               <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;">
@@ -13189,9 +13189,31 @@ Instrucciones de respuesta:
   mesActual(){ return new Date().toISOString().slice(0,7); }
   // ---- valoración de inventario a fecha de corte (para cierres mensuales) ----
   invValorActualTotal(){ const rev=new Set((this.state.productos||[]).filter(p=>p.esReventa).map(p=>p.codigo)); const valMat=(this.state.materias||[]).filter(m=>!rev.has(m.codigo)).reduce((a,m)=>a+Math.max(0,this.materiaStockActual(m))*(Number(m.costo)||0),0); const valMez=(this.state.mezclas||[]).reduce((a,mz)=>a+this.mezclaMlStock(mz.codigo)*this.mezclaCostoUnit(mz),0); const valPT=(this.state.productos||[]).reduce((a,p)=>a+this.productoValor(p),0); return valMat+valMez+valPT; }
-  invEntradasCosto(desde,hasta){ let n=0; (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.entregas||[]).forEach(e=>{ const f=this.parseFecha(e.fecha||o.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; (e.items||[]).forEach(it=>{ const m=(this.state.materias||[]).find(x=>x.codigo===it.materiaCodigo); const costo=m?(Number(m.costo)||0):0; n+=(Number(it.cantidad)||0)*costo; }); }); }); (this.state.producciones||[]).forEach(op=>{ const f=this.parseFecha(op.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; const p=(this.state.productos||[]).find(x=>x.codigo===op.productoCodigo); n+=(p?this.productoCosto(p):0)*(Number(op.cantidad)||0); }); return n; }
-  invSalidasCosto(desde,hasta){ let n=0; (this.state.ventas||[]).forEach(v=>{ if(v.cancelada) return; const f=this.parseFecha(v.fecha)||''; if(!f) return; if(desde&&f<desde) return; if(hasta&&f>hasta) return; n+=this.ventaCosto(v); }); return n; }
-  invValorAFecha(hasta){ return this.invValorActualTotal() - this.invEntradasCosto(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), '') + this.invSalidasCosto(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), ''); }
+  // Movimientos de inventario valorizados en un rango. La PRODUCCIÓN es un traslado: suma el
+  // producto terminado (o la mezcla) Y resta la materia prima que consumió — antes solo se sumaba
+  // el PT, así que la entrada salía inflada, el inventario inicial reconstruido quedaba corto y la
+  // variación del mes no cuadraba (22-sep). También entran muestras, remisiones y conteos aprobados,
+  // que mueven el stock real y no estaban en la reconstrucción.
+  invMovDetalle(desde,hasta){ const r={compras:0, prodPT:0, prodMez:0, consumo:0, vendido:0, muestras:0, remisiones:0, ajusteMas:0, ajusteMenos:0};
+    const enR=(f)=>{ f=this.parseFecha(f)||''; if(!f) return false; if(desde&&f<desde) return false; if(hasta&&f>hasta) return false; return true; };
+    const prods={}; (this.state.productos||[]).forEach(p=>{ prods[p.codigo]=p; });
+    (this.state.ordenes||[]).forEach(o=>{ if(this.ordenAnulada(o)) return; (o.entregas||[]).forEach(e=>{ if(!enR(e.fecha||o.fecha)) return; (e.items||[]).forEach(it=>{ const m=(this.state.materias||[]).find(x=>x.codigo===it.materiaCodigo); r.compras+=(Number(it.cantidad)||0)*(m?(Number(m.costo)||0):0); }); }); });
+    (this.state.producciones||[]).forEach(op=>{ if(!enR(op.fecha)) return; const p=prods[op.productoCodigo]; if(!p) return; const q=Number(op.cantidad)||0;
+      if(!op.recarga) r.prodPT+=this.productoCosto(p)*q; // la recarga no crea stock de PT: se entrega en el envase del cliente
+      this.opFormula2(p,op).forEach(f=>{ r.consumo+=this.refCostoUnit(f.materiaCodigo)*(Number(f.cantidad)||0)*q; }); });
+    (this.state.produccionesMezcla||[]).forEach(op=>{ if(!enR(op.fecha)) return; const mz=(this.state.mezclas||[]).find(x=>x.codigo===op.mezclaCodigo); if(!mz) return;
+      r.prodMez+=this.omMl(op)*this.mezclaCostoUnit(mz);
+      this.omFormula(op).forEach(f=>{ r.consumo+=this.refCostoUnit(f.materiaCodigo)*(Number(f.cantidad)||0)*(Number(op.lotes)||0); }); });
+    (this.state.ventas||[]).forEach(v=>{ if(v.cancelada||!enR(v.fecha)) return; r.vendido+=this.ventaCosto(v); });
+    (this.state.msvc||[]).forEach(mv=>{ if(mv.anulada||!enR(mv.fecha)) return; r.muestras+=this.msvcCosto(mv); });
+    (this.state.remisiones||[]).forEach(rm=>{ if(rm.tipo!=='remision'||!enR(rm.fecha)) return; (rm.items||[]).forEach(it=>{ r.remisiones+=this.ventaItemCosto({...it, productoCodigo:it.codigo})*(Number(it.cantidad)||0); }); });
+    (this.state.conteos||[]).forEach(c=>{ if(c.estado!=='aprobado'||!enR(c.fecha||c.aprobadoAt)) return; const cu=(c.costoUnit!=null&&Number(c.costoUnit)>0)? Number(c.costoUnit) : this.refCostoUnit(c.codigo); const v=(Number(c.diferencia)||0)*cu; if(v>=0) r.ajusteMas+=v; else r.ajusteMenos+=-v; });
+    r.entradas=r.compras+r.prodPT+r.prodMez+r.ajusteMas;
+    r.salidas=r.vendido+r.consumo+r.muestras+r.remisiones+r.ajusteMenos;
+    return r; }
+  invEntradasCosto(desde,hasta){ return this.invMovDetalle(desde,hasta).entradas; }
+  invSalidasCosto(desde,hasta){ return this.invMovDetalle(desde,hasta).salidas; }
+  invValorAFecha(hasta){ const d=this.invMovDetalle(hasta==='' ? '9999-99-99' : this.dayAfter(hasta), ''); return this.invValorActualTotal() - d.entradas + d.salidas; }
   dayAfter(d){ try{ const dt=new Date(d+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+1); return dt.toISOString().slice(0,10); }catch(e){ return d; } }
   ultimoDiaMes(ym){ const p=String(ym).split('-').map(Number); const d=new Date(Date.UTC(p[0], p[1], 0)); return d.toISOString().slice(0,10); }
   finMes(){ return this.state.finMes || this.mesActual(); }
@@ -16587,7 +16609,13 @@ Instrucciones de respuesta:
       const ym=this.finMes(); const pyg=this.finPyG(ym); const pygPrev=this.finPyG(this.mesShift(ym,-1)); const cajaMes=this.finCajaMes(ym); const iva=this.finIva(ym);
       // ---- inventario para cierre contable ----
       { const finDia=this.ultimoDiaMes(ym); const iniDia=this.ultimoDiaMes(this.mesShift(ym,-1)); const desdeM=ym+'-01'; const hastaM=finDia;
-        const vIni=this.invValorAFecha(iniDia); const vFin=this.invValorAFecha(finDia); const ent=this.invEntradasCosto(desdeM,hastaM); const sal=this.invSalidasCosto(desdeM,hastaM);
+        const vIni=this.invValorAFecha(iniDia); const vFin=this.invValorAFecha(finDia); const _md=this.invMovDetalle(desdeM,hastaM); const ent=_md.entradas; const sal=_md.salidas;
+        const _f=(n)=>this.fmt(Math.round(n));
+        out.invEntSub='compras '+_f(_md.compras)+' · producido '+_f(_md.prodPT+_md.prodMez)+(_md.ajusteMas>0?(' · conteos '+_f(_md.ajusteMas)):'');
+        const _otras=_md.muestras+_md.remisiones+_md.ajusteMenos;
+        out.invSalSub='vendido '+_f(_md.vendido)+' · materia prima usada '+_f(_md.consumo)+(_otras>0?(' · muestras, remisiones y conteos '+_f(_otras)):'');
+        const _neto=(_md.prodPT+_md.prodMez)-_md.consumo;
+        out.invProdNota=(_md.prodPT+_md.prodMez)>0? ('La producción es un traslado: suma '+_f(_md.prodPT+_md.prodMez)+' de producto terminado y mezclas y resta '+_f(_md.consumo)+' de materia prima que se usó'+(Math.abs(_neto)>=1000? (' (diferencia '+(_neto>=0?'+':'−')+_f(Math.abs(_neto))+' por costos que cambiaron o fórmulas sin costo)') : ' (queda en cero)')+'.') : '';
         out.invIniFmt=this.fmt(Math.round(vIni)); out.invFinFmt=this.fmt(Math.round(vFin)); out.invEntFmt=this.fmt(Math.round(ent)); out.invSalFmt=this.fmt(Math.round(sal));
         out.invVarFmt=(vFin-vIni>=0?'+':'−')+this.fmt(Math.abs(Math.round(vFin-vIni))); out.invMesLabel=this.mesLabel(ym); }
       out.frCaja=this.fmt(Math.round(this.cajaSaldoTotal()));
@@ -16687,7 +16715,7 @@ Instrucciones de respuesta:
       out.fgTotal=this.fmt(Math.round(tot));
       out.fgCats=cats.map(c=>({categoria:c.categoria, montoFmt:this.fmt(Math.round(c.monto)), pct:(tot>0?Math.round(c.monto/tot*100):0)+'%', bar:(tot>0?(c.monto/tot*100):0).toFixed(1)+'%'}));
       out.fgCatsVacio=cats.length===0;
-      out.fgFijos=(this.state.gastosFijos||[]).map(g=>{ const _mv=this.gastoFijoMovMes(g.id,ym); return {id:g.id, concepto:g.concepto, categoria:g.categoria, montoFmt:this.fmt(Math.round(Number(g.monto)||0)), diaTxt:'D\u00eda '+(g.dia||1), cuenta:g.cuenta||'\u2014', activo:(g.activo!==false), pagado:!!_mv, noPagado:!_mv, pagoTxt:_mv?('Pagado '+this.fmtFecha(_mv.fecha)+' \u00b7 '+(_mv.cuenta||'\u2014')):'', onPagar:()=>this.pagarGastoFijo(g.id), onEdit:()=>this.editarGastoFijo(g.id), onEditPago:()=>this.editarPagoGasto(g.id), onDeshacerPago:()=>this.deshacerPagoGasto(g.id)}; });
+      out.fgFijos=(this.state.gastosFijos||[]).map(g=>{ const _mv=this.gastoFijoMovMes(g.id,ym); return {id:g.id, concepto:g.concepto, categoria:g.categoria, montoFmt:this.fmt(Math.round(Number(g.monto)||0)), diaTxt:'D\u00eda '+(g.dia||1), cuenta:g.cuenta||'\u2014', activo:(g.activo!==false), pagado:!!_mv, noPagado:!_mv, pagoTxt:_mv?('Pagado '+this.fmtFecha(_mv.fecha)+' \u00b7 '+(_mv.cuenta||'\u2014')):'', onPagar:()=>this.pagarGastoFijo(g.id), onEdit:()=>this.editarGastoFijo(g.id), onEditPago:()=>this.editarPagoGasto(g.id), onDeshacerPago:()=>this.deshacerPagoGasto(g.id), _dOrd:(_mv&&_mv.fecha?(Number(String(_mv.fecha).slice(8,10))||Number(g.dia)||1):(Number(g.dia)||1)), _cOrd:String(g.concepto||'')}; }).sort((a,b)=>(a._dOrd-b._dOrd)||a._cOrd.localeCompare(b._cOrd,'es'));
       out.fgFijosVacio=(this.state.gastosFijos||[]).length===0;
       const totFijos=(this.state.gastosFijos||[]).filter(g=>g.activo!==false).reduce((a,g)=>a+(Number(g.monto)||0),0); out.fgFijosTotal=this.fmt(Math.round(totFijos));
       const pagFijos=(this.state.gastosFijos||[]).filter(g=>this.gastoFijoPagadoMes(g.id,ym)).reduce((a,g)=>a+(Number(g.monto)||0),0); out.fgFijosPagado=this.fmt(Math.round(pagFijos));
