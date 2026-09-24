@@ -4498,7 +4498,7 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:20px;">
                   <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
                     <div style="flex:1;min-width:220px;">
-                      <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;">Recaudos de ODA Labs · facturas sin IVA</div>
+                      <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;">Recaudos de ODA Labs · facturas con IVA</div>
                       <div style="font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5;text-wrap:pretty;">Solo lectura: ODA Labs los registra y aquí se legalizan. El link de Bold usa la misma deducción, retenciones y plazo de cualquier recaudo Bold; la transferencia entra directo a la cuenta Bold.</div>
                       <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">{{ odlSyncTxt }}</div>
                     </div>
@@ -4518,7 +4518,7 @@
                           <sc-if value="{{ r.hayConcepto }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-body);margin-top:3px;">{{ r.concepto }}</div></sc-if>
                           <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;">{{ r.tipo }} · pagado {{ r.fechaFmt }}</div>
                           <sc-if value="{{ r.esLink }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;margin-top:3px;color:{{ r.formaFg }};">{{ r.formaTxt }}</div></sc-if>
-                          <sc-if value="{{ r.haySelForma }}" hint-placeholder-val="{{ false }}"><label style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11.5px;color:var(--text-body);flex-wrap:wrap;">Forma de liquidación (Link de pago · sin IVA):<select value="{{ r.formaVal }}" onChange="{{ r.onForma }}" style="font-family:inherit;font-size:11.5px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);"><option value="">— elegir —</option><sc-for list="{{ r.formaOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.key }}">{{ o.label }}</option></sc-for></select></label></sc-if>
+                          <sc-if value="{{ r.haySelForma }}" hint-placeholder-val="{{ false }}"><label style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11.5px;color:var(--text-body);flex-wrap:wrap;">Forma de liquidación (Link de pago · con IVA):<select value="{{ r.formaVal }}" onChange="{{ r.onForma }}" style="font-family:inherit;font-size:11.5px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);"><option value="">— elegir —</option><sc-for list="{{ r.formaOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.key }}">{{ o.label }}</option></sc-for></select></label></sc-if>
                           <sc-if value="{{ r.bloqueada }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:var(--oda-sale);margin-top:3px;">No se puede legalizar hasta elegir la forma: el neto saldría sin comisión ni retenciones.</div></sc-if>
                           <sc-if value="{{ r.hayPlazo }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Plazo: {{ r.plazoTxt }}</div></sc-if>
                           <div style="font-size:11.5px;margin-top:3px;color:{{ r.cruceFg }};">{{ r.cruceTxt }}</div>
@@ -12043,7 +12043,7 @@ Instrucciones de respuesta:
     if(n){ this.toast(n===1? '1 pago Bold se cruzó solo por su ID de pago' : (n+' pagos Bold se cruzaron solos por su ID de pago')); await this.cloudLoadBold(); }
   }finally{ this._autoCruzando=false; } }
   // ===== PUENTE ODA LABS (solo lectura) =====
-  // ODA Labs llena recaudos_oda (solo facturas SINIVA); la función sync-oda-labs copia a oda_labs_recaudos
+  // ODA Labs llena recaudos_oda (solo facturas CONIVA); la función sync-oda-labs copia a oda_labs_recaudos
   // cada hora. El Hub solo LEE esa copia; la única escritura hacia ODA Labs es marcar_legalizado_oda
   // (vía la función, el token nunca está en el navegador). Movimiento en caja: id 'odl-<factura>'.
   _odlFalla(causa){ try{ window.odaEstado && window.odaEstado('finanzas-odalabs: '+String(causa||'').slice(0,90)); }catch(e){} }
@@ -12062,6 +12062,7 @@ Instrucciones de respuesta:
     finally{ this.setState({odlSyncing:false}); } }
   _odlMovId(r){ return 'odl-'+String(r.factura_num||'').replace(/[^A-Za-z0-9_-]/g,''); }
   _odlEtiqueta(r){ return 'Origen: ODA Labs \u00b7 '+r.factura_num+(r.cliente?(' \u00b7 '+r.cliente):''); }
+  _odlIva(r){ const v=Math.round(Number(r.valor_cop)||0); if(r.iva!=null && Number(r.iva)>=0) return Math.min(Math.round(Number(r.iva)),v); const pct=(r.iva_pct!=null?Number(r.iva_pct):19)||0; return Math.round(v-v/(1+pct/100)); }
   _odlEsLink(r){ return String(r.estado)==='por_legalizar' || /link|bold/i.test(String(r.metodo||'')+' '+String(r.integracion||'')); }
   _odlPago(r){ const pid=String(r.payment_id||'').trim(), ref=String(r.referencia||'').trim(); if(!pid&&!ref) return null;
     return (this.state.boldPagos||[]).find(p=>p.aprobado && !p.anulado && ((pid && String(p.payment_id||'')===pid) || (ref && String(p.referencia||'')===ref)))||null; }
@@ -12072,14 +12073,14 @@ Instrucciones de respuesta:
   _odlDed(r){ const mB=this._odlMetodoBold(); const monto=Math.round(Number(r.valor_cop)||0); const mapa=this.boldLiqMapGet(); const formas=mB?this.metodoFormas(mB):[]; const pago=this._odlPago(r);
     let canal, fk='';
     if(pago){ const c=this.boldCanalDe(pago); canal=c.label; fk=mapa[c.key]||''; }
-    else { canal='Link de pago \u00b7 venta sin IVA'; const ks=Object.keys(mapa).filter(k=>/\|LINK\|SINIVA$/.test(k) && mapa[k]); if(mapa['ODALABS|LINK|SINIVA']) ks.length=0, ks.push('ODALABS|LINK|SINIVA'); const cnt={}; ks.forEach(k=>{ cnt[mapa[k]]=(cnt[mapa[k]]||0)+1; }); fk=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||''; }
+    else { canal='Link de pago \u00b7 venta con IVA'; const ks=Object.keys(mapa).filter(k=>/\|LINK\|CONIVA$/.test(k) && mapa[k]); if(mapa['ODALABS|LINK|CONIVA']) ks.length=0, ks.push('ODALABS|LINK|CONIVA'); const cnt={}; ks.forEach(k=>{ cnt[mapa[k]]=(cnt[mapa[k]]||0)+1; }); fk=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||''; }
     const f=fk?formas.find(x=>x.key===fk):null; let ded=0;
-    if(f && mB){ const pf=this.metodoPerfil(mB,f.key); const ivaR=pago? Math.min(Math.round(Number(pago.iva)||0),monto) : 0; const cb=Math.round(monto*(Number(pf.comisionPct)||0)/100)+(Number(pf.comisionFijo)||0); const ci=pf.comisionIva?Math.round(cb*0.19):0; const bg=(pf.retenBruto===true)?monto:(monto-ivaR); ded=cb+ci+Math.round(bg*(Number(pf.reteRenta)||0)/100)+Math.round(bg*(Number(pf.reteIca)||0)/100)+Math.round(ivaR*(Number(pf.reteIva)||0)/100); }
+    if(f && mB){ const pf=this.metodoPerfil(mB,f.key); const ivaR=pago? Math.min(Math.round(Number(pago.iva)||0),monto) : this._odlIva(r); const cb=Math.round(monto*(Number(pf.comisionPct)||0)/100)+(Number(pf.comisionFijo)||0); const ci=pf.comisionIva?Math.round(cb*0.19):0; const bg=(pf.retenBruto===true)?monto:(monto-ivaR); ded=cb+ci+Math.round(bg*(Number(pf.reteRenta)||0)/100)+Math.round(bg*(Number(pf.reteIca)||0)/100)+Math.round(ivaR*(Number(pf.reteIva)||0)/100); }
     const m=this.metodoMatch(mB); return { monto, ded, neto:monto-ded, canal, formaKey:fk, formaNombre:(f?f.nombre:''), sinForma:!f, plazo:(m&&m.diasLiq?this.diasLiqTxt(m):''), pago }; }
   async _odlGuardarMov(mv){ const sb=this._sbClient(); if(!sb) throw new Error('sin nube'); const {data,error}=await sb.from('movimientos').upsert(this._finToDb(mv)).select('id'); if(error) throw error; if(!data||!data.length) throw new Error('la base no confirmó el movimiento'); }
   async _odlBorrarMov(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('movimientos').delete().eq('id',id).select('id'); }catch(e){ this._odlFalla('revertir '+((e&&e.message)||e)); } }
   _odlMov(r, monto, extra){ return Object.assign({ id:this._odlMovId(r), ts:Date.now(), tipo:'ingreso', fecha:String(r.fecha_pago||'').slice(0,10)||new Date().toISOString().slice(0,10), cuenta:this._odlCuentaBold(), monto:Math.round(monto),
-      categoria:'Recaudo ODA Labs', concepto:this._odlEtiqueta(r)+(r.concepto?(' \u00b7 '+r.concepto):''), origenOdaLabs:true, odaLabs:{ factura:r.factura_num, cliente:r.cliente||'', metodo:r.metodo||'', integracion:r.integracion||'', referencia:r.referencia||'', paymentId:r.payment_id||'', valor:Math.round(Number(r.valor_cop)||0) } }, extra||{}); }
+      categoria:'Recaudo ODA Labs', concepto:this._odlEtiqueta(r)+(r.concepto?(' \u00b7 '+r.concepto):''), origenOdaLabs:true, odaLabs:{ factura:r.factura_num, ivaFlag:'CONIVA', iva:this._odlIva(r), cliente:r.cliente||'', metodo:r.metodo||'', integracion:r.integracion||'', referencia:r.referencia||'', paymentId:r.payment_id||'', valor:Math.round(Number(r.valor_cop)||0) } }, extra||{}); }
   // Transferencia (en_cuenta): entra sola como ingreso disponible en la cuenta Bold, una vez (id fijo).
   async _odlAutoEnCuenta(){ if(!this.cloudOn() || !this.canWriteMod('finanzas') || this._odlAutoT) return; this._odlAutoT=true;
     try{ const ya=new Set((this.state.movimientos||[]).map(m=>m.id)); const pend=(this.state.odaLabs||[]).filter(r=>(r.estado==='en_cuenta'||(r.estado==='legalizado'&&!this._odlEsLink(r))) && !ya.has(this._odlMovId(r)) && Number(r.valor_cop)>0);
@@ -17015,9 +17016,9 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
             valorFmt:this.fmt(Math.round(Number(r.valor_cop)||0)), fechaFmt:(r.fecha_pago?this.fmtFecha(String(r.fecha_pago).slice(0,10)):'\u2014'),
             tipo:(link?'Link de pago Bold':'Transferencia'+(r.integracion?(' \u00b7 '+r.integracion):'')), estL:est.l, estBg:est.bg, estFg:est.fg,
             esLink:link, dedFmt:(d?this.fmt(d.ded):''), netoFmt:(d?this.fmt(d.neto):''), formaTxt:(d?(d.sinForma?('Canal \u00ab'+d.canal+'\u00bb sin forma de liquidación en la pestaña Bold'):(d.formaNombre+' \u00b7 '+d.canal)):''), formaFg:(d&&d.sinForma?'var(--oda-sale)':'var(--text-muted)'), plazoTxt:(d&&d.plazo?d.plazo:''), hayPlazo:!!(d&&d.plazo),
-            haySelForma:!!(link && d && canW && !d.pago && r.estado!=='legalizado'), formaVal:(this.boldLiqMapGet()['ODALABS|LINK|SINIVA']||''),
+            haySelForma:!!(link && d && canW && !d.pago && r.estado!=='legalizado'), formaVal:(this.boldLiqMapGet()['ODALABS|LINK|CONIVA']||''),
             formaOpts:(this._odlMetodoBold()? this.metodoFormas(this._odlMetodoBold()).map(fo=>({key:fo.key, label:fo.nombre})) : []),
-            onForma:(e)=>this.boldLiqMapSet('ODALABS|LINK|SINIVA', e.target.value),
+            onForma:(e)=>this.boldLiqMapSet('ODALABS|LINK|CONIVA', e.target.value),
             bloqueada:!!(link && d && d.sinForma),
             cruceTxt:(link?(d&&d.pago?('Cruzado con el pago Bold '+(d.pago.payment_id||'')+' (no se duplica)'):'Sin pago Bold del webhook todavía \u2014 se cruza solo cuando llegue'):(movIds.has(this._odlMovId(r))?'Ingreso registrado en '+(this._odlCuentaBold()||'la cuenta Bold')+' \u00b7 disponible':'Pendiente de registrar el ingreso en la cuenta Bold')),
             cruceFg:((link&&d&&d.pago)||(!link&&movIds.has(this._odlMovId(r)))?'#4C6149':'#9A6B2E'),
