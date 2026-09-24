@@ -4494,6 +4494,47 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;border-top:3px solid #4C6149;"><div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Neto esperado</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;margin-top:7px;color:#4C6149;">{{ recTotalNeto }}</div></div>
               </div>
 
+              <sc-if value="{{ odlShow }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:20px;">
+                  <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:220px;">
+                      <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;">Recaudos de ODA Labs · facturas sin IVA</div>
+                      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5;text-wrap:pretty;">Solo lectura: ODA Labs los registra y aquí se legalizan. El link de Bold usa la misma deducción, retenciones y plazo de cualquier recaudo Bold; la transferencia entra directo a la cuenta Bold.</div>
+                      <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">{{ odlSyncTxt }}</div>
+                    </div>
+                    <button onClick="{{ odlSync }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">{{ odlSyncL }}</button>
+                  </div>
+                  <sc-if value="{{ odlHayErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.3);font-size:12px;color:#8E3F2F;line-height:1.5;">{{ odlErr }}</div></sc-if>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;">
+                    <sc-for list="{{ odlTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.on }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:99px;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};cursor:pointer;">{{ t.label }}</button></sc-for>
+                  </div>
+                  <sc-if value="{{ odlHayTot }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-body);margin-top:10px;font-weight:600;">{{ odlTotTxt }}</div></sc-if>
+                  <sc-if value="{{ odlVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:18px 0 4px;font-size:12.5px;color:var(--text-muted);">{{ odlVacioTxt }}</div></sc-if>
+                  <div style="display:flex;flex-direction:column;margin-top:8px;">
+                    <sc-for list="{{ odlRows }}" as="r" hint-placeholder-count="2">
+                      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 0;border-top:1px solid var(--border-subtle);">
+                        <div style="min-width:0;">
+                          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-size:13.5px;color:var(--text-strong);">{{ r.factura }}</strong><span style="font-size:13px;color:var(--text-body);">{{ r.cliente }}</span><span style="display:inline-flex;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:{{ r.estBg }};color:{{ r.estFg }};">{{ r.estL }}</span></div>
+                          <sc-if value="{{ r.hayConcepto }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-body);margin-top:3px;">{{ r.concepto }}</div></sc-if>
+                          <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;">{{ r.tipo }} · pagado {{ r.fechaFmt }}</div>
+                          <sc-if value="{{ r.esLink }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;margin-top:3px;color:{{ r.formaFg }};">{{ r.formaTxt }}</div></sc-if>
+                          <sc-if value="{{ r.haySelForma }}" hint-placeholder-val="{{ false }}"><label style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11.5px;color:var(--text-body);flex-wrap:wrap;">Forma de liquidación (Link de pago · sin IVA):<select value="{{ r.formaVal }}" onChange="{{ r.onForma }}" style="font-family:inherit;font-size:11.5px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);"><option value="">— elegir —</option><sc-for list="{{ r.formaOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.key }}">{{ o.label }}</option></sc-for></select></label></sc-if>
+                          <sc-if value="{{ r.bloqueada }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:var(--oda-sale);margin-top:3px;">No se puede legalizar hasta elegir la forma: el neto saldría sin comisión ni retenciones.</div></sc-if>
+                          <sc-if value="{{ r.hayPlazo }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Plazo: {{ r.plazoTxt }}</div></sc-if>
+                          <div style="font-size:11.5px;margin-top:3px;color:{{ r.cruceFg }};">{{ r.cruceTxt }}</div>
+                          <div style="display:inline-flex;margin-top:6px;padding:3px 9px;border-radius:99px;background:var(--surface-linen);font-size:10.5px;font-weight:700;color:var(--brand-ink);">{{ r.etiqueta }}</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right;">
+                          <div style="font-size:15px;font-weight:800;color:var(--text-strong);">{{ r.valorFmt }}</div>
+                          <sc-if value="{{ r.esLink }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--oda-sale);">− {{ r.dedFmt }}</div><div style="font-size:12px;font-weight:700;color:#4C6149;">Neto {{ r.netoFmt }}</div></sc-if>
+                          <sc-if value="{{ r.puedeLegalizar }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onLegalizar }}" style="margin-top:6px;font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:99px;border:1px solid var(--brand-ink);background:{{ r.legBg }};color:{{ r.legFg }};cursor:pointer;">{{ r.legL }}</button></sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
               <sc-if value="{{ recBoldMapShow }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-bottom:16px;">
                   <button onClick="{{ recBoldMapToggle }}" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>Liquidación por canal Bold{{ recBoldMapResumen }}</button>
@@ -12001,6 +12042,77 @@ Instrucciones de respuesta:
       try{ await sb.from('bold_pagos').update({pedido:ex.pedido, conciliado:true, conciliado_por:'auto · ID de pago', conciliado_at:new Date().toISOString()}).eq('payment_id',p.payment_id); n++; }catch(e){} }
     if(n){ this.toast(n===1? '1 pago Bold se cruzó solo por su ID de pago' : (n+' pagos Bold se cruzaron solos por su ID de pago')); await this.cloudLoadBold(); }
   }finally{ this._autoCruzando=false; } }
+  // ===== PUENTE ODA LABS (solo lectura) =====
+  // ODA Labs llena recaudos_oda (solo facturas SINIVA); la función sync-oda-labs copia a oda_labs_recaudos
+  // cada hora. El Hub solo LEE esa copia; la única escritura hacia ODA Labs es marcar_legalizado_oda
+  // (vía la función, el token nunca está en el navegador). Movimiento en caja: id 'odl-<factura>'.
+  _odlFalla(causa){ try{ window.odaEstado && window.odaEstado('finanzas-odalabs: '+String(causa||'').slice(0,90)); }catch(e){} }
+  async cloudLoadOdaLabs(){ const sb=this._sbClient(); if(!sb||this._odlLoading) return; this._odlLoading=true;
+    try{ let rows=[]; for(let off=0,pg=1000;;off+=pg){ const {data,error}=await sb.from('oda_labs_recaudos').select('factura_num,data,estado,actualizado').order('factura_num',{ascending:false}).range(off,off+pg-1); if(error) throw error; rows=rows.concat(data||[]); if(!data||data.length<pg) break; }
+      let sync=null; try{ const r=await sb.from('oda_labs_sync').select('*').eq('id',1).maybeSingle(); sync=r.data||null; }catch(e){}
+      const list=rows.map(r=>Object.assign({}, r.data||{}, { factura_num:r.factura_num, estado:(r.estado||(r.data&&r.data.estado)||'') }));
+      const sig=JSON.stringify(list)+'|'+JSON.stringify(sync||{}); if(sig!==this._odlSig){ this._odlSig=sig; this.setState({odaLabs:list, odaLabsSync:sync, odaLabsErr:''}); }
+      setTimeout(()=>{ this._odlAutoEnCuenta(); this._odlAutoCruzarBold(); }, 600); }
+    catch(e){ const m=String((e&&e.message)||e); this._odlFalla(m); this.setState({odaLabs:(this.state.odaLabs||[]), odaLabsErr:(/oda_labs_recaudos|relation|does not exist/i.test(m)? 'Falta correr supabase-oda-labs.sql en la base del Hub.' : m)}); }
+    finally{ this._odlLoading=false; } }
+  async odaLabsSincronizar(){ const sb=this._sbClient(); if(!sb){ this.toast('La nube no está conectada'); return; } this.setState({odlSyncing:true});
+    try{ const {data,error}=await sb.functions.invoke('sync-oda-labs',{ body:{ modo:'sync', por:this._auditUser() } }); if(error) throw error; if(data&&data.error) throw new Error(data.error);
+      this.toast(data&&data.cambio? ('ODA Labs: '+data.n+' factura(s) · hubo cambios') : ('ODA Labs: sin cambios ('+((data&&data.n)||0)+' factura(s))')); await this.cloudLoadOdaLabs(); }
+    catch(e){ const m=String((e&&e.message)||e); this._odlFalla('sync '+m); this.toast('No se pudo leer ODA Labs: '+m); }
+    finally{ this.setState({odlSyncing:false}); } }
+  _odlMovId(r){ return 'odl-'+String(r.factura_num||'').replace(/[^A-Za-z0-9_-]/g,''); }
+  _odlEtiqueta(r){ return 'Origen: ODA Labs \u00b7 '+r.factura_num+(r.cliente?(' \u00b7 '+r.cliente):''); }
+  _odlEsLink(r){ return String(r.estado)==='por_legalizar' || /link|bold/i.test(String(r.metodo||'')+' '+String(r.integracion||'')); }
+  _odlPago(r){ const pid=String(r.payment_id||'').trim(), ref=String(r.referencia||'').trim(); if(!pid&&!ref) return null;
+    return (this.state.boldPagos||[]).find(p=>p.aprobado && !p.anulado && ((pid && String(p.payment_id||'')===pid) || (ref && String(p.referencia||'')===ref)))||null; }
+  _odlMetodoBold(){ return ((this.metodosFinList().find(m=>/bold/i.test(m.nombre||'')))||{}).nombre||''; }
+  _odlCuentaBold(){ const cs=this.cuentasList(); const c=cs.find(x=>x.tipo!=='tarjeta' && /bold/i.test(x.nombre||'')); if(c) return c.nombre; const m=this.metodoMatch(this._odlMetodoBold()); return (m&&m.cuenta)||''; }
+  // Deducción: MISMA fórmula de _liqB (pestaña Bold) sobre el mapa canal→forma. Si el pago llegó también por
+  // el webhook se usa su canal real; si no, el canal Link de pago sin IVA ya configurado (clave *|LINK|SINIVA).
+  _odlDed(r){ const mB=this._odlMetodoBold(); const monto=Math.round(Number(r.valor_cop)||0); const mapa=this.boldLiqMapGet(); const formas=mB?this.metodoFormas(mB):[]; const pago=this._odlPago(r);
+    let canal, fk='';
+    if(pago){ const c=this.boldCanalDe(pago); canal=c.label; fk=mapa[c.key]||''; }
+    else { canal='Link de pago \u00b7 venta sin IVA'; const ks=Object.keys(mapa).filter(k=>/\|LINK\|SINIVA$/.test(k) && mapa[k]); if(mapa['ODALABS|LINK|SINIVA']) ks.length=0, ks.push('ODALABS|LINK|SINIVA'); const cnt={}; ks.forEach(k=>{ cnt[mapa[k]]=(cnt[mapa[k]]||0)+1; }); fk=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||''; }
+    const f=fk?formas.find(x=>x.key===fk):null; let ded=0;
+    if(f && mB){ const pf=this.metodoPerfil(mB,f.key); const ivaR=pago? Math.min(Math.round(Number(pago.iva)||0),monto) : 0; const cb=Math.round(monto*(Number(pf.comisionPct)||0)/100)+(Number(pf.comisionFijo)||0); const ci=pf.comisionIva?Math.round(cb*0.19):0; const bg=(pf.retenBruto===true)?monto:(monto-ivaR); ded=cb+ci+Math.round(bg*(Number(pf.reteRenta)||0)/100)+Math.round(bg*(Number(pf.reteIca)||0)/100)+Math.round(ivaR*(Number(pf.reteIva)||0)/100); }
+    const m=this.metodoMatch(mB); return { monto, ded, neto:monto-ded, canal, formaKey:fk, formaNombre:(f?f.nombre:''), sinForma:!f, plazo:(m&&m.diasLiq?this.diasLiqTxt(m):''), pago }; }
+  async _odlGuardarMov(mv){ const sb=this._sbClient(); if(!sb) throw new Error('sin nube'); const {data,error}=await sb.from('movimientos').upsert(this._finToDb(mv)).select('id'); if(error) throw error; if(!data||!data.length) throw new Error('la base no confirmó el movimiento'); }
+  async _odlBorrarMov(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('movimientos').delete().eq('id',id).select('id'); }catch(e){ this._odlFalla('revertir '+((e&&e.message)||e)); } }
+  _odlMov(r, monto, extra){ return Object.assign({ id:this._odlMovId(r), ts:Date.now(), tipo:'ingreso', fecha:String(r.fecha_pago||'').slice(0,10)||new Date().toISOString().slice(0,10), cuenta:this._odlCuentaBold(), monto:Math.round(monto),
+      categoria:'Recaudo ODA Labs', concepto:this._odlEtiqueta(r)+(r.concepto?(' \u00b7 '+r.concepto):''), origenOdaLabs:true, odaLabs:{ factura:r.factura_num, cliente:r.cliente||'', metodo:r.metodo||'', integracion:r.integracion||'', referencia:r.referencia||'', paymentId:r.payment_id||'', valor:Math.round(Number(r.valor_cop)||0) } }, extra||{}); }
+  // Transferencia (en_cuenta): entra sola como ingreso disponible en la cuenta Bold, una vez (id fijo).
+  async _odlAutoEnCuenta(){ if(!this.cloudOn() || !this.canWriteMod('finanzas') || this._odlAutoT) return; this._odlAutoT=true;
+    try{ const ya=new Set((this.state.movimientos||[]).map(m=>m.id)); const pend=(this.state.odaLabs||[]).filter(r=>(r.estado==='en_cuenta'||(r.estado==='legalizado'&&!this._odlEsLink(r))) && !ya.has(this._odlMovId(r)) && Number(r.valor_cop)>0);
+      if(!pend.length) return; if(!this._odlCuentaBold()){ this._odlFalla('sin cuenta Bold'); return; }
+      for(const r of pend){ const mv=this._odlMov(r, Number(r.valor_cop)||0);
+        this.setState(s=>({movimientos:[mv].concat((s.movimientos||[]).filter(x=>x.id!==mv.id))}),()=>this.persist());
+        try{ await this._odlGuardarMov(mv); }catch(e){ const m=String((e&&e.message)||e); this._odlFalla('en_cuenta '+m); this.setState(s=>({movimientos:(s.movimientos||[]).filter(x=>x.id!==mv.id)}),()=>this.persist()); this.toast('No se pudo registrar la transferencia '+r.factura_num+' de ODA Labs: '+m); break; } }
+    }finally{ this._odlAutoT=false; } }
+  // Pago por link que también llegó por el webhook de Bold: se cruza con ese pago (no se duplica) y queda marcado ODA Labs.
+  async _odlAutoCruzarBold(){ if(!this.cloudOn() || !this.canWriteMod('finanzas')) return; const sb=this._sbClient(); if(!sb) return; let n=0;
+    for(const r of (this.state.odaLabs||[]).filter(x=>this._odlEsLink(x))){ const p=this._odlPago(r); if(!p || p.conciliado) continue;
+      try{ const {data,error}=await sb.from('bold_pagos').update({ pedido:'ODA Labs \u00b7 '+r.factura_num, conciliado:true, conciliado_por:'auto \u00b7 ODA Labs', conciliado_at:new Date().toISOString(), nota:this._odlEtiqueta(r) }).eq('payment_id',p.payment_id).select('payment_id');
+        if(error) throw error; if(!data||!data.length) throw new Error('bold_pagos no confirmó el cruce'); n++; }
+      catch(e){ this._odlFalla('cruce bold '+((e&&e.message)||e)); } }
+    if(n) this.cloudLoadBold(); }
+  async odaLabsLegalizar(factura){ const r=(this.state.odaLabs||[]).find(x=>x.factura_num===factura); if(!r) return;
+    if(!this.canWriteMod('finanzas')){ this.toast('No tienes permiso de escritura en Finanzas'); return; }
+    if(this.state.odlConfirm!==factura){ this.setState({odlConfirm:factura}); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('La nube no está conectada'); return; }
+    const link=this._odlEsLink(r); const mvId=this._odlMovId(r); const yaMov=(this.state.movimientos||[]).some(m=>m.id===mvId); let mvNuevo=null;
+    if(!yaMov){ if(!this._odlCuentaBold()){ this.toast('No hay una cuenta Bold en Caja y bancos'); return; }
+      if(link){ const d=this._odlDed(r); if(d.sinForma){ this.setState({odlConfirm:null}); this.toast('Asigna la forma de liquidación del canal «'+d.canal+'» (aquí mismo en la fila) antes de legalizar: sin ella no se descuentan la comisión ni las retenciones de Bold.'); return; } mvNuevo=this._odlMov(r, d.neto, { fecha:new Date().toISOString().slice(0,10), bruto:d.monto, deduccion:d.ded, formaLiq:d.formaNombre, concepto:this._odlEtiqueta(r)+' \u00b7 legalizado (bruto '+this.fmt(d.monto)+' \u2212 deducci\u00f3n '+this.fmt(d.ded)+')' }); }
+      else mvNuevo=this._odlMov(r, Number(r.valor_cop)||0); }
+    const prevEstado=r.estado;
+    this.setState(s=>({ odlConfirm:null, odlBusy:factura, odaLabs:(s.odaLabs||[]).map(x=>x.factura_num===factura?{...x, estado:'legalizado', legalizado_en:new Date().toISOString()}:x), movimientos:(mvNuevo?[mvNuevo].concat((s.movimientos||[]).filter(x=>x.id!==mvNuevo.id)):s.movimientos) }),()=>this.persist());
+    try{ if(mvNuevo) await this._odlGuardarMov(mvNuevo);
+      const {data,error}=await sb.functions.invoke('sync-oda-labs',{ body:{ modo:'legalizar', factura_num:factura } }); if(error) throw error; if(!data||data.error||!data.ok) throw new Error((data&&data.error)||'ODA Labs no confirmó');
+      this.toast(factura+' legalizada · ODA Labs ya ve el cierre'); }
+    catch(e){ const m=String((e&&e.message)||e); this._odlFalla('legalizar '+m);
+      if(mvNuevo) await this._odlBorrarMov(mvNuevo.id);
+      this.setState(s=>({ odaLabs:(s.odaLabs||[]).map(x=>x.factura_num===factura?{...x, estado:prevEstado, legalizado_en:r.legalizado_en||null}:x), movimientos:(mvNuevo?(s.movimientos||[]).filter(x=>x.id!==mvNuevo.id):s.movimientos) }),()=>this.persist());
+      this.toast('No se legalizó '+factura+': '+m+' · se deshizo el cambio'); }
+    finally{ this.setState({odlBusy:null}); } }
   async boldNota(paymentId, nota){ const sb=this._sbClient(); if(!sb) return;
     try{ await sb.from('bold_pagos').update({nota}).eq('payment_id',paymentId); this.cloudLoadBold(); }catch(e){} }
   // ---- «sin leer»: cada usuario marca en su navegador qué recordatorios ya vio. Si el
@@ -16885,6 +16997,34 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.recReintentarMetodos=()=>{ this.cloudLoadMetodos(); this.cloudLoadLiquidaciones(); this.toast('Recargando métodos de pago…'); };
       if(!this._liqRenumT || Date.now()-this._liqRenumT>5000){ this._liqRenumT=Date.now(); setTimeout(()=>this.liqRenumerar(),400); }
       out.recBoldMapShow=false;
+      { if(st.odaLabs===undefined && this.cloudOn() && !this._odlLoading){ this.cloudLoadOdaLabs(); }
+        const rows=st.odaLabs||[]; const fo=st.odlFiltro||'pendientes'; const pend=rows.filter(r=>r.estado==='por_legalizar'||r.estado==='en_cuenta'); const leg=rows.filter(r=>r.estado==='legalizado');
+        const vis=(fo==='legalizados'?leg:pend).slice().sort((a,b)=>String(b.fecha_pago||'').localeCompare(String(a.fecha_pago||'')));
+        const sy=st.odaLabsSync||null; out.odlShow=this.cloudOn(); out.odlErr=st.odaLabsErr||((sy&&sy.error)?('Última lectura con error: '+sy.error):''); out.odlHayErr=!!out.odlErr;
+        const fh=(t)=>t? new Date(t).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+        out.odlSyncTxt=(sy&&sy.leido_at)? ('Leído de ODA Labs '+fh(sy.leido_at)+(sy.cambiado_at?(' \u00b7 último cambio '+fh(sy.cambiado_at)):'')) : (st.odaLabs===undefined?'Cargando…':'Todavía no se ha leído ODA Labs');
+        out.odlSync=()=>this.odaLabsSincronizar(); out.odlSyncL=st.odlSyncing?'Leyendo…':'Sincronizar ahora';
+        const tb=(k,l)=>({ label:l, bg:(fo===k?'var(--brand-ink)':'var(--surface-card)'), fg:(fo===k?'#fff':'var(--text-body)'), bd:(fo===k?'var(--brand-ink)':'var(--border-strong)'), on:()=>this.setState({odlFiltro:k}) });
+        out.odlTabs=[tb('pendientes','Por legalizar \u00b7 '+pend.length), tb('legalizados','Legalizados \u00b7 '+leg.length)];
+        const movIds=new Set((st.movimientos||[]).map(m=>m.id)); const canW=!!out.canWriteFin;
+        let totB=0, totN=0;
+        out.odlRows=vis.slice(0,200).map(r=>{ const link=this._odlEsLink(r); const d=link?this._odlDed(r):null; const conf=(st.odlConfirm===r.factura_num), busy=(st.odlBusy===r.factura_num);
+          if(r.estado!=='legalizado'){ totB+=Math.round(Number(r.valor_cop)||0); totN+=(d?d.neto:Math.round(Number(r.valor_cop)||0)); }
+          const est=r.estado==='legalizado'? {l:'Legalizado',bg:'rgba(98,123,96,0.16)',fg:'#4C6149'} : (r.estado==='en_cuenta'? {l:'En cuenta',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'} : {l:'Por legalizar',bg:'rgba(212,150,80,0.18)',fg:'#9A6B2E'});
+          return { key:r.factura_num, factura:r.factura_num, cliente:r.cliente||'\u2014', concepto:r.concepto||'', hayConcepto:!!r.concepto, etiqueta:this._odlEtiqueta(r),
+            valorFmt:this.fmt(Math.round(Number(r.valor_cop)||0)), fechaFmt:(r.fecha_pago?this.fmtFecha(String(r.fecha_pago).slice(0,10)):'\u2014'),
+            tipo:(link?'Link de pago Bold':'Transferencia'+(r.integracion?(' \u00b7 '+r.integracion):'')), estL:est.l, estBg:est.bg, estFg:est.fg,
+            esLink:link, dedFmt:(d?this.fmt(d.ded):''), netoFmt:(d?this.fmt(d.neto):''), formaTxt:(d?(d.sinForma?('Canal \u00ab'+d.canal+'\u00bb sin forma de liquidación en la pestaña Bold'):(d.formaNombre+' \u00b7 '+d.canal)):''), formaFg:(d&&d.sinForma?'var(--oda-sale)':'var(--text-muted)'), plazoTxt:(d&&d.plazo?d.plazo:''), hayPlazo:!!(d&&d.plazo),
+            haySelForma:!!(link && d && canW && !d.pago && r.estado!=='legalizado'), formaVal:(this.boldLiqMapGet()['ODALABS|LINK|SINIVA']||''),
+            formaOpts:(this._odlMetodoBold()? this.metodoFormas(this._odlMetodoBold()).map(fo=>({key:fo.key, label:fo.nombre})) : []),
+            onForma:(e)=>this.boldLiqMapSet('ODALABS|LINK|SINIVA', e.target.value),
+            bloqueada:!!(link && d && d.sinForma),
+            cruceTxt:(link?(d&&d.pago?('Cruzado con el pago Bold '+(d.pago.payment_id||'')+' (no se duplica)'):'Sin pago Bold del webhook todavía \u2014 se cruza solo cuando llegue'):(movIds.has(this._odlMovId(r))?'Ingreso registrado en '+(this._odlCuentaBold()||'la cuenta Bold')+' \u00b7 disponible':'Pendiente de registrar el ingreso en la cuenta Bold')),
+            cruceFg:((link&&d&&d.pago)||(!link&&movIds.has(this._odlMovId(r)))?'#4C6149':'#9A6B2E'),
+            puedeLegalizar:(canW && r.estado!=='legalizado' && !(link && d && d.sinForma)), legL:(busy?'Legalizando…':(conf?'¿Seguro? Sí, legalizar':'Legalizar')), legBg:(conf?'var(--brand-ink)':'var(--surface-card)'), legFg:(conf?'#fff':'var(--brand-ink)'),
+            onLegalizar:()=>{ if(!busy) this.odaLabsLegalizar(r.factura_num); } }; });
+        out.odlVacio=out.odlRows.length===0; out.odlVacioTxt=(fo==='legalizados'?'Aún no hay facturas de ODA Labs legalizadas.':'No hay recaudos de ODA Labs por legalizar.');
+        out.odlTotTxt=(fo==='pendientes' && pend.length)? (pend.length+' factura(s) \u00b7 bruto '+this.fmt(totB)+' \u00b7 neto esperado '+this.fmt(totN)) : ''; out.odlHayTot=!!out.odlTotTxt; }
       const grupos=this.recaudosPorMetodo().map(g=>{ const ded=g.ventas.reduce((a,v)=>a+this.ventaDeduccionEst(v),0); const m=this.metodoMatch(g.metodo); return {metodo:g.metodo, n:g.ventas.length, brutoFmt:this.fmt(Math.round(g.bruto)), dedFmt:this.fmt(Math.round(ded)), netoFmt:this.fmt(Math.round(g.bruto-ded)), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m&&m.diasLiq?this.diasLiqTxt(m):''), onLiquidar:()=>this.nuevaLiquidacion(g.metodo, true)}; });
       out.recGrupos=grupos; out.recVacio=grupos.length===0;
       { const _dup=this.liqDuplicados(); out.recDupShow=_dup.length>0; out.recDupN=_dup.length;
