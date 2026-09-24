@@ -4504,6 +4504,7 @@
                     </div>
                     <button onClick="{{ odlSync }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);">{{ odlSyncL }}</button>
                   </div>
+                  <sc-if value="{{ odlHayDiag }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-linen);font-size:12px;color:var(--text-body);line-height:1.5;">{{ odlDiag }}</div></sc-if>
                   <sc-if value="{{ odlHayErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.3);font-size:12px;color:#8E3F2F;line-height:1.5;">{{ odlErr }}</div></sc-if>
                   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;">
                     <sc-for list="{{ odlTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.on }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:99px;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};cursor:pointer;">{{ t.label }}</button></sc-for>
@@ -12050,16 +12051,23 @@ Instrucciones de respuesta:
   async cloudLoadOdaLabs(){ const sb=this._sbClient(); if(!sb||this._odlLoading) return; this._odlLoading=true;
     try{ let rows=[]; for(let off=0,pg=1000;;off+=pg){ const {data,error}=await sb.from('oda_labs_recaudos').select('factura_num,data,estado,actualizado').order('factura_num',{ascending:false}).range(off,off+pg-1); if(error) throw error; rows=rows.concat(data||[]); if(!data||data.length<pg) break; }
       let sync=null; try{ const r=await sb.from('oda_labs_sync').select('*').eq('id',1).maybeSingle(); sync=r.data||null; }catch(e){}
-      const list=rows.map(r=>Object.assign({}, r.data||{}, { factura_num:r.factura_num, estado:(r.estado||(r.data&&r.data.estado)||'') }));
+      const list=rows.map(r=>{ const d=r.data||{}; return Object.assign({}, d, { factura_num:r.factura_num, estadoOrig:(r.estado||d.estado||''), estado:this._odlEstado(r.estado||d.estado, d) }); });
       const sig=JSON.stringify(list)+'|'+JSON.stringify(sync||{}); if(sig!==this._odlSig){ this._odlSig=sig; this.setState({odaLabs:list, odaLabsSync:sync, odaLabsErr:''}); }
       setTimeout(()=>{ this._odlAutoEnCuenta(); this._odlAutoCruzarBold(); }, 600); }
     catch(e){ const m=String((e&&e.message)||e); this._odlFalla(m); this.setState({odaLabs:(this.state.odaLabs||[]), odaLabsErr:(/oda_labs_recaudos|relation|does not exist/i.test(m)? 'Falta correr supabase-oda-labs.sql en la base del Hub.' : m)}); }
     finally{ this._odlLoading=false; } }
   async odaLabsSincronizar(){ const sb=this._sbClient(); if(!sb){ this.toast('La nube no está conectada'); return; } this.setState({odlSyncing:true});
     try{ const {data,error}=await sb.functions.invoke('sync-oda-labs',{ body:{ modo:'sync', por:this._auditUser() } }); if(error) throw error; if(data&&data.error) throw new Error(data.error);
+      const dg=(data&&data.diag)||null; const lst=(o)=>Object.keys(o||{}).map(k=>k+' ('+o[k]+')').join(', ');
+      this.setState({odlDiag: dg? ('ODA Labs entregó '+dg.recibidas+' factura(s) · '+dg.conIva+' con IVA'+(dg.descartadasSinIva?(' · '+dg.descartadasSinIva+' descartada(s) por decir SIN IVA'):'')+(dg.recibidas?(' · marcas de IVA: '+lst(dg.flags)+' · estados: '+lst(dg.estados)):' · la función de ODA Labs no devolvió ninguna fila (revisar que corrieron el SQL nuevo y que el token es el correcto)')) : ''});
       this.toast(data&&data.cambio? ('ODA Labs: '+data.n+' factura(s) · hubo cambios') : ('ODA Labs: sin cambios ('+((data&&data.n)||0)+' factura(s))')); await this.cloudLoadOdaLabs(); }
     catch(e){ const m=String((e&&e.message)||e); this._odlFalla('sync '+m); this.toast('No se pudo leer ODA Labs: '+m); }
     finally{ this.setState({odlSyncing:false}); } }
+  // Estado de ODA Labs normalizado: «Por legalizar», «por-legalizar», «pendiente»… → por_legalizar; lo desconocido
+  // que no esté legalizado cae en por_legalizar (link) o en_cuenta (transferencia), para que nunca quede invisible.
+  _odlEstado(v, d){ const s=String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]+/g,'_').replace(/^_|_$/g,'');
+    if(/^legaliz/.test(s)) return 'legalizado'; if(/en_cuenta|recibid|consignad|transfer/.test(s)) return 'en_cuenta'; if(/por_legaliz|pendient|pagad|aprobad/.test(s)) return 'por_legalizar';
+    const link=/link|bold/i.test(String((d&&d.metodo)||'')+' '+String((d&&d.integracion)||'')); return link?'por_legalizar':'en_cuenta'; }
   _odlMovId(r){ return 'odl-'+String(r.factura_num||'').replace(/[^A-Za-z0-9_-]/g,''); }
   _odlEtiqueta(r){ return 'Origen: ODA Labs \u00b7 '+r.factura_num+(r.cliente?(' \u00b7 '+r.cliente):''); }
   _odlIva(r){ const v=Math.round(Number(r.valor_cop)||0); if(r.iva!=null && Number(r.iva)>=0) return Math.min(Math.round(Number(r.iva)),v); const pct=(r.iva_pct!=null?Number(r.iva_pct):19)||0; return Math.round(v-v/(1+pct/100)); }
@@ -17001,7 +17009,7 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       { if(st.odaLabs===undefined && this.cloudOn() && !this._odlLoading){ this.cloudLoadOdaLabs(); }
         const rows=st.odaLabs||[]; const fo=st.odlFiltro||'pendientes'; const pend=rows.filter(r=>r.estado==='por_legalizar'||r.estado==='en_cuenta'); const leg=rows.filter(r=>r.estado==='legalizado');
         const vis=(fo==='legalizados'?leg:pend).slice().sort((a,b)=>String(b.fecha_pago||'').localeCompare(String(a.fecha_pago||'')));
-        const sy=st.odaLabsSync||null; out.odlShow=this.cloudOn(); out.odlErr=st.odaLabsErr||((sy&&sy.error)?('Última lectura con error: '+sy.error):''); out.odlHayErr=!!out.odlErr;
+        const sy=st.odaLabsSync||null; out.odlShow=this.cloudOn(); out.odlErr=st.odaLabsErr||((sy&&sy.error)?('Última lectura con error: '+sy.error):''); out.odlHayErr=!!out.odlErr; out.odlDiag=st.odlDiag||''; out.odlHayDiag=!!out.odlDiag;
         const fh=(t)=>t? new Date(t).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
         out.odlSyncTxt=(sy&&sy.leido_at)? ('Leído de ODA Labs '+fh(sy.leido_at)+(sy.cambiado_at?(' \u00b7 último cambio '+fh(sy.cambiado_at)):'')) : (st.odaLabs===undefined?'Cargando…':'Todavía no se ha leído ODA Labs');
         out.odlSync=()=>this.odaLabsSincronizar(); out.odlSyncL=st.odlSyncing?'Leyendo…':'Sincronizar ahora';
