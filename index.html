@@ -8439,7 +8439,15 @@ class Component extends DCLogic {
     if(!/^\S+@\S+\.\S+$/.test(email)){ this.toast('Escribe un correo v\u00e1lido'); return; }
     if(pwd.length<6){ this.toast('La contrase\u00f1a debe tener al menos 6 caracteres'); return; }
     if(this.users.some(u=>String(u.email||'').toLowerCase()===email && u.id!==d._id)){ this.toast('Ya existe un usuario con ese correo'); return; }
-    if(d._id){ const prev=this.users.find(u=>u.id===d._id)||{}; const _pw=this.updateUser(d._id,{name,email,role,password:pwd,initials:this._userInitials(name)}); this.close(); Promise.resolve(_pw).then(ok=>{ if(ok) this.toast('Usuario actualizado y guardado en la nube'); }); this._authSync('actualizar',{name,email,role,password:(pwd!==String(prev.password||'')?pwd:''),prevEmail:String(prev.email||'')}); return; }
+    if(d._id){ const prev=this.users.find(u=>u.id===d._id)||{}; const cambioClave=pwd!==String(prev.password||'');
+      // La clave se manda SIEMPRE a la cuenta de acceso (25-sep): comparar contra la lista del Hub fallaba cuando un
+      // intento anterior ya la había guardado allí pero no en Supabase Auth → «actualizada» sin cambiar la clave.
+      const _pw=this.updateUser(d._id,{name,email,role,password:pwd,initials:this._userInitials(name)}); this.close();
+      (async()=>{ const [okNube, r] = await Promise.all([Promise.resolve(_pw), this._authSync('actualizar',{name,email,role,password:pwd,prevEmail:String(prev.email||'')}, true)]);
+        if(!r||!r.ok){ this.toast('⚠ La cuenta de acceso NO se actualizó: '+((r&&r.msg)||'sin respuesta')+' · con esta clave todavía no puede entrar'); return; }
+        const clave = r.verificada===true ? 'clave verificada, ya puede entrar con ella' : (r.clave ? 'clave enviada' : 'datos actualizados');
+        this.toast((cambioClave||r.clave ? 'Contraseña actualizada · ' + clave : 'Usuario actualizado') + (okNube ? '' : ' · el registro del Hub quedó solo en este equipo')); })();
+      return; }
     const colors=['#6596A6','#627B60','#9C97A2','#B08A6B','#6B7A9C','#C9A15A','#B5503C','#5A4A33']; const nu={ id:'cu'+Date.now(), name, email, role, password:pwd, initials:this._userInitials(name), color:colors[this.users.length%colors.length] };
     const c0=this._usersCfgGet(); this._usersCfgSave({ overrides:{...c0.overrides}, custom:c0.custom.concat([nu]), _ts:c0._ts });
     const perms={...(this.state.userPerms||{})}; perms[nu.id]={...(this.roles[role]||{})}; this.setState({userPerms:perms}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(perms)); }catch(e){} if(this.cloudOn()) this.cloudSavePermiso(nu.id,perms[nu.id]);
@@ -8448,15 +8456,18 @@ class Component extends DCLogic {
   // Crea/actualiza/elimina la CUENTA DE ACCESO (Supabase Auth) vía la Edge Function `usuarios`,
   // para que no haya que entrar a Authentication → Users. Corre después de guardar en el Hub;
   // si falla, el usuario del Hub queda igual y el toast dice qué pasó.
-  async _authSync(accion, u){
-    if(!this.cloudOn()) return; const sb=this._sbClient(); if(!sb) return;
+  async _authSync(accion, u, silencioso){
+    if(!this.cloudOn()) return {ok:false, msg:'sin conexión a la nube'}; const sb=this._sbClient(); if(!sb) return {ok:false, msg:'sin conexión a la nube'};
     try{
       const { data, error } = await sb.functions.invoke('usuarios', { body:{ accion, ...u } });
-      if(error || !data || data.error){ const msg=(data&&data.error)||(error&&error.message)||'sin respuesta';
-        this.toast('Cuenta de acceso: '+msg+(/no encontr|not found|404/i.test(msg)? ' \u00b7 falta desplegar la funci\u00f3n «usuarios»' : '')); return; }
+      if(error || !data || data.error){ let msg=(data&&data.error)||'';
+        if(!msg && error){ try{ const ctx=error.context; if(ctx&&typeof ctx.json==='function'){ const j=await ctx.json(); msg=(j&&j.error)||''; } }catch(_){} if(!msg) msg=error.message||''; }
+        msg=(msg||'sin respuesta')+(/no encontr|not found|404/i.test(msg)? ' \u00b7 falta desplegar la funci\u00f3n «usuarios»' : '');
+        if(!silencioso) this.toast('Cuenta de acceso: '+msg); return {ok:false, msg}; }
+      if(silencioso) return {ok:true, ...data};
       const t={creada:'Cuenta de acceso creada \u00b7 ya puede entrar con su correo y contrase\u00f1a', actualizada:'Cuenta de acceso actualizada', eliminada:'Cuenta de acceso eliminada', no_existia:'No ten\u00eda cuenta de acceso'}[data.accion];
-      if(t) this.toast(t);
-    }catch(e){ console.warn('usuarios fn:', e); this.toast('No se pudo sincronizar la cuenta de acceso: '+String(e&&e.message||e)); }
+      if(t) this.toast(t); return {ok:true, ...data};
+    }catch(e){ console.warn('usuarios fn:', e); const msg=String(e&&e.message||e); if(!silencioso) this.toast('No se pudo sincronizar la cuenta de acceso: '+msg); return {ok:false, msg}; }
   }
   eliminarUsuario(){ const d=this.state.draft||{}; if(!d._id||!d._custom) return; if(!d._confirmDel){ this.setState(s=>({draft:{...s.draft,_confirmDel:true}})); return; }
     const delU=this.users.find(u=>u.id===d._id)||{};
