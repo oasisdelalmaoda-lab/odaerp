@@ -8414,9 +8414,23 @@ class Component extends DCLogic {
     'Producción y bodega':      { compras:'none',  desarrollo:'read',  ventas:'none',  finanzas:'none',  produccion:'write', inventario:'write', marketing:'none',  conversaciones:'none',  informes:'none', admin:false },
   };
   _usersCfgGet(){ if(!this._usersCfgCache){ let c=null; try{ c=JSON.parse(localStorage.getItem('oda_hub_usuarios_v1')); }catch(e){} if(!c||typeof c!=='object') c={}; this._usersCfgCache={ overrides:(c.overrides||{}), custom:(c.custom||[]), _ts:(Number(c._ts)||0) }; } return this._usersCfgCache; }
-  _usersCfgSave(cfg){ cfg._ts=Date.now(); this._usersCfgCache=cfg; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(cfg)); }catch(e){} if(this.cloudOn&&this.cloudOn()) this.cloudSavePermiso('__usuarios__', cfg); this.forceUpdate(); }
+  _usersCfgSave(cfg){ cfg._ts=Date.now(); this._usersCfgCache=cfg; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(cfg)); }catch(e){} const p=(this.cloudOn&&this.cloudOn())? this._usersCfgNube(cfg) : Promise.resolve(false); this.forceUpdate(); return p; }
+  // La lista de usuarios (con sus contraseñas) se guarda en permisos.__usuarios__ y se VERIFICA con .select:
+  // antes cloudSavePermiso se tragaba cualquier error y el admin creía que había quedado guardado.
+  async _usersCfgNube(cfg){ const sb=this._sbClient(); if(!sb) return false;
+    try{ const {data,error}=await sb.from('permisos').upsert({user_key:'__usuarios__', perms:cfg, actualizado:new Date().toISOString()}).select('user_key'); if(error) throw error; if(!data||!data.length) throw new Error('la nube no confirmó el guardado'); return true; }
+    catch(e){ const m=String((e&&e.message)||e); this.toast('Usuarios: no se guardó en la nube ('+m+'). Queda solo en este equipo.'); try{ window.odaEstado&&window.odaEstado('usuarios: '+m); }catch(_){} return false; } }
+  // Cuando el propio usuario cambia su contraseña (o la restablece por correo), el registro del Hub
+  // debe quedar con la nueva — si no, el admin ve la vieja en «Usuarios y permisos». Se baja primero
+  // la lista de la nube para no pisar cambios más nuevos de otro equipo.
+  async _pwdGuardarEnHub(pwd){ const lu=this.users.find(x=>x.id===this.state.userId); if(!lu) return false;
+    try{ const sb=this._sbClient(); if(sb){ const {data}=await sb.from('permisos').select('perms').eq('user_key','__usuarios__').limit(1); const uc=data&&data[0]&&data[0].perms; const loc=this._usersCfgGet();
+      if(uc && (Number(uc._ts)||0) > (Number(loc._ts)||0)) this._usersCfgCache={ overrides:(uc.overrides||{}), custom:(uc.custom||[]), _ts:(Number(uc._ts)||0) }; } }catch(e){}
+    const c0=this._usersCfgGet(); const cfg={ overrides:{...c0.overrides}, custom:(c0.custom||[]).slice(), _ts:c0._ts };
+    if(this.usersBase.some(u=>u.id===lu.id)) cfg.overrides[lu.id]={...(cfg.overrides[lu.id]||{}), password:pwd}; else cfg.custom=cfg.custom.map(u=>u.id===lu.id?{...u,password:pwd}:u);
+    return await this._usersCfgSave(cfg); }
   get users(){ const cfg=this._usersCfgGet(); return this.usersBase.map(u=>({...u,...(cfg.overrides[u.id]||{})})).concat(cfg.custom||[]); }
-  updateUser(id,patch){ const c0=this._usersCfgGet(); const cfg={ overrides:{...c0.overrides}, custom:(c0.custom||[]).slice(), _ts:c0._ts }; if(this.usersBase.some(u=>u.id===id)) cfg.overrides[id]={...(cfg.overrides[id]||{}),...patch}; else cfg.custom=cfg.custom.map(u=>u.id===id?{...u,...patch}:u); this._usersCfgSave(cfg); }
+  updateUser(id,patch){ const c0=this._usersCfgGet(); const cfg={ overrides:{...c0.overrides}, custom:(c0.custom||[]).slice(), _ts:c0._ts }; if(this.usersBase.some(u=>u.id===id)) cfg.overrides[id]={...(cfg.overrides[id]||{}),...patch}; else cfg.custom=cfg.custom.map(u=>u.id===id?{...u,...patch}:u); return this._usersCfgSave(cfg); }
   _userInitials(n){ const p=String(n||'').trim().split(/\s+/); return (((p[0]||'')[0]||'')+((p[1]||'')[0]||'')).toUpperCase()||'U'; }
   nuevoUsuario(){ this.open('usuario',{_new:true, name:'', email:'', role:'Comercial', password:''}); }
   editarUsuario(u){ this.open('usuario',{_id:u.id, name:u.name, email:u.email, role:u.role, password:u.password, _custom:!this.usersBase.some(x=>x.id===u.id)}); }
@@ -8425,7 +8439,7 @@ class Component extends DCLogic {
     if(!/^\S+@\S+\.\S+$/.test(email)){ this.toast('Escribe un correo v\u00e1lido'); return; }
     if(pwd.length<6){ this.toast('La contrase\u00f1a debe tener al menos 6 caracteres'); return; }
     if(this.users.some(u=>String(u.email||'').toLowerCase()===email && u.id!==d._id)){ this.toast('Ya existe un usuario con ese correo'); return; }
-    if(d._id){ const prev=this.users.find(u=>u.id===d._id)||{}; this.updateUser(d._id,{name,email,role,password:pwd,initials:this._userInitials(name)}); this.close(); this.toast('Usuario actualizado'); this._authSync('actualizar',{name,email,role,password:(pwd!==String(prev.password||'')?pwd:''),prevEmail:String(prev.email||'')}); return; }
+    if(d._id){ const prev=this.users.find(u=>u.id===d._id)||{}; const _pw=this.updateUser(d._id,{name,email,role,password:pwd,initials:this._userInitials(name)}); this.close(); Promise.resolve(_pw).then(ok=>{ if(ok) this.toast('Usuario actualizado y guardado en la nube'); }); this._authSync('actualizar',{name,email,role,password:(pwd!==String(prev.password||'')?pwd:''),prevEmail:String(prev.email||'')}); return; }
     const colors=['#6596A6','#627B60','#9C97A2','#B08A6B','#6B7A9C','#C9A15A','#B5503C','#5A4A33']; const nu={ id:'cu'+Date.now(), name, email, role, password:pwd, initials:this._userInitials(name), color:colors[this.users.length%colors.length] };
     const c0=this._usersCfgGet(); this._usersCfgSave({ overrides:{...c0.overrides}, custom:c0.custom.concat([nu]), _ts:c0._ts });
     const perms={...(this.state.userPerms||{})}; perms[nu.id]={...(this.roles[role]||{})}; this.setState({userPerms:perms}); try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(perms)); }catch(e){} if(this.cloudOn()) this.cloudSavePermiso(nu.id,perms[nu.id]);
@@ -9108,7 +9122,7 @@ class Component extends DCLogic {
     if(a!==b){ this.setState({pwdError:'Las contraseñas no coinciden.'}); return; }
     const sb=this._sbClient(); if(!sb){ this.setState({pwdError:'No hay conexión con la nube. Intenta de nuevo.'}); return; }
     this.setState({pwdBusy:true, pwdError:''});
-    try{ const {error}=await sb.auth.updateUser({password:a}); if(error) throw error; this.setState({pwdModalOpen:false, pwdNew:'', pwdNew2:'', pwdBusy:false}); this.toast('Contraseña actualizada'); }
+    try{ const {error}=await sb.auth.updateUser({password:a}); if(error) throw error; this.setState({pwdModalOpen:false, pwdNew:'', pwdNew2:'', pwdBusy:false}); const ok=await this._pwdGuardarEnHub(a); this.toast(ok? 'Contraseña actualizada' : 'Contraseña actualizada para entrar · el registro del Hub no se pudo guardar en la nube'); }
     catch(e){ const m=(e&&e.message)||''; let es='No se pudo cambiar la contraseña.'; if(/different from the old/i.test(m)) es='La nueva contraseña debe ser distinta a la actual.'; else if(/weak|at least/i.test(m)) es='La contraseña es muy débil. Usa al menos 6 caracteres.'; else if(/session|JWT|expired/i.test(m)) es='Tu sesión expiró. Vuelve a iniciar sesión e inténtalo.'; this.setState({pwdBusy:false, pwdError:es}); }
   }
   access(){ const u=this.users.find(x=>x.id===this.state.userId); if(!u) return null; const p=(this.state.userPerms||{})[u.id]; return p||this.roles[u.role]||null; }
@@ -13200,6 +13214,8 @@ Instrucciones de respuesta:
       rows.push({codigo:m.codigo, nombre:m.nombre||'', clase:'materia', cat, unidad:m.unidad||'und', stock:r3(this.materiaStockActual(m)), minimo:r3(m.stockMinimo), costo:Math.round(Number(m.costo)||0)}); });
     (st.mezclas||[]).forEach(mz=>{ rows.push({codigo:mz.codigo, nombre:'Mezcla '+(mz.nombre||''), clase:'mezcla', cat:'mez', unidad:'ml', stock:r3(this.mezclaMlStock(mz.codigo)), minimo:0, costo:Math.round((this.mezclaCostoMlActual(mz.codigo)||0)*100)/100}); });
     (st.productos||[]).forEach(p=>{ rows.push({codigo:p.codigo, nombre:p.nombre||'', clase:'producto', cat:'pt', unidad:'und', stock:r3(this.productoStockActual(p)), minimo:r3(p.stockMinimo), costo:Math.round(this.productoCosto(p)||0)}); });
+    // Kits: solo su costo (cat 'kit', sin stock) para que la app muestre la rentabilidad de la cotización igual que el Hub.
+    (st.kits||[]).forEach(k=>{ if(!k||!k.codigo) return; rows.push({codigo:k.codigo, nombre:k.nombre||'', clase:'kit', cat:'kit', unidad:'und', stock:0, minimo:0, costo:Math.round(this.kitCosto(k)||0)}); });
     return rows; }
   async publicarInventarioSnapshot(){ const sb=this._sbClient(); if(!sb||!this.cloudOn()||!this.canWriteMod('inventario')) return;
     if(!(this.state.materias||[]).length && !(this.state.productos||[]).length) return; // la carga aún no llegó: no publicar ceros
@@ -14657,7 +14673,7 @@ Instrucciones de respuesta:
   // Ahora: (1) si la firma de las conversaciones no cambió, no se baja nada más ni se re-renderiza;
   // (2) los mensajes se cachean por conversación (_convMsgCache) y solo se re-bajan los de las
   // conversaciones cuyo ultimo_at cambió; (3) _convLoading evita recargas encimadas.
-  async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb||this._convLoading) return; this._convLoading=true; try{
+  async cloudLoadConvs(){ const sb=this._sbClient(); if(!sb) return; if(this._convLoading){ this._convPend=true; return; } this._convLoading=true; this._convPend=false; try{
       const {data:convs,error}=await sb.from('conversaciones').select('*').order('ultimo_at',{ascending:false}).limit(1000); if(error) throw error;
       const sig=(convs||[]).map(r=>r.id+'|'+(r.ultimo_at||'')+'|'+(r.estado||'')+'|'+(r.asignado_a||'')+'|'+(r.no_leidos||0)+'|'+(r.promos_off?1:0)+'|'+(r.cliente||'')).join('~');
       if(sig===this._convSig && this.state.convsCloud){ this._convLoading=false; return; }
@@ -14685,7 +14701,9 @@ Instrucciones de respuesta:
       this._notifFalloIA(list);
       this._cerrarLimiteMkt(list);
       this.setState({convsCloud:list});
-    }catch(e){} this._convLoading=false; }
+    }catch(e){} this._convLoading=false;
+    // Un aviso de realtime que llegó mientras se cargaba (p. ej. otro usuario marcó un chat resuelto) no se pierde.
+    if(this._convPend){ this._convPend=false; setTimeout(()=>this.cloudLoadConvs(), 300); } }
   // Conversaciones que quedaron en «necesita humano» SOLO porque WhatsApp frenó una promoción
   // (código 131049, tope de marketing por usuario): no hay nada que responder → se resuelven.
   // Cubre las viejas (aviso noEntregado con el texto de Meta) y las nuevas (limiteMarketing).
@@ -14837,7 +14855,17 @@ Instrucciones de respuesta:
     this.setState({convSel:null, convMsgDraft:''});
     this.toast('Conversación borrada · el próximo mensaje entra como nueva');
   }
-  convResolver(id){ this.convUpdate(id, c=>({...c, estado:'resuelta', noLeidos:0})); this.cloudSaveConv(id,{estado:'resuelta', no_leidos:0}); this.toast('Conversación marcada como resuelta'); }
+  // Cerrar (resolver) un chat: solo quien lo tiene asignado, o un admin. Un chat sin responsable
+  // (bot / «necesita asesor») o de otra persona solo lo cierra el admin (pedido 25-sep).
+  convPuedeResolver(c){ if(!c || c.estado==='resuelta' || !this.canWriteMod('conversaciones')) return false; if(this.isAdminUser()) return true; const me=(this.state.cloudUser&&this.state.cloudUser.id)||this.state.userId; return !!c.asignadoA && (this._mismoUid(c.asignadoA, me) || this._mismoUid(c.asignadoA, this.state.userId)); }
+  // Se guarda VERIFICADO (.select) para que llegue a todos: si la nube no lo acepta, se revierte y se avisa.
+  async convResolver(id){ const c=this.convList().find(x=>x.id===id); if(!this.convPuedeResolver(c)){ this.toast('Solo quien tiene asignada la conversación o un administrador puede marcarla resuelta'); return; }
+    const antes={estado:c.estado, noLeidos:c.noLeidos||0};
+    this.convUpdate(id, x=>({...x, estado:'resuelta', noLeidos:0}));
+    const sb=this._sbClient(); if(!sb||!this.state.convsCloud){ this.toast('Conversación marcada como resuelta'); return; }
+    try{ const {data,error}=await sb.from('conversaciones').update({estado:'resuelta', no_leidos:0}).eq('id',id).select('id'); if(error) throw error; if(!data||!data.length) throw new Error('la nube no confirmó el cambio');
+      this._convSig=null; this.toast('Conversación marcada como resuelta · se actualiza para todo el equipo'); }
+    catch(e){ const m=String((e&&e.message)||e); this.convUpdate(id, x=>({...x, estado:antes.estado, noLeidos:antes.noLeidos})); this.toast('No se pudo marcar resuelta: '+m); try{ window.odaEstado&&window.odaEstado('conversaciones-resolver: '+m); }catch(_){} } }
   // ===== ADJUNTOS Y RESPUESTAS DE KIT EN EL CHAT =====
   // El adjunto viaja DENTRO del texto del borrador como una etiqueta al inicio ([IMG:url] o
   // [DOC:url|nombre]) — igual que en la app y que los mensajes del bot. Así el asesor puede
@@ -15928,7 +15956,7 @@ Instrucciones de respuesta:
     out.convActsToggle=()=>this.setState(s=>({convActsOpen:!s.convActsOpen}));
       if(cc){ const cm=this.convCanalMeta(cc.canal), em=this.convEstadoMeta(cc.estado);
         out.cv={ id:cc.id, cliente:cc.cliente, promosOff:!!cc.promosOff, cerrAuto:!!cc.cerradaAuto, sinResp:!!cc.sinRespuesta, esWa:cc.canal==='whatsapp', esIg:cc.canal==='instagram', esMs:cc.canal==='messenger', esWeb:cc.canal==='web', logoBg:_logoBg(cc.canal), esTuTurno:_esperando(cc), online:(cc.canal==='web' && (st.webOnline||[]).indexOf(String(cc.id))>=0), telefono:cc.telefono||'', hayTel:!!cc.telefono, canalL:cm.l, canalBg:cm.bg, canalFg:cm.fg, estadoL:em.l, estadoBg:em.bg, estadoFg:em.fg, estadoDot:em.dot, intencionL:(cc.intencion==='ventas'?'Intención de compra':(cc.intencion==='servicio'?'Servicio postventa':'Consulta general')),
-          esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:cc.estado!=='resuelta',
+          esBot:cc.estado==='bot'||cc.estado==='necesita', esHumano:cc.estado==='humano', noResuelta:this.convPuedeResolver(cc),
           mensajes:this._convDedupMsgs(cc.mensajes||[]).map((m,i,arr)=>{ const esCliente=m.de==='cliente'; const esSys=m.de==='sistema'; const im=/^\[IMG:([^\]]+)\]\s*([\s\S]*)$/.exec(String(m.texto||'').trim()); const dc=im?null:/^\[DOC:([^|\]]+)\|?([^\]]*)\]\s*([\s\S]*)$/.exec(String(m.texto||'').trim()); const prev=arr[i-1]; const nuevoDia=!!(m.fecha && (!prev || prev.fecha!==m.fecha)); const _cita=String(m.respondeA||'').trim(); const _citaIm=/^\[IMG:(.+)\]$/.exec(_cita); return { hayCita:!!_cita, citaTxt:(_citaIm?'📷 Foto que le enviamos':_cita.slice(0,180)), citaEsImg:!!_citaIm, citaImg:_citaIm?_citaIm[1]:'', texto:(im? (im[2]||'') : (dc? (dc[3]||'') : m.texto)), esImg:!!im, img:im?im[1]:'', esDoc:!!dc, docUrl:dc?dc[1]:'#', docNombre:dc?(dc[2]||decodeURIComponent(dc[1].split('/').pop()||'archivo').replace(/^\d+_\d+_/,'')):'', hora:m.hora||'', nuevoDia, fechaL:this._convFechaLabel(m.fecha), sello:((m.fecha? this._convFechaLabel(m.fecha)+' · ':'')+(m.hora||'')), quien:(esSys?'Aviso del sistema':(m.de==='bot'?'Agente IA · Oda':(m.de==='asesor'?(this.leadUName(m.asesor||cc.asignadoA)||'Asesor'):cc.cliente))), align:esSys?'center':(esCliente?'flex-start':'flex-end'), bg:esSys?'rgba(181,80,60,0.08)':(esCliente?'var(--surface-card)':(m.de==='bot'?'rgba(167,134,89,0.14)':'var(--brand-primary)')), fg:esSys?(m.limiteMkt?'var(--text-muted)':'#8A4A3C'):(esCliente?'var(--text-strong)':(m.de==='bot'?'var(--text-strong)':'var(--text-on-brand)')), bd:esSys?(m.limiteMkt?'1px dashed var(--border-strong)':'1px dashed rgba(181,80,60,0.45)'):(esCliente?'1px solid var(--border-subtle)':'none'), noEntregado:!!(esSys&&m.noEntregado), canalL:this._convCanalNativo(cc.canal).l, nativoUrl:this._convCanalNativo(cc.canal).url, onManual:()=>this.convMarcarManual(cc.id) }; }) };
         out.convAsigVal=this._uidCanon(cc.asignadoA)||''; out.onConvAsignar=(e)=>this.convAsignar(cc.id, e.target.value);
         // El perfil de la nube puede venir SIN nombre: si se usa tal cual, la <option> queda
