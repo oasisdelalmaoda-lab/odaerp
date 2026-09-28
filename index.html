@@ -3449,12 +3449,11 @@
               </div>
               <sc-if value="{{ baseNotCamp }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
-                <sc-if value="{{ ventasCargando }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--brand-primary);background:rgba(167,134,89,0.14);border-radius:99px;padding:5px 12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand-primary);animation:odaPulse 1s ease-in-out infinite;"></span>Cargando ventas de la nube…</span></sc-if>
-                <div style="flex:1;"></div>
-                
                 <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
                   <sc-for list="{{ baseCanalChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}</button></sc-for>
                 </div>
+                <sc-if value="{{ ventasCargando }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--brand-primary);background:rgba(167,134,89,0.14);border-radius:99px;padding:5px 12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand-primary);animation:odaPulse 1s ease-in-out infinite;"></span>Cargando ventas de la nube…</span></sc-if>
+                <div style="flex:1;"></div>
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                   <div style="display:flex;align-items:center;gap:7px;background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 14px;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
@@ -6847,7 +6846,7 @@
 
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px;">
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Envío (COP)<input name="envio" type="number" value="{{ draft.envio }}" onInput="{{ onDraftInput }}" placeholder="0" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
-                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Método de pago<select name="metodoPago" value="{{ draft.metodoPago }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">—</option><sc-for list="{{ metodosPagoOptions }}" as="m" hint-placeholder-count="3"><option value="{{ m }}">{{ m }}</option></sc-for></select></label>
+                <label style="font-size:12px;font-weight:700;color:var(--text-body);">Método de pago<select name="metodoPago" value="{{ draft.metodoPago }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">—</option><sc-for list="{{ metodosPagoOptions }}" as="m" hint-placeholder-count="3"><option value="{{ m }}">{{ m }}</option></sc-for></select><sc-if value="{{ venBoldLinkOpc }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11.5px;font-weight:600;color:var(--brand-ink);cursor:pointer;"><input type="checkbox" checked="{{ venBoldLinkGen }}" onChange="{{ onToggleBoldLinkGen }}" style="accent-color:var(--brand-primary);margin:0;">Generar link de pago Bold al guardar</span></sc-if></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Pagado (COP)<input name="pagado" type="number" value="{{ draft.pagado }}" onInput="{{ onDraftInput }}" placeholder="0 · por cobrar" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
               <label style="display:flex;align-items:center;gap:9px;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--text-strong);cursor:pointer;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 14px;"><input name="_pagoTotal" type="checkbox" checked="{{ venPagoTotal }}" onChange="{{ onDraftCheck }}" style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;">Ya está pagada · marcar como pago total<span style="font-weight:400;color:var(--text-muted);">(si no, queda como «Por cobrar»)</span></label>
@@ -7320,6 +7319,27 @@
                   <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;">Consignación</div>
                   <label style="font-size:12px;font-weight:700;color:var(--text-body);display:block;">Esta venta descuenta de la tienda<select value="{{ detConsignSel }}" onChange="{{ onDetConsign }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">— Inventario propio (no consignación) —</option><sc-for list="{{ detConsignOptions }}" as="t" hint-placeholder-count="0"><option value="{{ t.id }}">{{ t.nombre }}</option></sc-for></select></label>
                   <p style="font-size:10.5px;color:var(--text-muted);margin:7px 0 0;line-height:1.45;">Si marcas una tienda, las unidades salen del stock en consignación de esa tienda y NO del inventario propio.</p>
+                </div>
+              </sc-if>
+              <sc-if value="{{ detBoldMostrar }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;">
+                    <span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;flex:1;">Link de pago Bold</span>
+                    <sc-if value="{{ detBoldHay }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:{{ detBoldLink.estadoBg }};color:{{ detBoldLink.estadoFg }};">{{ detBoldLink.estado }}</span></sc-if>
+                  </div>
+                  <sc-if value="{{ detBoldHay }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12.5px;font-weight:700;color:var(--brand-ink);word-break:break-all;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:8px 10px;">{{ detBoldLink.url }}</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">{{ detBoldLink.info }}</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;">
+                      <button onClick="{{ detBoldOnWa }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);">Enviar por WhatsApp</button>
+                      <button onClick="{{ detBoldOnCopiar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Copiar</button>
+                      <button onClick="{{ detBoldOnAbrir }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Abrir</button>
+                      <button onClick="{{ detBoldOnEstado }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Consultar estado</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ detBoldSin }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">Este pedido aún no tiene link de pago.</div></sc-if>
+                  <sc-if value="{{ detBoldPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ detBoldOnGen }}" style="margin-top:10px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--brand-primary);background:transparent;color:var(--brand-primary);cursor:pointer;" style-hover="background:rgba(167,134,89,0.1);">{{ detBoldGenTxt }}</button></sc-if>
+                  <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px;line-height:1.4;">Cuando el cliente paga, el pago llega a Finanzas → Bold y se cruza solo con este pedido (referencia del link).</div>
                 </div>
               </sc-if>
               <div style="margin-top:16px;background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.28);border-radius:var(--radius-md);padding:12px 14px;">
@@ -11681,7 +11701,11 @@ Instrucciones de respuesta:
     const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true), costoUnit:this._itemConCosto(it, it.productoCodigo||''), kitItems:this._itemKitSnap(it, it.productoCodigo||'', _fecha)}; });
     // Consecutivo OV: para pedidos nuevos (o si el OV mostrado quedó viejo por sincronización de nube y ahora choca con otro), se recalcula el siguiente libre AL GUARDAR.
     const _ovNumDraft=this.ovNum({ov:d._ov}); const _ovDup=(this.state.ventas||[]).some(v=>v.id!==d.id && v.origen!=='historico' && this.ovNum(v)===_ovNumDraft && _ovNumDraft>0); const _ov=(d._new || _ovDup || !_ovNumDraft)? this.nextOV() : d._ov;
-    const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', direccion:d.direccion||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || this.metodoAutoPagado(d.metodoPago))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true) };
+    // Link de pago Bold: un pedido manual NUEVO con método Bold genera su link al guardar (se puede desmarcar en el modal).
+    // Mientras el link no se pague, la venta queda con pagado=0 (no se asume cobrada como el resto de Bold).
+    const _linkBold=!!(d._new && (d.origen||'manual')==='manual' && this._esBold(d.metodoPago) && d.boldLinkGen!==false);
+    const _linkPend=_linkBold || !!(d.boldLink && d.boldLink.estado!=='PAID' && this._esBold(d.metodoPago));
+    const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, boldLink:(d.boldLink||undefined), boldLinkRefs:(Array.isArray(d.boldLinkRefs)?d.boldLinkRefs:undefined), canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', direccion:d.direccion||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || (this.metodoAutoPagado(d.metodoPago) && !_linkPend))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true) };
     let list=(this.state.ventas||[]).slice(); const rowFinal=d._new?this.applyPackagingRules(row):row;
     // Si un humano edita a mano los ítems de un pedido que vino de Shopify, esa corrección queda protegida:
     // la próxima sincronización ya no puede sobrescribir sus referencias/SKU.
@@ -11690,7 +11714,40 @@ Instrucciones de respuesta:
     this.setState({ventas:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveVenta(rowFinal);
     const _pb=this.ventaProblemas(rowFinal);
     if(_pb.length) this.toast('⚠ Venta '+rowFinal.ov+' registrada, pero '+_pb.length+' referencia(s) sin crear o sin costo: '+_pb.map(p=>p.sku+' ('+p.motivo+')').join(' · '));
-    else this.toast('Venta '+rowFinal.ov+' registrada · stock actualizado'); }
+    else this.toast('Venta '+rowFinal.ov+' registrada · stock actualizado'+(_linkBold?' · generando link de pago Bold…':''));
+    if(_linkBold){ if(this.cloudOn()) setTimeout(()=>this.boldCrearLink(rowFinal.id, true), 400); else this.toast('Sin conexión a la nube: el link de pago Bold se genera desde el detalle del pedido.'); } }
+  // ===== LINK DE PAGO BOLD (pedidos manuales) =====
+  // La función bold-link crea el link con la llave de identidad (nunca en el navegador). Referencia única
+  // OV-…-<ts>; el pago llega por bold-webhook con esa referencia y boldSugerencias lo cruza EXACTO con la venta.
+  _esBold(m){ return /bold/i.test(String(m||'')); }
+  _boldLinkMonto(v){ const total=Math.round(this.ventaTotal(v)); const monto=Math.max(0, total-(Number(v.abono)||0)); const iva=total>0? Math.round(this.ventaIvaGen(v)*monto/total) : 0; return {monto, iva}; }
+  async _boldGuardarVenta(id, fn){ const list=(this.state.ventas||[]).map(x=> x.id===id? fn(x) : x); const nv=list.find(x=>x.id===id); this.setState({ventas:list},()=>this.persist());
+    const sb=this._sbClient(); if(!sb||!nv) return true;
+    try{ const {data,error}=await sb.from('ventas').upsert(this._ventaToDb(nv)).select('id'); if(error||!data||!data.length) throw (error||new Error('la nube no confirmó')); return true; }
+    catch(e){ try{ window.odaEstado && window.odaEstado('ventas-boldlink: '+String((e&&e.message)||e).slice(0,90)); }catch(_e){} this.toast('⚠ El link quedó en este equipo pero la nube no confirmó el guardado. Vuelve a intentarlo.'); return false; } }
+  async boldCrearLink(id, auto){ const v=(this.state.ventas||[]).find(x=>x.id===id); if(!v) return; const sb=this._sbClient(); if(!sb){ this.toast('Sin conexión a la nube'); return; }
+    if(this._boldLinkBusy) return; this._boldLinkBusy=id; this.forceUpdate();
+    try{ const {monto, iva}=this._boldLinkMonto(v); if(monto<1000){ this.toast('El saldo del pedido es menor a $1.000: no se puede generar link.'); return; }
+      const ref=(String(v.ov||v.pedido||'OV').replace(/[^A-Za-z0-9-]/g,'')||'OV')+'-'+Date.now().toString(36).toUpperCase();
+      const desc='Oasis del Alma · '+(v.ov||'')+(v.pedido?' · '+v.pedido:'')+(v.cliente?' · '+this.titleCase(v.cliente):'');
+      const {data,error}=await sb.functions.invoke('bold-link',{ body:{ modo:'crear', referencia:ref, monto, iva, descripcion:desc } });
+      let msg=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) msg=j.error; } }catch(_e){} msg=msg||((error&&error.message)||'bold-link no respondió'); }
+      else if(!data||!data.ok||!data.url) msg=(data&&data.error)||'Bold no devolvió el link';
+      if(msg){ try{ window.odaEstado && window.odaEstado('ventas-boldlink: '+String(msg).slice(0,90)); }catch(_e){} this.toast('No se pudo generar el link de pago Bold: '+msg); return; }
+      const link={ id:data.id||'', url:data.url, ref, monto, iva, creado:new Date().toISOString(), por:this.recMeNombre(), estado:'ACTIVE' };
+      const ok=await this._boldGuardarVenta(id, x=>({...x, boldLink:link, boldLinkRefs:[...new Set([...(x.boldLinkRefs||[]), ...(x.boldLink&&x.boldLink.ref?[x.boldLink.ref]:[]), ref])] }));
+      try{ navigator.clipboard && navigator.clipboard.writeText(data.url); }catch(_e){}
+      if(ok) this.toast('Link de pago Bold listo y copiado · '+this.fmt(monto));
+      if(auto) this.setState({modal:'detalleventa', detalleId:id});
+    }finally{ this._boldLinkBusy=null; this.forceUpdate(); } }
+  async boldConsultarLink(id){ const v=(this.state.ventas||[]).find(x=>x.id===id); const bl=v&&v.boldLink; if(!bl||!bl.id) return; const sb=this._sbClient(); if(!sb) return;
+    try{ const {data,error}=await sb.functions.invoke('bold-link',{ body:{ modo:'estado', id:bl.id } }); if(error||!data||!data.ok) throw new Error((data&&data.error)||'sin respuesta');
+      const est=String(data.estado||'').toUpperCase(); if(!est){ this.toast('Bold no informó el estado'); return; }
+      if(est==='PAID') await this._boldLinkPagado(id); else await this._boldGuardarVenta(id, x=>({...x, boldLink:{...(x.boldLink||{}), estado:est, revisado:new Date().toISOString()}}));
+      this.toast('Estado del link: '+(this._boldLinkEstadoTxt(est)));
+    }catch(e){ this.toast('No se pudo consultar el link: '+((e&&e.message)||e)); } }
+  async _boldLinkPagado(id){ return this._boldGuardarVenta(id, x=>{ const tot=this.ventaTotal(x); return {...x, pagado:Math.max(Number(x.pagado)||0, tot), fechaCobro:(x.fechaCobro||new Date().toISOString().slice(0,10)), boldLink:{...(x.boldLink||{}), estado:'PAID', pagadoAt:new Date().toISOString()}}; }); }
+  _boldLinkEstadoTxt(e){ return ({ACTIVE:'Activo · esperando pago', PROCESSING:'Pago en proceso', PAID:'Pagado', REJECTED:'Pago rechazado', CANCELLED:'Cancelado', EXPIRED:'Vencido'})[String(e||'').toUpperCase()]||String(e||'—'); }
   verVenta(v){ this.setState({modal:'detalleventa',detalleId:v.id}); }
   // ---- MSVC · muestras sin valor comercial ----
   nuevaMsvc(){ this.open('msvc',{ _new:true, fecha:new Date().toISOString().slice(0,10), responsableId:(this.state.userId||''), destinatario:'', ciudad:'', motivo:'', items:[], _selProd:'', _selProdText:'', _selUnidades:1 }); }
@@ -11980,7 +12037,7 @@ Instrucciones de respuesta:
     this.setState({boldLoading:true});
     try{ const {data,error}=await sb.from('bold_pagos').select('*').order('creado_at',{ascending:false}).limit(600);
       if(error) throw error;
-      this.setState({boldPagos:(data||[]), boldLoading:false, boldErr:''}, ()=>this.boldAutoMarcarFormas());
+      this.setState({boldPagos:(data||[]), boldLoading:false, boldErr:''}, ()=>{ this.boldAutoMarcarFormas(); this.boldAutoCruzar(); });
     }catch(e){ this.setState({boldPagos:(this.state.boldPagos||[]), boldLoading:false, boldErr:(e&&e.message)||'No se pudo cargar'}); }
     // Referencias de pago de Shopify: la «Referencia de la orden» que muestra Bold es el mismo
     // ID de pago que Shopify guarda en la transacción, así que el cruce sale exacto.
@@ -12032,6 +12089,9 @@ Instrucciones de respuesta:
   // referencia y se cuadran a mano desde la pantalla.
   _boldNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
   boldSugerencias(p){ const ref=String(p.referencia||'').trim();
+    // 0) Link de pago generado desde el Hub: la referencia es la del link guardado en la venta.
+    if(ref){ const vl=(this.state.ventas||[]).find(v=>!v.cancelada && ((v.boldLink&&v.boldLink.ref===ref) || (Array.isArray(v.boldLinkRefs)&&v.boldLinkRefs.includes(ref))));
+      if(vl) return [{ exacta:true, pedido:(String(vl.pedido||'').trim()||vl.ov), cliente:vl.cliente, total:this.ventaTotal(vl), s:100, ventaId:vl.id }]; }
     // 1) Cruce exacto: la referencia de Bold es el ID de pago de la transacción en Shopify.
     const mapa=this.state.boldRefs;
     const exacta=mapa && mapa[ref];
@@ -12063,13 +12123,14 @@ Instrucciones de respuesta:
   // (boldRefs), el pago se cruza solo — sin clics. Solo cruces exactos; lo demás queda a mano.
   async boldAutoCruzar(){ if(this._autoCruzando) return; this._autoCruzando=true; try{
     const acc=this.access(); if(!acc || this._modLevel(acc,'finanzas')!=='write') return;
-    const sb=this._sbClient(); if(!sb || !this.state.boldRefs) return;
+    const sb=this._sbClient(); if(!sb) return;
     const pend=(this.state.boldPagos||[]).filter(p=>p.aprobado&&!p.anulado&&!p.conciliado);
     const usados={}; (this.state.boldPagos||[]).forEach(p=>{ if(p.conciliado&&p.pedido) usados[String(p.pedido).replace(/\D/g,'')||String(p.pedido)]=1; });
     let n=0;
     for(const p of pend){ const sug=this.boldSugerencias(p); const ex=(sug[0]&&sug[0].exacta)?sug[0]:null; if(!ex||!ex.pedido) continue;
       const k=String(ex.pedido).replace(/\D/g,'')||String(ex.pedido); if(usados[k]) continue; usados[k]=1;
-      try{ await sb.from('bold_pagos').update({pedido:ex.pedido, conciliado:true, conciliado_por:'auto · ID de pago', conciliado_at:new Date().toISOString()}).eq('payment_id',p.payment_id); n++; }catch(e){} }
+      try{ await sb.from('bold_pagos').update({pedido:ex.pedido, conciliado:true, conciliado_por:(ex.ventaId?'auto · link de pago':'auto · ID de pago'), conciliado_at:new Date().toISOString()}).eq('payment_id',p.payment_id); n++;
+        if(ex.ventaId) await this._boldLinkPagado(ex.ventaId); }catch(e){} }
     if(n){ this.toast(n===1? '1 pago Bold se cruzó solo por su ID de pago' : (n+' pagos Bold se cruzaron solos por su ID de pago')); await this.cloudLoadBold(); }
   }finally{ this._autoCruzando=false; } }
   // ===== PUENTE ODA LABS (solo lectura) =====
@@ -17689,6 +17750,8 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       }
       const curMet=st.draft.metodoPago? [st.draft.metodoPago]:[];
       out.metodosPagoOptions=[...new Set([...curMet, ...metodoBaseOpts].filter(Boolean))];
+      out.venBoldLinkOpc=!!(st.modal==='venta' && st.draft._new && (st.draft.origen||'manual')==='manual' && this._esBold(st.draft.metodoPago)); out.venBoldLinkGen=(st.draft.boldLinkGen!==false);
+      out.onToggleBoldLinkGen=(e)=>{ const c=!!(e&&e.target&&e.target.checked); this.setState(s=>({draft:{...s.draft, boldLinkGen:c}})); };
     }
     if(st.modal==='cotizacion'){ const d2=st.draft;
       out.cotProdOptions=this.cotProdOptionsLabeled();
@@ -17727,6 +17790,20 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.onToggleVentaLock=()=>{ const list=(this.state.ventas||[]).map(x=>x.id===v.id?{...x, itemsLocked:!x.itemsLocked}:x); this.setState({ventas:list},()=>this.persist()); const nv=list.find(x=>x.id===v.id); if(this.cloudOn()) this.cloudSaveVenta(nv); this.toast(nv.itemsLocked?'SKU protegidos de este pedido':'Se permite que Shopify vuelva a actualizar el SKU'); };
       out.detVenta={ ov:v.ov||'—', pedido:v.pedido||'—', fechaFmt:this.fmtFecha(v.fecha), canal:v.canal, canalBg:cs.bg, canalFg:cs.fg, cliente:v.cliente, ciudad:v.ciudad||'—', celular:v.celular||'—', cedula:v.cedula||'—', correo:v.correo||'—', bodega:v.bodega||'—', metodoPago:v.metodoPago||'—', guia:v.guia||'—', origenLabel:this.origenLabel(v.origen), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), items:(v.items||[]).map((it,idx)=>{ const c=it.productoCodigo||it.referencia; const pp=(this.state.productos||[]).find(x=>x.codigo===c); const kk=(this.state.kits||[]).find(x=>x.codigo===c); const em=(v.origen==='manual'); return {nombre:(pp?pp.nombre:(kk?kk.nombre:(this.fixTxt(it.producto)||it.referencia))), referencia:it.referencia||'—', unidades:it.unidades, valorUnit:(Number(it.valorUnit)||0), valorFmt:this.fmt(it.valorUnit), subtotalFmt:this.fmt((Number(it.unidades)||0)*(Number(it.valorUnit)||0)), editable:em, readonly:!em, onSetCant:((i)=>(e)=>this.setVentaItemCant(v.id,i,e.target.value))(idx), onSetValor:((i)=>(e)=>this.setVentaItemValor(v.id,i,e.target.value))(idx)}; }), subtotalFmt:this.fmt(Math.round(this.ventaSubtotal(v))), envioFmt:this.fmt(v.envio||0), envioIvaFmt:this.fmt(this.ventaIvaEnvio(v)), envioConIva:this.ventaIvaEnvio(v)>0, fleteEntregaFmt:this.fmt(v.fleteEntrega||0), tieneFleteEntrega:(Number(v.fleteEntrega)||0)>0, fleteCuentaTxt:(v.fleteCuenta||'—'), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), hayAbono:(this.ventaAbono(v)>0), abonoFmt:this.fmt(Math.round(this.ventaAbono(v))), abonoMetodoTxt:(v.abonoMetodo||'—'), abonoCuentaTxt:(v.abonoCuenta||'—'), abonoFechaFmt:(v.abonoFecha?this.fmtFecha(v.abonoFecha):'—'), saldoRecaudoFmt:this.fmt(Math.round(this.ventaRecaudoBruto(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.max(0,Math.round(this.ventaSaldo(v)))), hayExc:this.ventaSaldo(v)<-0.5, excFmt:this.fmt(Math.round(Math.max(0,-this.ventaSaldo(v)))), costoFmt:this.fmt(Math.round(this.ventaCosto(v))), margenFmt:this.fmt(Math.round(this.ventaSubtotal(v)-this.ventaCosto(v))), onEditar:()=>this.editVenta(v) };
       out.detVentaEsManual=(v.origen==='manual');
+      { const bl=v.boldLink||null; const esB=this._esBold(v.metodoPago); const busy=(this._boldLinkBusy===v.id); const puede=(this._modLevel(this.access()||{},'ventas')==='write');
+        out.detBoldMostrar=!!(bl || (esB && v.origen==='manual' && !v.cancelada));
+        out.detBoldHay=!!(bl&&bl.url); out.detBoldSin=!(bl&&bl.url); out.detBoldPuede=!!puede && !v.cancelada; out.detBoldBusy=busy;
+        out.detBoldGenTxt=busy? 'Generando…' : (bl&&bl.url? 'Generar uno nuevo' : 'Generar link de pago Bold');
+        const est=bl? String(bl.estado||'ACTIVE').toUpperCase() : ''; out.detBoldPagado=(est==='PAID');
+        out.detBoldLink={ url:(bl&&bl.url)||'', estado:this._boldLinkEstadoTxt(est), estadoFg:(est==='PAID'?'#4C6149':(/REJECTED|CANCELLED|EXPIRED/.test(est)?'#B5503C':'#7A5E36')), estadoBg:(est==='PAID'?'rgba(98,123,96,0.14)':(/REJECTED|CANCELLED|EXPIRED/.test(est)?'rgba(181,80,60,0.1)':'rgba(167,134,89,0.14)')),
+          info:bl? (this.fmt(Number(bl.monto)||0)+(Number(bl.iva)>0?' · IVA '+this.fmt(Number(bl.iva)):'')+' · creado '+this.fmtFecha(String(bl.creado||'').slice(0,10))+(bl.por?' por '+bl.por:'')+' · sin vencimiento') : '' };
+        out.detBoldOnGen=()=>{ if(busy) return; if(bl&&bl.url&&est!=='PAID'&&!window.confirm('Ya hay un link para este pedido. ¿Generar uno nuevo? El anterior sigue activo en Bold (los links no vencen); si el cliente paga cualquiera de los dos, el pago se cruza igual con este pedido.')) return; this.boldCrearLink(v.id, false); };
+        out.detBoldOnCopiar=()=>{ try{ navigator.clipboard.writeText(bl.url); this.toast('Link copiado'); }catch(e){ window.prompt('Copia el link:', bl.url); } };
+        out.detBoldOnAbrir=()=>{ try{ window.open(bl.url,'_blank'); }catch(e){} };
+        out.detBoldOnEstado=()=>this.boldConsultarLink(v.id);
+        out.detBoldOnWa=()=>{ const cel=String(v.celular||'').replace(/\D/g,''); const full=cel? (cel.length===10?'57'+cel:cel) : ''; const nom=this.titleCase(String(v.cliente||'').split(' ')[0]||'');
+          const txt='Hola'+(nom?' '+nom:'')+' 💛 Te comparto el link para pagar tu pedido '+(v.ov||'')+' de Oasis del Alma por '+this.fmt(Number(bl.monto)||0)+':\n'+bl.url+'\n\nPuedes pagar con tarjeta, PSE, Nequi o Botón Bancolombia.';
+          try{ navigator.clipboard && navigator.clipboard.writeText(txt); }catch(e){} try{ window.open(full?('https://wa.me/'+full+'?text='+encodeURIComponent(txt)):('https://wa.me/?text='+encodeURIComponent(txt)),'_blank'); }catch(e){} }; }
       out.waHabilitado=this.waConfigurado(); out.waNoHabilitado=!this.waConfigurado();
       out.waSinCel=!String(v.celular||'').replace(/\D/g,''); out.waConCel=!!String(v.celular||'').replace(/\D/g,'');
       out.waBotones=Object.entries(this.waTemplates()).map(([key,t])=>({ key, label:t.label, enviado:this.waYaEnviado(v,key), onClick:()=>this.waSendManual(v,key) }));
