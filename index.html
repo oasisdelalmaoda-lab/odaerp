@@ -3437,6 +3437,11 @@
                   <button onClick="{{ onBaseTabPanorama }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabPanBg }};color:{{ baseTabPanFg }};transition:background 140ms;">Histórico</button>
                   <button onClick="{{ onBaseTabClientes }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:8px 20px;border:none;border-radius:99px;cursor:pointer;background:{{ baseTabCliBg }};color:{{ baseTabCliFg }};transition:background 140ms;">Clientes · Inteligencia</button>
                 </div>
+                <sc-if value="{{ baseNotCamp }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:4px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
+                  <sc-for list="{{ baseMeses }}" as="mm" hint-placeholder-count="13"><button onClick="{{ mm.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 12px;border:none;border-radius:99px;cursor:pointer;background:{{ mm.bg }};color:{{ mm.fg }};">{{ mm.label }}</button></sc-for>
+                </div>
+                </sc-if>
                 <div style="flex:1;"></div>
                 <div style="display:flex;gap:6px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
                   <sc-for list="{{ baseYears }}" as="y" hint-placeholder-count="4"><button onClick="{{ y.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;background:{{ y.bg }};color:{{ y.fg }};">{{ y.label }}</button></sc-for>
@@ -3444,9 +3449,6 @@
               </div>
               <sc-if value="{{ baseNotCamp }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
-                <div style="display:flex;gap:4px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
-                  <sc-for list="{{ baseMeses }}" as="mm" hint-placeholder-count="13"><button onClick="{{ mm.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 12px;border:none;border-radius:99px;cursor:pointer;background:{{ mm.bg }};color:{{ mm.fg }};">{{ mm.label }}</button></sc-for>
-                </div>
                 <sc-if value="{{ ventasCargando }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--brand-primary);background:rgba(167,134,89,0.14);border-radius:99px;padding:5px 12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand-primary);animation:odaPulse 1s ease-in-out infinite;"></span>Cargando ventas de la nube…</span></sc-if>
                 <div style="flex:1;"></div>
                 
@@ -3462,10 +3464,10 @@
                     <sc-for list="{{ baseProdOpts }}" as="o" hint-placeholder-count="1"><option value="{{ o.val }}">{{ o.label }}</option></sc-for>
                   </select>
                   <sc-if value="{{ baseFiltrosOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ baseLimpiarFiltros }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 14px;border:1px solid var(--border-subtle);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">Limpiar</button></sc-if>
-                </div>
-                <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}">
-                  <button onClick="{{ nuevaBaseImport }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Importar histórico</button>
+                  <sc-if value="{{ canWriteVentas }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ nuevaBaseImport }}" style="display:flex;align-items:center;gap:7px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Importar histórico</button>
                 </sc-if>
+                </div>
               </div>
 
               </sc-if>
