@@ -6837,6 +6837,12 @@
                     <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:12.5px;">Agrega los productos o kits de esta venta.</div>
                   </sc-if>
                 </div>
+                <sc-if value="{{ drEmpHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:12px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--surface-card);overflow:hidden;">
+                    <div style="padding:8px 12px;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;background:var(--surface-raised);">Material de empaque de este pedido · genera costo y descuenta inventario</div>
+                    <sc-for list="{{ drEmpaques }}" as="e" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--border-subtle);font-size:12.5px;"><span style="flex:1;min-width:0;">{{ e.nombre }} <span style="color:var(--text-muted);font-size:11px;">{{ e.codigo }}</span></span><span style="color:var(--text-muted);white-space:nowrap;">{{ e.cantidad }} {{ e.unidad }}</span><span style="font-weight:700;min-width:80px;text-align:right;">{{ e.costoFmt }}</span><button onClick="{{ e.onRemove }}" style="background:none;border:none;color:var(--oda-sale);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Quitar</button></div></sc-for>
+                  </div>
+                </sc-if>
                 <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border-subtle);">
                   <label style="width:150px;font-size:11.5px;font-weight:700;color:var(--brand-primary);">Descuento masivo (%)<input name="descuentoMasivo" type="number" min="0" max="100" value="{{ draft.descuentoMasivo }}" onInput="{{ onDraftInput }}" placeholder="0" style="display:block;width:100%;margin-top:4px;font-family:inherit;font-size:13px;font-weight:700;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"></label>
                   <button onClick="{{ aplicarDescuentoMasivo }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:var(--radius-sm);border:1px solid var(--brand-primary);background:rgba(167,134,89,0.12);color:var(--brand-ink);cursor:pointer;white-space:nowrap;">Aplicar a todo el pedido</button>
@@ -6954,6 +6960,31 @@
                     <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:12.5px;">Agrega los productos a cotizar.</div>
                   </sc-if>
                 </div>
+                <sc-if value="{{ cotInvHayItems }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onCotInvToggle }}" style="margin-top:10px;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--brand-primary);background:transparent;color:var(--brand-primary);cursor:pointer;" style-hover="background:rgba(167,134,89,0.1);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>{{ cotInvToggleTxt }}</button></sc-if>
+                <sc-if value="{{ cotInvAbierto }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
+                    <div style="font-size:12.5px;font-weight:700;padding:9px 12px;border-radius:var(--radius-sm);background:{{ cotInvBg }};border:1px solid {{ cotInvBd }};color:{{ cotInvFg }};line-height:1.45;">{{ cotInvResumen }}</div>
+                    <sc-if value="{{ cotInvHayPT }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--surface-card);overflow:hidden;">
+                        <div style="display:grid;grid-template-columns:minmax(0,1fr) 64px 64px minmax(96px,auto);gap:8px;padding:7px 12px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;background:var(--surface-raised);"><span>Producto terminado</span><span style="text-align:right;">Pide</span><span style="text-align:right;">Bodega</span><span style="text-align:right;">Acción</span></div>
+                        <sc-for list="{{ cotInvPT }}" as="r" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:minmax(0,1fr) 64px 64px minmax(96px,auto);gap:8px;padding:7px 12px;font-size:12px;border-top:1px solid var(--border-subtle);align-items:center;"><span style="min-width:0;">{{ r.nombre }} <span style="color:var(--text-muted);font-size:11px;">{{ r.codigo }}</span></span><span style="text-align:right;">{{ r.nec }}</span><span style="text-align:right;color:var(--text-muted);">{{ r.disp }}</span><span style="text-align:right;font-weight:700;color:{{ r.fg }};">{{ r.estado }}</span></div></sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ cotInvHayMez }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--surface-card);overflow:hidden;">
+                        <div style="display:grid;grid-template-columns:minmax(0,1fr) 72px 72px minmax(110px,auto);gap:8px;padding:7px 12px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;background:var(--surface-raised);"><span>Mezclas (ml)</span><span style="text-align:right;">Necesita</span><span style="text-align:right;">Hay</span><span style="text-align:right;">Estado</span></div>
+                        <sc-for list="{{ cotInvMez }}" as="r" hint-placeholder-count="1"><div style="display:grid;grid-template-columns:minmax(0,1fr) 72px 72px minmax(110px,auto);gap:8px;padding:7px 12px;font-size:12px;border-top:1px solid var(--border-subtle);align-items:center;"><span style="min-width:0;">{{ r.nombre }}</span><span style="text-align:right;">{{ r.nec }}</span><span style="text-align:right;color:var(--text-muted);">{{ r.disp }}</span><span style="text-align:right;font-weight:700;color:{{ r.fg }};">{{ r.estado }}</span></div></sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ cotInvHayMat }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--surface-card);overflow:hidden;">
+                        <div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 80px minmax(110px,auto);gap:8px;padding:7px 12px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;background:var(--surface-raised);"><span>Materias, insumos y empaque</span><span style="text-align:right;">Necesita</span><span style="text-align:right;">Hay</span><span style="text-align:right;">Estado</span></div>
+                        <sc-for list="{{ cotInvMat }}" as="r" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 80px minmax(110px,auto);gap:8px;padding:7px 12px;font-size:12px;border-top:1px solid var(--border-subtle);align-items:center;"><span style="min-width:0;">{{ r.nombre }} <span style="color:var(--text-muted);font-size:11px;">{{ r.codigo }}</span></span><span style="text-align:right;">{{ r.nec }} {{ r.uni }}</span><span style="text-align:right;color:var(--text-muted);">{{ r.disp }}</span><span style="text-align:right;font-weight:700;color:{{ r.fg }};">{{ r.estado }}</span></div></sc-for>
+                      </div>
+                    </sc-if>
+                    <div style="font-size:10.5px;color:var(--text-muted);line-height:1.45;">Stock actual de Inventario (el mismo del kardex). Lo que falta en bodega se explota a su fórmula; no reserva ni descuenta nada, y no resta otros pedidos pendientes por producir.</div>
+                  </div>
+                </sc-if>
               </div>
 
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
@@ -10457,6 +10488,7 @@ class Component extends DCLogic {
     const k=(this.state.kits||[]).find(x=>x.codigo===c);
     if(k){ if(!(k.items||[]).length) return 'Kit sin componentes';
       return (this.kitCosto(k)>0)? '' : 'Kit sin costo'; }
+    if((this.state.materias||[]).some(x=>x.codigo===c) || (this.state.mezclas||[]).some(x=>x.codigo===c)) return ''; // materia cobrada: su costo va en Material de empaque
     return 'No existe en el catálogo'; }
   _diagKey(){ const st=this.state; let s=0; (st.materias||[]).forEach(m=>{ s+=(Number(m.costo)||0); }); (st.productos||[]).forEach(p=>{ s+=((p.formula||[]).length+(p.empaques||[]).length)*7; }); (st.kits||[]).forEach(k=>{ s+=(k.items||[]).length*13; });
     return ((st.productos||[]).length)+':'+((st.kits||[]).length)+':'+((st.materias||[]).length)+':'+((st.ventas||[]).length)+':'+Math.round(s); }
@@ -10483,7 +10515,7 @@ class Component extends DCLogic {
     let m=this.refDiag(code);
     // El costo que usa la venta es el congelado (costoUnit) o el vivo; si ambos dan 0 la línea está sin costo
     // aunque el catálogo hoy esté bien (p. ej. se congeló un 0 o el producto se arregló después sin recalcular).
-    if(!m && code && Math.round(this.ventaItemCosto(it)||0)<=0) m='Línea sin costo (recalcular costo en la venta)';
+    if(!m && code && !it.soloIngreso && Math.round(this.ventaItemCosto(it)||0)<=0) m='Línea sin costo (recalcular costo en la venta)';
     if(m) out.push({sku:(code||'—'), nombre:(it.producto||it.nombre||it.referencia||''), motivo:m}); }); return out; }
   ventasConProblemas(){ const key=this._diagKey();
     if(this._probCache && this._probCache.key===key && (Date.now()-this._probCache.t)<4000) return this._probCache.val;
@@ -10499,7 +10531,7 @@ class Component extends DCLogic {
   ventaIvaTotal(v){ return this.ventaSubtotal(v)-this.ventaNetaProductos(v); }
   ventaNeta(v){ return this.ventaNetaProductos(v); } // Tipo 2: el envío que paga el cliente NO es ingreso operacional (va como no operacional)
   ventaTotal(v){ return this.ventaSubtotal(v)+(Number(v.envio)||0); }
-  ventaCosto(v){ const itemsCosto=(v.items||[]).reduce((a,it)=>a+this.ventaItemCosto(it)*(Number(it.unidades)||0),0); const empCosto=(v.empaques||[]).reduce((a,e)=>{ const m=(this.state.materias||[]).find(x=>x.codigo===e.materiaCodigo); return a+(m?Number(m.costo)||0:0)*(Number(e.cantidad)||0); },0); return itemsCosto+empCosto; }
+  ventaCosto(v){ const itemsCosto=(v.items||[]).reduce((a,it)=>a+this.ventaItemCosto(it)*(Number(it.unidades)||0),0); const empCosto=(v.empaques||[]).reduce((a,e)=>{ const m=(this.state.materias||[]).find(x=>x.codigo===e.materiaCodigo); const cu=m? (Number(m.costo)||0) : ((this.state.mezclas||[]).some(x=>x.codigo===e.materiaCodigo)? this.mezclaCostoMlActual(e.materiaCodigo) : 0); return a+cu*(Number(e.cantidad)||0); },0); return itemsCosto+empCosto; }
   ventaCostoVendido(v){ return (v.items||[]).reduce((a,it)=>a+(((Number(it.valorUnit)||0)>0)? this.ventaItemCosto(it)*(Number(it.unidades)||0):0),0); }
   ventaObsequioCosto(v){ return (v.items||[]).reduce((a,it)=>a+(((Number(it.valorUnit)||0)===0)? this.ventaItemCosto(it)*(Number(it.unidades)||0):0),0); }
   // Costo de un documento MSVC (muestras registradas aparte de las ventas). Usa el costo congelado
@@ -11602,7 +11634,16 @@ Instrucciones de respuesta:
   exportListado(rows){ if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando, intenta de nuevo'); return; } const headers=['Fecha','Pedido','OV Shopify','Canal','Cliente','Celular','SKU','Producto','Unidades','Valor unitario','Base sin IVA','IVA','Total pedido','Costo','Ciudad','Método de pago','Flete']; const aoa=[headers]; (rows||[]).forEach(r=>aoa.push([r.fechaFmt, r.pedido, r.ov, r.canal, r.cliente, r.celular, r.sku, r.nombre, r.unidades, r.valorUnit, r.baseLine, r.ivaLine, r.total, r.costo, r.ciudad, r.metodoPago, r.flete])); const ws=XLSX.utils.aoa_to_sheet(aoa); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Listado'); XLSX.writeFile(wb,'listado_pedidos.xlsx'); this.toast('Listado exportado'); }
   ventasProductoOptions(){ return [ ...(this.state.productos||[]).map(p=>({codigo:p.codigo, nombre:p.nombre, precio:Number(p.precio)||0})), ...(this.state.kits||[]).map(k=>({codigo:k.codigo, nombre:k.nombre, precio:Number(k.precio)||0})) ]; }
   nuevaVenta(canalDefault){ this.open('venta',{ _new:true, _ov:this.nextOV(), fecha:new Date().toISOString().slice(0,10), pedido:'', canal:canalDefault||'Página Web', bodega:'Principal', cliente:'', celular:'', correo:'', ciudad:'', direccion:'', items:[], envio:'', fleteEntrega:'', fleteCuenta:'', guia:'', metodoPago:'', pagado:'', _pagoTotal:false, abono:'', abonoCuenta:'', abonoMetodo:'Transferencia', abonoFecha:new Date().toISOString().slice(0,10), origen:'manual', cobraIva:true, descuentoMasivo:'', _selProd:'', _selProdText:'', _selUnidades:1, _selValor:'' }); }
-  pedidoDesdeCotizacion(c){ if(!c){ return; } const items=(c.items||[]).map(it=>({ referencia:it.referencia||it.productoCodigo||'', producto:it.producto||it.referencia||'', productoCodigo:it.productoCodigo||it.referencia||'', unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:Number(it.valorUnit)||0, descPct:0 })); this.open('venta',{ _new:true, _ov:this.nextOV(), _desdeCot:c.numero||'', fecha:new Date().toISOString().slice(0,10), pedido:'', canal:'Venta Directa', bodega:'Principal', cliente:c.cliente||'', celular:c.celular||'', correo:c.correo||'', ciudad:c.ciudad||'', direccion:'', items:items, envio:Number(c.envio)||'', fleteEntrega:'', fleteCuenta:'', guia:'', metodoPago:'', pagado:'', _pagoTotal:false, abono:'', abonoCuenta:'', abonoMetodo:'Transferencia', abonoFecha:new Date().toISOString().slice(0,10), origen:'manual', cobraIva:false, nota:('Pedido a partir de '+(c.numero||'cotización')+(c.nota?(' \u00b7 '+c.nota):'')), descuentoMasivo:'', _selProd:'', _selProdText:'', _selUnidades:1, _selValor:'' }); this.toast('Pedido armado desde '+(c.numero||'la cotización')+' \u00b7 revisa IVA, pago y envío antes de guardar'); }
+  pedidoDesdeCotizacion(c){ if(!c){ return; }
+    // Materia prima / mezcla agregada en la cotización (empaque, obsequio, aceite extra): en la venta va a
+    // «Material de empaque de este pedido» (empaques[]), que es lo que genera costo y descuenta inventario.
+    // Si se cobró (valor > 0), la línea de venta se conserva SOLO para el ingreso (sin costo) y el costo/inventario va por empaques.
+    const _esMat0=(code)=> !(this.state.productos||[]).some(x=>x.codigo===code) && !(this.state.kits||[]).some(x=>x.codigo===code) && ((this.state.materias||[]).some(x=>x.codigo===code) || (this.state.mezclas||[]).some(x=>x.codigo===code));
+    const _tipoDe={}; (c.items||[]).forEach(it=>{ const k=it.productoCodigo||it.referencia||''; if(k&&(it.tipo==='materia'||it.tipo==='mezcla')) _tipoDe[k]=1; });
+    const _esMat=(code)=> !!code && (_esMat0(code) || (!!_tipoDe[code] && !(this.state.productos||[]).some(x=>x.codigo===code) && !(this.state.kits||[]).some(x=>x.codigo===code)));
+    const empaques=[]; let _nMat=0;
+    (c.items||[]).forEach(it=>{ const code=it.productoCodigo||it.referencia||''; const u=Number(it.unidades)||0; if(!code||u<=0||!_esMat(code)) return; _nMat++; const ex=empaques.find(e=>e.materiaCodigo===code); if(ex) ex.cantidad+=u; else empaques.push({materiaCodigo:code, cantidad:u, manual:true, desdeCot:(c.numero||true)}); });
+    const items=(c.items||[]).filter(it=>{ const code=it.productoCodigo||it.referencia||''; return !(code && _esMat(code) && !((Number(it.valorUnit)||0)>0)); }).map(it=>{ const code=it.productoCodigo||it.referencia||''; const g=Math.max(0,Math.min(100,Number(c.descuentoPct)||0)); const vu0=Number(it.valorUnit)||0; const bruto=Math.max(vu0, Number(it.valorBruto)||0); const vu=Math.round(vu0*(1-g/100)); const dp=(bruto>0 && vu<bruto)? Math.round((1-vu/bruto)*10000)/100 : 0; return { referencia:it.referencia||it.productoCodigo||'', producto:it.producto||it.referencia||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:bruto, descPct:dp, ...(_esMat(code)?{soloIngreso:true}:{}) }; }); this.open('venta',{ _new:true, _ov:this.nextOV(), _desdeCot:c.numero||'', fecha:new Date().toISOString().slice(0,10), pedido:'', canal:'Venta Directa', bodega:'Principal', cliente:c.cliente||'', celular:c.celular||'', correo:c.correo||'', ciudad:c.ciudad||'', direccion:'', items:items, empaques:empaques, envio:Number(c.envio)||'', fleteEntrega:'', fleteCuenta:'', guia:'', metodoPago:'', pagado:'', _pagoTotal:false, abono:'', abonoCuenta:'', abonoMetodo:'Transferencia', abonoFecha:new Date().toISOString().slice(0,10), origen:'manual', cobraIva:false, nota:('Pedido a partir de '+(c.numero||'cotización')+(c.nota?(' \u00b7 '+c.nota):'')), descuentoMasivo:'', _selProd:'', _selProdText:'', _selUnidades:1, _selValor:'' }); this.toast('Pedido armado desde '+(c.numero||'la cotización')+(_nMat? (' \u00b7 '+_nMat+' materia'+(_nMat===1?'':'s')+' prima pasa'+(_nMat===1?'':'n')+' a Material de empaque (costo e inventario)') : '')+((Number(c.descuentoPct)||0)>0? (' \u00b7 descuento del '+Number(c.descuentoPct)+'% ya aplicado a cada producto') : '')+' \u00b7 revisa IVA, pago y envío antes de guardar'); }
   editVenta(v){ const _tot=this.ventaTotal(v); this.open('venta',{...v, _ov:v.ov||this.nextOV(), consignDescuenta:!!v.consignTienda, cobraIva:(typeof v.cobraIva==='boolean'? v.cobraIva : this.ventaConIva(v)), descuentoMasivo:'', _pagoTotal:(_tot>0 && (Number(v.pagado)||0)>=_tot), items:(v.items||[]).slice(), _selProd:'', _selProdText:'', _selUnidades:1, _selValor:''}); }
   addEmpaqueVenta(){ const id=this.state.detalleId; const code=this.state.empSel; const cant=Number(this.state.empCant)||0; if(!code){ this.toast('Elige el material de empaque'); return; } if(cant<=0){ this.toast('Indica la cantidad'); return; } const list=(this.state.ventas||[]).map(v=> v.id===id? {...v, empaques:[...(v.empaques||[]), {materiaCodigo:code, cantidad:cant, manual:true}]} : v); this.setState({ventas:list, empSel:'', empCant:''},()=>this.persist()); if(this.cloudOn()){ const _cv=list.find(x=>x.id===id); if(_cv) this.cloudSaveVenta(_cv); } this.toast('Material de empaque registrado · descontado de inventario'); }
   removeEmpaqueVenta(idx){ const id=this.state.detalleId; const list=(this.state.ventas||[]).map(v=>{ if(v.id!==id) return v; const arr=(v.empaques||[]).slice(); const rem=arr[idx]; arr.splice(idx,1); let excl=Array.isArray(v.empExcluidos)?v.empExcluidos.slice():[]; if(rem && rem.materiaCodigo && !rem.manual && !excl.includes(rem.materiaCodigo)) excl.push(rem.materiaCodigo); return {...v, empaques:arr, empExcluidos:excl}; }); this.setState({ventas:list},()=>this.persist()); if(this.cloudOn()){ const _cv=list.find(x=>x.id===id); if(_cv) this.cloudSaveVenta(_cv); } }
@@ -11698,7 +11739,7 @@ Instrucciones de respuesta:
         if(_dup){ this.toast('Bloqueado: el pedido '+d.pedido+' ya existe ('+this.titleCase(_dup.cliente||'')+', '+this.fmtFecha(_dup.fecha)+', '+(_dup.ov||'')+'). Edita esa venta en lugar de crear una repetida.'); return; } } }
     const _fecha=d.fecha||new Date().toISOString().slice(0,10); const _canal=d.canal||'Página Web'; const _conIva=this.ventaConIva({fecha:_fecha, canal:_canal});
     // El valor unitario que se digita es el valor FULL (IVA incluido); se guarda tal cual, igual que las ventas de Shopify. El sistema discrimina el IVA a partir de ese total.
-    const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true), costoUnit:this._itemConCosto(it, it.productoCodigo||''), kitItems:this._itemKitSnap(it, it.productoCodigo||'', _fecha)}; });
+    const _items=(d.items||[]).map(it=>{ const taxable=(it.taxable!==false); let vu=Number(it.valorUnit)||0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); const vb=Number(it.valorBruto)|| (dp>0? Math.round(vu/(1-dp/100)) : vu); return {referencia:it.referencia||it.productoCodigo||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', unidades:Number(it.unidades)||0, valorUnit:vu, valorBruto:vb, descPct:dp, taxable, obsequio:(it.obsequio===true), ...(it.soloIngreso?{soloIngreso:true}:{}), costoUnit:this._itemConCosto(it, it.productoCodigo||''), kitItems:this._itemKitSnap(it, it.productoCodigo||'', _fecha)}; });
     // Consecutivo OV: para pedidos nuevos (o si el OV mostrado quedó viejo por sincronización de nube y ahora choca con otro), se recalcula el siguiente libre AL GUARDAR.
     const _ovNumDraft=this.ovNum({ov:d._ov}); const _ovDup=(this.state.ventas||[]).some(v=>v.id!==d.id && v.origen!=='historico' && this.ovNum(v)===_ovNumDraft && _ovNumDraft>0); const _ov=(d._new || _ovDup || !_ovNumDraft)? this.nextOV() : d._ov;
     // Link de pago Bold: un pedido manual NUEVO con método Bold genera su link al guardar (se puede desmarcar en el modal).
@@ -11748,6 +11789,27 @@ Instrucciones de respuesta:
     }catch(e){ this.toast('No se pudo consultar el link: '+((e&&e.message)||e)); } }
   async _boldLinkPagado(id){ return this._boldGuardarVenta(id, x=>{ const tot=this.ventaTotal(x); return {...x, pagado:Math.max(Number(x.pagado)||0, tot), fechaCobro:(x.fechaCobro||new Date().toISOString().slice(0,10)), boldLink:{...(x.boldLink||{}), estado:'PAID', pagadoAt:new Date().toISOString()}}; }); }
   _boldLinkEstadoTxt(e){ return ({ACTIVE:'Activo · esperando pago', PROCESSING:'Pago en proceso', PAID:'Pagado', REJECTED:'Pago rechazado', CANCELLED:'Cancelado', EXPIRED:'Vencido'})[String(e||'').toUpperCase()]||String(e||'—'); }
+  // ===== VALIDAR INVENTARIO DE UNA COTIZACIÓN =====
+  // Explota la cotización: kits → productos + materias directas; producto terminado que falta → su fórmula;
+  // mezcla que falta → su fórmula por ml (lote / rendimiento). Compara contra el MISMO stock derivado
+  // que usa Inventario (productoStockActual / materiaStockActual / mezclaMlStock). Solo lectura: no reserva nada.
+  cotValidarInventario(items){ const hoy=new Date().toISOString().slice(0,10);
+    const S=this.state; const prodDe=(c)=>(S.productos||[]).find(x=>x.codigo===c); const kitDe=(c)=>(S.kits||[]).find(x=>x.codigo===c);
+    const matDe=(c)=>(S.materias||[]).find(x=>x.codigo===c); const mezDe=(c)=>(S.mezclas||[]).find(x=>x.codigo===c);
+    const pt={}, mat={}, mez={}; const sumar=(o,c,n)=>{ if(!c||!(n>0)) return; o[c]=(o[c]||0)+n; };
+    const alComponente=(c,n)=>{ if(prodDe(c)) sumar(pt,c,n); else if(mezDe(c)) sumar(mez,c,n); else sumar(mat,c,n); };
+    (items||[]).forEach(it=>{ const u=Number(it.unidades)||0; if(u<=0) return; const c=it.productoCodigo||it.referencia; if(!c) return;
+      if(kitDe(c)){ (this.kitItemsEn(c, hoy, null)||[]).forEach(ki=>{ const n=u*(Number(ki.cantidad)||1); if(ki.tipo==='producto') sumar(pt,ki.codigo,n); else alComponente(ki.codigo,n); }); }
+      else alComponente(c,u); });
+    const ptRows=Object.keys(pt).map(c=>{ const p=prodDe(c); const nec=pt[c]; const disp=Math.max(0,this.productoStockActual(p)); const falta=Math.max(0,nec-disp); const reventa=!!(p&&p.esReventa);
+      if(falta>0 && !reventa) (p.formula||[]).forEach(f=>alComponente(f.materiaCodigo, falta*(Number(f.cantidad)||0)));
+      return {codigo:c, nombre:(p&&p.nombre)||c, nec, disp, falta, reventa}; });
+    const mezRows=Object.keys(mez).map(c=>{ const nec=mez[c]; const disp=Math.max(0,this.mezclaMlStock(c)); const falta=Math.max(0,nec-disp);
+      if(falta>0){ const fml=this.mezclaFormulaEn(c, hoy); const rend=fml.reduce((a,f)=>a+(Number(f.cantidad)||0),0)||0; if(rend>0) fml.forEach(f=>sumar(mat,f.materiaCodigo, falta*(Number(f.cantidad)||0)/rend)); }
+      return {codigo:c, nombre:(mezDe(c)||{}).nombre||c, nec, disp, falta}; });
+    const matRows=Object.keys(mat).map(c=>{ const m=matDe(c); const nec=mat[c]; const disp=m? Math.max(0,this.materiaStockActual(m)) : 0; return {codigo:c, nombre:(m&&m.nombre)||this.refNombre(c)||c, unidad:(m&&m.unidad)||this.refUnidad(c)||'', nec, disp, falta:Math.max(0,nec-disp), sinFicha:!m}; });
+    const aProducir=ptRows.filter(r=>r.falta>0&&!r.reventa); const aComprarPT=ptRows.filter(r=>r.falta>0&&r.reventa); const faltanMat=matRows.filter(r=>r.falta>0);
+    return { ptRows, mezRows, matRows, aProducir, aComprarPT, faltanMat, ok:(!aComprarPT.length && !faltanMat.length) }; }
   verVenta(v){ this.setState({modal:'detalleventa',detalleId:v.id}); }
   // ---- MSVC · muestras sin valor comercial ----
   nuevaMsvc(){ this.open('msvc',{ _new:true, fecha:new Date().toISOString().slice(0,10), responsableId:(this.state.userId||''), destinatario:'', ciudad:'', motivo:'', items:[], _selProd:'', _selProdText:'', _selUnidades:1 }); }
@@ -17723,6 +17785,11 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.onVentaItemsFile=(e)=>this.onVentaItemsFile(e); out.descargarPlantillaItems=()=>this.descargarPlantillaItems();
       out.drInItems=(d.items||[]).map((it,i)=>{ const u=Number(it.unidades)||0; const vu=Number(it.valorUnit)||0; const costOnly=(st.modal==='cotizacion' && (it.tipo==='materia'||it.tipo==='mezcla') && vu===0); const cu=costOnly?this.cotItemCosto(it):0; const dp=Math.max(0,Math.min(100,Number(it.descPct)||0)); return {nombre:it.producto||it.referencia, unidades:it.unidades, descPct:dp, valorFmt:(costOnly?'solo costo':this.fmt(vu)), descTxt:(dp>0? ('  \u00b7  \u2212'+dp+'%') : ''), subtotalFmt:(costOnly?('costo '+this.fmt(Math.round(cu*u))):this.fmt(u*vu)), showDesc:!costOnly, onSetUnid:((idx)=>(e)=>this.setDraftItemUnidades(idx, e.target.value))(i), onSetDesc:((idx)=>(e)=>this.setDraftItemDesc(idx, e.target.value))(i), onRemove:()=> (st.modal==='venta'? this.removeVentaItem(i): this.removeCotItem(i))}; });
       out.drItemsVacio=(d.items||[]).length===0;
+      { const emps=(st.modal==='venta' && Array.isArray(d.empaques))? d.empaques : [];
+        out.drEmpHay=emps.length>0;
+        out.drEmpaques=emps.map((e,i)=>{ const m=(this.state.materias||[]).find(x=>x.codigo===e.materiaCodigo); const mz=m?null:(this.state.mezclas||[]).find(x=>x.codigo===e.materiaCodigo); const cu=m?Number(m.costo)||0:(mz?this.mezclaCostoMlActual(mz.codigo):0);
+          return { codigo:e.materiaCodigo, nombre:(m?m.nombre:(mz?'Mezcla '+mz.nombre:e.materiaCodigo)), cantidad:e.cantidad, unidad:(m?m.unidad:(mz?'ml':'')), costoFmt:this.fmt(Math.round(cu*(Number(e.cantidad)||0))),
+            onRemove:()=>this.setState(s=>{ const arr=(s.draft.empaques||[]).slice(); const rem=arr.splice(i,1)[0]; const exc=(s.draft.empExcluidos||[]).slice(); if(rem && rem.auto && !exc.includes(rem.materiaCodigo)) exc.push(rem.materiaCodigo); return {draft:{...s.draft, empaques:arr, empExcluidos:exc}}; }) }; }); }
       const sub=(d.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0)*(Number(it.valorUnit)||0),0);
       out.drSubtotalFmt=this.fmt(sub); out.drTotalFmt=this.fmt(sub+(Number(d.envio)||0));
       out.addDrItem=()=> (st.modal==='venta'? this.addVentaItem(): this.addCotItem());
@@ -17754,6 +17821,22 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.onToggleBoldLinkGen=(e)=>{ const c=!!(e&&e.target&&e.target.checked); this.setState(s=>({draft:{...s.draft, boldLinkGen:c}})); };
     }
     if(st.modal==='cotizacion'){ const d2=st.draft;
+      { const q=(n)=>{ const r=Math.round((Number(n)||0)*100)/100; return r.toLocaleString('es-CO',{maximumFractionDigits:2}); };
+        out.cotInvHayItems=(d2.items||[]).length>0; out.cotInvAbierto=!!st.cotInvOpen && out.cotInvHayItems;
+        out.cotInvToggleTxt=out.cotInvAbierto? 'Ocultar validación' : 'Validar inventario para producir';
+        out.onCotInvToggle=()=>this.setState(s=>({cotInvOpen:!s.cotInvOpen}));
+        if(out.cotInvAbierto){ const r=this.cotValidarInventario(d2.items||[]);
+          const fila=(x,uni)=>({ nombre:x.nombre, codigo:x.codigo, nec:q(x.nec), disp:q(x.disp), falta:(x.falta>0? q(x.falta) : '—'), uni:uni||'', fg:(x.falta>0?'#B5503C':'#4C6149'), estado:(x.falta>0? (x.reventa?'Comprar':(uni==='ml'?'Preparar':'Falta')) : 'OK') });
+          out.cotInvPT=r.ptRows.map(x=>({...fila(x,'und'), estado:(x.falta>0? (x.reventa?'Comprar (reventa)':'Producir '+q(x.falta)) : 'En bodega'), fg:(x.falta>0?(x.reventa?'#B5503C':'#7A5E36'):'#4C6149')}));
+          out.cotInvMez=r.mezRows.map(x=>({...fila(x,'ml'), estado:(x.falta>0? 'Preparar '+q(x.falta)+' ml' : 'Alcanza'), fg:(x.falta>0?'#7A5E36':'#4C6149')}));
+          out.cotInvMat=r.matRows.sort((a,b)=>(b.falta>0)-(a.falta>0)||a.nombre.localeCompare(b.nombre)).map(x=>({...fila(x,x.unidad), estado:(x.falta>0? 'Faltan '+q(x.falta)+' '+(x.unidad||'') : 'Alcanza')}));
+          out.cotInvHayPT=out.cotInvPT.length>0; out.cotInvHayMez=out.cotInvMez.length>0; out.cotInvHayMat=out.cotInvMat.length>0;
+          out.cotInvOk=r.ok; out.cotInvNoOk=!r.ok;
+          out.cotInvResumen= r.ok
+            ? (r.aProducir.length? ('Se puede producir: hay materiales para las '+r.aProducir.reduce((a,x)=>a+x.falta,0).toLocaleString('es-CO')+' unidades que faltan en bodega.') : 'Todo el pedido sale de producto terminado en bodega.')
+            : ('No alcanza: '+[r.faltanMat.length? (r.faltanMat.length+' material'+(r.faltanMat.length===1?'':'es')+' con faltante') : '', r.aComprarPT.length? (r.aComprarPT.length+' producto'+(r.aComprarPT.length===1?'':'s')+' de reventa por comprar') : ''].filter(Boolean).join(' · ')+'.');
+          out.cotInvBg=r.ok?'rgba(98,123,96,0.12)':'rgba(181,80,60,0.08)'; out.cotInvBd=r.ok?'rgba(98,123,96,0.4)':'rgba(181,80,60,0.35)'; out.cotInvFg=r.ok?'#4C6149':'#B5503C';
+        } }
       out.cotProdOptions=this.cotProdOptionsLabeled();
       out.onPickCotProd=(e)=>this.onPickCotProd(e);
       const _selOpt=this.cotProdOptionsLabeled().find(o=>o.codigo===d2._selProd);
@@ -17807,7 +17890,7 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       out.waHabilitado=this.waConfigurado(); out.waNoHabilitado=!this.waConfigurado();
       out.waSinCel=!String(v.celular||'').replace(/\D/g,''); out.waConCel=!!String(v.celular||'').replace(/\D/g,'');
       out.waBotones=Object.entries(this.waTemplates()).map(([key,t])=>({ key, label:t.label, enviado:this.waYaEnviado(v,key), onClick:()=>this.waSendManual(v,key) }));
-      out.detVentaOnEliminar=()=>this.askDeleteVenta(v); out.detEmpaqueOptions=(this.state.materias||[]).filter(m=>['insumo','empaque','envase'].includes(m.tipo)).map(m=>({codigo:m.codigo, label:m.codigo+' · '+m.nombre})); out.empSel=st.empSel||''; out.empCant=st.empCant||''; out.onEmpSel=(e)=>this.setState({empSel:e.target.value}); out.onEmpCant=(e)=>this.setState({empCant:e.target.value}); out.onAddEmpaque=()=>this.addEmpaqueVenta(); out.detEmpaques=(v.empaques||[]).map((e,i)=>{ const m=(this.state.materias||[]).find(x=>x.codigo===e.materiaCodigo); const cu=m?Number(m.costo)||0:0; return {nombre:(m?m.nombre:e.materiaCodigo), cantidad:e.cantidad, unidad:(m?m.unidad:''), costoFmt:this.fmt(Math.round(cu*(Number(e.cantidad)||0))), auto:!!e.auto, onRemove:((idx)=>()=>this.removeEmpaqueVenta(idx))(i), onSetCant:((idx)=>(ev)=>this.setEmpaqueVentaCant(idx, ev.target.value))(i)}; }); out.detEmpVacio=(v.empaques||[]).length===0; out.detPuedeEmp=out.canWriteVentas; out.detNoPuedeEmp=!out.canWriteVentas;
+      out.detVentaOnEliminar=()=>this.askDeleteVenta(v); out.detEmpaqueOptions=(this.state.materias||[]).filter(m=>['insumo','empaque','envase'].includes(m.tipo)).map(m=>({codigo:m.codigo, label:m.codigo+' · '+m.nombre})); out.empSel=st.empSel||''; out.empCant=st.empCant||''; out.onEmpSel=(e)=>this.setState({empSel:e.target.value}); out.onEmpCant=(e)=>this.setState({empCant:e.target.value}); out.onAddEmpaque=()=>this.addEmpaqueVenta(); out.detEmpaques=(v.empaques||[]).map((e,i)=>{ const m=(this.state.materias||[]).find(x=>x.codigo===e.materiaCodigo); const mz=m?null:(this.state.mezclas||[]).find(x=>x.codigo===e.materiaCodigo); const cu=m?Number(m.costo)||0:(mz?this.mezclaCostoMlActual(mz.codigo):0); return {nombre:(m?m.nombre:(mz?'Mezcla '+mz.nombre:e.materiaCodigo)), cantidad:e.cantidad, unidad:(m?m.unidad:(mz?'ml':'')), costoFmt:this.fmt(Math.round(cu*(Number(e.cantidad)||0))), auto:!!e.auto, onRemove:((idx)=>()=>this.removeEmpaqueVenta(idx))(i), onSetCant:((idx)=>(ev)=>this.setEmpaqueVentaCant(idx, ev.target.value))(i)}; }); out.detEmpVacio=(v.empaques||[]).length===0; out.detPuedeEmp=out.canWriteVentas; out.detNoPuedeEmp=!out.canWriteVentas;
       out.detConsignOptions=this.consignTiendas().map(t=>({id:t.id, nombre:t.nombre})); out.detConsignSel=v.consignTienda||''; out.detHayTiendas=this.consignTiendas().length>0; out.onDetConsign=(e)=>this.setVentaConsign(v.id, e.target.value); } }
 
     // ---- MODAL ----
