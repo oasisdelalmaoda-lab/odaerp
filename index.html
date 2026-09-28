@@ -11810,7 +11810,29 @@ Instrucciones de respuesta:
     const matRows=Object.keys(mat).map(c=>{ const m=matDe(c); const nec=mat[c]; const disp=m? Math.max(0,this.materiaStockActual(m)) : 0; return {codigo:c, nombre:(m&&m.nombre)||this.refNombre(c)||c, unidad:(m&&m.unidad)||this.refUnidad(c)||'', nec, disp, falta:Math.max(0,nec-disp), sinFicha:!m}; });
     const aProducir=ptRows.filter(r=>r.falta>0&&!r.reventa); const aComprarPT=ptRows.filter(r=>r.falta>0&&r.reventa); const faltanMat=matRows.filter(r=>r.falta>0);
     return { ptRows, mezRows, matRows, aProducir, aComprarPT, faltanMat, ok:(!aComprarPT.length && !faltanMat.length) }; }
-  verVenta(v){ this.setState({modal:'detalleventa',detalleId:v.id}); }
+  verVenta(v){ this.setState({modal:'detalleventa',detalleId:v.id}); if(v && v.boldLink && String(v.boldLink.estado||'').toUpperCase()!=='PAID' && !v.cancelada) this.boldLinksRevisar([v.id], true); }
+  // Revisa los links de pago Bold pendientes SIN depender de abrir Finanzas → Bold: (1) busca en bold_pagos
+  // un pago aprobado con la referencia (o el id LNK_) del link; (2) si no aparece, le pregunta a Bold el estado.
+  // Si está pagado: marca la venta pagada y cruza el pago. Corre al entrar, al volver a la pestaña (máx. 1/min)
+  // y al abrir el detalle de un pedido con link pendiente. Sin temporizadores periódicos.
+  async boldLinksRevisar(ids, forzar){ const sb=this._sbClient(); if(!sb||this._blRev) return;
+    if(!forzar && this._blRevAt && Date.now()-this._blRevAt<60000) return; this._blRevAt=Date.now(); this._blRev=true;
+    try{ const pend=(this.state.ventas||[]).filter(v=>!v.cancelada && v.boldLink && (v.boldLink.url||v.boldLink.id) && String(v.boldLink.estado||'').toUpperCase()!=='PAID' && (!ids || ids.includes(v.id)));
+      if(!pend.length) return;
+      const claves=(v)=>[...new Set([v.boldLink.ref, v.boldLink.id, ...(v.boldLinkRefs||[])].filter(Boolean).map(String))];
+      const todas=[...new Set(pend.flatMap(claves))];
+      let pagos=[]; try{ const {data}=await sb.from('bold_pagos').select('payment_id,referencia,aprobado,anulado,conciliado,pedido,monto').in('referencia', todas); pagos=(data||[]).filter(p=>p.aprobado&&!p.anulado); }catch(e){}
+      let n=0;
+      for(const v of pend){ const ks=claves(v); const p=pagos.find(x=>ks.includes(String(x.referencia||'')));
+        if(p){ await this._boldLinkPagado(v.id); n++;
+          if(!p.conciliado){ try{ await sb.from('bold_pagos').update({pedido:(String(v.pedido||'').trim()||v.ov), conciliado:true, conciliado_por:'auto · link de pago', conciliado_at:new Date().toISOString()}).eq('payment_id',p.payment_id); }catch(e){} }
+          continue; }
+        if(!v.boldLink.id) continue;
+        try{ const {data}=await sb.functions.invoke('bold-link',{ body:{ modo:'estado', id:v.boldLink.id } }); const est=String((data&&data.estado)||'').toUpperCase();
+          if(est==='PAID'){ await this._boldLinkPagado(v.id); n++; }
+          else if(est && est!==String(v.boldLink.estado||'').toUpperCase()) await this._boldGuardarVenta(v.id, x=>({...x, boldLink:{...(x.boldLink||{}), estado:est, revisado:new Date().toISOString()}})); }catch(e){} }
+      if(n) this.toast(n===1? '1 pedido se pagó por link Bold · marcado como pagado' : (n+' pedidos se pagaron por link Bold · marcados como pagados'));
+    }finally{ this._blRev=false; } }
   // ---- MSVC · muestras sin valor comercial ----
   nuevaMsvc(){ this.open('msvc',{ _new:true, fecha:new Date().toISOString().slice(0,10), responsableId:(this.state.userId||''), destinatario:'', ciudad:'', motivo:'', items:[], _selProd:'', _selProdText:'', _selUnidades:1 }); }
   addMsvcItem(){ const d=this.state.draft; if(!d._selProd){ this.toast('Elige un producto o kit'); return; } const u=Number(d._selUnidades)||0; if(u<=0){ this.toast('Indica las unidades'); return; } const opt=this.ventasProductoOptions().find(o=>o.codigo===d._selProd); const items=(d.items||[]).slice(); items.push({productoCodigo:d._selProd, nombre:(opt?opt.nombre:d._selProd), unidades:u}); this.setState({draft:{...d, items, _selProd:'', _selProdText:'', _selUnidades:1}}); }
@@ -12066,7 +12088,7 @@ Instrucciones de respuesta:
     this.setState({cloudUser:{id:user.id,email:user.email,nombre}});
     this.cloudSyncMyProfile(user.id,nombre); this.cloudSubscribe(); this.cloudStartAutoRefresh();
     const tandas=[
-      ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); },
+      ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); setTimeout(()=>this.boldLinksRevisar(null,true), 20000); },
       ()=>{ this.cloudLoadMaterias(); this.cloudLoadProveedores(); this.cloudLoadOrdenes(); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudLoadRecepciones(); },
       ()=>{ this.cloudLoadProducciones(); this.cloudLoadProdMez(); this.cloudLoadCotizaciones(); this.cloudLoadServicios(); this.cloudLoadConteos(); },
       ()=>{ this.cloudLoadCuentas(); this.cloudLoadMetodos(); this.cloudLoadMovimientos(); this.cloudLoadGastos(); this.cloudLoadLiquidaciones(); },
@@ -12152,7 +12174,7 @@ Instrucciones de respuesta:
   _boldNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
   boldSugerencias(p){ const ref=String(p.referencia||'').trim();
     // 0) Link de pago generado desde el Hub: la referencia es la del link guardado en la venta.
-    if(ref){ const vl=(this.state.ventas||[]).find(v=>!v.cancelada && ((v.boldLink&&v.boldLink.ref===ref) || (Array.isArray(v.boldLinkRefs)&&v.boldLinkRefs.includes(ref))));
+    if(ref){ const vl=(this.state.ventas||[]).find(v=>!v.cancelada && ((v.boldLink&&(v.boldLink.ref===ref||v.boldLink.id===ref)) || (Array.isArray(v.boldLinkRefs)&&v.boldLinkRefs.includes(ref))));
       if(vl) return [{ exacta:true, pedido:(String(vl.pedido||'').trim()||vl.ov), cliente:vl.cliente, total:this.ventaTotal(vl), s:100, ventaId:vl.id }]; }
     // 1) Cruce exacto: la referencia de Bold es el ID de pago de la transacción en Shopify.
     const mapa=this.state.boldRefs;
@@ -12871,7 +12893,7 @@ Instrucciones de respuesta:
     // de trabajo (barato: si nada cambió no trae filas ni re-renderiza). Cubre el caso de que
     // el realtime se haya caído mientras la pestaña estaba en segundo plano.
     this._cloudFocus=()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles();
-      this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); } };
+      this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); setTimeout(()=>this.boldLinksRevisar(null,false), 4000); } };
     try{ document.addEventListener('visibilitychange',this._cloudFocus); window.addEventListener('focus',this._cloudFocus); }catch(e){}
     this._cloudPoll=setInterval(()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); } },15000);
     // Foto del inventario para la app: UNA vez tras la carga inicial y después solo cuando el
