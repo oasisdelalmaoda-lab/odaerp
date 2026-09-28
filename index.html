@@ -3444,7 +3444,9 @@
               </div>
               <sc-if value="{{ baseNotCamp }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
-                <p style="font-size:12.5px;color:var(--text-muted);margin:0;max-width:480px;line-height:1.55;text-wrap:pretty;">Toda la historia de ventas para analizar y definir estrategias. Importa el histórico desde 2020 por Excel/CSV.</p>
+                <div style="display:flex;gap:4px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:4px;flex-wrap:wrap;">
+                  <sc-for list="{{ baseMeses }}" as="mm" hint-placeholder-count="13"><button onClick="{{ mm.onClick }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 12px;border:none;border-radius:99px;cursor:pointer;background:{{ mm.bg }};color:{{ mm.fg }};">{{ mm.label }}</button></sc-for>
+                </div>
                 <sc-if value="{{ ventasCargando }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--brand-primary);background:rgba(167,134,89,0.14);border-radius:99px;padding:5px 12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand-primary);animation:odaPulse 1s ease-in-out infinite;"></span>Cargando ventas de la nube…</span></sc-if>
                 <div style="flex:1;"></div>
                 
@@ -12418,6 +12420,7 @@ Instrucciones de respuesta:
   async cloudBulkVentas(list){ const sb=this._sbClient(); if(!sb||!list||!list.length) return; try{ for(let i=0;i<list.length;i+=200){ await sb.from('ventas').upsert(list.slice(i,i+200).map(v=>this._ventaToDb(v))); } }catch(e){} }
   async cloudDeleteVenta(id){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('ventas').delete().eq('id',id); }catch(e){} }
   openBaseDetalle(dim, key, label){ this.setState({modal:'basedetalle', baseDetDim:dim, baseDetKey:key, baseDetLabel:label}); }
+  toggleBaseMes(mm){ if(mm==='todos'){ this.setState({baseMeses:[]}); return; } const cur=Array.isArray(this.state.baseMeses)?this.state.baseMeses:[]; const nx=cur.includes(mm)? cur.filter(x=>x!==mm) : [...cur,mm]; this.setState({baseMeses:(nx.length===12?[]:nx)}); }
   toggleBaseAnio(y){ if(y==='todos'){ this.setState({baseAnios:[]}); return; } const cur=Array.isArray(this.state.baseAnios)?this.state.baseAnios.slice():[]; const i=cur.indexOf(y); if(i>=0) cur.splice(i,1); else cur.push(y); this.setState({baseAnios:cur}); }
   toggleCliFiltro(key, val){ if(val==='todos'){ this.setState({[key]:[]}); return; } const cur=Array.isArray(this.state[key])?this.state[key].slice():[]; const i=cur.indexOf(val); if(i>=0) cur.splice(i,1); else cur.push(val); this.setState({[key]:cur}); }
   // Marca como canal WhatsApp SOLO los pedidos preliminares de Shopify ('draft' en la columna Source
@@ -17359,7 +17362,12 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       const years=[...new Set(all.map(v=>(v.fecha||'').slice(0,4)).filter(Boolean))].sort();
       const selA=Array.isArray(st.baseAnios)?st.baseAnios:[]; const allSel=selA.length===0;
       out.baseYears=['todos',...years].map(y=>{ const on=(y==='todos')? allSel : selA.includes(y); return {label:(y==='todos'?'Todo':y), active:on, bg:(on?'var(--brand-primary)':'transparent'), fg:(on?'var(--text-on-brand)':'var(--text-muted)'), onClick:()=>this.toggleBaseAnio(y)}; });
-      const filY = allSel? all : all.filter(v=>selA.includes((v.fecha||'').slice(0,4)));
+      const filY0 = allSel? all : all.filter(v=>selA.includes((v.fecha||'').slice(0,4)));
+      // Filtro por mes (acumulable, igual que años y canales): Ene…Dic sobre los años elegidos.
+      const MES_L=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const selM=Array.isArray(st.baseMeses)?st.baseMeses:[]; const allM=selM.length===0;
+      out.baseMeses=['todos',...MES_L.map((_,k)=>String(k+1).padStart(2,'0'))].map(mm=>{ const on=(mm==='todos')? allM : selM.includes(mm); return {label:(mm==='todos'?'Todos los meses':MES_L[Number(mm)-1]), bg:(on?'var(--brand-primary)':'transparent'), fg:(on?'var(--text-on-brand)':'var(--text-muted)'), onClick:()=>this.toggleBaseMes(mm)}; });
+      const filY = allM? filY0 : filY0.filter(v=>selM.includes((v.fecha||'').slice(5,7)));
       // Filtro por canal (acumulable, igual que los años). MSVC no es canal de venta: se excluye.
       const selC=Array.isArray(st.baseCanalesSel)?st.baseCanalesSel:[];
       const canalesDisp=[...new Set(filY.map(v=>this.canonCanal(v.canal)||'—'))].filter(c=>c!=='MSVC').sort();
