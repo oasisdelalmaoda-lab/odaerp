@@ -355,6 +355,19 @@
             </div>
           </sc-if>
           </sc-if>
+          <sc-if value="{{ canLogistica }}" hint-placeholder-val="{{ false }}">
+          <div class="oda-navitem" onClick="{{ logNav }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ logNavColor }};background:{{ logNavBg }};">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+            <span style="flex:1;">Logística</span>
+            <sc-if value="{{ logBadgeShow }}" hint-placeholder-val="{{ false }}"><span title="Pedidos atrasados" style="background:#B5503C;color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;">{{ logBadge }}</span></sc-if>
+          </div>
+          <sc-if value="{{ showLogisticaSub }}" hint-placeholder-val="{{ false }}">
+            <div class="oda-navsub" style="margin:2px 0 6px 0;padding-left:8px;">
+              <sc-if value="{{ vL_seg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ logSubSeg }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subLogSeg.c }};background:{{ subLogSeg.bg }};border-left:2px solid {{ subLogSeg.b }};">Seguimiento de entregas</div></sc-if>
+              <sc-if value="{{ vL_plazos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ logSubPlazos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subLogPlazos.c }};background:{{ subLogPlazos.bg }};border-left:2px solid {{ subLogPlazos.b }};">Promesas y plazos</div></sc-if>
+            </div>
+          </sc-if>
+          </sc-if>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
             <div class="oda-navsection" style="font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(251,248,242,0.4);padding:18px 10px 8px;">Administración</div>
             <div class="oda-navitem" onClick="{{ nav.adminTablero }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:700;color:{{ adminTabNavColor }};background:{{ adminTabNavBg }};">
@@ -1426,6 +1439,7 @@
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Finanzas</th>
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Marketing</th>
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Informes</th>
+                    <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Logística</th>
                     <th style="padding:12px 8px;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:center;">Admin</th>
                   </tr></thead>
                   <tbody>
@@ -1446,6 +1460,7 @@
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.c6click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c6bg }};color:{{ r.c6fg }};">{{ r.c6 }}</button></td>
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.c7click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c7bg }};color:{{ r.c7fg }};">{{ r.c7 }}</button></td>
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.c8click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c8bg }};color:{{ r.c8fg }};">{{ r.c8 }}</button></td>
+                        <td style="padding:8px;text-align:center;"><button onClick="{{ r.c9click }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.c9bg }};color:{{ r.c9fg }};">{{ r.c9 }}</button></td>
                         <td style="padding:8px;text-align:center;"><button onClick="{{ r.onToggleAdmin }}" style="font-family:inherit;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 120ms;background:{{ r.adminBg }};color:{{ r.adminFg }};">{{ r.adminLabel }}</button></td>
                       </tr>
                     </sc-for>
@@ -5747,6 +5762,165 @@
             </div>
           </sc-if>
 
+          <!-- ===== LOGÍSTICA · SEGUIMIENTO ===== -->
+          <sc-if value="{{ showLogSeg }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <p style="flex:1;min-width:260px;margin:0;font-size:13px;color:var(--text-muted);line-height:1.55;text-wrap:pretty;">Despacho: el mismo día hábil si el pedido entra antes del corte, si no el siguiente. Entrega: días hábiles desde el despacho según la zona. Las fechas reales salen de la guía en Shopify y de la etiqueta de entregado, o se marcan a mano.</p>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <sc-for list="{{ logRangos }}" as="r" hint-placeholder-count="4"><button onClick="{{ r.onClick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-subtle);cursor:pointer;background:{{ r.bg }};color:{{ r.fg }};">{{ r.l }}</button></sc-for>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;">
+                <sc-for list="{{ logKpis }}" as="k" hint-placeholder-count="5">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 18px;">
+                    <div style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;color:var(--text-muted);">{{ k.l }}</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;line-height:1.1;margin-top:6px;color:{{ k.fg }};">{{ k.v }}</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">{{ k.s }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ logSinFechaShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">{{ logSinFechaTxt }}</div></sc-if>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0 0 10px;">Cumplimiento por zona</h3>
+                  <div style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr));gap:8px 10px;font-size:12.5px;align-items:center;">
+                    <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;">Zona</div>
+                    <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;text-align:right;">Pedidos</div>
+                    <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;text-align:right;">A tiempo</div>
+                    <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;text-align:right;">Prom. real</div>
+                    <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;text-align:right;">Atrasados</div>
+                    <sc-for list="{{ logZonas }}" as="z" hint-placeholder-count="3">
+                      <div><div style="font-weight:700;color:var(--text-strong);">{{ z.l }}</div><div style="font-size:11px;color:var(--text-muted);">Promesa: {{ z.plazo }}</div></div>
+                      <div style="text-align:right;">{{ z.n }}</div>
+                      <div style="text-align:right;font-weight:700;">{{ z.pct }}</div>
+                      <div style="text-align:right;">{{ z.prom }} d</div>
+                      <div style="text-align:right;">{{ z.atr }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0 0 10px;">Motivos de retraso</h3>
+                  <sc-if value="{{ logMotivosShow }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:7px;">
+                      <sc-for list="{{ logMotivosRes }}" as="m" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;color:{{ m.fg }};border-bottom:1px solid var(--border-subtle);padding-bottom:6px;"><span>{{ m.l }}</span><strong>{{ m.n }}</strong></div></sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ logMotivosVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--text-muted);">Sin retrasos en el periodo.</div></sc-if>
+                  <p style="font-size:12px;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">Atrasados abiertos y entregados tarde del periodo. Anota el motivo en cada pedido para ver dónde se pierde la promesa.</p>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--border-subtle);">
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;flex:1;">
+                    <sc-for list="{{ logFiltros }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.onClick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-subtle);cursor:pointer;background:{{ f.bg }};color:{{ f.fg }};">{{ f.l }}</button></sc-for>
+                  </div>
+                  <input value="{{ logBuscar }}" onInput="{{ onLogBuscar }}" placeholder="Buscar pedido, cliente, guía o ciudad" style="font-family:inherit;font-size:13px;padding:8px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-page);min-width:220px;flex:0 1 280px;">
+                  <button onClick="{{ logExportar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Exportar Excel</button>
+                </div>
+                <sc-if value="{{ logVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:36px 20px;text-align:center;font-size:13.5px;color:var(--text-muted);">{{ logVacioTxt }}</div></sc-if>
+                <div style="overflow-x:auto;">
+                  <div style="min-width:880px;">
+                    <sc-for list="{{ logRows }}" as="r" hint-placeholder-count="6">
+                      <div style="border-bottom:1px solid var(--border-subtle);background:{{ r.rowBg }};">
+                        <div onClick="{{ r.onToggle }}" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) 64px;gap:12px;align-items:center;padding:11px 16px;cursor:pointer;font-size:12.5px;" style-hover="background:rgba(167,134,89,0.05);">
+                          <div><div style="font-weight:700;color:var(--text-strong);">{{ r.pedido }} · {{ r.cliente }}</div><div style="font-size:11.5px;color:var(--text-muted);">Pedido {{ r.fecha }}</div></div>
+                          <div><div style="color:var(--text-body);">{{ r.ciudad }}</div><div style="font-size:11.5px;color:var(--text-muted);">{{ r.zona }}</div></div>
+                          <div><div style="font-size:11px;color:var(--text-muted);">Despacho · prom. {{ r.promDesp }}</div><div style="font-weight:700;color:{{ r.despFg }};">{{ r.despReal }}</div></div>
+                          <div><div style="font-size:11px;color:var(--text-muted);">Entrega · prom. {{ r.promEnt }}</div><div style="font-weight:700;color:{{ r.entFg }};">{{ r.entReal }}</div></div>
+                          <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;"><span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:{{ r.estBg }};color:{{ r.estFg }};">{{ r.estL }}</span><sc-if value="{{ r.etapaShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:var(--text-body);">{{ r.etapa }}</span></sc-if><sc-if value="{{ r.motivoShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:var(--text-muted);">{{ r.motivo }}</span></sc-if></div>
+                          <div style="text-align:right;"><sc-if value="{{ r.atrasoShow }}" hint-placeholder-val="{{ false }}"><span style="font-weight:800;color:#9A3F2E;">{{ r.atrasoTxt }}</span></sc-if></div>
+                        </div>
+                        <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+                          <div style="padding:4px 16px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                              <div style="font-size:12.5px;color:var(--text-body);">{{ r.guiaTxt }}</div>
+                              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <sc-if value="{{ r.trackShow }}" hint-placeholder-val="{{ false }}"><a href="{{ r.trackUrl }}" target="_blank" rel="noopener" style="font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);color:var(--text-body);text-decoration:none;">Rastrear guía</a></sc-if>
+                                <button onClick="{{ r.onWa }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;">Escribir por WhatsApp</button>
+                                <button onClick="{{ r.onCaso }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Crear caso de servicio</button>
+                              </div>
+                              <div style="font-size:11px;color:var(--text-muted);">{{ r.fuenteTxt }}</div>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                              <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Motivo del retraso
+                                <select value="{{ r.motivo }}" onChange="{{ r.onMotivo }}" style="display:block;width:100%;box-sizing:border-box;margin-top:4px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);">
+                                  <sc-for list="{{ r.motivoOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+                                </select>
+                              </label>
+                              <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Nota
+                                <textarea value="{{ r.nota }}" onInput="{{ r.onNota }}" onBlur="{{ r.onNotaSave }}" rows="2" placeholder="Qué pasó, con quién se habló…" style="display:block;width:100%;box-sizing:border-box;margin-top:4px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);resize:vertical;"></textarea>
+                              </label>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                              <sc-if value="{{ r.showDesp }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onDesp }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Marcar despachado hoy</button></sc-if>
+                              <sc-if value="{{ r.showQuitarDesp }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onQuitarDesp }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;text-decoration:underline;">Quitar despacho manual</button></sc-if>
+                              <sc-if value="{{ r.showEnt }}" hint-placeholder-val="{{ false }}">
+                                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                                  <input type="date" value="{{ r.entFecha }}" onInput="{{ r.onEntFecha }}" style="font-family:inherit;font-size:12.5px;padding:7px 9px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);">
+                                  <button onClick="{{ r.onEnt }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">Marcar entregado</button>
+                                </div>
+                              </sc-if>
+                              <sc-if value="{{ r.showQuitarEnt }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onQuitarEnt }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;text-decoration:underline;">Quitar entrega</button></sc-if>
+                            </div>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <sc-if value="{{ logMasShow }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 16px;font-size:12px;color:var(--text-muted);">{{ logMasTxt }}</div></sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== LOGÍSTICA · PLAZOS ===== -->
+          <sc-if value="{{ showLogPlazos }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px;max-width:860px;">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Promesa de despacho</h3>
+                <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 14px;line-height:1.55;">Si el pedido entra un día hábil antes de la hora de corte, sale ese mismo día; si no, el siguiente día hábil (sin sábados, domingos ni festivos). El despacho real es la fecha en que se crea la guía en Coordinadora (llega de Shopify); si va por otro medio, se marca a mano al preparar el pedido.</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Hora de corte (0–23)<input name="corte" type="number" value="{{ logCfgD.corte }}" onInput="{{ onLogCfg }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);"></label>
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Medir pedidos desde<input name="desde" type="date" value="{{ logCfgD.desde }}" onInput="{{ onLogCfg }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);"></label>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Promesa de entrega · días hábiles desde el despacho</h3>
+                <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 14px;line-height:1.55;">Se usa el máximo del rango que le prometes al cliente. En Cali, un pedido sin guía se toma como mensajero y uno con guía como transportadora.</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Cali · mensajero<input name="caliMensajero" type="number" value="{{ logCfgD.caliMensajero }}" onInput="{{ onLogCfg }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);"></label>
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Cali · transportadora<input name="caliTransp" type="number" value="{{ logCfgD.caliTransp }}" onInput="{{ onLogCfg }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);"></label>
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Ciudades principales<input name="principales" type="number" value="{{ logCfgD.principales }}" onInput="{{ onLogCfg }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);"></label>
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Otras ciudades<input name="otras" type="number" value="{{ logCfgD.otras }}" onInput="{{ onLogCfg }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);"></label>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:12px;">
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Cali y área metropolitana (separadas por coma)<textarea name="metroTxt" value="{{ logCfgD.metroTxt }}" onInput="{{ onLogCfg }}" rows="2" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);resize:vertical;"></textarea></label>
+                  <label style="font-size:12px;font-weight:700;color:var(--text-body);">Ciudades principales (separadas por coma)<textarea name="principalesTxt" value="{{ logCfgD.principalesTxt }}" onInput="{{ onLogCfg }}" rows="3" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);resize:vertical;"></textarea></label>
+                </div>
+                <sc-if value="{{ logCanWrite }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:8px;margin-top:14px;">
+                    <button onClick="{{ logCfgGuardar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">Guardar plazos</button>
+                    <sc-if value="{{ logCfgDirty }}" hint-placeholder-val="{{ false }}"><button onClick="{{ logCfgDescartar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Descartar cambios</button></sc-if>
+                  </div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ logCanWrite }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;">
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Poner al día los pedidos viejos</h3>
+                  <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 14px;line-height:1.55;">Si hay pedidos que ya llegaron pero nunca tuvieron la etiqueta de entregado, elige una fecha: los despachados antes de ese día quedan como entregados «sin fecha», así no salen como atrasados y no cuentan en el % de entrega.</p>
+                  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <input type="date" value="{{ logLimpiarFecha }}" onInput="{{ onLogLimpiarFecha }}" style="font-family:inherit;font-size:13px;padding:9px 11px;border-radius:var(--radius-md);border:1px solid var(--border-strong);">
+                    <sc-if value="{{ logLimpiarShow }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:12.5px;color:var(--text-body);">{{ logLimpiarN }} pedidos despachados sin entregar antes de esa fecha</span>
+                      <button onClick="{{ logLimpiar }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 15px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ logLimpiarBtnTxt }}</button>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
           <!-- ===== PRONTO ===== -->
           <sc-if value="{{ showPronto }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 20px;background:var(--surface-card);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);">
@@ -8539,6 +8713,7 @@ class Component extends DCLogic {
     conversaciones: [{key:'bandeja',label:'Bandeja'},{key:'informe',label:'Informe'},{key:'agente',label:'Agente IA'},{key:'canales',label:'Canales'}],
     finanzas:   [{key:'finresumen',label:'Tablero'},{key:'finpagar',label:'Por pagar'},{key:'fincobrar',label:'Por cobrar'},{key:'finrecaudos',label:'Recaudos'},{key:'finbold',label:'Bold'},{key:'fincaja',label:'Caja y bancos'},{key:'gastos',label:'Gastos fijos'}],
     marketing:  [{key:'mktresumen',label:'Resumen'},{key:'mktwa',label:'Campañas WhatsApp'},{key:'mktconexion',label:'Conexión Meta'}],
+    logistica:  [{key:'seguimiento',label:'Seguimiento de entregas'},{key:'plazos',label:'Promesas y plazos'}],
     informes:   [{key:'gerencial',label:'Informe gerencial'}]
   };
 
@@ -9337,7 +9512,7 @@ class Component extends DCLogic {
         return r;
       }, function(e){ if(mio) self._odaFalla(url,'consulta sin respuesta'); throw e; }); }; }
   // ---- nav ----
-  goModule(m){ if(m==='soporte'){ this.sopCargar(); } if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser() && !this._modHasAccess(this.access()||{},'informes')){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else { this.setState({module:m}); } }
+  goModule(m){ if(m==='soporte'){ this.sopCargar(); } if(m==='inicio'){ this.setState({module:'inicio',sub:null}); } else if(m==='informes'){ if(!this.isAdminUser() && !this._modHasAccess(this.access()||{},'informes')){ this.toast('Los informes gerenciales son solo del Administrador'); return; } this.setState({module:'informes',sub:null}); } else if(m==='compras'){ this.setState({module:'compras',sub:'resumen'}); } else if(m==='desarrollo'){ this.setState({module:'desarrollo',sub:'mezclas'}); } else if(m==='produccion'){ this.setState({module:'produccion',sub:'prodmez'}); } else if(m==='inventario'){ this.setState({module:'inventario',sub:'resumen'}); } else if(m==='ventas'){ this.setState({module:'ventas',sub:'registro'}); } else if(m==='conversaciones'){ this.setState({module:'conversaciones',sub:'bandeja'}); } else if(m==='finanzas'){ this.setState({module:'finanzas',sub:'finresumen'}); } else if(m==='marketing'){ this.setState({module:'marketing',sub:'mktresumen'}); } else if(m==='logistica'){ this.setState({module:'logistica',sub:(this._modHasAccess(this.access()||{},'logistica')&&this._subVisible&&!this._subVisible('logistica','seguimiento')?'plazos':'seguimiento')}); } else { this.setState({module:m}); } }
   goSub(s){ this.setState({module:'compras',sub:s}); }
   _modHasAccess(p,mod){ if(p.admin) return true; return this._modLevel(p,mod)!=='none'; }
   canWriteMod(mod){ const acc=this.access(); return !!acc && this._modLevel(acc,mod)==='write'; }
@@ -10705,7 +10880,7 @@ Instrucciones de respuesta:
         const pn=this.pedidoNum(o);
         const exI = (o.shopifyId&&idxByShop.has(String(o.shopifyId))) ? idxByShop.get(String(o.shopifyId)) : (pn&&idxByPed.has(pn)? idxByPed.get(pn) : -1);
         const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0, costoUnit:this._itemConCosto(it, code), kitItems:this._itemKitSnap(it, code, o.fecha) }; });
-        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanalVenta({canal:(o.canal||'Página Web'), sourceName:o.sourceName||''}), sourceName:o.sourceName||'', bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined) };
+        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanalVenta({canal:(o.canal||'Página Web'), sourceName:o.sourceName||''}), sourceName:o.sourceName||'', bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined), creadoAt:(o.creadoAt||''), despachoAt:(o.despachoAt||''), transportadora:(o.transportadora||''), trackingUrl:(o.trackingUrl||''), entregadoAt:(o.entregaAt||(this.logTagEntregado(o.tags)?this._logFechaEtiqueta(o):'')), entregaFuente:(o.entregaAt?'shopify':(this.logTagEntregado(o.tags)&&o.updatedAt?'etiqueta':'')), entregaSinFecha:(!o.entregaAt && this.logTagEntregado(o.tags) && !o.updatedAt), logVisto:Date.now() };
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
           const ex=list[exI];
@@ -10715,7 +10890,17 @@ Instrucciones de respuesta:
           // para que Shopify no vuelva a descuadrar cuentas ya conciliadas.
           const merged={ ...ex,
             items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, sourceName:(ex.sourceName||bruto0.sourceName||''), canal:this.canonCanalVenta({canal:(ex.canal||bruto0.canal), sourceName:(ex.sourceName||bruto0.sourceName||'')}), bodega:(ex.bodega||bruto0.bodega),
-            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), atrib:(ex.atrib&&ex.atrib.fuente? ex.atrib : bruto0.atrib), id:ex.id };
+            guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), atrib:(ex.atrib&&ex.atrib.fuente? ex.atrib : bruto0.atrib), id:ex.id,
+            creadoAt:(ex.creadoAt||bruto0.creadoAt||''), despachoAt:(ex.despachoAt||bruto0.despachoAt||''), transportadora:(ex.transportadora||bruto0.transportadora||''), trackingUrl:(ex.trackingUrl||bruto0.trackingUrl||'') };
+          // Logística: la entrega se fecha cuando Shopify la marca delivered o cuando APARECE la etiqueta
+          // (si ya estaba antes de que existiera el módulo, queda entregada «sin fecha» y no cuenta en el cumplimiento).
+          // entregaSinFecha puesto por el sync (no a mano) se re-fecha apenas la función trae updatedAt.
+          if(!ex.entregadoAt && (!ex.entregaSinFecha || ex.entregaFuente!=='manual')){
+            if(o.entregaAt){ merged.entregadoAt=o.entregaAt; merged.entregaFuente='shopify'; merged.entregaSinFecha=false; }
+            else if(this.logTagEntregado(bruto0.tags)){ const f=this._logFechaEtiqueta(o); if(f){ merged.entregadoAt=f; merged.entregaFuente='etiqueta'; merged.entregaSinFecha=false; } else if(this.logTagEntregado(ex.tags) || !ex.logVisto) merged.entregaSinFecha=true; else { merged.entregadoAt=new Date().toISOString(); merged.entregaFuente='etiqueta'; } }
+          }
+          { const et=this.logEtapaCM(bruto0.tags); if(et && et!==ex.logEtapa){ merged.logEtapa=et; merged.logEtapaAt=(o.updatedAt||new Date().toISOString()); } }
+          if(!merged.logVisto) merged.logVisto=Date.now();
           if(o.cancelado){ merged.pagado=0; merged.envio=0; }
           list[exI]=(typeof this.applyPackagingRules==='function')?this.applyPackagingRules(merged):merged;
           touched.add(list[exI].id);
@@ -10804,6 +10989,80 @@ Instrucciones de respuesta:
     const esManana=(d.toDateString()===manana.toDateString());
     const cuando=esManana? 'mañana' : ('el '+dias[d.getDay()]);
     return cuando; }
+  // ======================================================================
+  //  LOGÍSTICA · promesa de despacho (corte 3 pm, L-V no festivos) y de entrega (días hábiles por zona)
+  //  Despacho real = creación del primer fulfillment en Shopify (guía Coordinadora) o marca manual.
+  //  Entrega real = shipment_status delivered, aparición de la etiqueta «CM: ENTREGADA/Entregado» o marca manual.
+  // ======================================================================
+  logTagEntregado(tags){ return /cm:\s*entregad[ao]|(^|[^a-z])entregad[ao]([^a-z]|$)/.test(String(tags||'').toLowerCase()); }
+  // Etapa que la app de Coordinadora escribe como etiqueta «CM: …» en Shopify
+  logEtapaCM(tags){ const m=String(tags||'').match(/cm:\s*([^,]+)/i); if(!m) return ''; const t=m[1].trim().toLowerCase(); return t.charAt(0).toUpperCase()+t.slice(1); }
+  // Fecha de la etiqueta de entregado = updated_at del pedido (Shopify no fecha las etiquetas; ponerla actualiza el pedido).
+  // Nunca antes del despacho; si updated_at es anterior o no viene (función vieja), no hay fecha.
+  _logFechaEtiqueta(o){ const u=String((o&&o.updatedAt)||''); if(!u) return ''; const d=String((o&&o.despachoAt)||''); if(d && u<d) return ''; return u; }
+  LOG_DEF={ corte:15, caliMensajero:1, caliTransp:3, principales:3, otras:5, desde:'2026-09-01',
+    metroTxt:'Cali, Jamundí, Yumbo, Palmira, Candelaria',
+    principalesTxt:'Bogotá, Medellín, Barranquilla, Cartagena, Bucaramanga, Pereira, Manizales, Armenia, Ibagué, Santa Marta, Cúcuta, Villavicencio, Pasto, Neiva, Popayán, Montería, Tuluá, Buga' };
+  LOG_MOTIVOS=['Transportadora','Dirección errada o incompleta','Cliente ausente','Sin stock','Preparación tardía','Clima u orden público','Otro'];
+  logCfg(){ return {...this.LOG_DEF, ...((this.state.reglasNeg||{}).logPlazos||{})}; }
+  logSetCfg(k,v){ const c={...((this.state.reglasNeg||{}).logPlazos||{}), [k]:v}; const rn={...(this.state.reglasNeg||{}), logPlazos:c}; this.setState({reglasNeg:rn}); try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({logPlazos:c}); }
+  _logIso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  _logDate(iso){ return new Date(String(iso).slice(0,10)+'T12:00:00'); }
+  _logMasHabiles(iso,n){ const d=this._logDate(iso); let k=0, g=0; while(!this.esDiaHabil(d) && g<15){ d.setDate(d.getDate()+1); g++; } while(k<n && g<60){ d.setDate(d.getDate()+1); g++; if(this.esDiaHabil(d)) k++; } return this._logIso(d); }
+  _logHabilesEntre(a,b){ if(!a||!b||b<=a) return 0; const d=this._logDate(a); let n=0, g=0; const fin=String(b).slice(0,10); while(this._logIso(d)<fin && g<400){ d.setDate(d.getDate()+1); g++; if(this.esDiaHabil(d)) n++; } return n; }
+  _logLista(txt){ return String(txt||'').split(',').map(s=>this.normKey(s)).filter(Boolean); }
+  logZona(v){ const c=this.normKey(v&&v.ciudad||''); const cfg=this.logCfg(); if(!c) return 'otra';
+    if(this._logLista(cfg.metroTxt).some(x=>c===x||c.indexOf(x)===0)) return 'cali';
+    if(this._logLista(cfg.principalesTxt).some(x=>c===x||c.indexOf(x)===0)) return 'principal'; return 'otra'; }
+  logEsEnvio(v){ if(!v||v.cancelada) return false;
+    // Solo pedidos de Página Web y WhatsApp (pedido del usuario, 29-sep)
+    const cn=this.normKey(v.canal||'').replace(/[^a-z]/g,''); if(!(cn.indexOf('paginaweb')===0 || cn.indexOf('whatsapp')===0)) return false;
+    const tg=String(v.tags||'').toLowerCase(); if(/recoge en oficina|recoge en tienda/.test(tg)) return false; return true; }
+  logInfo(v){ const cfg=this.logCfg(); const hoy=this._logIso(new Date());
+    const zona=this.logZona(v); const conGuia=!!String(v.guia||'').trim();
+    const plazo=Number(zona==='cali'?(conGuia?cfg.caliTransp:cfg.caliMensajero):(zona==='principal'?cfg.principales:cfg.otras))||0;
+    // Promesa de despacho: pedido en día hábil antes del corte → ese día; si no, el siguiente hábil
+    let base=v.creadoAt? new Date(v.creadoAt) : null; if(!base||isNaN(base)) base=new Date(String(v.fecha||hoy).slice(0,10)+'T09:00:00');
+    const bIso=this._logIso(base); const promDesp=(this.esDiaHabil(base) && base.getHours()<(Number(cfg.corte)||15))? bIso : this._logMasHabiles(this._logIso(new Date(base.getTime()+86400000)),0);
+    const despIso=v.despachoAt? this._logIso(new Date(v.despachoAt)) : '';
+    // Con guía pero sin fecha de despacho (pedidos anteriores al módulo o aún sin sync): despachado, fecha desconocida
+    const despSinFecha=!despIso && (!!String(v.guia||'').trim() || v.ordFulfill==='fulfilled' || !!this.logEtapaCM(v.tags));
+    const promEnt=this._logMasHabiles(despIso||promDesp, plazo);
+    const entIso=v.entregadoAt? this._logIso(new Date(v.entregadoAt)) : '';
+    // La etiqueta de entregado ya presente (aunque el sync no la haya fechado) cuenta como entregado sin fecha
+    const entregado=!!(entIso||v.entregaSinFecha||this.logTagEntregado(v.tags));
+    let estado, atraso=0;
+    if(entregado){ if(!entIso){ estado='sinfecha'; } else { atraso=this._logHabilesEntre(promEnt, entIso); estado=atraso>0?'tarde':'atiempo'; } }
+    else if(!despIso && !despSinFecha){ atraso=this._logHabilesEntre(promDesp, hoy); estado=atraso>0?'despAtrasado':'porDespachar'; }
+    else { atraso=this._logHabilesEntre(promEnt, hoy); estado=atraso>0?'entAtrasada':'transito'; }
+    const despATiempo=despIso? (despIso<=promDesp) : null;
+    return { zona, plazo, promDesp, despIso, despSinFecha, promEnt, entIso, entregado, estado, atraso, despATiempo, atrasado:(estado==='despAtrasado'||estado==='entAtrasada') }; }
+  logEstadoMeta(k){ return ({ porDespachar:{l:'Por despachar',bg:'var(--surface-raised)',fg:'var(--text-body)'}, despAtrasado:{l:'Despacho atrasado',bg:'rgba(181,80,60,0.14)',fg:'#9A3F2E'}, transito:{l:'En tránsito',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, entAtrasada:{l:'Entrega atrasada',bg:'rgba(181,80,60,0.14)',fg:'#9A3F2E'}, atiempo:{l:'Entregado a tiempo',bg:'rgba(98,123,96,0.18)',fg:'#4C6149'}, tarde:{l:'Entregado tarde',bg:'rgba(201,161,90,0.22)',fg:'#7A5E36'}, sinfecha:{l:'Entregado · sin fecha',bg:'#EFE9DD',fg:'#8A7B6A'} })[k]||{l:k,bg:'#EFE9DD',fg:'#8A7B6A'}; }
+  logPedidos(){ const d=this.logCfg().desde||'2026-09-01'; return (this.state.ventas||[]).filter(v=>(v.fecha||'')>=d && this.logEsEnvio(v)); }
+  logAtrasados(){ return this.logPedidos().filter(v=>this.logInfo(v).atrasado); }
+  async _logGuardar(id, patch, msg){ const list=(this.state.ventas||[]).map(x=>x.id===id? {...x, ...patch} : x); const v=list.find(x=>x.id===id); if(!v) return;
+    this.setState({ventas:list},()=>this.persist());
+    if(this.cloudOn()){ const sb=this._sbClient(); try{ const {data,error}=await sb.from('ventas').upsert(this._ventaToDb(v)).select('id'); if(error||!data||!data.length) throw (error||new Error('sin confirmación')); }catch(e){ this.toast('No se guardó en la nube: '+((e&&e.message)||'error')); try{ window.odaEstado&&window.odaEstado('logistica: '+((e&&e.message)||'guardar')); }catch(_e){} return; } }
+    if(msg) this.toast(msg); }
+  logMarcarDespachado(v){ this._logGuardar(v.id, {despachoAt:new Date().toISOString(), despachoFuente:'manual'}, 'Marcado como despachado'); }
+  logQuitarDespacho(v){ this._logGuardar(v.id, {despachoAt:'', despachoFuente:''}, 'Despacho desmarcado'); }
+  logMarcarEntregado(v){ const f=(this.state.logEntFecha||{})[v.id]||this._logIso(new Date()); this._logGuardar(v.id, {entregadoAt:new Date(f+'T12:00:00').toISOString(), entregaFuente:'manual', entregaSinFecha:false, entregaPor:this.casoUserName()}, 'Marcado como entregado · '+this.fmtFecha(f)); }
+  logQuitarEntrega(v){ this._logGuardar(v.id, {entregadoAt:'', entregaFuente:'', entregaSinFecha:false}, 'Entrega desmarcada'); }
+  logSetMotivo(v, motivo){ this._logGuardar(v.id, {logMotivo:motivo, logMotivoAt:Date.now()}, motivo?('Motivo: '+motivo):'Motivo quitado'); }
+  logSetNota(v, nota){ if(String(nota||'')===String(v.logNota||'')) return; this._logGuardar(v.id, {logNota:String(nota||'')}, 'Nota guardada'); }
+  logTracking(v){ if(v.trackingUrl) return v.trackingUrl; return this.casoTrackingUrl({guia:v.guia, transportadora:v.transportadora}); }
+  logWaTexto(v){ const i=this.logInfo(v); const n=this.waNombre(v); const ref=v.pedido||v.ov||'';
+    if(!i.despIso) return (n?'Hola '+n:'Hola')+', te escribimos de Oasis del Alma sobre tu pedido '+ref+'. Tuvimos un retraso en la preparación y sale '+this.waDespachoTxt()+'. Te compartimos la guía apenas esté lista. Disculpa la espera 🙏';
+    const g=String(v.guia||'').trim(); const url=this.logTracking(v);
+    return (n?'Hola '+n:'Hola')+', te escribimos de Oasis del Alma sobre tu pedido '+ref+'. Vimos que la entrega está tardando más de lo previsto y ya lo estamos revisando con la transportadora'+(g?(' (guía '+g+')'):'')+'.'+(url?(' Puedes seguirlo aquí: '+url):'')+' ¿Nos confirmas si ya te llegó?'; }
+  logWhatsApp(v){ const d=String(v.celular||'').replace(/\D/g,''); const tel=d.length>=10? ('57'+d.slice(-10)) : ''; if(!tel){ this.toast('El pedido no tiene celular'); return; }
+    try{ window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(this.logWaTexto(v)),'_blank','noopener'); }catch(e){} }
+  logCrearCaso(v){ this.nuevoCaso(); const i=this.logInfo(v);
+    setTimeout(()=>{ this.setState(s=>({casoDraft:{...(s.casoDraft||{}), pedido:(v.pedido||v.ov||''), cliente:(v.cliente||''), celular:(v.celular||''), guia:(v.guia||''), transportadora:(v.transportadora||''), descripcion:'Creado desde Logística · '+this.logEstadoMeta(i.estado).l+(i.atraso?(' · '+i.atraso+' día'+(i.atraso===1?'':'s')+' hábil'+(i.atraso===1?'':'es')+' de atraso'):'')+(v.logMotivo?(' · motivo: '+v.logMotivo):'')+(v.logNota?(' · '+v.logNota):'')}}), ()=>{ try{ this.casoAplicarPedido(); }catch(e){} }); },0); }
+  logExportar(rows){ if(typeof XLSX==='undefined'){ this.toast('El exportador aún está cargando, intenta de nuevo'); return; }
+    const data=(rows||[]).map(v=>{ const i=this.logInfo(v); return { Pedido:v.pedido||'', OV:v.ov||'', Fecha:v.fecha||'', Cliente:v.cliente||'', Ciudad:v.ciudad||'', Zona:i.zona, 'Plazo (hábiles)':i.plazo, 'Promesa despacho':i.promDesp, 'Despacho real':i.despIso, 'Promesa entrega':i.promEnt, 'Entrega real':i.entIso, Estado:this.logEstadoMeta(i.estado).l, 'Días de atraso':i.atraso, Transportadora:v.transportadora||'', Guía:v.guia||'', Motivo:v.logMotivo||'', Nota:v.logNota||'' }; });
+    if(!data.length){ this.toast('No hay pedidos para exportar'); return; }
+    const ws=XLSX.utils.json_to_sheet(data); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Logística'); XLSX.writeFile(wb,'logistica_entregas.xlsx'); }
   // --- Cupón de postventa: uno por mes (mismo vencimiento para toda la cohorte) ---
   // Ej.: quien compra en agosto 2026 recibe GRACIAS0826, válido hasta el 30 de septiembre.
   // Más adelante estos códigos se crearán automáticamente en Shopify por API.
@@ -12387,7 +12646,7 @@ Instrucciones de respuesta:
       this.cloudLoadRecordatorios();
     }catch(e){ this.toast('No se pudo guardar la nota'); } }
   // ---- permisos compartidos (nube) ----
-  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null, ucfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else if(r.user_key==='__usuarios__'){ ucfg=r.perms||null; } else { m[r.user_key]=r.perms||{}; } }); if(ucfg){ const loc=this._usersCfgGet(); if((Number(ucfg._ts)||0) > (Number(loc._ts)||0)){ this._usersCfgCache={ overrides:(ucfg.overrides||{}), custom:(ucfg.custom||[]), _ts:(Number(ucfg._ts)||0) }; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(this._usersCfgCache)); }catch(e){} } } const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.boldLiqMap && typeof cfg.boldLiqMap==='object' && Object.keys(cfg.boldLiqMap).length){ const _lm={...cfg.boldLiqMap, ...this.boldLiqMapGet()}; this._boldLiqMapCache=_lm; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(_lm)); }catch(e){} } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes);
+  async cloudLoadPermisos(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('permisos').select('user_key,perms'); if(error) throw error; if(data && data.length){ const m={}; let cfg=null, ucfg=null; data.forEach(r=>{ if(r.user_key==='__config__'){ cfg=r.perms||{}; } else if(r.user_key==='__usuarios__'){ ucfg=r.perms||null; } else { m[r.user_key]=r.perms||{}; } }); if(ucfg){ const loc=this._usersCfgGet(); if((Number(ucfg._ts)||0) > (Number(loc._ts)||0)){ this._usersCfgCache={ overrides:(ucfg.overrides||{}), custom:(ucfg.custom||[]), _ts:(Number(ucfg._ts)||0) }; try{ localStorage.setItem('oda_hub_usuarios_v1',JSON.stringify(this._usersCfgCache)); }catch(e){} } } const patch={userPerms:m}; try{ localStorage.setItem('oda_hub_perms_v1',JSON.stringify(m)); }catch(e){} if(cfg && (cfg.waAlist!==undefined || cfg.waCloudOn!==undefined || cfg.carContact!==undefined || cfg.mktAcct!==undefined || cfg.logPlazos!==undefined)){ const rn={...(this.state.reglasNeg||{})}; if(cfg.logPlazos && typeof cfg.logPlazos==='object') rn.logPlazos=cfg.logPlazos; if(cfg.waAlist!==undefined) rn.waAlist=cfg.waAlist; if(cfg.waCloudOn!==undefined) rn.waCloudOn=!!cfg.waCloudOn; if(cfg.mktAcct!==undefined){ rn.mktAcct=cfg.mktAcct; if(cfg.mktAcct && !this.state.mktAdAccountId){ patch.mktAdAccountId=cfg.mktAcct; try{ localStorage.setItem('oda_hub_meta_acct_v1', cfg.mktAcct); }catch(e){} } } patch.reglasNeg=rn; try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(cfg.carContact && typeof cfg.carContact==='object'){ const merged={...(this.state.carritosContactados||{}), ...cfg.carContact}; patch.carritosContactados=merged; try{ localStorage.setItem('oda_hub_car_contact_v1', JSON.stringify(merged)); }catch(e){} } if(cfg.carNotas && typeof cfg.carNotas==='object'){ const mergedN={...(this.state.carritosNotas||{}), ...cfg.carNotas}; patch.carritosNotas=mergedN; try{ localStorage.setItem('oda_hub_car_nota_v1', JSON.stringify(mergedN)); }catch(e){} } } if(cfg && cfg.boldLiqMap && typeof cfg.boldLiqMap==='object' && Object.keys(cfg.boldLiqMap).length){ const _lm={...cfg.boldLiqMap, ...this.boldLiqMapGet()}; this._boldLiqMapCache=_lm; try{ localStorage.setItem('oda_hub_boldliqmap_v1',JSON.stringify(_lm)); }catch(e){} } if(cfg && cfg.movAjustes && typeof cfg.movAjustes==='object'){ const _ma=this._migrarClavesAjustes(cfg.movAjustes);
       // Fusión por sello de tiempo: la nube puede venir vieja (eco del realtime o config
       // guardada por otro equipo con sus ajustes desactualizados). El ajuste más nuevo gana
       // y una eliminación local reciente no resucita desde la nube.
@@ -12396,7 +12655,7 @@ Instrucciones de respuesta:
       Object.keys(_del).forEach(k=>{ const c=_out[k]; if(c && (Number(_del[k])||0) >= (Number(c._ts)||0)) delete _out[k]; });
       patch.movAjustes=_out; try{ localStorage.setItem('oda_hub_movajustes_v1', JSON.stringify(_out)); }catch(e){} } if(cfg && (cfg.mapeoCajas!==undefined || cfg.bolsaDefault!==undefined)){ const re={...(this.state.reglasEmpaque||{})}; if(cfg.bolsaDefault!==undefined) re.bolsaDefault=cfg.bolsaDefault; if(cfg.bolsasHist!==undefined) re.bolsasHist=cfg.bolsasHist; if(cfg.mapeoCajas!==undefined) re.mapeoCajas=cfg.mapeoCajas; patch.reglasEmpaque=re; try{ localStorage.setItem('oda_hub_empaque_v1',JSON.stringify(re)); localStorage.setItem('oda_hub_empaque_v2','1'); }catch(e){} } this.setState(patch); } else { const cur=this.state.userPerms||{}; const rows=Object.keys(cur).map(k=>({user_key:k, perms:cur[k], actualizado:new Date().toISOString()})); if(rows.length){ try{ await sb.from('permisos').upsert(rows); }catch(e){} } } }catch(e){} }
   async cloudSavePermiso(uid, permObj){ const sb=this._sbClient(); if(!sb) return; try{ await sb.from('permisos').upsert({user_key:uid, perms:permObj, actualizado:new Date().toISOString()}); }catch(e){} }
-  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const re=(this.state.reglasEmpaque||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), movAjustes:(this.movAjustesGet()||{}), boldLiqMap:(this.boldLiqMapGet()||{}), bolsaDefault:(re.bolsaDefault||''), bolsasHist:(re.bolsasHist||[]), mapeoCajas:(re.mapeoCajas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
+  async cloudSaveConfig(obj){ const sb=this._sbClient(); if(!sb) return; try{ const cur=(this.state.reglasNeg||{}); const re=(this.state.reglasEmpaque||{}); const merged={ waAlist:(cur.waAlist||''), waCloudOn:!!cur.waCloudOn, mktAcct:(cur.mktAcct||''), logPlazos:(cur.logPlazos||{}), carContact:(this.state.carritosContactados||{}), carNotas:(this.state.carritosNotas||{}), movAjustes:(this.movAjustesGet()||{}), boldLiqMap:(this.boldLiqMapGet()||{}), bolsaDefault:(re.bolsaDefault||''), bolsasHist:(re.bolsasHist||[]), mapeoCajas:(re.mapeoCajas||{}), ...obj }; await sb.from('permisos').upsert({user_key:'__config__', perms:merged, actualizado:new Date().toISOString()}); }catch(e){} }
   cloudSubscribePermisos(){ const sb=this._sbClient(); if(!sb||this._permSub) return; try{ this._permSub=sb.channel('oda-permisos').on('postgres_changes',{event:'*',schema:'public',table:'permisos'},()=>{ this.cloudLoadPermisos(); }).subscribe(); }catch(e){} }
   // ---- proveedores compartidos (nube) ----
   _provToDb(p){ return { codigo:p.codigo, nombre:p.nombre||'', nit:p.nit||'', contacto_nombre:p.contactoNombre||'', telefonos:(Array.isArray(p.telefonos)?p.telefonos:[]), email:p.email||'', ciudad:p.ciudad||'', condiciones_pago:p.condicionesPago||'', calificacion:Number(p.calificacion)||0, autorretenedor:/s[ií]/i.test(String(p.autorretenedor||'')), actualizado:new Date().toISOString() }; }
@@ -15398,6 +15657,7 @@ Instrucciones de respuesta:
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_wa=subVis('marketing','mktwa'); out.vM_camp=false; out.vM_recom=false; out.vM_creativos=false; out.vM_publicos=false; out.vM_conexion=subVis('marketing','mktconexion');
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
+    out.vL_seg=subVis('logistica','seguimiento'); out.vL_plazos=subVis('logistica','plazos'); out.canLogistica=out.vL_seg||out.vL_plazos;
 
     // ===== INICIO (resumen personal de pendientes) =====
     // ===== SOPORTE ODA (módulo estándar ODA Labs) =====
@@ -15577,6 +15837,11 @@ Instrucciones de respuesta:
         const items=alerts.slice(0,5).map(a=>({title:a.title, sub:a.sub, right:'', rightColor:a.rightColor, onClick:goto('marketing','mktcampanas')}));
         cards.push({key:'marketing', title:'Marketing', desc: alerts.length? (alerts.length+' campaña'+(alerts.length===1?'':'s')+' necesitan atención') : 'Sin alertas de campañas', n:alerts.length, hasCount:alerts.length>0, items, empty:alerts.length===0, onVer:goto('marketing','mktcampanas')});
       }
+      if(out.canLogistica){ try{
+        const atrI=this.logAtrasados().map(v=>({v, i:this.logInfo(v)})).sort((a,b)=>b.i.atraso-a.i.atraso);
+        const items=atrI.slice(0,5).map(({v,i})=>({title:(v.pedido||v.ov||'')+' · '+this.titleCase(v.cliente||''), sub:this.logEstadoMeta(i.estado).l+' · '+(this.titleCase(v.ciudad||'')||'sin ciudad'), right:'+'+i.atraso+' d', rightColor:'#B5503C', onClick:goto('logistica','seguimiento')}));
+        cards.push({key:'logistica', title:'Logística', desc: atrI.length? (atrI.length+' pedido'+(atrI.length===1?'':'s')+' fuera de la promesa') : 'Todos los pedidos van dentro de la promesa', n:atrI.length, hasCount:atrI.length>0, items, empty:atrI.length===0, onVer:goto('logistica','seguimiento')});
+      }catch(e){} }
       out.inicioCards=cards; out.inicioVacio=cards.length===0;
       const dd=new Date(); out.inicioFecha=dd.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
     }
@@ -16279,6 +16544,79 @@ Instrucciones de respuesta:
     out.showVentasCotizador = onVen && st.sub==='cotizador';
     out.showVentasCarritos = false; // submódulo retirado: la recuperación de carritos vive en Conversaciones
     out.showVentasServicio = onVen && st.sub==='servicio';
+    // ===== LOGÍSTICA =====
+    { const onLog=st.module==='logistica'; const hoyL=this._logIso(new Date());
+      out.showLogisticaSub=onLog; out.logNavBg=onLog?'rgba(167,134,89,0.18)':'transparent'; out.logNavColor=onLog?'#D9BE92':'rgba(251,248,242,0.85)';
+      const subStyL=(k)=>{ const a=onLog&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
+      out.subLogSeg=subStyL('seguimiento'); out.subLogPlazos=subStyL('plazos');
+      out.logNav=()=>this.goModule('logistica'); out.logSubSeg=()=>this.setState({module:'logistica',sub:'seguimiento'}); out.logSubPlazos=()=>this.setState({module:'logistica',sub:'plazos'});
+      out.logCanWrite=this.canWriteMod('logistica');
+      if(this._logCache && this._logCache.v===st.ventas && this._logCache.d===hoyL && this._logCache.c===JSON.stringify(this.logCfg())){} else {
+        const peds=this.logPedidos(); const infos=new Map(); peds.forEach(v=>infos.set(v.id,this.logInfo(v)));
+        this._logCache={v:st.ventas, d:hoyL, c:JSON.stringify(this.logCfg()), peds, infos}; }
+      const LC=this._logCache; const atr=LC.peds.filter(v=>LC.infos.get(v.id).atrasado);
+      out.logBadge=String(atr.length); out.logBadgeShow=!!out.canLogistica && atr.length>0;
+      out.showLogSeg=onLog && st.sub!=='plazos' && !!out.vL_seg; out.showLogPlazos=onLog && st.sub==='plazos' && !!out.vL_plazos;
+      if(out.showLogSeg){
+        const rango=st.logRango||'d30'; const now=new Date(); let ini, fin=hoyL;
+        if(rango==='d7'){ ini=this._logIso(new Date(now.getTime()-6*86400000)); } else if(rango==='mes'){ ini=hoyL.slice(0,8)+'01'; } else if(rango==='mesant'){ const a=new Date(now.getFullYear(), now.getMonth()-1, 1), b=new Date(now.getFullYear(), now.getMonth(), 0); ini=this._logIso(a); fin=this._logIso(b); } else { ini=this._logIso(new Date(now.getTime()-29*86400000)); }
+        out.logRangos=[['d7','7 días'],['d30','30 días'],['mes','Este mes'],['mesant','Mes anterior']].map(([k,l])=>({l, on:rango===k, bg:rango===k?'var(--brand-primary)':'var(--surface-card)', fg:rango===k?'var(--text-on-brand)':'var(--text-body)', onClick:()=>this.setState({logRango:k})}));
+        const enR=LC.peds.filter(v=>(v.fecha||'')>=ini && (v.fecha||'')<=fin); const I=(v)=>LC.infos.get(v.id);
+        const desp=enR.filter(v=>I(v).despIso); const despOk=desp.filter(v=>I(v).despATiempo);
+        const med=enR.filter(v=>I(v).entIso); const medOk=med.filter(v=>I(v).estado==='atiempo');
+        const pct=(a,b)=>b? Math.round(a*100/b)+'%' : '—';
+        const prom=(arr)=>{ const xs=arr.map(v=>this._logHabilesEntre(I(v).despIso, I(v).entIso)); return xs.length? (Math.round(xs.reduce((s,x)=>s+x,0)*10/xs.length)/10).toString().replace('.',',') : '—'; };
+        out.logKpis=[
+          {l:'Pedidos con envío', v:String(enR.length), s:'En el periodo'},
+          {l:'Despacho a tiempo', v:pct(despOk.length,desp.length), s:despOk.length+' de '+desp.length+' despachados'},
+          {l:'Entrega a tiempo', v:pct(medOk.length,med.length), s:medOk.length+' de '+med.length+' con fecha de entrega'},
+          {l:'Atrasados hoy', v:String(atr.length), s:'Abiertos, de cualquier fecha', alerta:atr.length>0},
+          {l:'Despacho → entrega', v:prom(med), s:'Días hábiles en promedio'} ].map(k=>({...k, fg:k.alerta?'#9A3F2E':'var(--text-strong)'}));
+        const sinF=enR.filter(v=>I(v).estado==='sinfecha').length; out.logSinFechaShow=sinF>0; out.logSinFechaTxt=sinF+' entregado'+(sinF===1?'':'s')+' sin fecha (la etiqueta ya estaba antes del módulo) no cuentan en el % de entrega.';
+        const cfg=this.logCfg(); const zL={cali:'Cali y área metropolitana', principal:'Ciudades principales', otra:'Otras ciudades'};
+        out.logZonas=['cali','principal','otra'].map(z=>{ const zr=enR.filter(v=>I(v).zona===z); const zm=zr.filter(v=>I(v).entIso); const ok=zm.filter(v=>I(v).estado==='atiempo').length;
+          const plazo=z==='cali'?(cfg.caliMensajero+' día mensajero · '+cfg.caliTransp+' transportadora'):(z==='principal'?cfg.principales:cfg.otras)+' días hábiles';
+          return {l:zL[z], plazo, n:String(zr.length), pct:pct(ok,zm.length), prom:prom(zm), atr:String(zr.filter(v=>I(v).atrasado).length)}; });
+        const mot={}; LC.peds.filter(v=>I(v).atrasado || I(v).estado==='tarde').filter(v=>(v.fecha||'')>=ini || I(v).atrasado).forEach(v=>{ const m=v.logMotivo||'Sin motivo anotado'; mot[m]=(mot[m]||0)+1; });
+        out.logMotivosRes=Object.keys(mot).sort((a,b)=>mot[b]-mot[a]).map(k=>({l:k, n:String(mot[k]), fg:k==='Sin motivo anotado'?'var(--text-muted)':'var(--text-body)'})); out.logMotivosShow=out.logMotivosRes.length>0; out.logMotivosVacio=!out.logMotivosShow;
+        const filtro=st.logFiltro||'atrasados'; const q=this.normKey(st.logBuscar||'');
+        const cuenta={atrasados:atr.length, abiertos:LC.peds.filter(v=>!I(v).entregado).length, tarde:enR.filter(v=>I(v).estado==='tarde').length, todos:enR.length};
+        out.logFiltros=[['atrasados','Atrasados'],['abiertos','Sin entregar'],['tarde','Entregados tarde'],['todos','Todos del periodo']].map(([k,l])=>({l:l+' · '+cuenta[k], bg:filtro===k?'var(--text-strong)':'var(--surface-card)', fg:filtro===k?'var(--surface-page)':'var(--text-body)', onClick:()=>this.setState({logFiltro:k, logOpenId:null})}));
+        let rows = filtro==='atrasados'? atr : (filtro==='abiertos'? LC.peds.filter(v=>!I(v).entregado) : (filtro==='tarde'? enR.filter(v=>I(v).estado==='tarde') : enR));
+        if(q) rows=rows.filter(v=>this.normKey([v.pedido,v.ov,v.cliente,v.guia,v.ciudad].join(' ')).indexOf(q)>=0);
+        rows=rows.slice().sort((a,b)=>(I(b).atraso-I(a).atraso) || String(a.fecha||'').localeCompare(String(b.fecha||'')));
+        this._logRowsExport=rows; out.logExportar=()=>this.logExportar(this._logRowsExport);
+        out.logBuscar=st.logBuscar||''; out.onLogBuscar=(e)=>this.setState({logBuscar:e.target.value});
+        out.logVacio=rows.length===0; out.logVacioTxt=filtro==='atrasados'? 'No hay pedidos atrasados. Todo va dentro de la promesa.' : 'No hay pedidos con este filtro.';
+        out.logMasShow=rows.length>150; out.logMasTxt='Se muestran 150 de '+rows.length+'. Usa el buscador para encontrar otros.';
+        const zc={cali:'Cali', principal:'Principal', otra:'Otra'}; const fu={manual:'a mano', shopify:'Shopify', etiqueta:'etiqueta'};
+        out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
+          return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:this.titleCase(v.cliente||'—'), ciudad:(this.titleCase(v.ciudad||'')||'Sin ciudad'), zona:zc[i.zona]+' · '+i.plazo+'d', fecha:this.fmtFecha(v.fecha),
+            promDesp:this.fmtFecha(i.promDesp), despReal:(i.despIso?this.fmtFecha(i.despIso):(i.despSinFecha?(String(v.guia||'').trim()?'Con guía · sin fecha':'Preparado · sin guía'):'Pendiente')), despFg:(i.despIso?(i.despATiempo?'#4C6149':'#9A3F2E'):(i.despSinFecha?'var(--text-body)':'var(--text-muted)')),
+            promEnt:this.fmtFecha(i.promEnt), entReal:(i.entIso?this.fmtFecha(i.entIso):(i.estado==='sinfecha'?'Sin fecha':'Pendiente')), entFg:(i.entIso?(i.estado==='atiempo'?'#4C6149':'#9A3F2E'):'var(--text-muted)'),
+            estL:m.l, estBg:m.bg, estFg:m.fg, atrasoShow:i.atraso>0, atrasoTxt:'+'+i.atraso+' d', motivo:(v.logMotivo||''), motivoShow:!!v.logMotivo, etapa:((!i.entregado && this.logEtapaCM(v.tags))? ('Coordinadora: '+this.logEtapaCM(v.tags)) : ''), etapaShow:(!i.entregado && !!this.logEtapaCM(v.tags)),
+            open, rowBg:open?'rgba(167,134,89,0.07)':'transparent', onToggle:()=>this.setState({logOpenId:open?null:v.id}),
+            guiaTxt:(String(v.guia||'').trim()? ((v.transportadora||'Guía')+' · '+v.guia) : 'Sin guía'), trackShow:!!(String(v.guia||'').trim()&&url), trackUrl:url,
+            fuenteTxt:[i.despIso?('Despacho: '+(v.despachoFuente==='manual'?'marcado a mano':'guía en Shopify')):'', i.entIso?('Entrega: '+(fu[v.entregaFuente]||'—')+(v.entregaPor?(' · '+v.entregaPor):'')):''].filter(Boolean).join(' · '),
+            onWa:()=>this.logWhatsApp(v), onCaso:()=>this.logCrearCaso(v),
+            showDesp:!i.despIso && !i.despSinFecha && out.logCanWrite, onDesp:()=>this.logMarcarDespachado(v), showQuitarDesp:(v.despachoFuente==='manual' && out.logCanWrite), onQuitarDesp:()=>this.logQuitarDespacho(v),
+            showEnt:!i.entIso && out.logCanWrite, entFecha:((st.logEntFecha||{})[v.id]||hoyL), onEntFecha:(e)=>{ const val=e.target.value; this.setState(s=>({logEntFecha:{...(s.logEntFecha||{}), [v.id]:val}})); }, onEnt:()=>this.logMarcarEntregado(v),
+            showQuitarEnt:(i.entregado && v.entregaFuente!=='shopify' && out.logCanWrite), onQuitarEnt:()=>this.logQuitarEntrega(v),
+            motivoOpts:[''].concat(this.LOG_MOTIVOS).map(o=>({v:o, l:(o||'— Sin motivo —')})), onMotivo:(e)=>this.logSetMotivo(v, e.target.value),
+            nota:(((st.logNotaDraft||{})[v.id]!==undefined)?st.logNotaDraft[v.id]:(v.logNota||'')), onNota:(e)=>{ const val=e.target.value; this.setState(s=>({logNotaDraft:{...(s.logNotaDraft||{}), [v.id]:val}})); },
+            onNotaSave:()=>{ const d=(this.state.logNotaDraft||{})[v.id]; if(d!==undefined) this.logSetNota(v, d); } }; });
+      }
+      if(out.showLogPlazos){ const c=this.logCfg(); const d={...c, ...(st.logCfgDraft||{})};
+        out.logCfgD=d; out.onLogCfg=(e)=>{ const n=e.target.name, val=e.target.value; this.setState(s=>({logCfgDraft:{...(s.logCfgDraft||{}), [n]:val}})); };
+        out.logCfgDirty=!!(st.logCfgDraft && Object.keys(st.logCfgDraft).length);
+        out.logCfgGuardar=()=>{ const dr=this.state.logCfgDraft||{}; const nums=['corte','caliMensajero','caliTransp','principales','otras']; const c2={...((this.state.reglasNeg||{}).logPlazos||{})}; Object.keys(dr).forEach(k=>{ c2[k]=nums.indexOf(k)>=0? Math.max(0, Number(dr[k])||0) : String(dr[k]||''); }); const rn={...(this.state.reglasNeg||{}), logPlazos:c2}; this.setState({reglasNeg:rn, logCfgDraft:null}); try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({logPlazos:c2}); this.toast('Plazos guardados'); };
+        out.logCfgDescartar=()=>this.setState({logCfgDraft:null});
+        const lim=st.logLimpiarFecha||''; out.logLimpiarFecha=lim; out.onLogLimpiarFecha=(e)=>this.setState({logLimpiarFecha:e.target.value, logLimpiarConfirm:false});
+        const cand=lim? LC.peds.filter(v=>{ const i=LC.infos.get(v.id); return !i.entregado && (i.despIso||i.despSinFecha) && (i.despIso||String(v.fecha||''))<lim; }) : [];
+        out.logLimpiarN=String(cand.length); out.logLimpiarShow=!!lim; out.logLimpiarBtnTxt=st.logLimpiarConfirm? ('Confirmar · '+cand.length+' pedidos') : 'Dar por entregados';
+        out.logLimpiar=async()=>{ if(!cand.length){ this.toast('No hay pedidos para marcar'); return; } if(!this.state.logLimpiarConfirm){ this.setState({logLimpiarConfirm:true}); return; } for(const v of cand){ await this._logGuardar(v.id, {entregaSinFecha:true, entregaFuente:'manual', entregaPor:this.casoUserName()}); } this.setState({logLimpiarConfirm:false}); this.toast(cand.length+' pedidos dados por entregados (sin fecha)'); };
+      }
+    }
     out.showFinResumen = onFin && st.sub==='finresumen';
     out.showFinPagar = onFin && st.sub==='finpagar';
     out.showFinCobrar = onFin && st.sub==='fincobrar';
@@ -16298,9 +16636,10 @@ Instrucciones de respuesta:
     out.showMktConexion = onMkt && st.sub==='mktconexion';
     out.showMktWa = onMkt && st.sub==='mktwa';
     if(out.showMktWa) this._buildCampWa(out, st);
-    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
+    out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='logistica' && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
     if(st.module==='soporte'){ out.crumb='ODA Labs'; out.pageTitle='Soporte ODA'; }
     else if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
+    else if(st.module==='logistica'){ out.crumb='Logística'; out.pageTitle=(st.sub==='plazos'?'Promesas y plazos':'Seguimiento de entregas'); }
     else if(st.module==='informes'){ out.crumb='Dirección'; out.pageTitle='Informes gerenciales'; }
     else if(onComp){ out.crumb='Compras'; out.pageTitle=subLabels[st.sub]||'Compras'; }
     else if(onDes){ out.crumb='Desarrollo de producto'; out.pageTitle= st.sub==='kits'?'Creación de Kits':(st.sub==='mezclas'?'Creación de Mezclas':'Creación de Producto'); }
@@ -17402,9 +17741,9 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       const mapeo=re.mapeoCajas||{};
       out.reMapeoCajas=Object.keys(mapeo).map(pCod=>{ const p=(st.productos||[]).find(x=>x.codigo===pCod); const cajaVal=mapeo[pCod]; const cajaCods=Array.isArray(cajaVal)?cajaVal:(cajaVal?[cajaVal]:[]); const cajaDisplay=cajaCods.join(' + '); const cajaNombres=cajaCods.map(c=>{ const m=(st.materias||[]).find(x=>x.codigo===c); return m?m.nombre:c; }).join(' + '); return {productoCodigo:pCod,productoNombre:p?p.nombre:pCod,cajaCodigo:cajaDisplay,cajaNombre:cajaNombres,onChangeCaja:((pc)=>(e)=>{ const raw=e.target.value.trim(); const arr=raw.split(/[,+]/).map(s=>s.trim()).filter(Boolean); const val=arr.length===1?arr[0]:arr; const m2={...mapeo,[pc]:val}; saveEmpaq('mapeoCajas',m2); })(pCod)}; });
       const up=this.state.userPerms||{};
-      const pmods=['compras','desarrollo','produccion','inventario','ventas','conversaciones','finanzas','marketing','informes'];
+      const pmods=['compras','desarrollo','produccion','inventario','ventas','conversaciones','finanzas','marketing','informes','logistica'];
       const pillP=(v)=>{ if(v==='write') return {bg:'rgba(98,123,96,0.18)',fg:'#4C6149',t:'Escritura'}; if(v==='read') return {bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Lectura'}; return {bg:'#EFE9DD',fg:'#A9998B',t:'Sin acceso'}; };
-      const pmodL={compras:'Compras',desarrollo:'Desarrollo',produccion:'Producción',inventario:'Inventario',ventas:'Ventas',conversaciones:'Conversaciones',finanzas:'Finanzas',marketing:'Marketing',informes:'Informes'};
+      const pmodL={compras:'Compras',desarrollo:'Desarrollo',produccion:'Producción',inventario:'Inventario',ventas:'Ventas',conversaciones:'Conversaciones',finanzas:'Finanzas',marketing:'Marketing',informes:'Informes',logistica:'Logística'};
       out.usuariosView=this.users.map(x=>{ const uP=up[x.id]||this.roles[x.role]||{}; const resumen=uP.admin?'Acceso total · aprueba órdenes':pmods.map(m=>{ const dv=this._modDerivado(uP,m); if(!dv.n) return null; const suf=dv.t==='write'?'esc.':dv.t==='read'?'lec.':dv.n+'/'+dv.tot; return pmodL[m]+' ('+suf+')'; }).filter(Boolean).join(' · ')||'Sin acceso'; return {...x, resumenAcceso:resumen, email:x.email, password:x.password, onChangePwd:(e)=>this.updateUser(x.id,{password:e.target.value}), onEditar:()=>this.editarUsuario(x) }; });
       out.nuevoUsuarioBtn=()=>this.nuevoUsuario();
       out.permsMatriz=this.users.map(u=>{ const uP=up[u.id]||this.roles[u.role]||{}; const row={name:u.name,email:u.email,role:u.role,initials:u.initials,color:u.color}; pmods.forEach((mod,i)=>{ const dv=this._modDerivado(uP,mod); let p; if(dv.t==='none') p={bg:'#EFE9DD',fg:'#A9998B',t:'Sin acceso'}; else if(dv.t==='write') p={bg:'rgba(98,123,96,0.18)',fg:'#4C6149',t:'Escritura'}; else if(dv.t==='read') p={bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A',t:'Lectura'}; else p={bg:'rgba(167,134,89,0.18)',fg:'#7A5E36',t:'Mixto '+dv.n+'/'+dv.tot}; row['c'+i]=p.t; row['c'+i+'bg']=p.bg; row['c'+i+'fg']=p.fg; row['c'+i+'click']=()=>this.setState({expandedPermUser:u.id}); }); const isAdmin=!!uP.admin; row.adminBg=isAdmin?'rgba(167,134,89,0.2)':'#EFE9DD'; row.adminFg=isAdmin?'#7A5E36':'#A9998B'; row.adminLabel=isAdmin?'Admin ✓':'No admin'; row.onToggleAdmin=()=>this.toggleAdmin(u.id); const isExp=st.expandedPermUser===u.id; row.expandBg=isExp?'rgba(167,134,89,0.07)':'transparent'; row.onExpand=()=>this.setState({expandedPermUser:isExp?null:u.id}); return row; });
