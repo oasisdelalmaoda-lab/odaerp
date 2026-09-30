@@ -10874,7 +10874,7 @@ Instrucciones de respuesta:
       const idxByShop=new Map(); const idxByPed=new Map();
       list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const pn=this.pedidoNum(v); if(pn) idxByPed.set(pn,i); });
       const reindex=()=>{ idxByShop.clear(); idxByPed.clear(); list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const p=this.pedidoNum(v); if(p) idxByPed.set(p,i); }); };
-      let added=0, updated=0, cancelados=0, saltadosFecha=0; const despachados=[]; const touched=new Set();
+      let added=0, updated=0, cancelados=0, saltadosFecha=0; const despachados=[]; const metodosCorregidos=[]; const touched=new Set();
       incoming.forEach(o=>{
         if(!o.fecha || o.fecha < CUTOFF){ saltadosFecha++; return; } // piso de fecha
         const pn=this.pedidoNum(o);
@@ -10892,6 +10892,11 @@ Instrucciones de respuesta:
             items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, sourceName:(ex.sourceName||bruto0.sourceName||''), canal:this.canonCanalVenta({canal:(ex.canal||bruto0.canal), sourceName:(ex.sourceName||bruto0.sourceName||'')}), bodega:(ex.bodega||bruto0.bodega),
             guia:(ex.guia||o.guia||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), atrib:(ex.atrib&&ex.atrib.fuente? ex.atrib : bruto0.atrib), id:ex.id,
             creadoAt:(ex.creadoAt||bruto0.creadoAt||''), despachoAt:(ex.despachoAt||bruto0.despachoAt||''), transportadora:(ex.transportadora||bruto0.transportadora||''), trackingUrl:(ex.trackingUrl||bruto0.trackingUrl||'') };
+          // Excepción ACOTADA al congelado (30-sep, #5216 Addi falló → pagó Bold): si la función resolvió el
+          // método por la transacción exitosa y el pedido sigue con el método del primer intento (nadie lo
+          // cambió), sin liquidar y sin abonos manuales, se corrige el método. Lo demás financiero no se toca.
+          if(o.metodoPorTransaccion && o.metodoPago && o.metodoPago!==ex.metodoPago && ex.metodoPago===o.metodoPrimerIntento && !ex.liquidada && !(Array.isArray(ex.abonos)&&ex.abonos.length) && !o.cancelado){
+            merged.metodoPago=o.metodoPago; merged.metodoCorregidoDe=ex.metodoPago; merged.metodoCorregidoAt=new Date().toISOString(); metodosCorregidos.push(String(ex.pedido||'')); }
           // Logística: la entrega se fecha cuando Shopify la marca delivered o cuando APARECE la etiqueta
           // (si ya estaba antes de que existiera el módulo, queda entregada «sin fecha» y no cuenta en el cumplimiento).
           // entregaSinFecha puesto por el sync (no a mano) se re-fecha apenas la función trae updatedAt.
@@ -10947,6 +10952,7 @@ Instrucciones de respuesta:
       const _traeSrc=incoming.some(o=>Object.prototype.hasOwnProperty.call(o,'sourceName'));
       const _nDraft=incoming.filter(o=>o.sourceName==='shopify_draft_order').length;
       if(_traeSrc && _nDraft) partes.push(_nDraft+' preliminar(es) → WhatsApp');
+      if(metodosCorregidos.length) partes.push('método de pago corregido por la transacción exitosa: '+metodosCorregidos.slice(0,5).join(', ')+(metodosCorregidos.length>5?'…':''));
       this.toast(partes.length? ('Shopify: '+partes.join(' · ')) : 'Shopify: todo al día');
       if(!_traeSrc) setTimeout(()=>this.toast('La función «shopify» desplegada es una versión vieja: no envía el origen del pedido, así que los preliminares no se marcan como WhatsApp. Vuelve a desplegarla.'), 1800);
       // Auto-WhatsApp "despachado" para pedidos que estrenaron guía (solo si WhatsApp está activado).
