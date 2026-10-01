@@ -7627,7 +7627,7 @@
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Dirección<input value="{{ detGuiaF.direccion }}" onInput="{{ detGuiaOnDir }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Celular<input value="{{ detGuiaF.telefono }}" onInput="{{ detGuiaOnTel }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Bolsas (15×3×10 cm · 1 kg)<input type="number" min="1" value="{{ detGuiaF.unidades }}" onInput="{{ detGuiaOnUnd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
-                      <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Valor declarado<input type="number" value="{{ detGuiaF.valorDeclarado }}" onInput="{{ detGuiaOnVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
+                      <label style="display:none;">Valor declarado<input type="number" value="{{ detGuiaF.valorDeclarado }}" onInput="{{ detGuiaOnVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                       <sc-if value="{{ detGuiaRecShow }}" hint-placeholder-val="{{ false }}"><label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Recaudar al entregar<input type="number" value="{{ detGuiaF.recaudo }}" onInput="{{ detGuiaOnRec }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label></sc-if>
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Observaciones para el mensajero <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ detGuiaF.observaciones }}" onInput="{{ detGuiaOnObs }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     </div>
@@ -8371,7 +8371,7 @@
             </div>
             <sc-if value="{{ cg.mostrar }}" hint-placeholder-val="{{ false }}">
               <div style="border:1px solid var(--border-subtle);background:var(--surface-raised);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px;">
-                <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Guía de devolución · Coordinadora</div>
+                <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Guía de envío al cliente · Coordinadora</div>
                 <sc-for list="{{ cg.guias }}" as="g" hint-placeholder-count="0">
                   <div style="display:flex;flex-direction:column;gap:6px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:9px 11px;">
                     <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;"><span style="font-size:14px;font-weight:700;color:var(--brand-ink);letter-spacing:0.02em;">{{ g.remision }}</span><span style="font-size:11px;color:var(--text-muted);">{{ g.info }}</span></div>
@@ -8385,10 +8385,10 @@
                 <sc-if value="{{ cg.puede }}" hint-placeholder-val="{{ false }}">
                   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Ciudad del cliente (Coordinadora)<input list="coordCiuDLc" value="{{ cg.f.ciudad }}" onInput="{{ cg.onCiudad }}" onFocus="{{ cg.cargarCiudades }}" placeholder="Escribe la ciudad…" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"><datalist id="coordCiuDLc"><sc-for list="{{ coordCiudadesOptsC }}" as="o" hint-placeholder-count="0"><option value="{{ o }}"></option></sc-for></datalist></label>
-                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Dirección donde se recoge<input value="{{ cg.f.direccion }}" onInput="{{ cg.onDir }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
+                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Dirección de entrega<input value="{{ cg.f.direccion }}" onInput="{{ cg.onDir }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Celular<input value="{{ cg.f.telefono }}" onInput="{{ cg.onTel }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Bolsas (15×3×10 cm · 1 kg)<input type="number" min="1" value="{{ cg.f.unidades }}" onInput="{{ cg.onUnd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
-                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Valor declarado<input type="number" value="{{ cg.f.valorDeclarado }}" onInput="{{ cg.onVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
+                    <label style="display:none;">Valor declarado<input type="number" value="{{ cg.f.valorDeclarado }}" onInput="{{ cg.onVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Observaciones <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ cg.f.observaciones }}" onInput="{{ cg.onObs }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                   </div>
                   <div style="font-size:11px;color:var(--text-muted);text-wrap:pretty;">{{ cg.resumen }}</div>
@@ -11275,19 +11275,19 @@ Instrucciones de respuesta:
     this.setState({casos:list},()=>this.persist()); if(saved && this.cloudOn()) this.cloudSaveCaso(saved); if(msg) this.toast(msg); }
   async casoGuiaCrear(id){ const c=(this.state.casos||[]).find(x=>x.id===id); const F=(this._casoGuiaF||{})[id]; if(!c||!F) return; const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
     const tel=String(F.telefono||'').replace(/\D/g,''); if(!String(F.ciudad||'').trim()||!String(F.direccion||'').trim()||tel.length<7){ this.toast('Completa ciudad, dirección y celular'); return; }
-    if(!window.confirm('¿Crear guía de DEVOLUCIÓN para el caso '+(c.folio||'')+' · '+this.titleCase(c.cliente||'')+' · '+F.ciudad+'?\nLa guía queda creada en Coordinadora (se puede anular).')) return;
+    if(!window.confirm('¿Crear guía de envío al cliente para el caso '+(c.folio||'')+' · '+this.titleCase(c.cliente||'')+' · '+F.ciudad+'?\nLa guía queda creada en Coordinadora (se puede anular).')) return;
     const vL=(this.casoVentaLink?this.casoVentaLink(c):null)||{};
     this._coordGuiaBusy=id; this.setState(s=>({guiaErr:{...(s.guiaErr||{}), [id]:null}}));
-    try{ const body={ modo:'crearGuia', guia:{ sentido:'devolucion', destinatario:{ nombre:this.titleCase(c.cliente||''), nit:String(vL.cedula||'').replace(/\D/g,''), direccion:F.direccion, ciudad:this._coordCiudadTxt(F.ciudad), telefono:tel },
+    try{ const body={ modo:'crearGuia', guia:{ sentido:'envio', destinatario:{ nombre:this.titleCase(c.cliente||''), nit:String(vL.cedula||'').replace(/\D/g,''), direccion:F.direccion, ciudad:this._coordCiudadTxt(F.ciudad), telefono:tel },
         valorDeclarado:Number(F.valorDeclarado)||0, recaudo:null, paquete:{ nombre:'Bolsa Pequeña', alto:15, ancho:3, largo:10, peso:1, unidades:Math.max(1,Number(F.unidades)||1) },
-        referencia:String(c.folio||c.pedido||'').slice(0,30), contenido:'Devolución productos de aromaterapia', observaciones:F.observaciones||'' } };
+        referencia:String(c.folio||c.pedido||'').slice(0,30), contenido:'Productos de aromaterapia', observaciones:F.observaciones||'' } };
       const {data,error}=await sb.functions.invoke('coordinadora',{ body });
       let msg=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) msg=j.error; } }catch(_e){} msg=msg||((error&&error.message)||'la función no respondió'); }
       else if(!data||!data.ok) msg=(data&&data.error)||'Coordinadora no creó la guía';
       if(msg){ this.setState(s=>({guiaErr:{...(s.guiaErr||{}), [id]:{msg, raw:(data&&data.raw)||''}}})); try{ window.odaEstado&&window.odaEstado('coordinadora-guia-caso: '+String(msg).slice(0,90)); }catch(_e){} this.toast('No se creó la guía: '+msg); return; }
       const rem=String(data.remision); if(data.pdfBase64) this._coordPdfAbrir(rem, data.pdfBase64);
       const who=this.casoUserName?this.casoUserName():this.recMeNombre(); const gc={ remision:rem, creado:new Date().toISOString(), por:who, unidades:Math.max(1,Number(F.unidades)||1) };
-      this._casoGuardarGuias(id, x=>({...x, guiaDev:[...(x.guiaDev||[]), gc], timeline:(x.timeline||[]).concat([{fecha:new Date().toISOString(), texto:'Guía de devolución Coordinadora '+rem+' creada', por:who}])}), 'Guía de devolución '+rem+' creada'+(data.pdfBase64?' · rótulo descargado':''));
+      this._casoGuardarGuias(id, x=>({...x, guiaDev:[...(x.guiaDev||[]), gc], timeline:(x.timeline||[]).concat([{fecha:new Date().toISOString(), texto:'Guía de envío Coordinadora '+rem+' creada', por:who}])}), 'Guía de envío '+rem+' creada'+(data.pdfBase64?' · rótulo descargado':''));
       this.setState(s=>({casoGuiaForm:{...(s.casoGuiaForm||{}), [id]:undefined}}));
     }catch(e){ this.toast('No se creó la guía: '+((e&&e.message)||'error')); }
     finally{ this._coordGuiaBusy=null; this.forceUpdate(); } }
@@ -11295,7 +11295,7 @@ Instrucciones de respuesta:
     try{ const {data}=await sb.functions.invoke('coordinadora',{ body:{ modo:'anular', remision:rem } });
       if(!data||!data.ok){ this.toast('Coordinadora no anuló la guía: '+((data&&data.error)||'sin respuesta')); return; }
       const who=this.casoUserName?this.casoUserName():this.recMeNombre();
-      this._casoGuardarGuias(id, x=>({...x, guiaDev:(x.guiaDev||[]).map(g=>g.remision===rem?{...g, anulada:true, anuladaAt:new Date().toISOString()}:g), timeline:(x.timeline||[]).concat([{fecha:new Date().toISOString(), texto:'Guía de devolución '+rem+' anulada', por:who}])}), 'Guía '+rem+' anulada');
+      this._casoGuardarGuias(id, x=>({...x, guiaDev:(x.guiaDev||[]).map(g=>g.remision===rem?{...g, anulada:true, anuladaAt:new Date().toISOString()}:g), timeline:(x.timeline||[]).concat([{fecha:new Date().toISOString(), texto:'Guía de envío '+rem+' anulada', por:who}])}), 'Guía '+rem+' anulada');
     }catch(e){ this.toast('No se pudo anular la guía'); } }
   // Prueba de conexión desde Promesas y plazos.
   async coordProbar(){ const g=String(this.state.coordGuia||'').replace(/\D/g,''); if(g.length<8){ this.toast('Escribe un número de guía'); return; }
@@ -18418,14 +18418,14 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       const vigente=(cc.guiaDev||[]).some(g=>!g.anulada);
       const F0=(this.state.casoGuiaForm||{})[cc.id]||{};
       const F={ ciudad:(F0.ciudad!==undefined?F0.ciudad:(cc.ciudad||vL.ciudad||'')), direccion:(F0.direccion!==undefined?F0.direccion:(vL.direccion||'')), telefono:(F0.telefono!==undefined?F0.telefono:(this.casoTel?this.casoTel(cc):(cc.celular||vL.celular||''))),
-        unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:(F0.valorDeclarado!==undefined?F0.valorDeclarado:10000), observaciones:(F0.observaciones!==undefined?F0.observaciones:('Devolución caso '+(cc.folio||''))) };
+        unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:35000, observaciones:(F0.observaciones!==undefined?F0.observaciones:('Caso '+(cc.folio||''))) };
       this._casoGuiaF=this._casoGuiaF||{}; this._casoGuiaF[cc.id]=F;
       const setF=(k)=>(e)=>{ const val=e.target.value; this.setState(s=>({casoGuiaForm:{...(s.casoGuiaForm||{}), [cc.id]:{...((s.casoGuiaForm||{})[cc.id]||{}), [k]:val}}})); };
       const busyC=(this._coordGuiaBusy===cc.id); const er=(this.state.guiaErr||{})[cc.id];
       out.cg={ mostrar:(gsC.length>0 || !!puedeC), guias:gsC, puede:(!!puedeC && !vigente && cc.estado!=='cerrado'), f:F,
         onCiudad:setF('ciudad'), onDir:setF('direccion'), onTel:setF('telefono'), onUnd:setF('unidades'), onVd:setF('valorDeclarado'), onObs:setF('observaciones'),
-        cargarCiudades:()=>this.coordCiudades(), btnTxt:(busyC?'Creando guía…':'Crear guía de devolución'), crear:()=>{ if(!busyC) this.casoGuiaCrear(cc.id); },
-        resumen:(this.titleCase(cc.cliente||'')+' entrega el paquete y llega a ODA LABS S.A.S. (Cra 64 # 3B-28, Cali). Flete: acuerdo semanal, sin recaudo.'),
+        cargarCiudades:()=>this.coordCiudades(), btnTxt:(busyC?'Creando guía…':'Crear guía de envío'), crear:()=>{ if(!busyC) this.casoGuiaCrear(cc.id); },
+        resumen:('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(cc.cliente||'')+'. Flete: acuerdo semanal · valor declarado $35.000 · sin recaudo.'),
         errShow:!!er, err:er?er.msg:'', raw:er?(er.raw||''):'' };
       const tm=this.casoTipoMeta(cc.tipo), em=this.casoEstadoMeta(cc.estado); const applied=(cc.estado==='resuelto'||cc.estado==='cerrado'); const tl=cc.timeline||[];
       out.cd={ folio:cc.folio, tipoL:tm.l, tipoBg:tm.bg, tipoFg:tm.fg, estL:em.l, estBg:em.bg, estFg:em.fg, estDot:em.dot, cliente:cc.cliente, ciudad:cc.ciudad||'—', canal:cc.canal, pedidoTxt:(cc.pedido||cc.ov||'Sin pedido'), ov:(cc.ov||'Caso suelto'), producto:cc.producto||'—', motivoLargo:cc.motivoLargo||cc.motivo||'', resolL:this.casoResolMeta(cc.resolucion), costoFmt:(cc.estado==='resuelto'||cc.estado==='cerrado')?(Number(cc.costo)>0?this.casoCop(cc.costo):'Sin costo'):(this.casoCostoEstimado(cc)>0?('~ '+this.casoCop(this.casoCostoEstimado(cc))+' (estimado)'):'Sin costo'), costoColor:((cc.estado==='resuelto'||cc.estado==='cerrado')?((cc.resolucion==='rechazado'||cc.resolucion==='pendiente')?'var(--text-body)':'var(--oda-sale,#B5503C)'):'var(--text-muted)'), responsable:cc.responsable||'—', venceFmt:cc.vence?this.fmtFecha(cc.vence):'—', telFmt:this.casoTelFmt(cc),
@@ -18611,8 +18611,8 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         const F0=(this.state.guiaForm||{})[v.id]||{}; const sent='envio';
         const saldo=Math.max(0,Math.round(this.ventaSaldo(v)));
         const F={ sentido:sent, ciudad:(F0.ciudad!==undefined?F0.ciudad:(v.ciudad||'')), direccion:(F0.direccion!==undefined?F0.direccion:(v.direccion||'')), telefono:(F0.telefono!==undefined?F0.telefono:(v.celular||'')),
-          unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:(F0.valorDeclarado!==undefined?F0.valorDeclarado:Math.max(10000,Math.round(this.ventaTotal(v)))),
-          recaudo:(F0.recaudo!==undefined?F0.recaudo:(sent==='envio'?saldo:0)), observaciones:(F0.observaciones!==undefined?F0.observaciones:'') };
+          unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:35000,
+          recaudo:(/contra/i.test(String(v.metodoPago||''))? (F0.recaudo!==undefined?F0.recaudo:saldo) : 0), observaciones:(F0.observaciones!==undefined?F0.observaciones:'') };
         this._guiaF=this._guiaF||{}; this._guiaF[v.id]=F; out.detGuiaF=F;
         out.detGuiaMostrar=(v.origen==='manual') && !v.cancelada && (gs.length>0 || !!puedeG);
         out.detGuiaPuede=!!puedeG && !v.cancelada && !(sent==='envio' && tieneEnvio);
@@ -18623,9 +18623,9 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         out.detGuiaSentEnvio=setS('envio'); out.detGuiaSentDev=setS('devolucion');
         const on={bd:'var(--brand-primary)',bg:'var(--brand-primary)',fg:'var(--text-on-brand)'}, off={bd:'var(--border-strong)',bg:'var(--surface-card)',fg:'var(--text-body)'};
         const e1=sent==='envio'?on:off, e2=sent==='devolucion'?on:off; out.detGuiaEnvBd=e1.bd; out.detGuiaEnvBg=e1.bg; out.detGuiaEnvFg=e1.fg; out.detGuiaDevBd=e2.bd; out.detGuiaDevBg=e2.bg; out.detGuiaDevFg=e2.fg;
-        out.detGuiaRecShow=(sent==='envio');
+        out.detGuiaRecShow=/contra/i.test(String(v.metodoPago||''));
         out.detGuiaCargarCiudades=()=>this.coordCiudades(); out.coordCiudadesOpts=(this.state.coordCiudades||[]).map(c=>c.label);
-        out.detGuiaResumen=(sent==='envio'? ('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(v.cliente||'')+'. Flete: acuerdo semanal.'+(Number(F.recaudo)>0?(' Coordinadora le cobra '+this.fmt(Number(F.recaudo))+' al entregar.'):' Sin recaudo.')) : ('Guía de devolución: '+this.titleCase(v.cliente||'')+' entrega el paquete y llega a la bodega en Cali. Flete: acuerdo semanal, sin recaudo.'));
+        out.detGuiaResumen=(sent==='envio'? ('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(v.cliente||'')+'. Flete: acuerdo semanal · valor declarado $35.000.'+(Number(F.recaudo)>0?(' Coordinadora le cobra '+this.fmt(Number(F.recaudo))+' al entregar.'):' Sin recaudo.')) : ('Guía de devolución: '+this.titleCase(v.cliente||'')+' entrega el paquete y llega a la bodega en Cali. Flete: acuerdo semanal, sin recaudo.'));
         const busyG=(this._coordGuiaBusy===v.id); out.detGuiaBtnTxt=busyG?'Creando guía…':(sent==='envio'?'Crear guía de envío':'Crear guía de devolución'); out.detGuiaCrear=()=>{ if(!busyG) this.coordCrearGuia(v.id); };
         const er=(this.state.guiaErr||{})[v.id]; out.detGuiaErrShow=!!er; out.detGuiaErr=er?er.msg:''; out.detGuiaRaw=er?(er.raw||''):''; }
       { const bl=v.boldLink||null; const esB=this._esBold(v.metodoPago); const busy=(this._boldLinkBusy===v.id); const puede=(this._modLevel(this.access()||{},'ventas')==='write');
