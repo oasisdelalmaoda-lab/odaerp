@@ -5866,6 +5866,7 @@
                                 <button onClick="{{ r.onCaso }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Crear caso de servicio</button>
                               </div>
                               <div style="font-size:11px;color:var(--text-muted);">{{ r.fuenteTxt }}</div>
+                              <sc-if value="{{ r.coordShow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--text-muted);"><span>{{ r.coordTxt }}</span><button onClick="{{ r.onCoord }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Consultar Coordinadora</button></div></sc-if>
                             </div>
                             <div style="display:flex;flex-direction:column;gap:8px;">
                               <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Motivo del retraso
@@ -5912,6 +5913,10 @@
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                   <input value="{{ coordGuia }}" onInput="{{ onCoordGuia }}" placeholder="Número de guía (11 dígitos)" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);min-width:220px;">
                   <button onClick="{{ coordProbar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">{{ coordBtnTxt }}</button>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border-subtle);padding-top:12px;">
+                  <button onClick="{{ coordSyncAll }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Actualizar todas las guías ahora · {{ coordPend }}</button>
+                  <span style="font-size:12px;color:var(--text-muted);text-wrap:pretty;">{{ coordSyncTxt }}</span>
                 </div>
                 <sc-if value="{{ coordResShow }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
@@ -11123,7 +11128,37 @@ Instrucciones de respuesta:
   logMarcarEntregado(v){ const f=(this.state.logEntFecha||{})[v.id]||this._logIso(new Date()); this._logGuardar(v.id, {entregadoAt:new Date(f+'T12:00:00').toISOString(), entregaFuente:'manual', entregaSinFecha:false, entregaPor:this.casoUserName()}, 'Marcado como entregado · '+this.fmtFecha(f)); }
   logQuitarEntrega(v){ this._logGuardar(v.id, {entregadoAt:'', entregaFuente:'', entregaSinFecha:false}, 'Entrega desmarcada'); }
   logSetMotivo(v, motivo){ this._logGuardar(v.id, {logMotivo:motivo, logMotivoAt:Date.now()}, motivo?('Motivo: '+motivo):'Motivo quitado'); }
-  // Rastreo oficial Coordinadora (función coordinadora · 1-oct). Primera fase: prueba de conexión desde Promesas y plazos.
+  // Rastreo oficial Coordinadora (1-oct, fase 2): fecha REAL de entrega por guía. Gana sobre etiqueta/Shopify; solo la manual la reemplaza.
+  // Revisa pedidos web/WA con guía Coordinadora sin entrega oficial. Cada pedido máx. 1 vez cada 3 h (forzar = ya);
+  // la pasada completa máx. 1 vez cada 20 min. Sin temporizadores periódicos: al entrar, al volver a la pestaña y con el botón.
+  _coordCandidatos(forzar){ const ahora=Date.now();
+    return this.logPedidos().filter(v=>{ const g=String(v.guia||'').replace(/\D/g,''); if(g.length<10) return false;
+      if(v.transportadora && !/coordinadora/i.test(v.transportadora)) return false;
+      if(v.entregaFuente==='manual' || v.entregaFuente==='coordinadora') return false;
+      if(!forzar && v.coordRevisado && ahora-new Date(v.coordRevisado).getTime()<3*3600000) return false;
+      return true; }); }
+  async coordSync(ids, forzar){ const sb=this._sbClient(); if(!sb||!this.cloudOn()||this._coordBusy) return;
+    if(!forzar && this._coordAt && Date.now()-this._coordAt<20*60000) return; this._coordAt=Date.now();
+    let cand=this._coordCandidatos(forzar); if(ids) cand=cand.filter(v=>ids.includes(v.id)); if(!cand.length){ if(forzar) this.toast('No hay guías pendientes por consultar'); return; }
+    this._coordBusy=true; this.setState({coordSyncTxt:'Consultando '+cand.length+' guías…'}); let nEnt=0, nErr=0, ultimoErr=''; const cambiados=[];
+    try{ for(let i=0;i<cand.length;i+=40){ const lote=cand.slice(i,i+40);
+        const {data,error}=await sb.functions.invoke('coordinadora',{ body:{ modo:'seguimiento', guias:lote.map(v=>String(v.guia).replace(/\D/g,'')) } });
+        if(error||!data||!data.ok){ let m=(data&&data.error)||(error&&error.message)||'sin respuesta'; try{ if(error&&error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) m=j.error; } }catch(_e){} throw new Error(m); }
+        const porG={}; (data.resultados||[]).forEach(r=>{ porG[String(r.guia)]=r; });
+        const ahoraIso=new Date().toISOString();
+        lote.forEach(v=>{ const r=porG[String(v.guia).replace(/\D/g,'')]; if(!r) return;
+          if(!r.ok){ nErr++; ultimoErr=r.error||''; cambiados.push({...v, coordRevisado:ahoraIso, coordError:String(r.error||'').slice(0,200)}); return; }
+          const ev=(r.eventos||[]).slice(-12); const ult=ev.length? ev[ev.length-1] : null;
+          const p={...v, coordRevisado:ahoraIso, coordError:'', coordEstado:String(r.estado||(ult&&ult.desc)||''), coordEventos:ev};
+          if(r.entregado && r.entregaAt){ p.entregadoAt=r.entregaAt; p.entregaFuente='coordinadora'; p.entregaSinFecha=false; p.entregaPor=''; nEnt++; }
+          cambiados.push(p); }); }
+      if(cambiados.length){ const map=new Map(cambiados.map(x=>[x.id,x])); this.setState(s=>({ventas:(s.ventas||[]).map(x=>map.has(x.id)? {...x, ...map.get(x.id)} : x)}),()=>this.persist());
+        for(let i=0;i<cambiados.length;i+=100){ const {data,error}=await sb.from('ventas').upsert(cambiados.slice(i,i+100).map(v=>this._ventaToDb(v))).select('id'); if(error||!data) throw (error||new Error('la nube no confirmó')); } }
+      const txt='Coordinadora · '+cand.length+' guías consultadas · '+nEnt+' entregas con fecha oficial'+(nErr?(' · '+nErr+' sin respuesta'+(ultimoErr?(' ('+ultimoErr.slice(0,80)+')'):'')):'');
+      this.setState({coordSyncTxt:txt+' · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})}); if(forzar) this.toast(txt);
+    }catch(e){ const m=(e&&e.message)||'error'; this.setState({coordSyncTxt:'No se pudo consultar Coordinadora: '+m}); if(forzar) this.toast('Coordinadora: '+m); try{ window.odaEstado&&window.odaEstado('coordinadora-sync: '+m); }catch(_e){} }
+    finally{ this._coordBusy=false; this.forceUpdate(); } }
+  // Prueba de conexión desde Promesas y plazos.
   async coordProbar(){ const g=String(this.state.coordGuia||'').replace(/\D/g,''); if(g.length<8){ this.toast('Escribe un número de guía'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Sin conexión a la nube'); return; } this.setState({coordBusy:true});
     try{ const {data,error}=await sb.functions.invoke('coordinadora',{ body:{ modo:'probar', guia:g } });
@@ -12433,7 +12468,7 @@ Instrucciones de respuesta:
     this.setState({cloudUser:{id:user.id,email:user.email,nombre}});
     this.cloudSyncMyProfile(user.id,nombre); this.cloudSubscribe(); this.cloudStartAutoRefresh();
     const tandas=[
-      ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); setTimeout(()=>this.boldLinksRevisar(null,true), 20000); },
+      ()=>{ this.cloudLoadPermisos(); this.cloudLoadProductos(); this.cloudLoadKits(); this.cloudLoadMezclas(); this.cloudLoadVentas(); setTimeout(()=>this.boldLinksRevisar(null,true), 20000); setTimeout(()=>this.coordSync(null,false), 35000); },
       ()=>{ this.cloudLoadMaterias(); this.cloudLoadProveedores(); this.cloudLoadOrdenes(); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudLoadRecepciones(); },
       ()=>{ this.cloudLoadProducciones(); this.cloudLoadProdMez(); this.cloudLoadCotizaciones(); this.cloudLoadServicios(); this.cloudLoadConteos(); },
       ()=>{ this.cloudLoadCuentas(); this.cloudLoadMetodos(); this.cloudLoadMovimientos(); this.cloudLoadGastos(); this.cloudLoadLiquidaciones(); },
@@ -13296,7 +13331,7 @@ Instrucciones de respuesta:
     // de trabajo (barato: si nada cambió no trae filas ni re-renderiza). Cubre el caso de que
     // el realtime se haya caído mientras la pestaña estaba en segundo plano.
     this._cloudFocus=()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles();
-      this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); setTimeout(()=>this.boldLinksRevisar(null,false), 4000); } };
+      this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); setTimeout(()=>this.boldLinksRevisar(null,false), 4000); setTimeout(()=>this.coordSync(null,false), 9000); } };
     try{ document.addEventListener('visibilitychange',this._cloudFocus); window.addEventListener('focus',this._cloudFocus); }catch(e){}
     this._cloudPoll=setInterval(()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); } },15000);
     // Foto del inventario para la app: UNA vez tras la carga inicial y después solo cuando el
@@ -16738,7 +16773,7 @@ Instrucciones de respuesta:
         out.logBuscar=st.logBuscar||''; out.onLogBuscar=(e)=>this.setState({logBuscar:e.target.value});
         out.logVacio=rows.length===0; out.logVacioTxt=filtro==='atrasados'? 'No hay pedidos atrasados. Todo va dentro de la promesa.' : (filtro==='porConfirmar'? 'Ningún pedido espera confirmación del cliente.' : 'No hay pedidos con este filtro.');
         out.logMasShow=rows.length>150; out.logMasTxt='Se muestran 150 de '+rows.length+'. Usa el buscador para encontrar otros.';
-        const zc={cali:'Cali', principal:'Principal', otra:'Otra'}; const fu={manual:'a mano', shopify:'Shopify', etiqueta:'etiqueta'};
+        const zc={cali:'Cali', principal:'Principal', otra:'Otra'}; const fu={manual:'a mano', shopify:'Shopify', etiqueta:'etiqueta', coordinadora:'rastreo oficial Coordinadora'};
         out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:this.titleCase(v.cliente||'—'), ciudad:(this.titleCase(v.ciudad||'')||'Sin ciudad'), zona:zc[i.zona]+' · '+i.plazo+'d', fecha:this.fmtFecha(v.fecha),
             promDesp:this.fmtFecha(i.promDesp), despReal:(i.despIso?this.fmtFecha(i.despIso):(i.despSinFecha?(String(v.guia||'').trim()?'Con guía · sin fecha':'Preparado · sin guía'):'Pendiente')), despFg:(i.despIso?(i.despATiempo?'#4C6149':'#9A3F2E'):(i.despSinFecha?'var(--text-body)':'var(--text-muted)')),
@@ -16749,6 +16784,8 @@ Instrucciones de respuesta:
             guiaTxt:(String(v.guia||'').trim()? ((v.transportadora||'Guía')+' · '+v.guia) : 'Sin guía'), trackShow:!!(String(v.guia||'').trim()&&url), trackUrl:url,
             fuenteTxt:[i.despIso?('Despacho: '+(v.despachoFuente==='manual'?'marcado a mano':'guía en Shopify')):'', i.entIso?('Entrega: '+(i.estado==='porVerificar'?'etiqueta (fecha en que se vio, no la real — revisa el rastreo y corrígela)':(fu[v.entregaFuente]||'—'))+(v.entregaPor?(' · '+v.entregaPor):'')):''].filter(Boolean).join(' · '),
             onWa:()=>this.logWhatsApp(v), onCaso:()=>this.logCrearCaso(v),
+            coordShow:!!(String(v.guia||'').replace(/\D/g,'').length>=10 && (!v.transportadora||/coordinadora/i.test(v.transportadora))), onCoord:()=>this.coordSync([v.id], true),
+            coordTxt:(v.coordEstado? ('Coordinadora: '+v.coordEstado+(v.coordRevisado?(' · revisado '+this.fmtFecha(String(v.coordRevisado).slice(0,10))):'')) : (v.coordError? ('Coordinadora: '+v.coordError) : '')),
             showDesp:!i.despIso && !i.despSinFecha && out.logCanWrite, onDesp:()=>this.logMarcarDespachado(v), showQuitarDesp:(v.despachoFuente==='manual' && out.logCanWrite), onQuitarDesp:()=>this.logQuitarDespacho(v),
             showEnt:(!i.entIso || i.estado==='porVerificar') && out.logCanWrite, entBtnTxt:(i.entIso?'Corregir fecha de entrega':'Marcar entregado'), entFecha:((st.logEntFecha||{})[v.id]||hoyL), onEntFecha:(e)=>{ const val=e.target.value; this.setState(s=>({logEntFecha:{...(s.logEntFecha||{}), [v.id]:val}})); }, onEnt:()=>this.logMarcarEntregado(v),
             showQuitarEnt:(i.entregado && v.entregaFuente!=='shopify' && out.logCanWrite), onQuitarEnt:()=>this.logQuitarEntrega(v),
@@ -16759,6 +16796,7 @@ Instrucciones de respuesta:
       if(out.showLogPlazos){ const cr=st.coordRes;
         out.coordGuia=st.coordGuia||''; out.onCoordGuia=(e)=>this.setState({coordGuia:e.target.value}); out.coordBtnTxt=st.coordBusy?'Consultando…':'Probar conexión';
         out.coordProbar=()=>this.coordProbar(); out.coordResShow=!!cr;
+        out.coordSyncAll=()=>this.coordSync(null,true); out.coordSyncTxt=st.coordSyncTxt||'Se consulta solo al entrar al Hub y al volver a la pestaña.'; out.coordPend=String(this._coordCandidatos(true).length);
         if(cr){ const L=cr.leido||{}; out.coordResTit=cr.error? ('No funcionó: '+cr.error) : (L.eventos&&L.eventos.length? ((L.entregado?'Entregado':'Sin entregar')+' · '+L.eventos.length+' eventos · fuente '+(cr.fuente||'')) : ('Respondió pero no se leyeron eventos'+(cr.fault?(' · '+cr.fault):'')));
           out.coordResFg=(cr.error||!(L.eventos&&L.eventos.length))?'#9A3F2E':'#4C6149';
           out.coordEventos=(L.eventos||[]).map(e=>({f:String(e.fecha||'').replace('T',' ').slice(0,16), d:e.desc}));
