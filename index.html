@@ -1263,7 +1263,7 @@
                     <input type="number" value="{{ rnEnvio }}" onInput="{{ onRnEnvio }}" min="0" style="font-family:inherit;font-size:15px;font-weight:700;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:150px;text-align:right;">
                   </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+                <div style="display:none;">
                   <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Grupo de alistamiento (WhatsApp)</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Adónde se envían los pedidos de reenvío desde Servicio al Cliente. Pega el <strong>enlace del grupo</strong> (chat.whatsapp.com/…) o un <strong>número</strong> de la persona de bodega (ej. 3134063259). Se comparte con <strong>todo el equipo</strong> (nube).</div></div>
                   <input type="text" value="{{ rnWaAlist }}" onInput="{{ onRnWaAlist }}" placeholder="chat.whatsapp.com/… o 3134063259" style="flex-shrink:0;font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-page);color:var(--text-strong);width:280px;max-width:100%;">
                 </div>
@@ -7627,7 +7627,7 @@
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Dirección<input value="{{ detGuiaF.direccion }}" onInput="{{ detGuiaOnDir }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Celular<input value="{{ detGuiaF.telefono }}" onInput="{{ detGuiaOnTel }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Bolsas (15×3×10 cm · 1 kg)<input type="number" min="1" value="{{ detGuiaF.unidades }}" onInput="{{ detGuiaOnUnd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
-                      <label style="display:none;">Valor declarado<input type="number" value="{{ detGuiaF.valorDeclarado }}" onInput="{{ detGuiaOnVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
+                      <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Valor declarado<input type="number" value="{{ detGuiaF.valorDeclarado }}" onInput="{{ detGuiaOnVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                       <sc-if value="{{ detGuiaRecShow }}" hint-placeholder-val="{{ false }}"><label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Recaudar al entregar<input type="number" value="{{ detGuiaF.recaudo }}" onInput="{{ detGuiaOnRec }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label></sc-if>
                       <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Observaciones para el mensajero <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ detGuiaF.observaciones }}" onInput="{{ detGuiaOnObs }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     </div>
@@ -8388,7 +8388,7 @@
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Dirección de entrega<input value="{{ cg.f.direccion }}" onInput="{{ cg.onDir }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Celular<input value="{{ cg.f.telefono }}" onInput="{{ cg.onTel }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Bolsas (15×3×10 cm · 1 kg)<input type="number" min="1" value="{{ cg.f.unidades }}" onInput="{{ cg.onUnd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
-                    <label style="display:none;">Valor declarado<input type="number" value="{{ cg.f.valorDeclarado }}" onInput="{{ cg.onVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
+                    <label style="font-size:11.5px;font-weight:700;color:var(--text-body);">Valor declarado<input type="number" value="{{ cg.f.valorDeclarado }}" onInput="{{ cg.onVd }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                     <label style="font-size:11.5px;font-weight:700;color:var(--text-body);grid-column:1/-1;">Observaciones <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input value="{{ cg.f.observaciones }}" onInput="{{ cg.onObs }}" style="font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);width:100%;box-sizing:border-box;margin-top:4px;"></label>
                   </div>
                   <div style="font-size:11px;color:var(--text-muted);text-wrap:pretty;">{{ cg.resumen }}</div>
@@ -8420,9 +8420,9 @@
             </div>
             <sc-if value="{{ casoAlistShow }}" hint-placeholder-val="{{ false }}">
             <div style="border:1px solid var(--border-brand);background:rgba(167,134,89,0.08);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--brand-primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--brand-ink);">Pedido de alistamiento</div><div style="font-size:11.5px;color:var(--text-muted);">{{ casoAlistDestTxt }}</div></div></div>
-              <pre style="margin:0 0 10px;white-space:pre-wrap;font-family:inherit;font-size:12px;line-height:1.5;color:var(--text-body);background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:11px 13px;">{{ casoAlistPreview }}</pre>
-              <button onClick="{{ casoAlistSendBtn }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;" style-hover="background:var(--brand-hover);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"></path></svg>Enviar a grupo de alistamiento</button>
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--brand-primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--brand-ink);">Alerta de alistamiento</div><div style="font-size:11.5px;color:var(--text-muted);">{{ casoAlistDestTxt }}</div></div></div>
+              <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:11px 13px;"><input type="checkbox" checked="{{ casoAlistOn }}" onChange="{{ casoAlistToggle }}" style="width:17px;height:17px;margin-top:1px;accent-color:var(--brand-primary);flex-shrink:0;"><div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:700;color:var(--brand-ink);">{{ casoAlistChkTxt }}</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;text-wrap:pretty;">{{ casoAlistEstadoTxt }}</div></div></label>
+              <details style="margin-top:8px;"><summary style="font-size:11.5px;color:var(--text-muted);cursor:pointer;">Lo que verá en la app</summary><pre style="margin:6px 0 0;white-space:pre-wrap;font-family:inherit;font-size:12px;line-height:1.5;color:var(--text-body);background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:11px 13px;">{{ casoAlistPreview }}</pre></details>
             </div>
             </sc-if>
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-raised);">
@@ -10843,10 +10843,11 @@ class Component extends DCLogic {
     const ventas=(this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; const f=v.fecha||''; if(!okA(f.slice(0,4))) return false; if(!okM(f.slice(5,7))) return false; if(!okC(v.canal)) return false; return true; });
     const map={};
     ventas.forEach(v=>{ const key=String(v.celular||v.correo||v.cliente||'').trim().toLowerCase(); if(!key) return;
-      if(!map[key]) map[key]={key, cliente:v.cliente||'—', celular:v.celular||'', correo:v.correo||'', ciudad:v.ciudad||'', canal:v.canal||'', ordenes:0, total:0, unidades:0, fechas:[], productos:{}};
+      if(!map[key]) map[key]={key, cliente:v.cliente||'—', celular:v.celular||'', correo:v.correo||'', ciudad:v.ciudad||'', direccion:'', cedula:'', _fd:'', canal:v.canal||'', ordenes:0, total:0, unidades:0, fechas:[], productos:{}};
       const c=map[key]; c.ordenes++; c.total+=this.ventaTotal(v);
       if(v.cliente && String(v.cliente).length>String(c.cliente).length) c.cliente=v.cliente;
       if(v.ciudad && !c.ciudad) c.ciudad=v.ciudad; if(v.correo && !c.correo) c.correo=v.correo; if(v.celular && !c.celular) c.celular=v.celular;
+      if(String(v.direccion||'').trim() && String(v.fecha||'')>=c._fd){ c._fd=String(v.fecha||''); c.direccion=String(v.direccion).trim(); if(v.ciudad) c.ciudad=v.ciudad; } if(v.cedula && !c.cedula) c.cedula=v.cedula;
       (v.items||[]).forEach(it=>{ const u=Number(it.unidades)||0; c.unidades+=u; const code=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===code); const k=(this.state.kits||[]).find(x=>x.codigo===code); const nm=p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||it.referencia||'Producto')); c.productos[nm]=(c.productos[nm]||0)+u; });
       if(v.fecha) c.fechas.push(v.fecha); });
     const hoy=new Date();
@@ -10857,6 +10858,13 @@ class Component extends DCLogic {
     arr.forEach(c=>{ c.R=quint(byR.indexOf(c)); c.F=quint(byF.indexOf(c)); c.M=quint(byM.indexOf(c)); c.rfm=c.R+c.F+c.M; c.segmento=this.segmentoCliente(c); });
     return arr;
   }
+  // Datos de contacto más recientes de un cliente (dirección, ciudad, cédula…) buscando en TODAS sus ventas
+  // por celular (últimos 10 dígitos), cédula o nombre exacto. La dirección sale de la venta más reciente que la tenga.
+  clienteDatosPara(q){ q=q||{}; const d10=(x)=>String(x||'').replace(/\D/g,'').slice(-10); const cel=d10(q.celular||q.telefono); const ced=String(q.cedula||'').replace(/\D/g,''); const nk=(x)=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); const nom=nk(q.cliente);
+    const vs=(this.state.ventas||[]).filter(v=>{ if(v.cancelada) return false; if(cel.length>=7 && d10(v.celular)===cel) return true; if(ced.length>=5 && String(v.cedula||'').replace(/\D/g,'')===ced) return true; return !!nom && nk(v.cliente)===nom; }).sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
+    const pick=(k)=>{ const v=vs.find(x=>String(x[k]||'').trim()); return v?String(v[k]).trim():''; };
+    const vd=vs.find(x=>String(x.direccion||'').trim());
+    return { direccion:vd?String(vd.direccion).trim():'', ciudad:(vd&&vd.ciudad)?vd.ciudad:pick('ciudad'), celular:pick('celular'), cedula:pick('cedula'), correo:pick('correo') }; }
   segmentoCliente(c){ const {R,F,M,ordenes,diasDesde}=c;
     if(ordenes===1 && diasDesde<=75) return 'Nuevo';
     if(R>=4 && F>=4 && M>=4) return 'Campeón';
@@ -11229,9 +11237,27 @@ Instrucciones de respuesta:
   async coordCiudades(){ if((this.state.coordCiudades||[]).length||this._coordCiuBusy) return; const sb=this._sbClient(); if(!sb) return; this._coordCiuBusy=true;
     try{ const {data}=await sb.functions.invoke('coordinadora',{ body:{ modo:'ciudades' } }); if(data&&data.ok&&Array.isArray(data.ciudades)) this.setState({coordCiudades:data.ciudades.map(c=>({...c, label:this.titleCase(String(c.nombre||'').toLowerCase())+(c.depto?' ('+this.titleCase(String(c.depto).toLowerCase())+')':'')}))}); }catch(e){} finally{ this._coordCiuBusy=false; } }
   _coordCiudadTxt(txt){ const t=String(txt||'').trim(); const c=(this.state.coordCiudades||[]).find(x=>x.label===t); return c? c.codigo : t; }
-  async _coordPdfAbrir(rem, b64){ try{ const bin=atob(b64); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); const blob=new Blob([u],{type:'application/pdf'});
-      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='guia-'+rem+'.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),30000);
-    }catch(e){} }
+  // Rótulo 10×10 cm (1-oct): Coordinadora devuelve el PDF en su formato; aquí cada página se rasteriza con pdf.js,
+  // se recorta el blanco y se abre una ventana de impresión con @page 100mm×100mm (una etiqueta por página).
+  // Si pdf.js no carga, se descarga el PDF original como antes.
+  async _pdfjs(){ if(window.pdfjsLib) return window.pdfjsLib; await new Promise((ok,ko)=>{ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=ok; s.onerror=ko; document.head.appendChild(s); });
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; return window.pdfjsLib; }
+  _recorteBlanco(cv){ const ctx=cv.getContext('2d'); const {width:w,height:h}=cv; const d=ctx.getImageData(0,0,w,h).data; let x0=w,y0=h,x1=-1,y1=-1;
+    for(let y=0;y<h;y+=2){ for(let x=0;x<w;x+=2){ const k=(y*w+x)*4; if(d[k+3]>10 && (d[k]<235||d[k+1]<235||d[k+2]<235)){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } } }
+    if(x1<0) return cv.toDataURL('image/png'); const pad=Math.round(Math.min(w,h)*0.01); x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad); x1=Math.min(w-1,x1+pad); y1=Math.min(h-1,y1+pad);
+    const o=document.createElement('canvas'); o.width=x1-x0+1; o.height=y1-y0+1; o.getContext('2d').drawImage(cv,x0,y0,o.width,o.height,0,0,o.width,o.height); return o.toDataURL('image/png'); }
+  async _coordPdfAbrir(rem, b64){ const bin=atob(b64); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+    const win=window.open('','_blank'); if(win){ try{ win.document.write('<!doctype html><title>Guía '+rem+'</title><body style="font-family:sans-serif;padding:20px;color:#5A4A33">Preparando la guía '+rem+' en 10 × 10 cm…</body>'); }catch(_e){} }
+    try{ const lib=await this._pdfjs(); const pdf=await lib.getDocument({data:u.slice()}).promise; const imgs=[];
+      for(let p=1;p<=pdf.numPages;p++){ const pg=await pdf.getPage(p); const vp=pg.getViewport({scale:3}); const cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+        const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height); await pg.render({canvasContext:cx, viewport:vp}).promise; imgs.push(this._recorteBlanco(cv)); }
+      if(!win) throw new Error('ventana bloqueada');
+      const html='<!doctype html><html><head><meta charset="utf-8"><title>Guía '+rem+'</title><style>@page{size:100mm 100mm;margin:0}html,body{margin:0;padding:0;background:#fff}.p{width:100mm;height:100mm;display:flex;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.p:last-child{page-break-after:auto;break-after:auto}.p img{max-width:98mm;max-height:98mm;width:auto;height:auto;object-fit:contain}@media screen{body{background:#EFE9DD;padding:20px;display:flex;flex-direction:column;gap:16px;align-items:center}.p{background:#fff;box-shadow:0 2px 10px rgba(58,51,38,.18)}}</style></head><body>'+imgs.map(s=>'<div class="p"><img src="'+s+'"></div>').join('')+'<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},300);}<\/script></body></html>';
+      win.document.open(); win.document.write(html); win.document.close();
+    }catch(e){ try{ if(win) win.close(); }catch(_e){} const blob=new Blob([u],{type:'application/pdf'});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='guia-'+rem+'.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000);
+      this.toast('No se pudo armar la etiqueta 10×10 · se descargó el PDF de Coordinadora'); }
+    }
   async coordCrearGuia(id){ const v=(this.state.ventas||[]).find(x=>x.id===id); const F=(this._guiaF||{})[id]; if(!v||!F) return; const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
     const dev=F.sentido==='devolucion'; const tel=String(F.telefono||'').replace(/\D/g,'');
     if(!String(F.ciudad||'').trim()||!String(F.direccion||'').trim()||tel.length<7){ this.toast('Completa ciudad, dirección y celular'); return; }
@@ -11287,8 +11313,9 @@ Instrucciones de respuesta:
       if(msg){ this.setState(s=>({guiaErr:{...(s.guiaErr||{}), [id]:{msg, raw:(data&&data.raw)||''}}})); try{ window.odaEstado&&window.odaEstado('coordinadora-guia-caso: '+String(msg).slice(0,90)); }catch(_e){} this.toast('No se creó la guía: '+msg); return; }
       const rem=String(data.remision); if(data.pdfBase64) this._coordPdfAbrir(rem, data.pdfBase64);
       const who=this.casoUserName?this.casoUserName():this.recMeNombre(); const gc={ remision:rem, creado:new Date().toISOString(), por:who, unidades:Math.max(1,Number(F.unidades)||1) };
-      this._casoGuardarGuias(id, x=>({...x, guiaDev:[...(x.guiaDev||[]), gc], timeline:(x.timeline||[]).concat([{fecha:new Date().toISOString(), texto:'Guía de envío Coordinadora '+rem+' creada', por:who}])}), 'Guía de envío '+rem+' creada'+(data.pdfBase64?' · rótulo descargado':''));
+      this._casoGuardarGuias(id, x=>({...x, direccion:F.direccion, ciudad:(x.ciudad||F.ciudad), celular:(x.celular||tel), guiaDev:[...(x.guiaDev||[]), gc], timeline:(x.timeline||[]).concat([{fecha:new Date().toISOString(), texto:'Guía de envío Coordinadora '+rem+' creada', por:who}])}), 'Guía de envío '+rem+' creada'+(data.pdfBase64?' · rótulo descargado':''));
       this.setState(s=>({casoGuiaForm:{...(s.casoGuiaForm||{}), [id]:undefined}}));
+      setTimeout(()=>{ const cN=(this.state.casos||[]).find(x=>x.id===id); if(cN && cN.alistAlerta) this.casoAlistPublicar(cN, true); }, 300);
     }catch(e){ this.toast('No se creó la guía: '+((e&&e.message)||'error')); }
     finally{ this._coordGuiaBusy=null; this.forceUpdate(); } }
   async casoGuiaAnular(id, rem){ if(!window.confirm('¿Anular la guía '+rem+' en Coordinadora? No se puede deshacer.')) return; const sb=this._sbClient(); if(!sb) return;
@@ -12251,7 +12278,12 @@ Instrucciones de respuesta:
     this.setState({materias:updated},()=>this.persist());
     this.toast(count+' materia'+(count===1?'':'s')+' ajustada'+(count===1?'':'s')+' · stock y costo desde órdenes');
   }
-  saveVenta(){ const d=this.state.draft; if(!d.cliente){ this.toast('Escribe el cliente'); return; } if(!(d.items||[]).length){ this.toast('Agrega al menos un producto'); return; } if((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && !d.consignTienda){ this.toast('Elige la tienda o vendedor del que se descuenta la consignación'); return; }
+  saveVenta(){ const d=this.state.draft; if(!d.cliente){ this.toast('Escribe el cliente'); return; }
+    // Pedidos manuales: el cliente debe quedar con sus datos de contacto y envío completos (1-oct).
+    if((d.origen||'manual')==='manual'){ const cel=String(d.celular||'').replace(/\D/g,''); const dir=String(d.direccion||'').trim();
+      if(cel.length<10){ this.toast('Falta el celular del cliente (10 dígitos)'); return; }
+      if(!String(d.ciudad||'').trim()){ this.toast('Falta la ciudad del cliente'); return; }
+      if(dir.length<6){ this.toast('Falta la dirección de entrega · si recoge, escribe «Recoge en oficina»'); return; } } if(!(d.items||[]).length){ this.toast('Agrega al menos un producto'); return; } if((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && !d.consignTienda){ this.toast('Elige la tienda o vendedor del que se descuenta la consignación'); return; }
     // BLOQUEO: no registrar dos ventas con el mismo número de pedido.
     { const _pn=this.pedidoNum({pedido:d.pedido||''});
       if(_pn){ const _dup=(this.state.ventas||[]).find(v=>v.id!==d.id && !v.cancelada && v.origen!=='historico' && this.pedidoNum(v)===_pn);
@@ -15912,16 +15944,41 @@ Instrucciones de respuesta:
     const lineas=items.map(it=>'• '+(Number(it.unidades)||1)+'× '+(it.nombre||it.codigo||'')).join('\n');
     const transp=(c.transportadora||'Coordinadora');
     const guia=String(c.guia||'').trim();
-    let m='📦 *ALISTAMIENTO* · Caso '+(c.folio||'');
-    m+='\nCliente: '+(c.cliente||'—')+((c.ciudad)?(' · '+c.ciudad):'');
-    if(this.casoTel(c)) m+='\nTel: '+this.casoTelFmt(c);
-    m+='\nTransportadora: '+transp;
-    m+='\nGuía: '+(guia||'(pendiente)');
+    const ad=this._alistData(c);
+    let m='ALISTAMIENTO · Caso '+(c.folio||'');
+    m+='\nCliente: '+(ad.cliente||'—')+(ad.ciudad?(' · '+ad.ciudad):'');
+    m+='\nDirección: '+(ad.direccion||'(sin dirección)');
+    if(ad.telefono) m+='\nTel: '+ad.telefono;
+    m+='\nTransportadora: '+ad.transportadora;
+    m+='\nGuía: '+(ad.guia||'(pendiente)');
     m+='\nMotivo: '+this.casoTipoMeta(c.tipo).l+' · '+this.casoResolMeta(c.resolucion);
-    m+='\n\n*Productos a enviar:*\n'+(lineas||'• (sin ítems)');
-    m+='\n\nGracias 🙌';
+    m+='\n\nProductos a enviar:\n'+(lineas||'• (sin ítems)');
     return m;
   }
+  _alistDestino(){ const u=(this.usersBase||[]).find(x=>x.role==='Producción y bodega')||{}; return { email:String(u.email||'alejandra.cobo@oasisdelalma.co').toLowerCase(), nombre:u.name||'Alejandra Cobo' }; }
+  _alistData(c){ const vL=(this.casoVentaLink?this.casoVentaLink(c):null)||{}; const gv=(c.guiaDev||[]).filter(g=>!g.anulada).slice(-1)[0];
+    const cD=this.clienteDatosPara({cliente:c.cliente, celular:(this.casoTel?this.casoTel(c):c.celular)||vL.celular});
+    return { tipo:'alistamiento', casoId:c.id, folio:c.folio||'', pedido:c.pedido||c.ov||'', cliente:this.titleCase(c.cliente||''), ciudad:c.ciudad||vL.ciudad||cD.ciudad||'',
+      direccion:c.direccion||vL.direccion||cD.direccion||'', telefono:(this.casoTel&&this.casoTel(c)?this.casoTelFmt(c):'')||c.celular||vL.celular||'', transportadora:(gv?'Coordinadora':(c.transportadora||'Coordinadora')),
+      guia:(gv?gv.remision:String(c.guia||'').trim()), motivo:this.casoTipoMeta(c.tipo).l+' · '+this.casoResolMeta(c.resolucion),
+      items:this.casoEnvioItems(c).map(it=>({ nombre:(it.nombre||it.codigo||''), codigo:it.codigo||'', unidades:Number(it.unidades)||1 })) }; }
+  async casoAlistPublicar(c, silencioso){ const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return false; }
+    const dst=this._alistDestino(); const id='alist-'+c.id; const who=this.casoUserName?this.casoUserName():this.recMeNombre(); const prev=c.alistAlerta||{};
+    const data={ ...this._alistData(c), creadoPor:prev.por||who, creadoAt:prev.creadoAt||new Date().toISOString(), actualizadoAt:new Date().toISOString() };
+    try{ const {data:r,error}=await sb.from('alertas_app').upsert({ id, data, destino:dst.email, estado:'pendiente', actualizado:new Date().toISOString() },{ onConflict:'id' }).select('id');
+      if(error||!r||!r.length) throw (error||new Error('la nube no confirmó'));
+      if(!silencioso) this.toast('Alerta de alistamiento enviada a '+dst.nombre); return { creadoAt:data.creadoAt, por:data.creadoPor };
+    }catch(e){ const m=String((e&&e.message)||e); this.toast(/alertas_app/.test(m)?'Falta correr supabase-alertas-app.sql':'No se creó la alerta: '+m); try{ window.odaEstado&&window.odaEstado('alerta-alistamiento: '+m.slice(0,90)); }catch(_e){} return false; } }
+  async casoAlistToggle(c){ if(this._alistBusy) return; this._alistBusy=c.id; this.forceUpdate(); const who=this.casoUserName?this.casoUserName():this.recMeNombre();
+    try{ if(!c.alistAlerta){ if(!this.casoEnvioItems(c).length){ this.toast('Agrega los productos a enviar antes de crear la alerta'); return; }
+        const r=await this.casoAlistPublicar(c, false); if(!r) return; this._alistEstado={...(this._alistEstado||{}), [c.id]:{estado:'pendiente'}};
+        this._casoGuardarGuias(c.id, x=>({...x, alistAlerta:{ id:'alist-'+c.id, creadoAt:r.creadoAt, por:r.por }, timeline:(x.timeline||[]).concat([{evento:true, titulo:'Alerta de alistamiento', fecha:new Date().toISOString().slice(0,10), who, nota:'Enviada a '+this._alistDestino().nombre+' en la app'}])}));
+      } else { const sb=this._sbClient(); const est=(this._alistEstado||{})[c.id]; if(est&&est.estado==='alistado'){ this.toast('Ya se alistó · la alerta queda como registro'); return; }
+        if(sb){ const {error}=await sb.from('alertas_app').delete().eq('id','alist-'+c.id).eq('estado','pendiente'); if(error){ this.toast('No se pudo retirar la alerta: '+error.message); return; } }
+        this._casoGuardarGuias(c.id, x=>{ const y={...x}; delete y.alistAlerta; y.timeline=(x.timeline||[]).concat([{evento:true, titulo:'Alerta de alistamiento retirada', fecha:new Date().toISOString().slice(0,10), who}]); return y; }, 'Alerta retirada'); }
+    } finally{ this._alistBusy=null; this.forceUpdate(); } }
+  async _alistCargarEstado(c){ this._alistEstado=this._alistEstado||{}; this._alistEstado[c.id]=null; const sb=this._sbClient(); if(!sb) return;
+    try{ const {data}=await sb.from('alertas_app').select('estado,data').eq('id','alist-'+c.id).maybeSingle(); this._alistEstado[c.id]=data?{estado:data.estado, por:(data.data||{}).alistadoPor, at:(data.data||{}).alistadoAt}:{estado:'pendiente'}; this.forceUpdate(); }catch(e){} }
   casoAlistSend(c){ const msg=this.casoAlistMsg(c); try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg); }catch(e){}
     const cfg=String(((this.state.reglasNeg||{}).waAlist)||'').trim();
     let url;
@@ -18417,15 +18474,16 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         puedeAnular:!!puedeC && !g.anulada, onAnular:()=>this.casoGuiaAnular(cc.id, g.remision) }));
       const vigente=(cc.guiaDev||[]).some(g=>!g.anulada);
       const F0=(this.state.casoGuiaForm||{})[cc.id]||{};
-      const F={ ciudad:(F0.ciudad!==undefined?F0.ciudad:(cc.ciudad||vL.ciudad||'')), direccion:(F0.direccion!==undefined?F0.direccion:(vL.direccion||'')), telefono:(F0.telefono!==undefined?F0.telefono:(this.casoTel?this.casoTel(cc):(cc.celular||vL.celular||''))),
-        unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:35000, observaciones:(F0.observaciones!==undefined?F0.observaciones:('Caso '+(cc.folio||''))) };
+      const cD=this.clienteDatosPara({cliente:cc.cliente, celular:(this.casoTel?this.casoTel(cc):cc.celular)||vL.celular, cedula:vL.cedula});
+      const F={ ciudad:(F0.ciudad!==undefined?F0.ciudad:(cc.ciudad||vL.ciudad||cD.ciudad||'')), direccion:(F0.direccion!==undefined?F0.direccion:(cc.direccion||vL.direccion||cD.direccion||'')), telefono:(F0.telefono!==undefined?F0.telefono:((this.casoTel?this.casoTel(cc):'')||cc.celular||vL.celular||cD.celular||'')),
+        unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:(F0.valorDeclarado!==undefined?F0.valorDeclarado:35000), observaciones:(F0.observaciones!==undefined?F0.observaciones:('Caso '+(cc.folio||''))) };
       this._casoGuiaF=this._casoGuiaF||{}; this._casoGuiaF[cc.id]=F;
       const setF=(k)=>(e)=>{ const val=e.target.value; this.setState(s=>({casoGuiaForm:{...(s.casoGuiaForm||{}), [cc.id]:{...((s.casoGuiaForm||{})[cc.id]||{}), [k]:val}}})); };
       const busyC=(this._coordGuiaBusy===cc.id); const er=(this.state.guiaErr||{})[cc.id];
       out.cg={ mostrar:(gsC.length>0 || !!puedeC), guias:gsC, puede:(!!puedeC && !vigente && cc.estado!=='cerrado'), f:F,
         onCiudad:setF('ciudad'), onDir:setF('direccion'), onTel:setF('telefono'), onUnd:setF('unidades'), onVd:setF('valorDeclarado'), onObs:setF('observaciones'),
         cargarCiudades:()=>this.coordCiudades(), btnTxt:(busyC?'Creando guía…':'Crear guía de envío'), crear:()=>{ if(!busyC) this.casoGuiaCrear(cc.id); },
-        resumen:('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(cc.cliente||'')+'. Flete: acuerdo semanal · valor declarado $35.000 · sin recaudo.'),
+        resumen:('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(cc.cliente||'')+'. Flete: acuerdo semanal · sin recaudo.'),
         errShow:!!er, err:er?er.msg:'', raw:er?(er.raw||''):'' };
       const tm=this.casoTipoMeta(cc.tipo), em=this.casoEstadoMeta(cc.estado); const applied=(cc.estado==='resuelto'||cc.estado==='cerrado'); const tl=cc.timeline||[];
       out.cd={ folio:cc.folio, tipoL:tm.l, tipoBg:tm.bg, tipoFg:tm.fg, estL:em.l, estBg:em.bg, estFg:em.fg, estDot:em.dot, cliente:cc.cliente, ciudad:cc.ciudad||'—', canal:cc.canal, pedidoTxt:(cc.pedido||cc.ov||'Sin pedido'), ov:(cc.ov||'Caso suelto'), producto:cc.producto||'—', motivoLargo:cc.motivoLargo||cc.motivo||'', resolL:this.casoResolMeta(cc.resolucion), costoFmt:(cc.estado==='resuelto'||cc.estado==='cerrado')?(Number(cc.costo)>0?this.casoCop(cc.costo):'Sin costo'):(this.casoCostoEstimado(cc)>0?('~ '+this.casoCop(this.casoCostoEstimado(cc))+' (estimado)'):'Sin costo'), costoColor:((cc.estado==='resuelto'||cc.estado==='cerrado')?((cc.resolucion==='rechazado'||cc.resolucion==='pendiente')?'var(--text-body)':'var(--oda-sale,#B5503C)'):'var(--text-muted)'), responsable:cc.responsable||'—', venceFmt:cc.vence?this.fmtFecha(cc.vence):'—', telFmt:this.casoTelFmt(cc),
@@ -18453,7 +18511,10 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         out.cd.dispResumen=hay?((dp.transportadora||'')+(dp.guia?(' · guía '+dp.guia):'')+' · reclamado '+this.fmt(Math.round(dp.monto||0))+((Number(dp.reintegro)||0)>0?(' · reintegrado '+this.fmt(Math.round(dp.reintegro))):'')+(dp.nota?(' · '+dp.nota):'')):'';
         out.cd.dispBtnLabel=hay?'Actualizar disputa':'Abrir disputa'; out.cd.onDisputa=()=>this.casoAbrirDisputa(); }
       out.casoEliminarBtn=()=>{ if(window.confirm('¿Borrar el caso '+(cc.folio||'')+' de '+(cc.cliente||'')+'? Esta acción no se puede deshacer.')) this.eliminarCaso(cc.id); };
-      { const cfg=String(((st.reglasNeg||{}).waAlist)||'').trim(); out.casoAlistDestTxt = cfg? (/chat\.whatsapp\.com/i.test(cfg)?'Se abre el grupo configurado y el mensaje queda copiado para pegar.':'Se envía directo al chat configurado ('+cfg+').') : 'Configura el grupo fijo en Administración → Tablero. Por ahora eliges el grupo en WhatsApp.'; }
+      { const dst=this._alistDestino(); const al=cc.alistAlerta||null; const est=al?((this._alistEstado||{})[cc.id]):null; if(al && est===undefined) this._alistCargarEstado(cc);
+        out.casoAlistDestTxt='Le llega a '+dst.nombre+' en la app móvil, en Inicio → Necesita tu atención.'; out.casoAlistOn=!!al; out.casoAlistToggle=()=>this.casoAlistToggle(cc);
+        out.casoAlistChkTxt=(this._alistBusy===cc.id)?'Guardando…':('Crear alerta de alistamiento para '+dst.nombre);
+        out.casoAlistEstadoTxt= !al ? 'Al marcarla, '+dst.nombre.split(' ')[0]+' recibe el caso con cliente, dirección, guía y productos a alistar.' : (est&&est.estado==='alistado' ? ('✓ Alistado por '+(est.por||'bodega')+(est.at?(' · '+new Date(est.at).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})):'')) : ('Alerta creada'+(al.creadoAt?(' el '+new Date(al.creadoAt).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})):'')+' · pendiente de alistar. Desmarca para retirarla.')); }
     } else { out.cd={folio:'',tipoL:'',tipoBg:'',tipoFg:'',estL:'',estBg:'',estFg:'',estDot:'',cliente:'',ciudad:'',canal:'',pedidoTxt:'',ov:'',producto:'',motivoLargo:'',resolL:'',costoFmt:'',costoColor:'',responsable:'',venceFmt:'',telFmt:'',hasAdjuntos:false,adjuntosCount:0,adjuntos:[],impactosTitle:'',sinImpactos:false,impactos:[],costeoShow:false,costeoTitulo:'',costeoNota:'',destinoShow:false,destinoLabel:'',envioItems:[],hasEnvioItems:false,guia:'',transportadora:'',envioShow:false,timeline:[],canAdvance:false,advanceLabel:'',canClose:false}; out.casoWaChips=[]; out.casoWaMsg=''; out.onCasoWaInput=()=>{}; out.casoWaSendBtn=()=>{}; out.casoAsigneeName='Sin asignar'; out.casoAsigneeId=''; out.casoReasignarOpts=[]; out.onCasoReasignar=()=>{}; }
     // modal de cierre de caso (desenlace con la transportadora)
     out.isModalCerrarCaso=st.modal==='cerrarcaso';
@@ -18531,7 +18592,7 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         out.venEsDiferido=(this.metodoTipo(d.metodoPago)==='diferido'); const _totVen=Math.round(base+iva+(Number(d.envio)||0)); const _abVen=Math.max(0, Math.min(Number(d.abono)||0, _totVen)); out.venAbono=(d.abono===''||d.abono===undefined)?'':d.abono; out.venAbonoCuenta=(d.abonoCuenta||''); out.venAbonoMetodo=(d.abonoMetodo||'Transferencia'); out.venAbonoFecha=(d.abonoFecha||new Date().toISOString().slice(0,10)); out.venAbonoMetodoOptions=this.metodosFinList().filter(m=>m.tipo==='inmediato').map(m=>m.nombre); out.venAbonoSaldoFmt=this.fmt(Math.max(0,_totVen-_abVen)); out.venAbonoHay=_abVen>0;
         const _seenV={}; const _optsV=[]; this.clientesData().forEach(c=>{ if(_seenV[c.key]) return; _seenV[c.key]=1; _optsV.push({key:c.key, label:c.cliente+(c.ciudad?(' · '+c.ciudad):'')}); });
         out.venClienteOptions=_optsV.sort((a,b)=>a.label.localeCompare(b.label)); out.venClienteHay=_optsV.length>0;
-        out.onPickVenCliente=(e)=>{ const val=String(e.target.value||''); const opt=_optsV.find(o=>o.label===val); if(!opt) return; const c=this.clientesData().find(x=>x.key===opt.key); if(c){ this.setState(s=>({draft:{...s.draft, cliente:c.cliente, celular:c.celular||'', correo:c.correo||'', ciudad:c.ciudad||'', cedula:(c.cedula||s.draft.cedula||'')}})); } };
+        out.onPickVenCliente=(e)=>{ const val=String(e.target.value||''); const opt=_optsV.find(o=>o.label===val); if(!opt) return; const c=this.clientesData().find(x=>x.key===opt.key); if(c){ const cd=this.clienteDatosPara(c); this.setState(s=>({draft:{...s.draft, cliente:c.cliente, celular:c.celular||cd.celular||'', correo:c.correo||cd.correo||'', ciudad:cd.ciudad||c.ciudad||'', direccion:(cd.direccion||s.draft.direccion||''), cedula:(c.cedula||cd.cedula||s.draft.cedula||'')}})); if(!cd.direccion) this.toast('Este cliente no tiene dirección guardada · escríbela'); } };
         out.onPickVenProd=(e)=>this.onPickVenProd(e);
       }
       if(st.modal==='msvc'){
@@ -18611,7 +18672,7 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         const F0=(this.state.guiaForm||{})[v.id]||{}; const sent='envio';
         const saldo=Math.max(0,Math.round(this.ventaSaldo(v)));
         const F={ sentido:sent, ciudad:(F0.ciudad!==undefined?F0.ciudad:(v.ciudad||'')), direccion:(F0.direccion!==undefined?F0.direccion:(v.direccion||'')), telefono:(F0.telefono!==undefined?F0.telefono:(v.celular||'')),
-          unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:35000,
+          unidades:(F0.unidades!==undefined?F0.unidades:1), valorDeclarado:(F0.valorDeclarado!==undefined?F0.valorDeclarado:35000),
           recaudo:(/contra/i.test(String(v.metodoPago||''))? (F0.recaudo!==undefined?F0.recaudo:saldo) : 0), observaciones:(F0.observaciones!==undefined?F0.observaciones:'') };
         this._guiaF=this._guiaF||{}; this._guiaF[v.id]=F; out.detGuiaF=F;
         out.detGuiaMostrar=(v.origen==='manual') && !v.cancelada && (gs.length>0 || !!puedeG);
@@ -18625,7 +18686,7 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         const e1=sent==='envio'?on:off, e2=sent==='devolucion'?on:off; out.detGuiaEnvBd=e1.bd; out.detGuiaEnvBg=e1.bg; out.detGuiaEnvFg=e1.fg; out.detGuiaDevBd=e2.bd; out.detGuiaDevBg=e2.bg; out.detGuiaDevFg=e2.fg;
         out.detGuiaRecShow=/contra/i.test(String(v.metodoPago||''));
         out.detGuiaCargarCiudades=()=>this.coordCiudades(); out.coordCiudadesOpts=(this.state.coordCiudades||[]).map(c=>c.label);
-        out.detGuiaResumen=(sent==='envio'? ('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(v.cliente||'')+'. Flete: acuerdo semanal · valor declarado $35.000.'+(Number(F.recaudo)>0?(' Coordinadora le cobra '+this.fmt(Number(F.recaudo))+' al entregar.'):' Sin recaudo.')) : ('Guía de devolución: '+this.titleCase(v.cliente||'')+' entrega el paquete y llega a la bodega en Cali. Flete: acuerdo semanal, sin recaudo.'));
+        out.detGuiaResumen=(sent==='envio'? ('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(v.cliente||'')+'. Flete: acuerdo semanal.'+(Number(F.recaudo)>0?(' Coordinadora le cobra '+this.fmt(Number(F.recaudo))+' al entregar.'):' Sin recaudo.')) : ('Guía de devolución: '+this.titleCase(v.cliente||'')+' entrega el paquete y llega a la bodega en Cali. Flete: acuerdo semanal, sin recaudo.'));
         const busyG=(this._coordGuiaBusy===v.id); out.detGuiaBtnTxt=busyG?'Creando guía…':(sent==='envio'?'Crear guía de envío':'Crear guía de devolución'); out.detGuiaCrear=()=>{ if(!busyG) this.coordCrearGuia(v.id); };
         const er=(this.state.guiaErr||{})[v.id]; out.detGuiaErrShow=!!er; out.detGuiaErr=er?er.msg:''; out.detGuiaRaw=er?(er.raw||''):''; }
       { const bl=v.boldLink||null; const esB=this._esBold(v.metodoPago); const busy=(this._boldLinkBusy===v.id); const puede=(this._modLevel(this.access()||{},'ventas')==='write');
