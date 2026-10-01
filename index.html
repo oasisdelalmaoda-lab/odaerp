@@ -5885,7 +5885,7 @@
                               <sc-if value="{{ r.showEnt }}" hint-placeholder-val="{{ false }}">
                                 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                                   <input type="date" value="{{ r.entFecha }}" onInput="{{ r.onEntFecha }}" style="font-family:inherit;font-size:12.5px;padding:7px 9px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);">
-                                  <button onClick="{{ r.onEnt }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">Marcar entregado</button>
+                                  <button onClick="{{ r.onEnt }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">{{ r.entBtnTxt }}</button>
                                 </div>
                               </sc-if>
                               <sc-if value="{{ r.showQuitarEnt }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onQuitarEnt }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;text-decoration:underline;">Quitar entrega</button></sc-if>
@@ -5904,6 +5904,25 @@
           <!-- ===== LOGÍSTICA · PLAZOS ===== -->
           <sc-if value="{{ showLogPlazos }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:16px;max-width:860px;">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0 0 4px;">Conexión con Coordinadora</h3>
+                  <div style="font-size:12.5px;color:var(--text-muted);text-wrap:pretty;">Prueba el rastreo oficial con una guía real. Si responde con los eventos y la fecha de entrega, la conexión quedó bien.</div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                  <input value="{{ coordGuia }}" onInput="{{ onCoordGuia }}" placeholder="Número de guía (11 dígitos)" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface-card);min-width:220px;">
+                  <button onClick="{{ coordProbar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">{{ coordBtnTxt }}</button>
+                </div>
+                <sc-if value="{{ coordResShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+                    <div style="font-weight:700;color:{{ coordResFg }};">{{ coordResTit }}</div>
+                    <sc-for list="{{ coordEventos }}" as="e" hint-placeholder-count="0">
+                      <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;"><span style="color:var(--text-muted);">{{ e.f }}</span><span>{{ e.d }}</span></div>
+                    </sc-for>
+                    <details><summary style="font-size:11.5px;color:var(--text-muted);cursor:pointer;">Respuesta técnica (para revisar)</summary><pre style="font-size:11px;white-space:pre-wrap;word-break:break-all;max-height:320px;overflow:auto;background:var(--surface-raised);padding:10px;border-radius:var(--radius-md);margin:6px 0 0;">{{ coordRaw }}</pre></details>
+                  </div>
+                </sc-if>
+              </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;">
                 <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin:0 0 4px;">Promesa de despacho</h3>
                 <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 14px;line-height:1.55;">Si el pedido entra un día hábil antes de la hora de corte, sale ese mismo día; si no, el siguiente día hábil (sin sábados, domingos ni festivos). El despacho real es la fecha en que se crea la guía en Coordinadora (llega de Shopify); si va por otro medio, se marca a mano al preparar el pedido.</p>
@@ -11079,16 +11098,18 @@ Instrucciones de respuesta:
     // La etiqueta de entregado ya presente (aunque el sync no la haya fechado) cuenta como entregado sin fecha
     const entregado=!!(entIso||v.entregaSinFecha||this.logTagEntregado(v.tags));
     // Cali con mensajero (sin guía) y etiqueta de entregado: se entrega el MISMO día del despacho (30-sep)
-    if(zona==='cali' && !conGuia && entregado && v.entregaFuente!=='manual'){ if(despIso) entIso=despIso; else if(entIso) despIso=entIso; }
+    let entAprox=(v.entregaFuente==='etiqueta');
+    if(zona==='cali' && !conGuia && entregado && v.entregaFuente!=='manual'){ if(despIso) entIso=despIso; else if(entIso) despIso=entIso; entAprox=false; }
     const porConf=entregado? '' : this.logPorConfirmar(v);
     let estado, atraso=0;
     if(porConf){ estado='porConfirmar'; }
-    else if(entregado){ if(!entIso){ estado='sinfecha'; } else { atraso=this._logHabilesEntre(promEnt, entIso); estado=atraso>0?'tarde':'atiempo'; } }
+    else if(entregado){ if(!entIso){ estado='sinfecha'; } else { atraso=this._logHabilesEntre(promEnt, entIso);
+      estado=atraso>0? (entAprox?'porVerificar':'tarde') : 'atiempo'; if(estado==='porVerificar') atraso=0; } }
     else if(!despIso && !despSinFecha){ atraso=this._logHabilesEntre(promDesp, hoy); estado=atraso>0?'despAtrasado':'porDespachar'; }
     else { atraso=this._logHabilesEntre(promEnt, hoy); estado=atraso>0?'entAtrasada':'transito'; }
     const despATiempo=despIso? (despIso<=promDesp) : null;
-    return { zona, plazo, promDesp, despIso, despSinFecha, promEnt, entIso, entregado, estado, atraso, despATiempo, porConf, atrasado:(estado==='despAtrasado'||estado==='entAtrasada') }; }
-  logEstadoMeta(k){ return ({ porConfirmar:{l:'Pendiente de confirmación',bg:'rgba(201,161,90,0.18)',fg:'#7A5E36'}, porDespachar:{l:'Por despachar',bg:'var(--surface-raised)',fg:'var(--text-body)'}, despAtrasado:{l:'Despacho atrasado',bg:'rgba(181,80,60,0.14)',fg:'#9A3F2E'}, transito:{l:'En tránsito',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, entAtrasada:{l:'Entrega atrasada',bg:'rgba(181,80,60,0.14)',fg:'#9A3F2E'}, atiempo:{l:'Entregado a tiempo',bg:'rgba(98,123,96,0.18)',fg:'#4C6149'}, tarde:{l:'Entregado tarde',bg:'rgba(201,161,90,0.22)',fg:'#7A5E36'}, sinfecha:{l:'Entregado · sin fecha',bg:'#EFE9DD',fg:'#8A7B6A'} })[k]||{l:k,bg:'#EFE9DD',fg:'#8A7B6A'}; }
+    return { zona, plazo, promDesp, despIso, despSinFecha, promEnt, entIso, entAprox, entregado, estado, atraso, despATiempo, porConf, atrasado:(estado==='despAtrasado'||estado==='entAtrasada') }; }
+  logEstadoMeta(k){ return ({ porConfirmar:{l:'Pendiente de confirmación',bg:'rgba(201,161,90,0.18)',fg:'#7A5E36'}, porDespachar:{l:'Por despachar',bg:'var(--surface-raised)',fg:'var(--text-body)'}, despAtrasado:{l:'Despacho atrasado',bg:'rgba(181,80,60,0.14)',fg:'#9A3F2E'}, transito:{l:'En tránsito',bg:'rgba(101,150,166,0.16)',fg:'#3F6A7A'}, entAtrasada:{l:'Entrega atrasada',bg:'rgba(181,80,60,0.14)',fg:'#9A3F2E'}, atiempo:{l:'Entregado a tiempo',bg:'rgba(98,123,96,0.18)',fg:'#4C6149'}, tarde:{l:'Entregado tarde',bg:'rgba(201,161,90,0.22)',fg:'#7A5E36'}, sinfecha:{l:'Entregado · sin fecha',bg:'#EFE9DD',fg:'#8A7B6A'}, porVerificar:{l:'Entregado · fecha por verificar',bg:'#EFE9DD',fg:'#7A5E36'} })[k]||{l:k,bg:'#EFE9DD',fg:'#8A7B6A'}; }
   logPedidos(){ const d=this.logCfg().desde||'2026-09-01'; return (this.state.ventas||[]).filter(v=>(v.fecha||'')>=d && this.logEsEnvio(v)); }
   logAtrasados(){ return this.logPedidos().filter(v=>this.logInfo(v).atrasado); }
   async _logGuardar(id, patch, msg){ const list=(this.state.ventas||[]).map(x=>x.id===id? {...x, ...patch} : x); const v=list.find(x=>x.id===id); if(!v) return;
@@ -11102,6 +11123,18 @@ Instrucciones de respuesta:
   logMarcarEntregado(v){ const f=(this.state.logEntFecha||{})[v.id]||this._logIso(new Date()); this._logGuardar(v.id, {entregadoAt:new Date(f+'T12:00:00').toISOString(), entregaFuente:'manual', entregaSinFecha:false, entregaPor:this.casoUserName()}, 'Marcado como entregado · '+this.fmtFecha(f)); }
   logQuitarEntrega(v){ this._logGuardar(v.id, {entregadoAt:'', entregaFuente:'', entregaSinFecha:false}, 'Entrega desmarcada'); }
   logSetMotivo(v, motivo){ this._logGuardar(v.id, {logMotivo:motivo, logMotivoAt:Date.now()}, motivo?('Motivo: '+motivo):'Motivo quitado'); }
+  // Rastreo oficial Coordinadora (función coordinadora · 1-oct). Primera fase: prueba de conexión desde Promesas y plazos.
+  async coordProbar(){ const g=String(this.state.coordGuia||'').replace(/\D/g,''); if(g.length<8){ this.toast('Escribe un número de guía'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Sin conexión a la nube'); return; } this.setState({coordBusy:true});
+    try{ const {data,error}=await sb.functions.invoke('coordinadora',{ body:{ modo:'probar', guia:g } });
+      let msg=''; if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) msg=j.error; } }catch(_e){} msg=msg||((error&&error.message)||'la función no respondió'); }
+      else if(!data||!data.ok) msg=(data&&data.error)||'sin respuesta';
+      if(msg){ this.setState({coordRes:{error:msg, raw:''}}); try{ window.odaEstado&&window.odaEstado('coordinadora: '+msg); }catch(_e){} return; }
+      const d=data.detallado||{}, s=data.simple||{}; const usa=(d.leido&&d.leido.eventos&&d.leido.eventos.length)? d : ((s.leido&&s.leido.eventos&&s.leido.eventos.length)? s : d);
+      this.setState({coordRes:{leido:usa.leido, fuente:(usa===d?'Seguimiento detallado':'Rastreo simple'), fault:[d.fault,s.fault].filter(Boolean).join(' · '),
+        raw:'— Seguimiento_detallado (HTTP '+d.status+') —\n'+(d.xml||'')+'\n\n— Guias_rastreoSimple (HTTP '+s.status+') —\n'+(s.xml||'')}});
+    }catch(e){ this.setState({coordRes:{error:(e&&e.message)||'error', raw:''}}); }
+    finally{ this.setState({coordBusy:false}); } }
   logSetNota(v, nota){ if(String(nota||'')===String(v.logNota||'')) return; this._logGuardar(v.id, {logNota:String(nota||'')}, 'Nota guardada'); }
   logTracking(v){ if(v.trackingUrl) return v.trackingUrl; return this.casoTrackingUrl({guia:v.guia, transportadora:v.transportadora}); }
   logWaTexto(v){ const i=this.logInfo(v); const n=this.waNombre(v); const ref=v.pedido||v.ov||'';
@@ -16678,7 +16711,7 @@ Instrucciones de respuesta:
         out.logRangos=[['d7','7 días'],['d30','30 días'],['mes','Este mes'],['mesant','Mes anterior']].map(([k,l])=>({l, on:rango===k, bg:rango===k?'var(--brand-primary)':'var(--surface-card)', fg:rango===k?'var(--text-on-brand)':'var(--text-body)', onClick:()=>this.setState({logRango:k})}));
         const enR=LC.peds.filter(v=>(v.fecha||'')>=ini && (v.fecha||'')<=fin); const I=(v)=>LC.infos.get(v.id);
         const desp=enR.filter(v=>I(v).despIso); const despOk=desp.filter(v=>I(v).despATiempo);
-        const med=enR.filter(v=>I(v).entIso); const medOk=med.filter(v=>I(v).estado==='atiempo');
+        const med=enR.filter(v=>I(v).entIso && I(v).estado!=='porVerificar'); const medOk=med.filter(v=>I(v).estado==='atiempo');
         const pct=(a,b)=>b? Math.round(a*100/b)+'%' : '—';
         const prom=(arr)=>{ const xs=arr.map(v=>this._logHabilesEntre(I(v).despIso, I(v).entIso)); return xs.length? (Math.round(xs.reduce((s,x)=>s+x,0)*10/xs.length)/10).toString().replace('.',',') : '—'; };
         out.logKpis=[
@@ -16689,16 +16722,16 @@ Instrucciones de respuesta:
           {l:'Despacho → entrega', v:prom(med), s:'Días hábiles en promedio'} ].map(k=>({...k, fg:k.alerta?'#9A3F2E':'var(--text-strong)'}));
         const sinF=enR.filter(v=>I(v).estado==='sinfecha').length; out.logSinFechaShow=sinF>0; out.logSinFechaTxt=sinF+' entregado'+(sinF===1?'':'s')+' sin fecha (la etiqueta ya estaba antes del módulo) no cuentan en el % de entrega.';
         const cfg=this.logCfg(); const zL={cali:'Cali y área metropolitana', principal:'Ciudades principales', otra:'Otras ciudades'};
-        out.logZonas=['cali','principal','otra'].map(z=>{ const zr=enR.filter(v=>I(v).zona===z); const zm=zr.filter(v=>I(v).entIso); const ok=zm.filter(v=>I(v).estado==='atiempo').length;
+        out.logZonas=['cali','principal','otra'].map(z=>{ const zr=enR.filter(v=>I(v).zona===z); const zm=zr.filter(v=>I(v).entIso && I(v).estado!=='porVerificar'); const ok=zm.filter(v=>I(v).estado==='atiempo').length;
           const plazo=z==='cali'?(cfg.caliMensajero+' día mensajero · '+cfg.caliTransp+' transportadora'):(z==='principal'?cfg.principales:cfg.otras)+' días hábiles';
           return {l:zL[z], plazo, n:String(zr.length), pct:pct(ok,zm.length), prom:prom(zm), atr:String(zr.filter(v=>I(v).atrasado).length)}; });
         const mot={}; LC.peds.filter(v=>I(v).atrasado || I(v).estado==='tarde').filter(v=>(v.fecha||'')>=ini || I(v).atrasado).forEach(v=>{ const m=v.logMotivo||'Sin motivo anotado'; mot[m]=(mot[m]||0)+1; });
         out.logMotivosRes=Object.keys(mot).sort((a,b)=>mot[b]-mot[a]).map(k=>({l:k, n:String(mot[k]), fg:k==='Sin motivo anotado'?'var(--text-muted)':'var(--text-body)'})); out.logMotivosShow=out.logMotivosRes.length>0; out.logMotivosVacio=!out.logMotivosShow;
         const filtro=st.logFiltro||'atrasados'; const q=this.normKey(st.logBuscar||'');
         const abiertosL=LC.peds.filter(v=>!I(v).entregado && !I(v).porConf); const porConfL=LC.peds.filter(v=>I(v).porConf);
-        const cuenta={atrasados:atr.length, porConfirmar:porConfL.length, abiertos:abiertosL.length, tarde:enR.filter(v=>I(v).estado==='tarde').length, todos:enR.length};
-        out.logFiltros=[['atrasados','Atrasados'],['porConfirmar','Despacho pendiente'],['abiertos','Sin entregar'],['tarde','Entregados tarde'],['todos','Todos del periodo']].map(([k,l])=>({l:l+' · '+cuenta[k], bg:filtro===k?'var(--text-strong)':'var(--surface-card)', fg:filtro===k?'var(--surface-page)':'var(--text-body)', onClick:()=>this.setState({logFiltro:k, logOpenId:null})}));
-        let rows = filtro==='atrasados'? atr : filtro==='porConfirmar'? porConfL : (filtro==='abiertos'? abiertosL : (filtro==='tarde'? enR.filter(v=>I(v).estado==='tarde') : enR));
+        const cuenta={atrasados:atr.length, porConfirmar:porConfL.length, abiertos:abiertosL.length, tarde:enR.filter(v=>I(v).estado==='tarde').length, porVerificar:enR.filter(v=>I(v).estado==='porVerificar').length, todos:enR.length};
+        out.logFiltros=[['atrasados','Atrasados'],['porConfirmar','Despacho pendiente'],['abiertos','Sin entregar'],['tarde','Entregados tarde'],['porVerificar','Fecha por verificar'],['todos','Todos del periodo']].map(([k,l])=>({l:l+' · '+cuenta[k], bg:filtro===k?'var(--text-strong)':'var(--surface-card)', fg:filtro===k?'var(--surface-page)':'var(--text-body)', onClick:()=>this.setState({logFiltro:k, logOpenId:null})}));
+        let rows = filtro==='atrasados'? atr : filtro==='porConfirmar'? porConfL : (filtro==='abiertos'? abiertosL : (filtro==='tarde'? enR.filter(v=>I(v).estado==='tarde') : (filtro==='porVerificar'? enR.filter(v=>I(v).estado==='porVerificar') : enR)));
         if(q) rows=rows.filter(v=>this.normKey([v.pedido,v.ov,v.cliente,v.guia,v.ciudad].join(' ')).indexOf(q)>=0);
         rows=rows.slice().sort((a,b)=>(I(b).atraso-I(a).atraso) || String(a.fecha||'').localeCompare(String(b.fecha||'')));
         this._logRowsExport=rows; out.logExportar=()=>this.logExportar(this._logRowsExport);
@@ -16709,21 +16742,28 @@ Instrucciones de respuesta:
         out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:this.titleCase(v.cliente||'—'), ciudad:(this.titleCase(v.ciudad||'')||'Sin ciudad'), zona:zc[i.zona]+' · '+i.plazo+'d', fecha:this.fmtFecha(v.fecha),
             promDesp:this.fmtFecha(i.promDesp), despReal:(i.despIso?this.fmtFecha(i.despIso):(i.despSinFecha?(String(v.guia||'').trim()?'Con guía · sin fecha':'Preparado · sin guía'):'Pendiente')), despFg:(i.despIso?(i.despATiempo?'#4C6149':'#9A3F2E'):(i.despSinFecha?'var(--text-body)':'var(--text-muted)')),
-            promEnt:this.fmtFecha(i.promEnt), entReal:(i.entIso?this.fmtFecha(i.entIso):(i.estado==='sinfecha'?'Sin fecha':'Pendiente')), entFg:(i.entIso?(i.estado==='atiempo'?'#4C6149':'#9A3F2E'):'var(--text-muted)'),
+            promEnt:this.fmtFecha(i.promEnt), entReal:(i.entIso?((i.estado==='porVerificar'?'A más tardar ':'')+this.fmtFecha(i.entIso)):(i.estado==='sinfecha'?'Sin fecha':'Pendiente')), entFg:(i.entIso?(i.estado==='atiempo'?'#4C6149':(i.estado==='porVerificar'?'#7A5E36':'#9A3F2E')):'var(--text-muted)'),
             estL:(i.porConf? (m.l+' · '+i.porConf) : m.l), estBg:m.bg,
             showConfirmar:(!!i.porConf && out.logCanWrite), onConfirmar:()=>this.logConfirmar(v), showPorConf:(!i.porConf && !i.entregado && !i.despIso && !i.despSinFecha && out.logCanWrite), onPorConf:()=>this.logDejarPorConfirmar(v), estFg:m.fg, atrasoShow:i.atraso>0, atrasoTxt:'+'+i.atraso+' d', motivo:(v.logMotivo||''), motivoShow:!!v.logMotivo, etapa:((!i.entregado && this.logEtapaCM(v.tags))? ('Coordinadora: '+this.logEtapaCM(v.tags)) : ''), etapaShow:(!i.entregado && !!this.logEtapaCM(v.tags)),
             open, rowBg:open?'rgba(167,134,89,0.07)':'transparent', onToggle:()=>this.setState({logOpenId:open?null:v.id}),
             guiaTxt:(String(v.guia||'').trim()? ((v.transportadora||'Guía')+' · '+v.guia) : 'Sin guía'), trackShow:!!(String(v.guia||'').trim()&&url), trackUrl:url,
-            fuenteTxt:[i.despIso?('Despacho: '+(v.despachoFuente==='manual'?'marcado a mano':'guía en Shopify')):'', i.entIso?('Entrega: '+(fu[v.entregaFuente]||'—')+(v.entregaPor?(' · '+v.entregaPor):'')):''].filter(Boolean).join(' · '),
+            fuenteTxt:[i.despIso?('Despacho: '+(v.despachoFuente==='manual'?'marcado a mano':'guía en Shopify')):'', i.entIso?('Entrega: '+(i.estado==='porVerificar'?'etiqueta (fecha en que se vio, no la real — revisa el rastreo y corrígela)':(fu[v.entregaFuente]||'—'))+(v.entregaPor?(' · '+v.entregaPor):'')):''].filter(Boolean).join(' · '),
             onWa:()=>this.logWhatsApp(v), onCaso:()=>this.logCrearCaso(v),
             showDesp:!i.despIso && !i.despSinFecha && out.logCanWrite, onDesp:()=>this.logMarcarDespachado(v), showQuitarDesp:(v.despachoFuente==='manual' && out.logCanWrite), onQuitarDesp:()=>this.logQuitarDespacho(v),
-            showEnt:!i.entIso && out.logCanWrite, entFecha:((st.logEntFecha||{})[v.id]||hoyL), onEntFecha:(e)=>{ const val=e.target.value; this.setState(s=>({logEntFecha:{...(s.logEntFecha||{}), [v.id]:val}})); }, onEnt:()=>this.logMarcarEntregado(v),
+            showEnt:(!i.entIso || i.estado==='porVerificar') && out.logCanWrite, entBtnTxt:(i.entIso?'Corregir fecha de entrega':'Marcar entregado'), entFecha:((st.logEntFecha||{})[v.id]||hoyL), onEntFecha:(e)=>{ const val=e.target.value; this.setState(s=>({logEntFecha:{...(s.logEntFecha||{}), [v.id]:val}})); }, onEnt:()=>this.logMarcarEntregado(v),
             showQuitarEnt:(i.entregado && v.entregaFuente!=='shopify' && out.logCanWrite), onQuitarEnt:()=>this.logQuitarEntrega(v),
             motivoOpts:[''].concat(this.LOG_MOTIVOS).map(o=>({v:o, l:(o||'— Sin motivo —')})), onMotivo:(e)=>this.logSetMotivo(v, e.target.value),
             nota:(((st.logNotaDraft||{})[v.id]!==undefined)?st.logNotaDraft[v.id]:(v.logNota||'')), onNota:(e)=>{ const val=e.target.value; this.setState(s=>({logNotaDraft:{...(s.logNotaDraft||{}), [v.id]:val}})); },
             onNotaSave:()=>{ const d=(this.state.logNotaDraft||{})[v.id]; if(d!==undefined) this.logSetNota(v, d); } }; });
       }
-      if(out.showLogPlazos){ const c=this.logCfg(); const d={...c, ...(st.logCfgDraft||{})};
+      if(out.showLogPlazos){ const cr=st.coordRes;
+        out.coordGuia=st.coordGuia||''; out.onCoordGuia=(e)=>this.setState({coordGuia:e.target.value}); out.coordBtnTxt=st.coordBusy?'Consultando…':'Probar conexión';
+        out.coordProbar=()=>this.coordProbar(); out.coordResShow=!!cr;
+        if(cr){ const L=cr.leido||{}; out.coordResTit=cr.error? ('No funcionó: '+cr.error) : (L.eventos&&L.eventos.length? ((L.entregado?'Entregado':'Sin entregar')+' · '+L.eventos.length+' eventos · fuente '+(cr.fuente||'')) : ('Respondió pero no se leyeron eventos'+(cr.fault?(' · '+cr.fault):'')));
+          out.coordResFg=(cr.error||!(L.eventos&&L.eventos.length))?'#9A3F2E':'#4C6149';
+          out.coordEventos=(L.eventos||[]).map(e=>({f:String(e.fecha||'').replace('T',' ').slice(0,16), d:e.desc}));
+          out.coordRaw=cr.raw||''; }
+        const c=this.logCfg(); const d={...c, ...(st.logCfgDraft||{})};
         out.logCfgD=d; out.onLogCfg=(e)=>{ const n=e.target.name, val=e.target.value; this.setState(s=>({logCfgDraft:{...(s.logCfgDraft||{}), [n]:val}})); };
         out.logCfgDirty=!!(st.logCfgDraft && Object.keys(st.logCfgDraft).length);
         out.logCfgGuardar=()=>{ const dr=this.state.logCfgDraft||{}; const nums=['corte','caliMensajero','caliTransp','principales','otras']; const c2={...((this.state.reglasNeg||{}).logPlazos||{})}; Object.keys(dr).forEach(k=>{ c2[k]=nums.indexOf(k)>=0? Math.max(0, Number(dr[k])||0) : String(dr[k]||''); }); const rn={...(this.state.reglasNeg||{}), logPlazos:c2}; this.setState({reglasNeg:rn, logCfgDraft:null}); try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({logPlazos:c2}); this.toast('Plazos guardados'); };
