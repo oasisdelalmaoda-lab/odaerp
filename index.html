@@ -18059,7 +18059,7 @@ Instrucciones de respuesta:
           detalle:[(a.motivo||''), (a.por? ('anuló '+a.por):''), (a.origen==='venta'? 'el pedido volvió a Cuentas por cobrar':'')].filter(Boolean).join(' \u00b7 '),
           onReactivar:((id)=>()=>{ if(!window.confirm('¿Reactivar esta transacción? Vuelve a contar en el saldo de la cuenta.')) return; this.reactivarMovimiento(id); this.toast('Transacción reactivada'); })(a.id) })); }
       { const c=this._odlBolsilloCalc(); const esA=this.isAdminUser(); const puede=esA||out.canWriteFin;
-      out.odlBol={ show:esA && (!!c.bol || c.nIng>0 || c.nGas>0), falta:!c.bol, puede:!!puede, crear:()=>this.odlBolsilloCrear(),
+      out.odlBol={ show:esA && (c.bol ? (st.fcjCuentaSel===c.bol.nombre) : (c.nIng>0 || c.nGas>0)), falta:!c.bol, puede:!!puede, crear:()=>this.odlBolsilloCrear(),
         kpis:[ {l:'Ingresos ODA Labs', v:this.fmt(c.ing), s:c.nIng+' recaudo'+(c.nIng===1?'':'s')+' en caja', c:'#4C6149'},
           {l:'(−) Gastos ODA Labs', v:this.fmt(c.gas), s:c.nGas+' egreso'+(c.nGas===1?'':'s')+' marcado'+(c.nGas===1?'':'s'), c:'#9A3F2E'},
           {l:'Saldo sugerido', v:this.fmt(c.sug), s:(c.ivaListo?('ingresos − IVA '+this.fmt(c.ivaIng)+' − gastos'):'calculando IVA…'), c:'var(--brand-ink)'},
