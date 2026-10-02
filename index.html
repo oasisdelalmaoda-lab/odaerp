@@ -4685,6 +4685,22 @@
                 </sc-if>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;"><sc-for list="{{ fcjChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};cursor:pointer;">{{ c.nombre }}</button></sc-for></div>
+              <sc-if value="{{ odlBol.show }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-brand);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px;">
+                  <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:220px;"><div style="font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#7A5E36;font-weight:800;">Bolsillo ODA Labs</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Aquí se guarda la plata de ODA Labs. El saldo sugerido es lo que ha entrado de sus facturas, sin IVA, menos lo que se ha pagado de sus gastos.</div></div>
+                    <sc-if value="{{ odlBol.falta }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ odlBol.puede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ odlBol.crear }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 15px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;">Crear bolsillo ODA Labs</button></sc-if></sc-if>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+                    <sc-for list="{{ odlBol.kpis }}" as="k" hint-placeholder-count="4"><div style="background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 13px;"><div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">{{ k.l }}</div><div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:{{ k.c }};line-height:1.15;margin-top:4px;">{{ k.v }}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">{{ k.s }}</div></div></sc-for>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:220px;font-size:12.5px;font-weight:700;color:{{ odlBol.difFg }};">{{ odlBol.difTxt }}</div>
+                    <sc-if value="{{ odlBol.hayAccion }}" hint-placeholder-val="{{ false }}"><button onClick="{{ odlBol.trasladar }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 15px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">{{ odlBol.btnTxt }}</button></sc-if>
+                  </div>
+                  <div style="font-size:11px;color:var(--text-muted);text-wrap:pretty;">{{ odlBol.nota }}</div>
+                </div>
+              </sc-if>
               <sc-if value="{{ rendHay }}" hint-placeholder-val="{{ false }}">
                 <div style="background:rgba(122,147,121,0.12);border:1px solid rgba(122,147,121,0.45);border-radius:var(--radius-lg);padding:13px 16px;margin-bottom:14px;">
                   <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:800;color:#4C6149;">Recordatorio · rendimientos por registrar</div>
@@ -7159,7 +7175,7 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Método de pago<select name="metodoPago" value="{{ draft.metodoPago }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">—</option><sc-for list="{{ metodosPagoOptions }}" as="m" hint-placeholder-count="3"><option value="{{ m }}">{{ m }}</option></sc-for></select><sc-if value="{{ venBoldLinkOpc }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11.5px;font-weight:600;color:var(--brand-ink);cursor:pointer;"><input type="checkbox" checked="{{ venBoldLinkGen }}" onChange="{{ onToggleBoldLinkGen }}" style="accent-color:var(--brand-primary);margin:0;">Generar link de pago Bold al guardar</span></sc-if></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Pagado (COP)<input name="pagado" type="number" value="{{ draft.pagado }}" onInput="{{ onDraftInput }}" placeholder="0 · por cobrar" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
               </div>
-              <label style="display:flex;align-items:center;gap:9px;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--text-strong);cursor:pointer;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 14px;"><input name="_pagoTotal" type="checkbox" checked="{{ venPagoTotal }}" onChange="{{ onDraftCheck }}" style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;">Ya está pagada · marcar como pago total<span style="font-weight:400;color:var(--text-muted);">(si no, queda como «Por cobrar»)</span></label>
+<sc-if value="{{ venPagoTotalShow }}" hint-placeholder-val="{{ false }}">              <label style="display:flex;align-items:center;gap:9px;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--text-strong);cursor:pointer;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 14px;"><input name="_pagoTotal" type="checkbox" checked="{{ venPagoTotal }}" onChange="{{ onDraftCheck }}" style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;">Ya está pagada · marcar como pago total<span style="font-weight:400;color:var(--text-muted);">(si no, queda como «Por cobrar»)</span></label></sc-if>
               <sc-if value="{{ venNecesitaCuenta }}" hint-placeholder-val="{{ false }}">
                 <label style="display:block;font-size:12px;font-weight:700;color:var(--text-body);margin-top:12px;">¿A qué cuenta entró el dinero?<select name="cuentaRecaudo" value="{{ venCuentaRecaudo }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;max-width:340px;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">Selecciona cuenta…</option><sc-for list="{{ venCuentaOptions }}" as="c" hint-placeholder-count="2"><option value="{{ c }}">{{ c }}</option></sc-for></select><span style="display:block;font-size:10.5px;color:var(--text-muted);margin-top:4px;">Ej: Caja menor o Efectivo. El recaudo entra a esta cuenta en Finanzas.</span></label>
               </sc-if>
@@ -12493,7 +12509,7 @@ Instrucciones de respuesta:
     this.setState({materias:updated},()=>this.persist());
     this.toast(count+' materia'+(count===1?'':'s')+' ajustada'+(count===1?'':'s')+' · stock y costo desde órdenes');
   }
-  saveVenta(){ const d=this.state.draft; if(!d.cliente){ this.toast('Escribe el cliente'); return; }
+  saveVenta(){ const d=this.state.draft; if(!d.cliente){ this.toast('Escribe el cliente'); return; } if(!this.isAdminUser() && d._pagoTotal){ d._pagoTotal=false; }
     // Pedidos manuales: el cliente debe quedar con sus datos de contacto y envío completos (1-oct).
     if((d.origen||'manual')==='manual'){ const cel=String(d.celular||'').replace(/\D/g,''); const dir=String(d.direccion||'').trim();
       if(cel.length<10){ this.toast('Falta el celular del cliente (10 dígitos)'); return; }
@@ -14590,6 +14606,21 @@ Instrucciones de respuesta:
   cuentaPromedioDiario(nombre, ym){ const start=ym+'-01'; const lastDay=this.ultimoDiaMes(ym); const today=new Date().toISOString().slice(0,10); const end=(ym===today.slice(0,7) && lastDay>today)? today : lastDay; const c=this.cuentasList().find(x=>x.nombre===nombre); const movs=this.cajaMovs().filter(m=>m.cuenta===nombre && !m.noBanco); let bal=c?(Number(c.saldoInicial)||0):0; movs.forEach(m=>{ if((m.fecha||'')<start) bal += (m.tipo==='ingreso'? m.monto : -m.monto); }); let sum=0, days=0, cur=bal; for(let d=new Date(start+'T00:00:00'); d<=new Date(end+'T00:00:00'); d.setDate(d.getDate()+1)){ const iso=d.toISOString().slice(0,10); movs.forEach(m=>{ if(m.fecha===iso) cur += (m.tipo==='ingreso'? m.monto : -m.monto); }); sum+=cur; days++; } return days>0? sum/days : bal; }
   cuentaRendimientoEstimado(nombre, ym){ const c=this.cuentasList().find(x=>x.nombre===nombre); if(!c || !c.remunerada) return 0; const prom=this.cuentaPromedioDiario(nombre, ym); return Math.max(0, Math.round(prom * this.rendimientoMensualRate(c.tasaEA))); }
   primerDiaHabilMes(ym){ let d=new Date((ym||new Date().toISOString().slice(0,7))+'-01T00:00:00'); while(d.getDay()===0||d.getDay()===6){ d.setDate(d.getDate()+1); } return d.toISOString().slice(0,10); }
+  // ===== Bolsillo ODA Labs (2-oct) =====
+  // Cuenta propia donde se aparta la plata de ODA Labs. Sugerido = ingresos de ODA Labs que entraron a caja (movimientos
+  // categoría «Recaudo ODA Labs» / id odl-*) − egresos marcados odaLabsGasto (valor pagado). Diferencia → traslado sugerido.
+  _odlBolsillo(){ const nk=(s)=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); return this.cuentasList().find(c=>/oda\s*labs/.test(nk(c.nombre)) && c.tipo!=='tarjeta')||null; }
+  _odlBolsilloCalc(){ const bol=this._odlBolsillo(); let ing=0, nIng=0, gas=0, nGas=0, ivaIng=0;
+    const ivaPorFac={}; const _rows=this.state.odaLabs; const ivaListo=Array.isArray(_rows); if(!ivaListo && this._odlAsegurar) this._odlAsegurar(); (_rows||[]).forEach(r=>{ if(r&&r.factura_num!=null) ivaPorFac[String(r.factura_num)]=this._odlIva(r)||0; });
+    this.cajaMovs().forEach(m=>{ if(m.esTraslado||m.noBanco) return; const monto=Number(m.monto)||0;
+      if(m.tipo==='ingreso' && (m.categoria==='Recaudo ODA Labs' || /^odl-/.test(String(m.id||'')))){ ing+=monto; nIng++; const fac=String(m.id||'').replace(/^odl-/,''); ivaIng+=(ivaPorFac[fac]||0); }
+      else if(m.tipo==='egreso' && m.odaLabsGasto){ gas+=monto; nGas++; } });
+    const sug=Math.round(ing-ivaIng-gas); const saldo=bol?Math.round(this.cuentaSaldo(bol.nombre)):0; return { bol, ing:Math.round(ing), nIng, gas:Math.round(gas), nGas, sug, saldo, dif:sug-saldo, ivaIng:Math.round(ivaIng), ivaListo }; }
+  odlBolsilloCrear(){ if(this._odlBolsillo()){ this.toast('Ya existe el bolsillo ODA Labs'); return; } const list=this.cuentasList().slice();
+    list.push({ id:'cta'+Date.now(), nombre:'Bolsillo ODA Labs', tipo:'banco', saldoInicial:0, banco:'Bold', numeroCuenta:'', tipoCuenta:'bolsillo', titular:'ODA LABS S.A.S.', remunerada:false, tasaEA:0, diaCorte:null, diaPago:null, cupo:null });
+    this.setState({cuentasFin:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkCuentas(list); this.toast('Bolsillo ODA Labs creado'); }
+  odlBolsilloTrasladar(){ const c=this._odlBolsilloCalc(); if(!c.bol||!c.dif) return; const bold=this._odlCuentaBold()||this.primeraCuenta();
+    const entra=c.dif>0; this.open('traslado',{ fecha:new Date().toISOString().slice(0,10), cuenta:(entra?bold:c.bol.nombre), cuentaDestino:(entra?c.bol.nombre:bold), monto:Math.abs(c.dif), concepto:(entra?'Apartar plata de ODA Labs':'Devolver excedente del bolsillo ODA Labs') }); }
   nuevoTraslado(){ this.open('traslado',{ fecha:new Date().toISOString().slice(0,10), cuenta:this.primeraCuenta(), cuentaDestino:'', monto:'', concepto:'' }); }
   editarTraslado(id){ const m=(this.state.movimientos||[]).find(x=>x.id===id && x.tipo==='traslado'); if(!m) return; this.open('traslado',{ _id:m.id, fecha:m.fecha, cuenta:m.cuenta, cuentaDestino:m.cuentaDestino, monto:m.monto, concepto:m.concepto||'' }); }
   saveTraslado(){ const d=this.state.draft; const monto=Number(d.monto)||0; if(monto<=0){ this.toast('Ingresa un monto v\u00e1lido'); return; } if(!d.cuenta||!d.cuentaDestino){ this.toast('Selecciona ambas cuentas'); return; } if(d.cuenta===d.cuentaDestino){ this.toast('Las cuentas deben ser distintas'); return; } const list=(this.state.movimientos||[]).slice(); let mv; if(d._id){ const i=list.findIndex(x=>x.id===d._id); if(i>=0){ list[i]={...list[i], fecha:d.fecha, cuenta:d.cuenta, cuentaDestino:d.cuentaDestino, monto, concepto:d.concepto||''}; mv=list[i]; } } if(!mv){ mv={ id:'mv'+Date.now(), tipo:'traslado', fecha:d.fecha||new Date().toISOString().slice(0,10), cuenta:d.cuenta, cuentaDestino:d.cuentaDestino, monto, categoria:'Traslado entre cuentas', concepto:d.concepto||'' }; list.unshift(mv); } this.setState({movimientos:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveMovimiento(mv); this.toast(d._id?'Traslado actualizado':'Traslado registrado'); }
@@ -18027,7 +18058,17 @@ Instrucciones de respuesta:
           monto:((a.tipo==='ingreso'?'+':'\u2212')+this.fmt(Math.round(Number(a.monto)||0))),
           detalle:[(a.motivo||''), (a.por? ('anuló '+a.por):''), (a.origen==='venta'? 'el pedido volvió a Cuentas por cobrar':'')].filter(Boolean).join(' \u00b7 '),
           onReactivar:((id)=>()=>{ if(!window.confirm('¿Reactivar esta transacción? Vuelve a contar en el saldo de la cuenta.')) return; this.reactivarMovimiento(id); this.toast('Transacción reactivada'); })(a.id) })); }
-      out.fcjNuevoIngreso=()=>this.nuevoMovimiento('ingreso'); out.fcjNuevoEgreso=()=>this.nuevoMovimiento('egreso'); out.fcjNuevoTraslado=()=>this.nuevoTraslado(); out.fcjConciliar=()=>this.abrirConciliacion(); out.fcjEsAdmin=this.isAdminUser(); out.fcjNuevaCuenta=()=>this.nuevaCuentaFin(); out.fcjCanWrite=out.canWriteFin;
+      { const c=this._odlBolsilloCalc(); const esA=this.isAdminUser(); const puede=esA||out.canWriteFin;
+      out.odlBol={ show:esA && (!!c.bol || c.nIng>0 || c.nGas>0), falta:!c.bol, puede:!!puede, crear:()=>this.odlBolsilloCrear(),
+        kpis:[ {l:'Ingresos ODA Labs', v:this.fmt(c.ing), s:c.nIng+' recaudo'+(c.nIng===1?'':'s')+' en caja', c:'#4C6149'},
+          {l:'(−) Gastos ODA Labs', v:this.fmt(c.gas), s:c.nGas+' egreso'+(c.nGas===1?'':'s')+' marcado'+(c.nGas===1?'':'s'), c:'#9A3F2E'},
+          {l:'Saldo sugerido', v:this.fmt(c.sug), s:(c.ivaListo?('ingresos − IVA '+this.fmt(c.ivaIng)+' − gastos'):'calculando IVA…'), c:'var(--brand-ink)'},
+          {l:'Saldo en el bolsillo', v:(c.bol?this.fmt(c.saldo):'—'), s:(c.bol?c.bol.nombre:'aún no existe'), c:'var(--brand-ink)'} ],
+        difTxt:(!c.ivaListo?'Calculando…':!c.bol?'Crea el bolsillo para empezar a apartar la plata de ODA Labs.':(c.dif===0?'✓ El bolsillo está al día con lo sugerido.':(c.dif>0?('Faltan '+this.fmt(c.dif)+' por pasar al bolsillo.'):('El bolsillo tiene '+this.fmt(-c.dif)+' de más.')))),
+        difFg:(!c.bol||c.dif===0)?'#4C6149':(c.dif>0?'#8A6321':'#9A3F2E'), hayAccion:!!c.ivaListo && !!c.bol && c.dif!==0 && !!puede,
+        btnTxt:(c.dif>0?('Trasladar '+this.fmt(c.dif)+' al bolsillo'):('Devolver '+this.fmt(-c.dif)+' a Bold')), trasladar:()=>this.odlBolsilloTrasladar(),
+        nota:(c.ivaListo?('El sugerido es SIN IVA: se descuentan '+this.fmt(c.ivaIng)+' de IVA de las facturas de ODA Labs, que se quedan en la cuenta Bold para pagar a la DIAN. '):'Calculando el IVA de las facturas de ODA Labs… ')+'Los gastos cuentan por lo pagado (con IVA). Si pagas un gasto de ODA Labs desde el bolsillo, el sugerido y el saldo bajan juntos.' }; }
+    out.fcjNuevoIngreso=()=>this.nuevoMovimiento('ingreso'); out.fcjNuevoEgreso=()=>this.nuevoMovimiento('egreso'); out.fcjNuevoTraslado=()=>this.nuevoTraslado(); out.fcjConciliar=()=>this.abrirConciliacion(); out.fcjEsAdmin=this.isAdminUser(); out.fcjNuevaCuenta=()=>this.nuevaCuentaFin(); out.fcjCanWrite=out.canWriteFin;
       out.fcjMetodos=this.metodosFinList().map(m=>({id:m.id, nombre:m.nombre, tipoTxt:(m.tipo==='diferido'?'Diferido':'Inmediato'), esDif:(m.tipo==='diferido'), comisionTxt:this.metodoComisionLabel(m), diasTxt:(m.tipo==='diferido'?(this.diasLiqTxt(m)+' en liquidar'):'Entra de una'), onEdit:()=>this.editarMetodoFin(m.id)}));
       out.fcjMetodosVacio=this.metodosFinList().length===0; out.fcjNuevoMetodo=()=>this.nuevoMetodoFin(); out.fcjVacioCuentas=this.cuentasList().length===0;
     }
@@ -18856,7 +18897,9 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         out.msvcItemsVacio=!((st.draft.items||[]).length);
       }
       const curMet=st.draft.metodoPago? [st.draft.metodoPago]:[];
-      out.metodosPagoOptions=[...new Set([...curMet, ...metodoBaseOpts].filter(Boolean))];
+      { const _ocultos=/^(addi|dlocal|nequi\s*\/\s*daviplata|transferencia bancaria|pse)$/i; const _act=String((st.draft&&st.draft.metodoPago)||'');
+      out.metodosPagoOptions=[...new Set([...curMet, ...metodoBaseOpts].filter(Boolean))].filter(m=>!_ocultos.test(String(m).trim()) || String(m)===_act); }
+    out.venPagoTotalShow=this.isAdminUser();
       out.venBoldLinkOpc=!!(st.modal==='venta' && st.draft._new && (st.draft.origen||'manual')==='manual' && this._esBold(st.draft.metodoPago)); out.venBoldLinkGen=(st.draft.boldLinkGen!==false);
       out.onToggleBoldLinkGen=(e)=>{ const c=!!(e&&e.target&&e.target.checked); this.setState(s=>({draft:{...s.draft, boldLinkGen:c}})); };
     }
