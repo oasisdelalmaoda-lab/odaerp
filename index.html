@@ -5344,6 +5344,7 @@
                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
                   <sc-for list="{{ ugcFiltros }}" as="fl" hint-placeholder-count="5"><button onClick="{{ fl.set }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:var(--radius-pill);border:1px solid {{ fl.bd }};background:{{ fl.bg }};color:{{ fl.fg }};cursor:pointer;">{{ fl.label }}</button></sc-for>
                 </div>
+                <sc-if value="{{ ugcPuede }}" hint-placeholder-val="{{ false }}"><label title="Excel con columnas CONTACTO/NOMBRE, CORREO, USUARIO, SEGUIDORES, CEL, CIUDAD, DEPTO, DIRECCION, PUNTAJE, NOTA" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 15px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;white-space:nowrap;">{{ ugcImportTxt }}<input type="file" accept=".xlsx,.xls,.csv" onChange="{{ ugcImportar }}" style="display:none;"></label></sc-if>
                 <sc-if value="{{ ugcPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ugcNuevo }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 15px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:var(--text-on-brand);cursor:pointer;white-space:nowrap;">Nuevo creador</button></sc-if>
               </div>
               <sc-if value="{{ ugcVacio }}" hint-placeholder-val="{{ false }}"><div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px;font-size:13px;color:var(--text-muted);">{{ ugcVacioTxt }}</div></sc-if>
@@ -11795,6 +11796,45 @@ Instrucciones de respuesta:
   ugcEstados(){ return [['prospecto','Prospecto','rgba(138,128,115,0.16)','#5E5648'],['contactado','Contactado','rgba(101,150,166,0.16)','#3F6A7A'],['acordado','Acordado','rgba(196,146,63,0.18)','#8A6321'],['enviado','Mercancía enviada','rgba(167,134,89,0.2)','#7A5E36'],['contenido','Contenido recibido','rgba(98,123,96,0.18)','#4C6149'],['publicado','Publicado','rgba(98,123,96,0.28)','#3F5A3E'],['descartado','Descartado','rgba(181,80,60,0.12)','#9A3F2E']]; }
   ugcEstadoMeta(k){ const e=this.ugcEstados().find(x=>x[0]===k)||this.ugcEstados()[0]; return {k:e[0], l:e[1], bg:e[2], fg:e[3]}; }
   ugcNuevo(){ this.open('ugc',{ _new:true, nombre:'', red:'Instagram', usuario:'', seguidores:'', estado:'prospecto', celular:'', correo:'', cedula:'', ciudad:'', direccion:'', acuerdo:'', notas:'' }); }
+  // Importar base de creadores desde Excel (5-oct, «Datos UGC.xlsx»). Detecta la hoja y la fila de encabezados por
+  // nombre de columna, no duplica (celular o usuario ya existentes, ni repetidos dentro del archivo) y guarda en la
+  // nube en lotes verificados con .select. Con PUNTAJE → ya trabajó con nosotros (estado «Contenido recibido»).
+  async ugcImportarArchivo(e){ const f=e&&e.target&&e.target.files&&e.target.files[0]; try{ if(e&&e.target) e.target.value=''; }catch(_){} if(!f) return;
+    if(!this.ugcPuede()){ this.toast('No tienes permiso para editar UGC'); return; }
+    if(typeof XLSX==='undefined'){ this.toast('El lector de Excel aún está cargando, intenta de nuevo'); return; }
+    const nk=(x)=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+    this.setState({ugcImporting:true});
+    try{ const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
+      const hojas=wb.SheetNames.slice().sort((a,b)=>(/ugc|creador/i.test(b)?1:0)-(/ugc|creador/i.test(a)?1:0));
+      let rows=null, H=null, hi=-1;
+      for(const n of hojas){ const r=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:''});
+        for(let i=0;i<Math.min(15,r.length);i++){ const h=r[i].map(nk); if((h.includes('contacto')||h.includes('nombre')) && h.some(x=>/^(cel|celular|telefono|usuario|correo)$/.test(x))){ rows=r; H=h; hi=i; break; } }
+        if(rows) break; }
+      if(!rows){ this.toast('No encontré una hoja con columnas CONTACTO/NOMBRE y CEL o USUARIO'); this.setState({ugcImporting:false}); return; }
+      const col=(...ks)=>H.findIndex(x=>ks.includes(x));
+      const C={ nom:col('contacto','nombre','creador'), cor:col('correo','email','mail'), usr:col('usuario','user','instagram','cuenta'), seg:col('seguidores','followers'), cel:col('cel','celular','telefono','whatsapp'), ciu:col('ciudad'), dep:col('depto','departamento'), dir:col('direccion'), pun:col('puntaje','calificacion'), nota:col('nota','notas','observaciones'), red:col('red') };
+      const g=(r,i)=> i>=0? r[i] : '';
+      const segN=(v)=>{ if(typeof v==='number') return Math.round((v<1000 && v%1!==0)? v*1000 : v); const s=String(v||'').toLowerCase().replace(/\s/g,''); const m=s.match(/^([\d.,]+)(k|mil|m)?/); if(!m) return 0; let num=m[1]; num=(!m[2] && /[.,]\d{3}$/.test(num))? num.replace(/[.,]/g,'') : num.replace(',','.'); let n=parseFloat(num)||0; if(m[2]==='k'||m[2]==='mil') n*=1000; else if(m[2]==='m') n*=1000000; return Math.round(n); };
+      const d10=(x)=>String(x||'').replace(/\D/g,'').slice(-10);
+      const ex=this.state.ugc||[]; const vistosCel=new Set(ex.map(u=>d10(u.celular)).filter(x=>x.length>=7)); const vistosUsr=new Set(ex.map(u=>String(u.usuario||'').toLowerCase()).filter(Boolean));
+      const now=new Date().toISOString(), who=this.recMeNombre(); const nuevos=[]; let dup=0, sinNom=0;
+      rows.slice(hi+1).forEach((r,i)=>{ const nom=String(g(r,C.nom)||'').replace(/\s+/g,' ').trim(); if(!nom){ if(r.some(c=>String(c).trim())) sinNom++; return; }
+        let usr=String(g(r,C.usr)||'').trim().replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\//i,'').replace(/\/.*$/,'').replace(/\s+/g,''); if(usr && usr[0]!=='@') usr='@'+usr;
+        const cel=d10(g(r,C.cel)); const uk=usr.toLowerCase();
+        if((cel.length>=7 && vistosCel.has(cel)) || (uk && vistosUsr.has(uk))){ dup++; return; }
+        if(cel.length>=7) vistosCel.add(cel); if(uk) vistosUsr.add(uk);
+        const pun=Number(String(g(r,C.pun)||'').replace(',','.')); const nota=String(g(r,C.nota)||'').trim(); const tienePun=String(g(r,C.pun)||'').trim()!=='' && !isNaN(pun);
+        const redV=String(g(r,C.red)||'').trim(); const red=/tik/i.test(redV)?'TikTok':(/you/i.test(redV)?'YouTube':'Instagram');
+        nuevos.push({ id:'ugc'+Date.now()+'_'+i, nombre:this.titleCase(nom), red, usuario:usr, seguidores:segN(g(r,C.seg)), estado:(tienePun?'contenido':'prospecto'),
+          celular:cel, correo:String(g(r,C.cor)||'').trim().toLowerCase(), cedula:'', ciudad:this.titleCase(String(g(r,C.ciu)||'').trim()), departamento:this.titleCase(String(g(r,C.dep)||'').trim()),
+          direccion:String(g(r,C.dir)||'').replace(/\s+/g,' ').trim(), acuerdo:'', notas:[tienePun?('Puntaje: '+pun+'/10'):'', nota].filter(Boolean).join(' · '), ...(tienePun?{puntaje:pun}:{}),
+          contenidos:[], creadoAt:now, creadoPor:who, actualizadoAt:now, origen:'importacion' }); });
+      if(!nuevos.length){ this.toast('No hay creadores nuevos para importar'+(dup?(' · '+dup+' ya estaban'):'')); this.setState({ugcImporting:false}); return; }
+      if(this.cloudOn()){ const sb=this._sbClient(); if(!sb) throw new Error('La nube no está lista');
+        for(let i=0;i<nuevos.length;i+=100){ const lote=nuevos.slice(i,i+100); const {data,error}=await sb.from('ugc').upsert(lote.map(x=>this._finToDb(x))).select('id'); if(error) throw error; if(!data||data.length!==lote.length) throw new Error('la nube confirmó '+((data&&data.length)||0)+' de '+lote.length); } }
+      this.setState(s=>({ugc:nuevos.concat(s.ugc||[]), ugcImporting:false}),()=>this.persist());
+      this.toast(nuevos.length+' creadores importados'+(dup?(' · '+dup+' ya estaban y se omitieron'):'')+(sinNom?(' · '+sinNom+' filas sin nombre'):''));
+    }catch(err){ const m=String((err&&err.message)||err); this.setState({ugcImporting:false}); this.toast('No se importó: '+m); try{ window.odaEstado&&window.odaEstado('ugc-importar: '+m.slice(0,90)); }catch(_){} } }
   ugcEditar(u){ this.open('ugc',{ ...u, _new:false, _id:u.id }); }
   async _ugcGuardar(row, msg){ const list=(this.state.ugc||[]).slice(); const i=list.findIndex(x=>x.id===row.id); if(i>=0) list[i]=row; else list.unshift(row);
     this.setState({ugc:list},()=>this.persist()); if(this.cloudOn()){ const ok=await this.cloudSaveUgc(row); if(!ok) return false; } if(msg) this.toast(msg); return true; }
@@ -17322,7 +17362,7 @@ Instrucciones de respuesta:
     out.showMktConexion = onMkt && st.sub==='mktconexion';
     out.showMktWa = onMkt && st.sub==='mktwa';
     out.showMktUgc = onMkt && st.sub==='mktugc';
-    if(out.showMktUgc){ const puede=this.ugcPuede(); out.ugcPuede=puede; out.ugcNuevo=()=>this.ugcNuevo(); const all=st.ugc||[]; const ym=new Date().toISOString().slice(0,7);
+    if(out.showMktUgc){ const puede=this.ugcPuede(); out.ugcPuede=puede; out.ugcNuevo=()=>this.ugcNuevo(); out.ugcImportar=(e)=>this.ugcImportarArchivo(e); out.ugcImportTxt=st.ugcImporting?'Importando…':'Importar Excel'; const all=st.ugc||[]; const ym=new Date().toISOString().slice(0,7);
       const envAll=(st.msvc||[]).filter(m=>m.ugcId && !m.anulada); const envMes=envAll.filter(m=>String(m.fecha||'').slice(0,7)===ym);
       const espera=all.filter(u=>u.estado==='enviado');
       out.ugcKpis=[ {l:'Creadores', v:String(all.filter(u=>u.estado!=='descartado').length), s:all.filter(u=>['acordado','enviado','contenido','publicado'].includes(u.estado)).length+' con acuerdo'},
