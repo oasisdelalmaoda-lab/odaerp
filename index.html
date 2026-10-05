@@ -11369,11 +11369,12 @@ Instrucciones de respuesta:
     // Cali con mensajero (sin guía) y etiqueta de entregado: se entrega el MISMO día del despacho (30-sep)
     let entAprox=(v.entregaFuente==='etiqueta');
     if(zona==='cali' && !conGuia && entregado && v.entregaFuente!=='manual'){ if(despIso) entIso=despIso; else if(entIso) despIso=entIso; entAprox=false; }
-    // Recogida: PREPARADO (fulfilled en Shopify / despacho marcado) ≠ RECOGIDO. Solo cuenta como recogido cuando se marca
-    // entregado (a mano o etiqueta de entregado); preparado = «Listo para recoger», sigue pendiente.
-    if(this.logEsRecoge(v)){ const prep=v.ordFulfill==='fulfilled' || !!v.despachoAt;
-      const est=entregado? 'recogido' : (prep? 'listoRecoger' : 'recoger');
-      return { zona, plazo:0, promDesp, despIso:(v.despachoAt? this._logIso(new Date(v.despachoAt)) : ''), despSinFecha:(prep && !v.despachoAt), promEnt:'', entIso:'', entAprox:false, entregado, estado:est, atraso:0, despATiempo:null, porConf:(entregado?'':'Recoge en oficina'), recoge:true, atrasado:false }; }
+    // Recogida: PREPARADO ≠ RECOGIDO. En Shopify el retiro va «Listo para retiro» (sin fulfillment) → «Marcar como
+    // retirado» (crea el fulfillment) — así que en un pedido de retiro fulfilled = RECOGIDO. Preparado en el Hub = despacho
+    // marcado a mano → «Listo para recoger», sigue pendiente.
+    if(this.logEsRecoge(v)){ const recog=entregado || v.ordFulfill==='fulfilled'; const prep=!recog && !!v.despachoAt;
+      const est=recog? 'recogido' : (prep? 'listoRecoger' : 'recoger');
+      return { zona, plazo:0, promDesp, despIso:(v.despachoAt? this._logIso(new Date(v.despachoAt)) : ''), despSinFecha:(prep && !v.despachoAt), promEnt:'', entIso:'', entAprox:false, entregado:recog, estado:est, atraso:0, despATiempo:null, porConf:(recog?'':'Recoge en oficina'), recoge:true, atrasado:false }; }
     const porConf=entregado? '' : this.logPorConfirmar(v);
     let estado, atraso=0;
     if(porConf){ estado='porConfirmar'; }
@@ -16228,7 +16229,10 @@ Instrucciones de respuesta:
   casoAsigneeOptions(){ return this.users.map(x=>({id:x.id,name:x.name||x.nombre||x.email})); }
   casoAsigneeName(id){ if(!id) return 'Sin asignar'; const u=this.users.find(x=>x.id===id); if(u) return (u.name||u.nombre||u.email); const cp=(this.state.cloudProfiles||[]).find(p=>p.id===id); if(cp) return (cp.nombre&&String(cp.nombre).trim())||('Usuario '+String(id).slice(0,4)); return 'Sin asignar'; }
   casoReasignar(uid){ const id=this.state.casoOpenId; let saved=null; const who=this.casoUserName(); const list=(this.state.casos||[]).map(c=>{ if(c.id!==id) return c; if((c.asignadoA||'')===(uid||'')) return c; const nc={...c, asignadoA:uid, timeline:(c.timeline||[]).concat([{evento:true, titulo:'Asignado a '+this.casoAsigneeName(uid), fecha:new Date().toISOString().slice(0,10), who:who, nota:''}])}; saved=nc; return nc; }); this.setState({casos:list},()=>this.persist()); if(saved&&this.cloudOn()) this.cloudSaveCaso(saved); if(saved) this.toast('Asignado a '+this.casoAsigneeName(uid)); }
-  casoCostoProducto(code){ return this.ventaItemCosto({productoCodigo:code}); }
+  // Costo de un ítem del caso (5-oct, SC-0020: solo salía el anillo): productos/kits al costo de siempre y MATERIAS
+  // (bolsa, caja, papel…) a su costo unitario — antes valían 0 porque ventaItemCosto solo conoce productos y kits.
+  casoCostoProducto(code){ const c=this.ventaItemCosto({productoCodigo:code}); if(c>0) return c; const m=(this.state.materias||[]).find(x=>x.codigo===code); if(m) return Number(m.costo)||0; if((this.state.mezclas||[]).some(x=>x.codigo===code)) return this.mezclaCostoMlActual(code)||0; return 0; }
+  _casoEsMateria(it){ const code=it&&(it.codigo||it.productoCodigo); if(it&&it.tipo==='materia') return true; return !(this.state.productos||[]).some(x=>x.codigo===code) && !(this.state.kits||[]).some(x=>x.codigo===code) && (this.state.materias||[]).some(x=>x.codigo===code); }
   casoCostoEstimado(c){ if(c.estado==='resuelto'||c.estado==='cerrado') return Number(c.costo)||0; const res=c.resolucion; if((res==='reenvio'||res==='cambio_prod') && (c.items||[]).length){ return Math.round((c.items||[]).reduce((a,it)=>a+this.casoCostoProducto(it.codigo)*(Number(it.unidades)||0),0)); } return Number(c.costo)||0; }
   aplicarImpactosCaso(c){ if(c._impAplicados) return {...c, _impAplicados:true};
     const res=c.resolucion; const hoy=new Date().toISOString().slice(0,10); const uid=this.casoCurrentUid(); const who=this.casoUserName();
@@ -16237,9 +16241,11 @@ Instrucciones de respuesta:
     const msvcList=(this.state.msvc||[]).slice(); const mvList=(this.state.movimientos||[]).slice(); const toCloudMsvc=[], toCloudMov=[];
     // A) Productos NUEVOS que salen (reenvío / cambio) → MSVC Garantía: descuenta inventario y su costo se carga como garantía
     if((res==='reenvio'||res==='cambio_prod') && nuevos.length){
-      const items=nuevos.map(it=>({productoCodigo:it.codigo, nombre:it.nombre, unidades:Number(it.unidades)||0}));
-      costoNuevos=items.reduce((a,it)=>a+this.casoCostoProducto(it.productoCodigo)*(Number(it.unidades)||0),0);
-      const mv={ id:'msvc'+Date.now(), fecha:hoy, responsableId:uid, responsableNombre:who, destinatario:c.cliente||'', ciudad:c.ciudad||'', motivo:'Garantía · Caso '+c.folio, casoId:c.id, garantia:true, items };
+      // Las materias (empaque) van como empaques[] de la MSVC: así descuentan inventario de materias y suman al costo.
+      const items=nuevos.filter(it=>!this._casoEsMateria(it)).map(it=>({productoCodigo:it.codigo, nombre:it.nombre, unidades:Number(it.unidades)||0}));
+      const empaques=nuevos.filter(it=>this._casoEsMateria(it)).map(it=>({materiaCodigo:it.codigo, nombre:it.nombre, cantidad:Number(it.unidades)||0})).filter(e=>e.cantidad>0);
+      costoNuevos=nuevos.reduce((a,it)=>a+this.casoCostoProducto(it.codigo)*(Number(it.unidades)||0),0);
+      const mv={ id:'msvc'+Date.now(), fecha:hoy, responsableId:uid, responsableNombre:who, destinatario:c.cliente||'', ciudad:c.ciudad||'', motivo:'Garantía · Caso '+c.folio, casoId:c.id, garantia:true, items, ...(empaques.length?{empaques}:{}) };
       msvcList.unshift(mv); toCloudMsvc.push(mv); msvcIds.push(mv.id); auto.push('inventario','msvc');
     }
     // B) Devolución: el producto ORIGINAL vuelve a bodega → reingresa al inventario (revierte costo de salida)
