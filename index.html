@@ -7742,6 +7742,18 @@
                   <p style="font-size:10.5px;color:var(--text-muted);margin:7px 0 0;line-height:1.45;">Si marcas una tienda, las unidades salen del stock en consignación de esa tienda y NO del inventario propio.</p>
                 </div>
               </sc-if>
+              <sc-if value="{{ detAlistShow }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+                  <span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Alistamiento · ¿cómo sale?</span>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <sc-for list="{{ detAlistModos }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.pick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:{{ m.bg }};color:{{ m.fg }};cursor:pointer;">{{ m.l }}</button></sc-for>
+                  </div>
+                  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <button onClick="{{ detAlistEnviar }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:#FBF8F2;cursor:pointer;white-space:nowrap;">{{ detAlistBtn }}</button>
+                    <span style="flex:1;min-width:200px;font-size:11.5px;color:var(--text-muted);line-height:1.45;text-wrap:pretty;">{{ detAlistInfo }}</span>
+                  </div>
+                </div>
+              </sc-if>
               <sc-if value="{{ detBoldMostrar }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:16px;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;">
                   <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;">
@@ -8565,6 +8577,7 @@
               <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:7px;">{{ cd.impactosTitle }}</div>
               <div style="display:flex;flex-wrap:wrap;gap:7px;">
                 <sc-for list="{{ cd.impactos }}" as="i" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:{{ i.chipBg }};border:1px solid {{ i.chipBorder }};color:{{ i.chipFg }};"><sc-if value="{{ i.applied }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if><sc-if value="{{ i.pending }}" hint-placeholder-val="{{ true }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ i.color }};"></span></sc-if>{{ i.l }}</span></sc-for>
+                <sc-if value="{{ cd.faltanteNota }}" hint-placeholder-val="{{ false }}"><span style="flex-basis:100%;font-size:11.5px;color:var(--text-muted);line-height:1.45;text-wrap:pretty;">Faltante: el producto repuesto no suma costo ni descuenta inventario (ya salió con la venta). Solo cuentan el material de empaque y la guía.</span></sc-if>
                 <sc-if value="{{ cd.sinImpactos }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:var(--text-muted);font-style:italic;">Sin impactos en otros módulos</span></sc-if>
               </div>
               <sc-if value="{{ cd.destinoShow }}" hint-placeholder-val="{{ false }}">
@@ -11546,17 +11559,39 @@ Instrucciones de respuesta:
     for(let y=0;y<h;y+=2){ for(let x=0;x<w;x+=2){ const k=(y*w+x)*4; if(d[k+3]>10 && (d[k]<235||d[k+1]<235||d[k+2]<235)){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } } }
     if(x1<0) return cv.toDataURL('image/png'); const pad=Math.round(Math.min(w,h)*0.01); x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad); x1=Math.min(w-1,x1+pad); y1=Math.min(h-1,y1+pad);
     const o=document.createElement('canvas'); o.width=x1-x0+1; o.height=y1-y0+1; o.getContext('2d').drawImage(cv,x0,y0,o.width,o.height,0,0,o.width,o.height); return o.toDataURL('image/png'); }
+  // Rótulo 10 × 10 cm (5-oct): el PDF de Coordinadora se rasteriza (pdf.js), se recorta el blanco y se arma un PDF NUEVO
+  // con páginas de 100 × 100 mm (la etiqueta centrada, 2 mm de margen). Se descarga como archivo y se abre para imprimir.
+  _recorteCanvas(cv){ const ctx=cv.getContext('2d'); const {width:w,height:h}=cv; const d=ctx.getImageData(0,0,w,h).data; let x0=w,y0=h,x1=-1,y1=-1;
+    for(let y=0;y<h;y+=2){ for(let x=0;x<w;x+=2){ const k=(y*w+x)*4; if(d[k+3]>10 && (d[k]<235||d[k+1]<235||d[k+2]<235)){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } } }
+    if(x1<0) return cv; const pad=Math.round(Math.min(w,h)*0.006); x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad); x1=Math.min(w-1,x1+pad); y1=Math.min(h-1,y1+pad);
+    const o=document.createElement('canvas'); o.width=x1-x0+1; o.height=y1-y0+1; const oc=o.getContext('2d'); oc.fillStyle='#fff'; oc.fillRect(0,0,o.width,o.height); oc.drawImage(cv,x0,y0,o.width,o.height,0,0,o.width,o.height); return o; }
+  _pdf10x10(pages){ const enc=new TextEncoder(); const parts=[]; let len=0; const offs=[]; const push=(x)=>{ const b=(typeof x==='string')?enc.encode(x):x; parts.push(b); len+=b.length; };
+    const S=283.465, M=5.67; const n=pages.length; const kids=[]; for(let k=0;k<n;k++) kids.push((3+k*3)+' 0 R');
+    push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    const obj=(num, body)=>{ offs[num]=len; push(num+' 0 obj\n'); body(); push('\nendobj\n'); };
+    obj(1,()=>push('<< /Type /Catalog /Pages 2 0 R >>')); obj(2,()=>push('<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+n+' >>'));
+    pages.forEach((p,k)=>{ const pn=3+k*3, cn=pn+1, im=pn+2; const av=S-2*M; const sc=Math.min(av/p.w, av/p.h); const dw=p.w*sc, dh=p.h*sc; const dx=(S-dw)/2, dy=(S-dh)/2;
+      const cs='q '+dw.toFixed(2)+' 0 0 '+dh.toFixed(2)+' '+dx.toFixed(2)+' '+dy.toFixed(2)+' cm /Im0 Do Q';
+      obj(pn,()=>push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+S.toFixed(3)+' '+S.toFixed(3)+'] /Resources << /XObject << /Im0 '+im+' 0 R >> >> /Contents '+cn+' 0 R >>'));
+      obj(cn,()=>push('<< /Length '+cs.length+' >>\nstream\n'+cs+'\nendstream'));
+      obj(im,()=>{ push('<< /Type /XObject /Subtype /Image /Width '+p.w+' /Height '+p.h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+p.jpg.length+' >>\nstream\n'); push(p.jpg); push('\nendstream'); }); });
+    const total=2+n*3; const xref=len; let x='xref\n0 '+(total+1)+'\n0000000000 65535 f \n'; for(let k=1;k<=total;k++) x+=String(offs[k]).padStart(10,'0')+' 00000 n \n';
+    push(x+'trailer\n<< /Size '+(total+1)+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF');
+    const out=new Uint8Array(len); let o=0; parts.forEach(b=>{ out.set(b,o); o+=b.length; }); return out; }
   async _coordPdfAbrir(rem, b64){ const bin=atob(b64); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-    const win=window.open('','_blank'); if(win){ try{ win.document.write('<!doctype html><title>Guía '+rem+'</title><body style="font-family:sans-serif;padding:20px;color:#5A4A33">Preparando la guía '+rem+' en 10 × 10 cm…</body>'); }catch(_e){} }
-    try{ const lib=await this._pdfjs(); const pdf=await lib.getDocument({data:u.slice()}).promise; const imgs=[];
-      for(let p=1;p<=pdf.numPages;p++){ const pg=await pdf.getPage(p); const vp=pg.getViewport({scale:3}); const cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
-        const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height); await pg.render({canvasContext:cx, viewport:vp}).promise; imgs.push(this._recorteBlanco(cv)); }
-      if(!win) throw new Error('ventana bloqueada');
-      const html='<!doctype html><html><head><meta charset="utf-8"><title>Guía '+rem+'</title><style>@page{size:100mm 100mm;margin:0}html,body{margin:0;padding:0;background:#fff}.p{width:100mm;height:100mm;display:flex;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.p:last-child{page-break-after:auto;break-after:auto}.p img{max-width:98mm;max-height:98mm;width:auto;height:auto;object-fit:contain}@media screen{body{background:#EFE9DD;padding:20px;display:flex;flex-direction:column;gap:16px;align-items:center}.p{background:#fff;box-shadow:0 2px 10px rgba(58,51,38,.18)}}</style></head><body>'+imgs.map(s=>'<div class="p"><img src="'+s+'"></div>').join('')+'<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},300);}<\/script></body></html>';
-      win.document.open(); win.document.write(html); win.document.close();
+    const win=window.open('','_blank'); if(win){ try{ win.document.write('<!doctype html><title>Guía '+rem+'</title><body style="font-family:sans-serif;padding:20px;color:#5A4A33">Preparando el rótulo '+rem+' en 10 × 10 cm…</body>'); }catch(_e){} }
+    try{ const lib=await this._pdfjs(); const pdf=await lib.getDocument({data:u.slice()}).promise; const pages=[];
+      for(let p=1;p<=pdf.numPages;p++){ const pg=await pdf.getPage(p); const vp=pg.getViewport({scale:4}); const cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+        const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height); await pg.render({canvasContext:cx, viewport:vp}).promise;
+        const c2=this._recorteCanvas(cv); const durl=c2.toDataURL('image/jpeg',0.95); const b=atob(durl.split(',')[1]); const jb=new Uint8Array(b.length); for(let k=0;k<b.length;k++) jb[k]=b.charCodeAt(k);
+        pages.push({w:c2.width, h:c2.height, jpg:jb}); }
+      const out=this._pdf10x10(pages); const blob=new Blob([out],{type:'application/pdf'}); const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='rotulo-10x10-'+rem+'.pdf'; document.body.appendChild(a); a.click(); a.remove();
+      if(win){ try{ win.location.href=url; }catch(_e){} } setTimeout(()=>URL.revokeObjectURL(url),120000);
+      this.toast('Rótulo 10 × 10 cm descargado · guía '+rem);
     }catch(e){ try{ if(win) win.close(); }catch(_e){} const blob=new Blob([u],{type:'application/pdf'});
       const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='guia-'+rem+'.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000);
-      this.toast('No se pudo armar la etiqueta 10×10 · se descargó el PDF de Coordinadora'); }
+      this.toast('No se pudo armar el rótulo 10×10 · se descargó el PDF de Coordinadora'); }
     }
   async coordCrearGuia(id){ const v=(this.state.ventas||[]).find(x=>x.id===id); const F=(this._guiaF||{})[id]; if(!v||!F) return; const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
     const dev=F.sentido==='devolucion'; const tel=String(F.telefono||'').replace(/\D/g,'');
@@ -11978,7 +12013,7 @@ Instrucciones de respuesta:
   _msvcGuiaPatch(id, patch, msg){ this._msvcGuardar(id, m=>{ const g=m.guiaCoord; if(!g||g.anulada) return m; const p={...patch}; ['id','_msvcId','pedido','cliente','ciudad','celular','canal','fecha','creadoAt','guia','transportadora','tags','items'].forEach(z=>delete p[z]); return {...m, guiaCoord:{...g, ...p}}; }, msg); }
   _msvcEnvioVals(m, u, puede){ const st=this.state; const g=m.guiaCoord; const vig=!!(g&&!g.anulada); const F0=(st.msvcGuiaForm||{})[m.id];
     const F={ ciudad:(F0&&F0.ciudad!==undefined)?F0.ciudad:(m.ciudad||u.ciudad||''), direccion:(F0&&F0.direccion!==undefined)?F0.direccion:(u.direccion||''), telefono:(F0&&F0.telefono!==undefined)?F0.telefono:(u.celular||''),
-      unidades:(F0&&F0.unidades!==undefined)?F0.unidades:1, valorDeclarado:(F0&&F0.valorDeclarado!==undefined)?F0.valorDeclarado:35000, observaciones:(F0&&F0.observaciones!==undefined)?F0.observaciones:('UGC '+(m.numero||'')) };
+      unidades:(F0&&F0.unidades!==undefined)?F0.unidades:1, valorDeclarado:(F0&&F0.valorDeclarado!==undefined)?F0.valorDeclarado:35000, observaciones:(F0&&F0.observaciones!==undefined)?F0.observaciones:((m.ugcId?'UGC ':'Muestra ')+(m.numero||'')) };
     this._msvcGuiaF=this._msvcGuiaF||{}; this._msvcGuiaF[m.id]=F;
     const setF=(k)=>(e)=>{ const v=e.target.value; this.setState(s=>({msvcGuiaForm:{...(s.msvcGuiaForm||{}), [m.id]:{...(((s.msvcGuiaForm||{})[m.id])||{}), [k]:v}}})); };
     const busy=this._coordGuiaBusy===m.id; const er=(st.guiaErr||{})[m.id]; const al=m.alistAlerta||null; const est=al?((this._alistEstado||{})['msvc-'+m.id]):null;
@@ -12821,7 +12856,7 @@ Instrucciones de respuesta:
     if(_envT==='mensajero' && (Number(d.fleteEntrega)||0)>0 && !d.fleteCuenta){ this.toast('Elige de qué cuenta salió el pago del mensajero'); return; } if(!String(d.destinatario||'').trim()){ this.toast('Escribe para qui\u00e9n son las muestras'); return; } const u=this.users.find(x=>x.id===d.responsableId); const _num=d.numero || ('MSVC-'+String((this.state.msvc||[]).reduce((mx,m)=>{ const n=parseInt(String(m.numero||'').replace(/\D/g,''),10)||0; return n>mx?n:mx; },0)+1).padStart(5,'0')); const row={ id:d.id||('msvc'+Date.now()), numero:_num, fecha:d.fecha||new Date().toISOString().slice(0,10), responsableId:d.responsableId||'', responsableNombre:(u?u.name:''), destinatario:this.titleCase(d.destinatario), ciudad:this.titleCase(d.ciudad||''), motivo:d.motivo||'', items:(d.items||[]).map(it=>({productoCodigo:it.productoCodigo, nombre:it.nombre, unidades:Number(it.unidades)||0})), empaques:(d.empaques||[]).map(e=>({materiaCodigo:e.materiaCodigo, nombre:e.nombre, cantidad:Number(e.cantidad)||0})).filter(e=>e.materiaCodigo&&e.cantidad>0),
       envioTipo:_envT, fleteEntrega:(_envT==='mensajero'?(Number(d.fleteEntrega)||0):0), fleteCuenta:(_envT==='mensajero'?(d.fleteCuenta||''):'') };
     { const _pv=(this.state.msvc||[]).find(x=>x.id===row.id); if(_pv){ ['guiaCoord','alistAlerta','anulada','casoId'].forEach(k=>{ if(_pv[k]!==undefined && row[k]===undefined) row[k]=_pv[k]; }); } } { const _pv=(this.state.msvc||[]).find(x=>x.id===row.id); const _ug=d.ugcId||(_pv&&_pv.ugcId); if(_ug) row.ugcId=_ug; } const list=(this.state.msvc||[]).slice(); const i=list.findIndex(x=>x.id===row.id); if(i>=0&&!d._new) list[i]=row; else list.unshift(row); this.setState({msvc:list, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveMsvc(row); if(_envT==='coord' && !(row.guiaCoord && !row.guiaCoord.anulada)){ const ug=(this.state.ugc||[]).find(x=>x.id===row.ugcId); this._msvcGuiaF=this._msvcGuiaF||{};
-      this._msvcGuiaF[row.id]={ ciudad:(d._gCiudad||row.ciudad||''), direccion:String(d._gDir||'').trim(), telefono:String(d._gTel||''), unidades:Math.max(1,Number(d._gUnd)||1), valorDeclarado:(Number(d._gVd)||0), observaciones:('UGC '+row.numero) };
+      this._msvcGuiaF[row.id]={ ciudad:(d._gCiudad||row.ciudad||''), direccion:String(d._gDir||'').trim(), telefono:String(d._gTel||''), unidades:Math.max(1,Number(d._gUnd)||1), valorDeclarado:(Number(d._gVd)||0), observaciones:((row.ugcId?'UGC ':'Muestra ')+row.numero) };
       setTimeout(()=>{ try{ this.msvcGuiaCrear(row.id, ug||{nombre:row.destinatario}); }catch(e){} }, 400); }
     const totU=row.items.reduce((a,it)=>a+it.unidades,0); this.toast('MSVC registrada \u00b7 '+totU+' und descontadas del stock');
     if(row.ugcId){ const u=(this.state.ugc||[]).find(x=>x.id===row.ugcId); if(u && ['prospecto','contactado','acordado'].includes(u.estado||'prospecto')) this._ugcGuardar({...u, estado:'enviado', actualizadoAt:new Date().toISOString()}, null); } }
@@ -16293,7 +16328,11 @@ Instrucciones de respuesta:
   // (bolsa, caja, papel…) a su costo unitario — antes valían 0 porque ventaItemCosto solo conoce productos y kits.
   casoCostoProducto(code){ const c=this.ventaItemCosto({productoCodigo:code}); if(c>0) return c; const m=(this.state.materias||[]).find(x=>x.codigo===code); if(m) return Number(m.costo)||0; if((this.state.mezclas||[]).some(x=>x.codigo===code)) return this.mezclaCostoMlActual(code)||0; return 0; }
   _casoEsMateria(it){ const code=it&&(it.codigo||it.productoCodigo); if(it&&it.tipo==='materia') return true; return !(this.state.productos||[]).some(x=>x.codigo===code) && !(this.state.kits||[]).some(x=>x.codigo===code) && (this.state.materias||[]).some(x=>x.codigo===code); }
-  casoCostoEstimado(c){ if(c.estado==='resuelto'||c.estado==='cerrado') return Number(c.costo)||0; const res=c.resolucion; if((res==='reenvio'||res==='cambio_prod') && (c.items||[]).length){ return Math.round((c.items||[]).reduce((a,it)=>a+this.casoCostoProducto(it.codigo)*(Number(it.unidades)||0),0)); } return Number(c.costo)||0; }
+  // FALTANTE (5-oct): el producto que faltó nunca salió y ya se descontó/costeó con la venta → al reponerlo NO se cuenta
+  // su costo ni se descuenta inventario; solo cuenta el material de empaque (y la guía, por la lógica normal de fletes).
+  _casoSoloEmpaque(c){ return !!c && c.tipo==='faltante'; }
+  _casoItemCuenta(c, it){ return !this._casoSoloEmpaque(c) || this._casoEsMateria(it); }
+  casoCostoEstimado(c){ if(c.estado==='resuelto'||c.estado==='cerrado') return Number(c.costo)||0; const res=c.resolucion; if((res==='reenvio'||res==='cambio_prod') && (c.items||[]).length){ return Math.round((c.items||[]).filter(it=>this._casoItemCuenta(c,it)).reduce((a,it)=>a+this.casoCostoProducto(it.codigo)*(Number(it.unidades)||0),0)); } return Number(c.costo)||0; }
   aplicarImpactosCaso(c){ if(c._impAplicados) return {...c, _impAplicados:true};
     const res=c.resolucion; const hoy=new Date().toISOString().slice(0,10); const uid=this.casoCurrentUid(); const who=this.casoUserName();
     const nuevos=(c.items||[]); const venta=this.casoVentaLink(c); const originales=(venta&&venta.items)||[];
@@ -16302,11 +16341,14 @@ Instrucciones de respuesta:
     // A) Productos NUEVOS que salen (reenvío / cambio) → MSVC Garantía: descuenta inventario y su costo se carga como garantía
     if((res==='reenvio'||res==='cambio_prod') && nuevos.length){
       // Las materias (empaque) van como empaques[] de la MSVC: así descuentan inventario de materias y suman al costo.
-      const items=nuevos.filter(it=>!this._casoEsMateria(it)).map(it=>({productoCodigo:it.codigo, nombre:it.nombre, unidades:Number(it.unidades)||0}));
+      const _soloEmp=this._casoSoloEmpaque(c);
+      const items=_soloEmp? [] : nuevos.filter(it=>!this._casoEsMateria(it)).map(it=>({productoCodigo:it.codigo, nombre:it.nombre, unidades:Number(it.unidades)||0}));
       const empaques=nuevos.filter(it=>this._casoEsMateria(it)).map(it=>({materiaCodigo:it.codigo, nombre:it.nombre, cantidad:Number(it.unidades)||0})).filter(e=>e.cantidad>0);
-      costoNuevos=nuevos.reduce((a,it)=>a+this.casoCostoProducto(it.codigo)*(Number(it.unidades)||0),0);
-      const mv={ id:'msvc'+Date.now(), fecha:hoy, responsableId:uid, responsableNombre:who, destinatario:c.cliente||'', ciudad:c.ciudad||'', motivo:'Garantía · Caso '+c.folio, casoId:c.id, garantia:true, items, ...(empaques.length?{empaques}:{}) };
-      msvcList.unshift(mv); toCloudMsvc.push(mv); msvcIds.push(mv.id); auto.push('inventario','msvc');
+      costoNuevos=nuevos.filter(it=>this._casoItemCuenta(c,it)).reduce((a,it)=>a+this.casoCostoProducto(it.codigo)*(Number(it.unidades)||0),0);
+      if(items.length || empaques.length){
+        const mv={ id:'msvc'+Date.now(), fecha:hoy, responsableId:uid, responsableNombre:who, destinatario:c.cliente||'', ciudad:c.ciudad||'', motivo:(_soloEmp?'Reposición de faltante (solo empaque) · Caso ':'Garantía · Caso ')+c.folio, casoId:c.id, garantia:true, items, ...(empaques.length?{empaques}:{}), ...(_soloEmp?{faltanteRepuesto:nuevos.filter(it=>!this._casoEsMateria(it)).map(it=>({productoCodigo:it.codigo, nombre:it.nombre, unidades:Number(it.unidades)||0}))}:{}) };
+        msvcList.unshift(mv); toCloudMsvc.push(mv); msvcIds.push(mv.id); auto.push('inventario','msvc');
+      }
     }
     // B) Devolución: el producto ORIGINAL vuelve a bodega → reingresa al inventario (revierte costo de salida)
     if((res==='reembolso'||res==='cambio_prod') && c.destino==='bodega' && originales.length){
@@ -16440,6 +16482,35 @@ Instrucciones de respuesta:
       direccion:c.direccion||vL.direccion||cD.direccion||'', telefono:(this.casoTel&&this.casoTel(c)?this.casoTelFmt(c):'')||c.celular||vL.celular||'', transportadora:(gv?'Coordinadora':(c.transportadora||'Coordinadora')),
       guia:(gv?gv.remision:String(c.guia||'').trim()), motivo:this.casoTipoMeta(c.tipo).l+' · '+this.casoResolMeta(c.resolucion),
       items:this.casoEnvioItems(c).map(it=>({ nombre:(it.nombre||it.codigo||''), codigo:it.codigo||'', unidades:Number(it.unidades)||1 })) }; }
+  // ===== Pedido → alistamiento (5-oct) =====
+  // Desde el detalle del pedido (Ventas) o Logística: se elige cómo sale (guía Coordinadora / mensajero / sin envío =
+  // recoge en oficina) y se crea la alerta en la app móvil (alertas_app, id 'alist-v-<id>', misma bandeja de bodega que
+  // los casos). El modo queda en la venta (logEnvioModo) y alimenta Logística: mensajero = sin guía, recoge = recogida.
+  PED_ALIST_MODOS(){ return [{k:'guia',l:'Con guía (Coordinadora)'},{k:'mensajero',l:'Con mensajero'},{k:'recoge',l:'Sin envío · recoge en oficina'}]; }
+  _pedAlistModoDef(v){ if(v.logEnvioModo) return v.logEnvioModo; if(this.logEsRecoge&&this.logEsRecoge(v)) return 'recoge'; if(String(v.guia||'').trim()) return 'guia'; return (this.logZona&&this.logZona(v.ciudad)==='cali')?'mensajero':'guia'; }
+  _pedAlistData(v, modo){ const cD=this.clienteDatosPara?this.clienteDatosPara({cliente:v.cliente, celular:v.celular}):{}; const ml=(this.PED_ALIST_MODOS().find(m=>m.k===modo)||{}).l||modo;
+    const items=[]; (v.items||[]).forEach(it=>{ if(it.soloIngreso) return; const code=it.productoCodigo||it.referencia; const k=(this.state.kits||[]).find(x=>x.codigo===code);
+      items.push({ nombre:(it.producto||(k&&k.nombre)||code||''), codigo:code||'', unidades:Number(it.unidades)||1 }); });
+    (v.empaques||[]).forEach(e=>{ if(e.soloIngreso) return; const m=(this.state.materias||[]).find(x=>x.codigo===(e.materiaCodigo||e.codigo)); items.push({ nombre:(e.nombre||(m&&m.nombre)||e.materiaCodigo||''), codigo:e.materiaCodigo||e.codigo||'', unidades:Number(e.cantidad||e.unidades)||1 }); });
+    const guia=String(v.guia||'').trim();
+    return { tipo:'alistamiento', ventaId:v.id, titulo:'Pedido '+(v.pedido||v.ov||'')+(v.pedido&&v.ov?(' · '+v.ov):''), pedido:v.pedido||v.ov||'', cliente:this.titleCase(v.cliente||''), ciudad:v.ciudad||cD.ciudad||'',
+      direccion:(modo==='recoge'?'Recoge en oficina':(v.direccion||cD.direccion||'')), telefono:v.celular||'', envioModo:modo,
+      transportadora:(modo==='guia'?(v.transportadora||'Coordinadora'):''), guia:(modo==='guia'?guia:''),
+      envioTxt:(modo==='guia'?((v.transportadora||'Coordinadora')+' · guía '+(guia||'pendiente')):(modo==='mensajero'?'Con mensajero · sin guía':'Sin envío · el cliente recoge en oficina')),
+      motivo:ml+(v.canal?(' · '+v.canal):''), items }; }
+  async pedAlistEnviar(v, modo){ if(!v) return; modo=modo||this._pedAlistModoDef(v); if(this._pedAlistBusy) return; const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
+    const data0=this._pedAlistData(v, modo); if(!data0.items.length){ this.toast('El pedido no tiene productos para alistar'); return; }
+    if(modo!=='recoge' && !String(data0.direccion||'').trim() && !window.confirm('El pedido no tiene dirección. ¿Enviar a alistar igual?')) return;
+    this._pedAlistBusy=v.id; this.forceUpdate(); const dst=this._alistDestino(); const who=this.recMeNombre(); const prev=v.alist||{}; const id='alist-v-'+v.id;
+    try{ const data={ ...data0, creadoPor:prev.por||who, creadoAt:prev.creadoAt||new Date().toISOString(), actualizadoAt:new Date().toISOString() };
+      const {data:r,error}=await sb.from('alertas_app').upsert({ id, data, destino:dst.email, estado:'pendiente', actualizado:new Date().toISOString() },{ onConflict:'id' }).select('id');
+      if(error||!r||!r.length) throw (error||new Error('la nube no confirmó'));
+      const patch={ alist:{ id, modo, creadoAt:data.creadoAt, por:data.creadoPor, actualizadoAt:data.actualizadoAt }, logEnvioModo:modo, ...(modo==='recoge'?{recoge:true}:{}), ...(modo!=='recoge' && v.recoge===true && v.logEnvioModo==='recoge'?{recoge:false}:{}) };
+      await this._logGuardar(v.id, patch, (prev.creadoAt?'Alistamiento actualizado':'Enviado a alistamiento')+' · '+(this.PED_ALIST_MODOS().find(m=>m.k===modo)||{}).l+' · '+dst.nombre);
+    }catch(e){ const m=String((e&&e.message)||e); this.toast(/alertas_app/.test(m)?'Falta correr supabase-alertas-app.sql':'No se envió a alistar: '+m); try{ window.odaEstado&&window.odaEstado('alistamiento-pedido: '+m.slice(0,90)); }catch(_e){} }
+    finally{ this._pedAlistBusy=null; this.forceUpdate(); } }
+  async _pedAlistEstado(v){ if(!v||!v.alist) return; this._pedAlistEst=this._pedAlistEst||{}; if(this._pedAlistEst[v.id]!==undefined) return; this._pedAlistEst[v.id]=null; const sb=this._sbClient(); if(!sb) return;
+    try{ const {data}=await sb.from('alertas_app').select('estado,data').eq('id','alist-v-'+v.id).maybeSingle(); this._pedAlistEst[v.id]=data?{estado:data.estado, por:(data.data||{}).alistadoPor, at:(data.data||{}).alistadoAt}:{estado:'borrada'}; this.forceUpdate(); }catch(e){} }
   async casoAlistPublicar(c, silencioso){ const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return false; }
     const dst=this._alistDestino(); const id='alist-'+c.id; const who=this.casoUserName?this.casoUserName():this.recMeNombre(); const prev=c.alistAlerta||{};
     const data={ ...this._alistData(c), creadoPor:prev.por||who, creadoAt:prev.creadoAt||new Date().toISOString(), actualizadoAt:new Date().toISOString() };
@@ -19012,7 +19083,7 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
       const tm=this.casoTipoMeta(cc.tipo), em=this.casoEstadoMeta(cc.estado); const applied=(cc.estado==='resuelto'||cc.estado==='cerrado'); const tl=cc.timeline||[];
       out.cd={ folio:cc.folio, tipoL:tm.l, tipoBg:tm.bg, tipoFg:tm.fg, estL:em.l, estBg:em.bg, estFg:em.fg, estDot:em.dot, cliente:cc.cliente, ciudad:cc.ciudad||'—', canal:cc.canal, pedidoTxt:(cc.pedido||cc.ov||'Sin pedido'), ov:(cc.ov||'Caso suelto'), producto:cc.producto||'—', motivoLargo:cc.motivoLargo||cc.motivo||'', resolL:this.casoResolMeta(cc.resolucion), costoFmt:(cc.estado==='resuelto'||cc.estado==='cerrado')?(Number(cc.costo)>0?this.casoCop(cc.costo):'Sin costo'):(this.casoCostoEstimado(cc)>0?('~ '+this.casoCop(this.casoCostoEstimado(cc))+' (estimado)'):'Sin costo'), costoColor:((cc.estado==='resuelto'||cc.estado==='cerrado')?((cc.resolucion==='rechazado'||cc.resolucion==='pendiente')?'var(--text-body)':'var(--oda-sale,#B5503C)'):'var(--text-muted)'), responsable:cc.responsable||'—', venceFmt:cc.vence?this.fmtFecha(cc.vence):'—', telFmt:this.casoTelFmt(cc),
         hasAdjuntos:(cc.adjuntos||[]).length>0, adjuntosCount:(cc.adjuntos||[]).length, adjuntos:(cc.adjuntos||[]).map((a,i)=>({name:a.name,isImg:!!a.isImg,isPdf:!a.isImg,thumb:['#8A9B8A','#A78659','#6596A6','#B58A6A','#627B60'][i%5]})),
-        impactosTitle:applied?'Aplicado automáticamente al resolver':'Se aplicará automáticamente al resolver', sinImpactos:(cc.impactos||[]).length===0,
+        impactosTitle:applied?'Aplicado automáticamente al resolver':'Se aplicará automáticamente al resolver', sinImpactos:(cc.impactos||[]).length===0, faltanteNota:(this._casoSoloEmpaque(cc) && (cc.resolucion==='reenvio'||cc.resolucion==='cambio_prod')),
         impactos:(cc.impactos||[]).map(k=>{ const m=this.casoImpactoMeta(k); return {l:m.l,color:m.color,applied:applied,pending:!applied,chipBg:applied?'rgba(98,123,96,0.12)':'var(--surface-card)',chipBorder:applied?'rgba(98,123,96,0.35)':'var(--border-subtle)',chipFg:applied?'#4C6149':'var(--text-body)'}; }),
         costeoShow:(cc.impactos||[]).includes('inventario'), costeoTitulo:((cc.destino==='bodega')?'Reingreso a inventario':((cc.destino==='baja')?'Baja de inventario':((cc.destino==='cliente')?'Sin reingreso':((cc.tipo==='devolucion')?'Reingreso a inventario':'Salida de inventario')))), costeoNota:((cc.destino==='bodega')?'el producto regresó a bodega: se reingresa al inventario al costo con que salió, no al costo actual.':((cc.destino==='baja')?'el producto se dio de baja (dañado): sale del inventario como pérdida, no se reingresa.':((cc.destino==='cliente')?'el cliente conservó el producto original: no se reingresa a bodega.':((cc.tipo==='devolucion')?'el producto regresa al inventario valorado al costo con que salió, no al costo actual.':'sale una unidad nueva, descontada del inventario al costo actual de producción.')))),
         destinoShow:(this.casoNeedsDestino(cc.tipo) && !!cc.destino), destinoLabel:this.casoDestinoLabel(cc.destino),
@@ -19220,6 +19291,11 @@ const p=this.finPyG(ym); const pp=this.finPyG(this.mesShift(ym,-1));
         out.detGuiaResumen=(sent==='envio'? ('Sale de ODA LABS S.A.S. (Cra 64 # 3B-28, Cali) hacia '+this.titleCase(v.cliente||'')+'. Flete: acuerdo semanal.'+(Number(F.recaudo)>0?(' Coordinadora le cobra '+this.fmt(Number(F.recaudo))+' al entregar.'):' Sin recaudo.')) : ('Guía de devolución: '+this.titleCase(v.cliente||'')+' entrega el paquete y llega a la bodega en Cali. Flete: acuerdo semanal, sin recaudo.'));
         const busyG=(this._coordGuiaBusy===v.id); out.detGuiaBtnTxt=busyG?'Creando guía…':(sent==='envio'?'Crear guía de envío':'Crear guía de devolución'); out.detGuiaCrear=()=>{ if(!busyG) this.coordCrearGuia(v.id); };
         const er=(this.state.guiaErr||{})[v.id]; out.detGuiaErrShow=!!er; out.detGuiaErr=er?er.msg:''; out.detGuiaRaw=er?(er.raw||''):''; }
+      { const puedeA=(this._modLevel(this.access()||{},'ventas')==='write'||this._modLevel(this.access()||{},'logistica')==='write'); const al=v.alist||null; if(al) this._pedAlistEstado(v);
+        const est=al&&this._pedAlistEst&&this._pedAlistEst[v.id]; const selM=(this.state.pedAlistModo||{})[v.id]||this._pedAlistModoDef(v);
+        out.detAlistShow=!v.cancelada && puedeA; out.detAlistModos=this.PED_ALIST_MODOS().map(m=>({k:m.k, l:m.l, on:m.k===selM, bg:(m.k===selM?'var(--brand-primary)':'var(--surface-card)'), fg:(m.k===selM?'#FBF8F2':'var(--text-body)'), pick:()=>this.setState(s=>({pedAlistModo:{...(s.pedAlistModo||{}), [v.id]:m.k}}))}));
+        out.detAlistBtn=(this._pedAlistBusy===v.id)?'Enviando…':(al?'Actualizar alistamiento':'Enviar a alistamiento'); out.detAlistEnviar=()=>this.pedAlistEnviar(v, selM);
+        out.detAlistInfo=al? ((est&&est.estado==='alistado')? ('✓ Alistado'+(est.por?(' por '+est.por):'')+(est.at?(' · '+new Date(est.at).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})):'')) : ('Enviado a alistar por '+(al.por||'—')+' · '+new Date(al.creadoAt).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' · '+((this.PED_ALIST_MODOS().find(m=>m.k===al.modo)||{}).l||'')+' · pendiente en la app')) : ('Le llega a '+this._alistDestino().nombre+' en la app móvil con los productos y cómo sale.'); }
       { const bl=v.boldLink||null; const esB=this._esBold(v.metodoPago); const busy=(this._boldLinkBusy===v.id); const puede=(this._modLevel(this.access()||{},'ventas')==='write');
         out.detBoldMostrar=!!(bl || (esB && v.origen==='manual' && !v.cancelada));
         out.detBoldHay=!!(bl&&bl.url); out.detBoldSin=!(bl&&bl.url); out.detBoldPuede=!!puede && !v.cancelada; out.detBoldBusy=busy;
