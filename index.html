@@ -11421,7 +11421,7 @@ Instrucciones de respuesta:
     const conf=/\bpedido\s+bot\b/.test(t) || (!/\b(sin|por|falta|pendiente\s+de)\s+confirmar\b/.test(t) && /\bconfirmad[oa]\b|\bconfirmacion\s+ok\b|\bok\s+confirm/.test(t));
     const mp=String(v.metodoPago||''); const saldo=this.ventaSaldo(v)>1;
     if(/coordinadora|cash on delivery|contraentrega|\bcod\b/i.test(mp) && saldo && !conf) return 'Contraentrega sin confirmar';
-    if(/bank deposit|transferencia|consignaci/i.test(mp) && saldo && !conf) return 'Transferencia sin pagar';
+    if(/bank deposit|transferencia|consignaci/i.test(mp) && saldo && !conf && !/\bpagado verificado por bot\b/.test(t)) return 'Transferencia sin pagar';
     return ''; }
   logInfo(v){ const cfg=this.logCfg(); const hoy=this._logIso(new Date());
     const zona=this.logZona(v); const conGuia=!!String(v.guia||'').trim();
