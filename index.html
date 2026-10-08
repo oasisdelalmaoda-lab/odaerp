@@ -11688,7 +11688,7 @@ Instrucciones de respuesta:
     finally{ this.setState({coordBusy:false}); } }
   logSetNota(v, nota){ if(String(nota||'')===String(v.logNota||'')) return; this._logGuardar(v.id, {logNota:String(nota||'')}, 'Nota guardada'); }
   logTracking(v){ if(v.trackingUrl) return v.trackingUrl; return this.casoTrackingUrl({guia:v.guia, transportadora:v.transportadora}); }
-  logWaTexto(v){ const i=this.logInfo(v); const n=this.waNombre(v); const ref=v.pedido||v.ov||'';
+  logWaTexto(v){ const i=this.logInfo(v); const n=this.waNombre(v); const _pd=String(v.pedido||'').trim(); const ref=/^#?\d{3,}$/.test(_pd)?(_pd[0]==='#'?_pd:'#'+_pd):''; /* 8-oct: al cliente solo el número de Shopify */
     if(!i.despIso) return (n?'Hola '+n:'Hola')+', te escribimos de Oasis del Alma sobre tu pedido '+ref+'. Tuvimos un retraso en la preparación y sale '+this.waDespachoTxt()+'. Te compartimos la guía apenas esté lista. Disculpa la espera 🙏';
     const g=String(v.guia||'').trim(); const url=this.logTracking(v);
     return (n?'Hola '+n:'Hola')+', te escribimos de Oasis del Alma sobre tu pedido '+ref+'. Vimos que la entrega está tardando más de lo previsto y ya lo estamos revisando con la transportadora'+(g?(' (guía '+g+')'):'')+'.'+(url?(' Puedes seguirlo aquí: '+url):'')+' ¿Nos confirmas si ya te llegó?'; }
