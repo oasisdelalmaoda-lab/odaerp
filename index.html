@@ -5639,6 +5639,18 @@
                     </sc-for>
                   </div>
                   <sc-if value="{{ cwTxEnviando }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font-size:12px;color:var(--brand-primary);">Enviando {{ cwTxEnviandoLabel }}…</div></sc-if>
+                  <sc-if value="{{ cwFotosPuede }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+                      <button onClick="{{ onCwFotosCrear }}" disabled="{{ cwFotosBusy }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border:none;border-radius:999px;background:var(--brand-primary);color:#fff;cursor:pointer;">Crear versiones con foto en Meta</button>
+                      <span style="font-size:12px;color:var(--text-muted);max-width:60ch;line-height:1.5;">Sube las fotos de marca y crea una copia de cada plantilla con encabezado de imagen. Meta las revisa en minutos u horas; hasta entonces sale la versión sin foto.</span>
+                    </div>
+                    <sc-if value="{{ cwFotosBusy }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;font-size:12px;color:var(--brand-primary);">Subiendo fotos y creando plantillas…</div></sc-if>
+                    <sc-if value="{{ cwFotosHayRes }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:8px;display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--text-body);">
+                        <sc-for list="{{ cwFotosRes }}" as="r" hint-placeholder-count="0"><div>· {{ r.t }}</div></sc-for>
+                      </div>
+                    </sc-if>
+                  </sc-if>
                 </div>
 
                 <sc-if value="{{ cwConfirmShow }}" hint-placeholder-val="{{ false }}">
@@ -12248,21 +12260,79 @@ Instrucciones de respuesta:
     if(key==='recordatorio_pago') return buscar(v=>this.ventaSaldo(v)>0) || ord[0];
     if(key==='pedido_contraentrega') return buscar(v=>/contraentrega/i.test(String(v.metodoPago||''))) || ord[0];
     return ord[0]; }
+  // ===== FOTOS EN LAS PLANTILLAS DE PEDIDO (8-oct) =====
+  // Cada plantilla transaccional tiene una gemela «<clave>_foto» con encabezado de imagen. Fijas
+  // (despachado, pago, postventa): JPG de marca en Storage adjuntos/wa/. Dinámicas (contraentrega,
+  // carrito): foto del primer producto del pedido, tomada del catálogo público de la tienda.
+  // Mientras la gemela no esté APPROVED en Meta, se sigue enviando la original (no se corta nada).
+  WA_FOTO_FIJA={ pedido_despachado:'despachado', recordatorio_pago:'pago', postventa:'postventa' };
+  waFotoUrl(key){ const f=this.WA_FOTO_FIJA[key]||'pago'; return this.CLOUD_URL+'/storage/v1/object/public/adjuntos/wa/'+f+'.jpg'; }
+  _waNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
+  async _waCatalogoImgs(){ if(this._waCat && Date.now()-this._waCat.at<600000) return this._waCat.map;
+    const m={}; try{ const r=await fetch('https://www.oasisdelalma.co/products.json?limit=250'); const j=await r.json();
+      (j.products||[]).forEach(p=>{ const img=(p.images&&p.images[0]&&p.images[0].src)||''; if(!img) return; m[this._waNorm(p.title)]=img;
+        (p.variants||[]).forEach(vv=>{ m['v'+vv.id]=(vv.featured_image&&vv.featured_image.src)||img; }); }); }catch(e){}
+    this._waCat={at:Date.now(), map:m}; return m; }
+  async waFotoProducto(v){ const m=await this._waCatalogoImgs();
+    for(const it of ((v&&v.items)||[])){ const vid=String(it.variantId||it.shopifyVariantId||'').replace(/\D/g,''); if(vid && m['v'+vid]) return m['v'+vid];
+      const n=this._waNorm(it.producto||it.referencia||''); if(!n) continue; if(m[n]) return m[n];
+      const k=Object.keys(m).find(x=>x[0]!=='v' && x.length>3 && (n.includes(x)||x.includes(n))); if(k) return m[k]; }
+    return ''; }
+  async waFotoPara(key, v){ if(this.WA_FOTO_FIJA[key]) return this.waFotoUrl(key); const p=v? await this.waFotoProducto(v) : ''; return p || this.waFotoUrl('recordatorio_pago'); }
+  waFotoTpl(key){ return (this.state.campWaTpls||[]).find(t=>t.nombre===key+'_foto')||null; }
+  async waFotosCrear(){ if(!this.isAdminUser()){ this.toast('Solo un administrador puede crear las plantillas con foto'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
+    this.setState({waFotosBusy:true}); const res=[];
+    try{
+      // 1) fotos de marca → Storage (los JPG viajan junto al index.html del Hub)
+      for(const f of ['despachado','pago','postventa']){
+        try{ const r=await fetch('wa-'+f+'.jpg',{cache:'no-store'}); if(!r.ok) throw new Error('falta wa-'+f+'.jpg junto al index.html');
+          const b=await r.blob(); const up=await sb.storage.from('adjuntos').upload('wa/'+f+'.jpg', b, {upsert:true, contentType:'image/jpeg'});
+          if(up.error) throw new Error(up.error.message);
+          const h=await fetch(this.CLOUD_URL+'/storage/v1/object/public/adjuntos/wa/'+f+'.jpg',{method:'HEAD',cache:'no-store'});
+          if(!h.ok) throw new Error('la foto no queda pública (¿corriste supabase-adjuntos.sql?)');
+        }catch(e){ res.push('Foto '+f+': '+e.message); }
+      }
+      // 2) plantillas gemelas en Meta, con el MISMO cuerpo, categoría y botones de la original
+      const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillas' } });
+      if(error||!data||data.error) throw new Error((data&&data.error)||'no se pudo leer las plantillas de Meta');
+      const items=data.items||[]; const T=this.waTemplates();
+      for(const key of Object.keys(T)){
+        const orig=items.find(t=>t.nombre===key); if(!orig){ res.push(T[key].label+': la original no existe en Meta'); continue; }
+        const ya=items.find(t=>t.nombre===key+'_foto'); if(ya){ res.push(T[key].label+': ya creada ('+ya.estado+')'); continue; }
+        const v=this.campWaVentaEjemplo(key); let ej=[]; try{ ej=v? (T[key].vars(v)||[]) : []; }catch(e){ ej=[]; }
+        const nv=Array.isArray(orig.variables)? orig.variables.length : (Number(orig.variables)||0);
+        ej=Array.from({length:nv},(_,i)=>String(ej[i]||'').trim()||'Ejemplo');
+        const img=await this.waFotoPara(key, v);
+        const r=await sb.functions.invoke('canales',{ body:{ modo:'plantillaCrear', plantilla:{ name:key+'_foto', category:orig.categoria||'UTILITY', language:orig.idioma||'es', body:orig.cuerpo, ejemplo:ej, botones:orig.botones||[], headerImageUrl:img } } });
+        const d=r.data||{}; if(r.error||d.error) res.push(T[key].label+': '+(d.error||'Meta no la aceptó'));
+        else res.push(T[key].label+': creada ('+(d.status||'PENDING')+')'+(d.avisoFoto?(' · '+d.avisoFoto):''));
+      }
+    }catch(e){ res.push((e&&e.message)||'error'); }
+    this.setState({waFotosBusy:false, waFotosRes:res});
+    this.campWaCargarPlantillas(true); }
   async campWaProbarTx(key){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const t=this.waTemplates()[key]; if(!t){ this.toast('Plantilla no encontrada'); return; }
     const tel=this.waNumber(this.campWaGet().pruebaTel); if(!tel){ this.toast('Escribe tu número para la prueba'); return; }
     const v=this.campWaVentaEjemplo(key); if(!v){ this.toast('Todavía no hay pedidos con los que armar el ejemplo'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     this.setState({campWaProbTx:key});
-    let msg='';
+    let msg='', fotoNota='';
     try{
       let variables=[]; try{ variables=t.vars(v)||[]; }catch(e){ variables=[]; }
-      const {data,error}=await sb.functions.invoke('whatsapp',{ body:{ to:tel, template:key, lang:t.lang, variables, origen:'prueba-transaccional' } });
+      // Si la gemela con foto ya está aprobada, la prueba sale CON foto (así se ve en el cel).
+      if(!this.state.campWaTpls) await this.campWaCargarPlantillas();
+      const tf=this.waFotoTpl(key); let body={ to:tel, template:key, lang:t.lang, variables, origen:'prueba-transaccional' };
+      if(tf && tf.estado==='APPROVED'){ const img=await this.waFotoPara(key, v);
+        body={ to:tel, template:key+'_foto', lang:tf.idioma||t.lang, origen:'prueba-transaccional', components:[{type:'header', parameters:[{type:'image', image:{link:img}}]}, ...(variables.length?[{type:'body', parameters:variables.map(x=>({type:'text', text:String(x==null?'':x)}))}]:[])] }; }
+      else if(tf) fotoNota=' · sin foto: la versión con foto está '+tf.estado+' en Meta';
+      else fotoNota=' · sin foto: aún no se creó la versión con foto';
+      const {data,error}=await sb.functions.invoke('whatsapp',{ body });
       if(error){ try{ if(error.context&&error.context.json){ const j=await error.context.json(); if(j&&j.error) msg=j.error; } }catch(_e){} msg=msg||'WhatsApp no respondió'; }
       else if(data&&data.error) msg=String(data.error);
     }catch(e){ msg=(e&&e.message)||'error'; }
     this.setState({campWaProbTx:''});
-    this.toast(msg? ('La prueba de «'+t.label+'» falló: '+msg) : ('Prueba de «'+t.label+'» enviada a '+tel+' · revisa tu WhatsApp'), msg?'error':'ok'); }
+    this.toast(msg? ('La prueba de «'+t.label+'» falló: '+msg) : ('Prueba de «'+t.label+'» enviada a '+tel+fotoNota+' · revisa tu WhatsApp'), msg?'error':'ok'); }
   async campWaPreparar(){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const c=this.campWaGet(); const t=this.campWaTplSel();
     if(!t){ this.toast('Elige la plantilla aprobada que vas a enviar'); return; }
@@ -12471,11 +12541,15 @@ Instrucciones de respuesta:
       out.cwTxEnviando=!!enviando; out.cwTxEnviandoLabel=(reqs[enviando]||{}).label||'';
       let hay=false;
       out.cwTxPruebas=Object.keys(reqs).map(k=>{ const v=this.campWaVentaEjemplo(k); if(v) hay=true;
+        const tf=this.waFotoTpl(k); const fe=tf? ({APPROVED:'con foto ✓',PENDING:'foto en revisión',REJECTED:'foto rechazada'}[tf.estado]||('foto '+tf.estado)) : 'sin foto';
         return { key:k, label:reqs[k].label,
-          detalle: v? ('con '+this.ventaRef(v)) : 'sin pedido de ejemplo',
+          detalle: (v? ('con '+this.ventaRef(v)) : 'sin pedido de ejemplo')+' · '+fe,
           off: puede? (!v || !!enviando) : true,
           onClick:()=>this.campWaProbarTx(k) }; });
-      out.cwTxSinVentas=!hay; }
+      out.cwTxSinVentas=!hay;
+      out.cwFotosPuede=this.isAdminUser(); out.cwFotosBusy=!!st.waFotosBusy; out.onCwFotosCrear=()=>this.waFotosCrear();
+      out.cwFotosRes=(st.waFotosRes||[]).map(t=>({t})); out.cwFotosHayRes=!!(st.waFotosRes||[]).length;
+      if(!st.campWaTpls && !this._campTplLoad && !st.campWaTplsErr) setTimeout(()=>this.campWaCargarPlantillas(),0); }
     out.cwPreparando=!!st.campWaPreparando; out.onCwPreparar=()=>this.campWaPreparar();
     // confirmación
     const cf=st.campWaConfirm;
