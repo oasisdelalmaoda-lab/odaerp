@@ -5642,6 +5642,7 @@
                   <sc-if value="{{ cwFotosPuede }}" hint-placeholder-val="{{ false }}">
                     <div style="margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
                       <button onClick="{{ onCwFotosCrear }}" disabled="{{ cwFotosBusy }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border:none;border-radius:999px;background:var(--brand-primary);color:#fff;cursor:pointer;">Crear versiones con foto en Meta</button>
+                      <button onClick="{{ onCwResenaCrear }}" disabled="{{ cwFotosBusy }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 16px;border:1px solid var(--brand-primary);border-radius:999px;background:transparent;color:var(--brand-primary);cursor:pointer;">Postventa con opiniones Judge.me</button>
                       <span style="font-size:12px;color:var(--text-muted);max-width:60ch;line-height:1.5;">Sube las fotos de marca y crea una copia de cada plantilla con encabezado de imagen. Meta las revisa en minutos u horas; hasta entonces sale la versión sin foto.</span>
                     </div>
                     <sc-if value="{{ cwFotosBusy }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;font-size:12px;color:var(--brand-primary);">Subiendo fotos y creando plantillas…</div></sc-if>
@@ -12311,6 +12312,33 @@ Instrucciones de respuesta:
     }catch(e){ res.push((e&&e.message)||'error'); }
     this.setState({waFotosBusy:false, waFotosRes:res});
     this.campWaCargarPlantillas(true); }
+  // POSTVENTA → JUDGE.ME (12-oct): gemela «postventa_resena» = mismo cuerpo + foto + botón URL dinámico
+  // https://www.oasisdelalma.co/{{1}} con {{1}} = products/<handle>#judgeme_product_reviews (producto del pedido).
+  async _waHandles(){ if(this._waHdl && Date.now()-this._waHdl.at<600000) return this._waHdl.map; const m={};
+    try{ const j=await (await fetch('https://www.oasisdelalma.co/products.json?limit=250')).json();
+      (j.products||[]).forEach(p=>{ if(!p.handle) return; m[this._waNorm(p.title)]=p.handle; (p.variants||[]).forEach(vv=>{ m['v'+vv.id]=p.handle; }); }); }catch(e){}
+    this._waHdl={at:Date.now(), map:m}; return m; }
+  async waResenaRuta(v){ const m=await this._waHandles();
+    for(const it of ((v&&v.items)||[])){ const vid=String(it.variantId||it.shopifyVariantId||'').replace(/\D/g,''); if(vid&&m['v'+vid]) return 'products/'+m['v'+vid]+'#judgeme_product_reviews';
+      const n=this._waNorm(it.producto||it.referencia||''); if(!n) continue; if(m[n]) return 'products/'+m[n]+'#judgeme_product_reviews';
+      const k=Object.keys(m).find(x=>x[0]!=='v'&&x.length>3&&(n.includes(x)||x.includes(n))); if(k) return 'products/'+m[k]+'#judgeme_product_reviews'; }
+    return 'collections/all'; }
+  async waResenaCrear(){ if(!this.isAdminUser()){ this.toast('Solo un administrador'); return; }
+    const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
+    this.setState({waFotosBusy:true}); const res=[];
+    try{ const {data,error}=await sb.functions.invoke('canales',{ body:{ modo:'plantillas' } });
+      if(error||!data||data.error) throw new Error((data&&data.error)||'no se pudo leer las plantillas de Meta');
+      const items=data.items||[]; const orig=items.find(t=>t.nombre==='postventa'); if(!orig) throw new Error('no existe la plantilla postventa en Meta');
+      const ya=items.find(t=>t.nombre==='postventa_resena');
+      if(ya) res.push('Postventa Judge.me: ya creada ('+ya.estado+')');
+      else { const T=this.waTemplates(); const v=this.campWaVentaEjemplo('postventa'); let ej=[]; try{ ej=v?(T.postventa.vars(v)||[]):[]; }catch(e){}
+        const nv=Array.isArray(orig.variables)?orig.variables.length:(Number(orig.variables)||0); ej=Array.from({length:nv},(_,i)=>String(ej[i]||'').trim()||'Ejemplo');
+        const otros=(orig.botones||[]).filter(b=>b.tipo!=='URL');
+        const botones=[{tipo:'URL', texto:'Dejar mi opinión', url:'https://www.oasisdelalma.co/{{1}}', ejemploUrl:'https://www.oasisdelalma.co/products/kit-calma'}, ...otros];
+        const r=await sb.functions.invoke('canales',{ body:{ modo:'plantillaCrear', plantilla:{ name:'postventa_resena', category:orig.categoria||'MARKETING', language:orig.idioma||'es', body:orig.cuerpo, ejemplo:ej, botones, headerImageUrl:this.waFotoUrl('postventa') } } });
+        const d=r.data||{}; res.push(r.error||d.error ? ('Postventa Judge.me: '+(d.error||'Meta no la aceptó')) : ('Postventa Judge.me: creada ('+(d.status||'PENDING')+')'+(d.avisoFoto?(' · '+d.avisoFoto):''))); }
+    }catch(e){ res.push((e&&e.message)||'error'); }
+    this.setState({waFotosBusy:false, waFotosRes:res}); this.campWaCargarPlantillas(true); }
   async campWaProbarTx(key){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const t=this.waTemplates()[key]; if(!t){ this.toast('Plantilla no encontrada'); return; }
     const tel=this.waNumber(this.campWaGet().pruebaTel); if(!tel){ this.toast('Escribe tu número para la prueba'); return; }
@@ -12322,9 +12350,11 @@ Instrucciones de respuesta:
       let variables=[]; try{ variables=t.vars(v)||[]; }catch(e){ variables=[]; }
       // Si la gemela con foto ya está aprobada, la prueba sale CON foto (así se ve en el cel).
       if(!this.state.campWaTpls) await this.campWaCargarPlantillas();
-      const tf=this.waFotoTpl(key); let body={ to:tel, template:key, lang:t.lang, variables, origen:'prueba-transaccional' };
+      const tr=key==='postventa'?(this.state.campWaTpls||[]).find(t=>t.nombre==='postventa_resena'):null;
+      const tf=(tr&&tr.estado==='APPROVED')?tr:this.waFotoTpl(key); let body={ to:tel, template:key, lang:t.lang, variables, origen:'prueba-transaccional' };
       if(tf && tf.estado==='APPROVED'){ const img=await this.waFotoPara(key, v);
-        body={ to:tel, template:key+'_foto', lang:tf.idioma||t.lang, origen:'prueba-transaccional', components:[{type:'header', parameters:[{type:'image', image:{link:img}}]}, ...(variables.length?[{type:'body', parameters:variables.map(x=>({type:'text', text:String(x==null?'':x)}))}]:[])] }; }
+        body={ to:tel, template:tf.nombre, lang:tf.idioma||t.lang, origen:'prueba-transaccional', components:[{type:'header', parameters:[{type:'image', image:{link:img}}]}, ...(variables.length?[{type:'body', parameters:variables.map(x=>({type:'text', text:String(x==null?'':x)}))}]:[])] };
+        if(tf.nombre==='postventa_resena'){ const ruta=await this.waResenaRuta(v); body.components.push({type:'button', sub_type:'url', index:'0', parameters:[{type:'text', text:ruta}]}); fotoNota=' · botón a Judge.me ('+ruta.split('#')[0]+')'; } }
       else if(tf) fotoNota=' · sin foto: la versión con foto está '+tf.estado+' en Meta';
       else fotoNota=' · sin foto: aún no se creó la versión con foto';
       const {data,error}=await sb.functions.invoke('whatsapp',{ body });
@@ -12541,13 +12571,14 @@ Instrucciones de respuesta:
       out.cwTxEnviando=!!enviando; out.cwTxEnviandoLabel=(reqs[enviando]||{}).label||'';
       let hay=false;
       out.cwTxPruebas=Object.keys(reqs).map(k=>{ const v=this.campWaVentaEjemplo(k); if(v) hay=true;
-        const tf=this.waFotoTpl(k); const fe=tf? ({APPROVED:'con foto ✓',PENDING:'foto en revisión',REJECTED:'foto rechazada'}[tf.estado]||('foto '+tf.estado)) : 'sin foto';
+        const _tr=k==='postventa'?(st.campWaTpls||[]).find(t=>t.nombre==='postventa_resena'):null;
+        const tf=(_tr&&_tr.estado==='APPROVED')?_tr:this.waFotoTpl(k); const fe=(_tr?(' Judge.me '+({APPROVED:'✓',PENDING:'en revisión',REJECTED:'rechazada'}[_tr.estado]||_tr.estado)+' · '):'')+tf? ({APPROVED:'con foto ✓',PENDING:'foto en revisión',REJECTED:'foto rechazada'}[tf.estado]||('foto '+tf.estado)) : 'sin foto';
         return { key:k, label:reqs[k].label,
           detalle: (v? ('con '+this.ventaRef(v)) : 'sin pedido de ejemplo')+' · '+fe,
           off: puede? (!v || !!enviando) : true,
           onClick:()=>this.campWaProbarTx(k) }; });
       out.cwTxSinVentas=!hay;
-      out.cwFotosPuede=this.isAdminUser(); out.cwFotosBusy=!!st.waFotosBusy; out.onCwFotosCrear=()=>this.waFotosCrear();
+      out.cwFotosPuede=this.isAdminUser(); out.cwFotosBusy=!!st.waFotosBusy; out.onCwFotosCrear=()=>this.waFotosCrear(); out.onCwResenaCrear=()=>this.waResenaCrear();
       out.cwFotosRes=(st.waFotosRes||[]).map(t=>({t})); out.cwFotosHayRes=!!(st.waFotosRes||[]).length;
       if(!st.campWaTpls && !this._campTplLoad && !st.campWaTplsErr) setTimeout(()=>this.campWaCargarPlantillas(),0); }
     out.cwPreparando=!!st.campWaPreparando; out.onCwPreparar=()=>this.campWaPreparar();
