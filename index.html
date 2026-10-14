@@ -13017,6 +13017,7 @@ Instrucciones de respuesta:
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
+      +this.pedidoPagoHtml(v)
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
@@ -13028,6 +13029,19 @@ Instrucciones de respuesta:
 
   // ---- documento PDF de pedido (mismo diseño que la cotización) ----
   pedidoNombreItem(it){ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||c||'Producto')); }
+  // Datos de pago para pedidos manuales SIN IVA (14-oct): salen de la cuenta «Nu» de Finanzas → Caja y bancos
+  // (nombre o banco = Nu). Si se edita allá (llave, titular), el PDF cambia solo. Sin esa cuenta, no sale el bloque.
+  pedidoCuentaNu(){ return this.cuentasList().find(c=>/^nu$/i.test(String(c.banco||'').trim()) || /^nu\b/i.test(String(c.nombre||'').trim())) || null; }
+  pedidoPagoHtml(v){ if(v.origen!=='manual' || this.ventaConIva(v) || v.cancelada) return '';
+    const c=this.pedidoCuentaNu(); if(!c || !String(c.numeroCuenta||'').trim()) return '';
+    const llave=String(c.numeroCuenta).trim(); const esCorreo=/@/.test(llave);
+    const fila=(l,val)=>'<div style="display:flex;gap:10px;padding:4px 0;"><span style="min-width:120px;color:#8A8073;">'+l+'</span><strong style="color:#3A3326;word-break:break-all;">'+val+'</strong></div>';
+    return '<div style="margin-top:28px;background:#F7F2E9;border:1px solid #E4DBCC;border-radius:14px;padding:18px 22px;font-size:13px;">'
+      +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:#A78659;font-weight:700;margin-bottom:8px;">Información de pago</div>'
+      +fila('Banco', String(c.banco||'Nu'))
+      +fila(esCorreo?'Llave (correo)':'Llave / cuenta', llave)
+      +(c.titular? fila('A nombre de', this.titleCase(String(c.titular))) : '')
+      +'</div>'; }
   pedidoDocHtml(v){ const conIva=this.ventaConIva(v);
     // Descuentos en el documento: si TODAS las líneas llevan el mismo % (descuento masivo) o la venta trae
     // descuentoPct, es un descuento DEL PEDIDO y se muestra al final; si no, cada línea muestra su propio
