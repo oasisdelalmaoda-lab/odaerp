@@ -12853,7 +12853,9 @@ Instrucciones de respuesta:
   }
   saveVenta(){ const d=this.state.draft; if(!d.cliente){ this.toast('Escribe el cliente'); return; } if(!this.isAdminUser() && d._pagoTotal){ d._pagoTotal=false; }
     // Pedidos manuales: el cliente debe quedar con sus datos de contacto y envío completos (1-oct).
-    if((d.origen||'manual')==='manual'){ const cel=String(d.celular||'').replace(/\D/g,''); const dir=String(d.direccion||'').trim();
+    // 15-oct: solo al CREAR un pedido; al editar uno ya existente no se exige (pedidos viejos sin dirección).
+    const _esNueva=!d.id || !(this.state.ventas||[]).some(v=>v.id===d.id);
+    if((d.origen||'manual')==='manual' && _esNueva){ const cel=String(d.celular||'').replace(/\D/g,''); const dir=String(d.direccion||'').trim();
       if(cel.length<10){ this.toast('Falta el celular del cliente (10 dígitos)'); return; }
       if(!String(d.ciudad||'').trim()){ this.toast('Falta la ciudad del cliente'); return; }
       if(dir.length<6){ this.toast('Falta la dirección de entrega · si recoge, escribe «Recoge en oficina»'); return; } } if(!(d.items||[]).length){ this.toast('Agrega al menos un producto'); return; } if((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && !d.consignTienda){ this.toast('Elige la tienda o vendedor del que se descuenta la consignación'); return; }
@@ -13023,7 +13025,7 @@ Instrucciones de respuesta:
     return html; }
   descargarCotizacion(c){ const html=this.cotDocHtml(c).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Cotizacion-'+(c.numero||'OdA')+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Cotización descargada · ábrela para guardarla como PDF'); }catch(e){ this.toast('No se pudo descargar la cotización'); } }
   previewCotizacion(c){ this.setState({modal:'cotpreview', cotPreviewHtml:this.cotDocHtml(c), cotPreviewNum:(c.numero||''), cotPreviewC:c, cotPreviewKind:'cotizacion'}); }
-  previewPedido(v){ this.setState({modal:'cotpreview', cotPreviewHtml:this.pedidoDocHtml(v), cotPreviewNum:(v.ov||v.pedido||''), cotPreviewC:v, cotPreviewKind:'pedido'}); }
+  previewPedido(v){ this._pedidoPagoAviso(v); this.setState({modal:'cotpreview', cotPreviewHtml:this.pedidoDocHtml(v), cotPreviewNum:(v.ov||v.pedido||''), cotPreviewC:v, cotPreviewKind:'pedido'}); }
   borrarCotizacion(id){ const c=(this.state.cotizaciones||[]).find(x=>x.id===id); if(!c) return; if(!window.confirm('¿Eliminar la cotización '+(c.numero||'')+'? Esta acción no se puede deshacer.')) return; const list=(this.state.cotizaciones||[]).filter(x=>x.id!==id); this.setState({cotizaciones:list,modal:null},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteCotizacion(id); this.toast('Cotización eliminada'); }
   printCotPreview(){ try{ const f=document.getElementById('cotPreviewFrame'); if(f&&f.contentWindow){ f.contentWindow.focus(); f.contentWindow.print(); } }catch(e){} }
 
@@ -13031,10 +13033,12 @@ Instrucciones de respuesta:
   pedidoNombreItem(it){ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||c||'Producto')); }
   // Datos de pago para pedidos manuales SIN IVA (14-oct): salen de la cuenta «Nu» de Finanzas → Caja y bancos
   // (nombre o banco = Nu). Si se edita allá (llave, titular), el PDF cambia solo. Sin esa cuenta, no sale el bloque.
-  pedidoCuentaNu(){ return this.cuentasList().find(c=>/^nu$/i.test(String(c.banco||'').trim()) || /^nu\b/i.test(String(c.nombre||'').trim())) || null; }
-  pedidoPagoHtml(v){ if(v.origen!=='manual' || this.ventaConIva(v) || v.cancelada) return '';
-    const c=this.pedidoCuentaNu(); if(!c || !String(c.numeroCuenta||'').trim()) return '';
-    const llave=String(c.numeroCuenta).trim(); const esCorreo=/@/.test(llave);
+  pedidoCuentaNu(){ const L=this.cuentasList(); const re=/(^|[^a-z])nu([^a-z]|$)|nubank/i;
+    return L.find(c=>re.test(String(c.banco||''))&&String(c.numeroCuenta||c.llave||'').trim()) || L.find(c=>re.test(String(c.nombre||''))&&String(c.numeroCuenta||c.llave||'').trim()) || L.find(c=>re.test(String(c.banco||''))||re.test(String(c.nombre||''))) || null; }
+  _pedidoEsManual(v){ return !v.shopifyId && (v.origen||'manual')==='manual'; }
+  pedidoPagoHtml(v){ if(!this._pedidoEsManual(v) || this.ventaConIva(v) || v.cancelada) return '';
+    const c=this.pedidoCuentaNu(); if(!c || !String(c.numeroCuenta||c.llave||'').trim()) return '';
+    const llave=String(c.numeroCuenta||c.llave).trim(); const esCorreo=/@/.test(llave);
     const fila=(l,val)=>'<div style="display:flex;gap:10px;padding:4px 0;"><span style="min-width:120px;color:#8A8073;">'+l+'</span><strong style="color:#3A3326;word-break:break-all;">'+val+'</strong></div>';
     return '<div style="margin-top:28px;background:#F7F2E9;border:1px solid #E4DBCC;border-radius:14px;padding:18px 22px;font-size:13px;">'
       +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:#A78659;font-weight:700;margin-bottom:8px;">Información de pago</div>'
@@ -13042,6 +13046,11 @@ Instrucciones de respuesta:
       +fila(esCorreo?'Llave (correo)':'Llave / cuenta', llave)
       +(c.titular? fila('A nombre de', this.titleCase(String(c.titular))) : '')
       +'</div>'; }
+  // Dice por qué un PDF de pedido NO trae «Información de pago» (14-oct, diagnóstico pedido por el usuario).
+  pedidoPagoMotivo(v){ if(!this._pedidoEsManual(v)) return 'es un pedido de Shopify'; if(v.cancelada) return 'el pedido está cancelado';
+    if(this.ventaConIva(v)) return 'el pedido está marcado CON IVA'; const c=this.pedidoCuentaNu();
+    if(!c) return 'no encuentro la cuenta «Nu» en Caja y bancos'; if(!String(c.numeroCuenta||c.llave||'').trim()) return 'la cuenta Nu no tiene la llave en «Número de cuenta»'; return ''; }
+  _pedidoPagoAviso(v){ const m=this.pedidoPagoMotivo(v); if(m) this.toast('Este PDF sale sin datos de pago: '+m); }
   pedidoDocHtml(v){ const conIva=this.ventaConIva(v);
     // Descuentos en el documento: si TODAS las líneas llevan el mismo % (descuento masivo) o la venta trae
     // descuentoPct, es un descuento DEL PEDIDO y se muestra al final; si no, cada línea muestra su propio
@@ -13087,7 +13096,7 @@ Instrucciones de respuesta:
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
-  descargarPedido(v){ const html=this.pedidoDocHtml(v).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Pedido-'+((v.ov||v.pedido||'OdA').replace(/[^\w-]/g,''))+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Pedido descargado · ábrelo para guardarlo como PDF'); }catch(e){ this.toast('No se pudo descargar el pedido'); } }
+  descargarPedido(v){ this._pedidoPagoAviso(v); const html=this.pedidoDocHtml(v).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Pedido-'+((v.ov||v.pedido||'OdA').replace(/[^\w-]/g,''))+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Pedido descargado · ábrelo para guardarlo como PDF'); }catch(e){ this.toast('No se pudo descargar el pedido'); } }
 
   cotProdOptionsLabeled(){ return this.cotItemOptions().map(o=>{ const esCost=(o.tipo==='materia'||o.tipo==='mezcla'); const suf=esCost?(' · costo '+this.fmt(Math.round(o.costo))+' (solo costo)'):(o.precio?(' ('+this.fmt(o.precio)+')'):''); return {codigo:o.codigo, precio:o.precio, label:({producto:'PT',kit:'Kit',materia:'Materia',mezcla:'Mezcla'}[o.tipo]||'')+' · '+o.nombre+suf}; }); }
   onPickVenProd(e){ const val=String(e.target.value||''); const list=this.ventasProductoOptions(); const lbl=(o)=>o.codigo+' · '+o.nombre+' ('+this.fmt(o.precio)+')'; let opt=list.find(o=>lbl(o)===val); if(!opt){ const k=this.normKey(val); opt=list.find(o=>this.normKey(o.nombre)===k) || list.find(o=>this.normKey(o.codigo)===k) || list.find(o=>this.normKey(o.nombre).includes(k) && k.length>=3); } this.setState(s=>({draft:{...s.draft,_selProdText:val,_selProd:(opt?opt.codigo:''),_selValor:(opt?opt.precio:s.draft._selValor),_selDesc:''}})); }
