@@ -13112,16 +13112,20 @@ Instrucciones de respuesta:
       try{ if(d.fonts&&d.fonts.ready) await Promise.race([d.fonts.ready, new Promise(r=>setTimeout(r,2000))]); }catch(e){}
       await Promise.all([...d.images].map(im=>im.complete?null:new Promise(r=>{ im.onload=im.onerror=r; setTimeout(r,2500); })));
       const body=d.body; fr.style.height=Math.max(1200, body.scrollHeight+40)+'px';
-      const bg=getComputedStyle(body).backgroundColor||'#ffffff';
-      const cv=await window.html2canvas(body,{scale:2, useCORS:true, backgroundColor:(bg==='rgba(0, 0, 0, 0)'?'#ffffff':bg), windowWidth:820, width:body.scrollWidth, height:body.scrollHeight});
-      const { jsPDF }=window.jspdf; const pdf=new jsPDF({unit:'mm', format:'a4', orientation:'portrait', compress:true});
-      const W=210, H=297; const pxPorMm=cv.width/W; const altoPag=Math.floor(H*pxPorMm);
-      for(let y=0, pag=0; y<cv.height; y+=altoPag, pag++){
-        const h=Math.min(altoPag, cv.height-y); const c2=document.createElement('canvas'); c2.width=cv.width; c2.height=h;
-        const g=c2.getContext('2d'); g.fillStyle=(bg==='rgba(0, 0, 0, 0)'?'#ffffff':bg); g.fillRect(0,0,c2.width,h); g.drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
-        if(pag>0) pdf.addPage(); pdf.addImage(c2.toDataURL('image/jpeg',0.92),'JPEG',0,0,W,h/pxPorMm);
-      }
-      pdf.save(nombre+'.pdf'); return true;
+      // Fondo real del documento (body, html o el primer contenedor) para que no quede franja blanca.
+      const _tr=c=>!c||c==='transparent'||c==='rgba(0, 0, 0, 0)';
+      let bg=getComputedStyle(body).backgroundColor; if(_tr(bg)) bg=getComputedStyle(d.documentElement).backgroundColor; if(_tr(bg)&&body.firstElementChild) bg=getComputedStyle(body.firstElementChild).backgroundColor; if(_tr(bg)) bg='#FBF8F2';
+      body.style.margin='0'; body.style.background=bg; d.documentElement.style.background=bg;
+      const cv=await window.html2canvas(body,{scale:2, useCORS:true, backgroundColor:bg, windowWidth:820, width:body.scrollWidth, height:body.scrollHeight});
+      // UNA sola página del alto exacto del documento (ancho A4): sin cortes ni espacio en blanco al final.
+      const { jsPDF }=window.jspdf; const W=210; const Hmm=Math.max(120, cv.height*W/cv.width);
+      const pdf=new jsPDF({unit:'mm', format:[W,Hmm], orientation:'portrait', compress:true});
+      try{ const m=String(bg).match(/\d+(\.\d+)?/g); if(m&&m.length>=3) pdf.setFillColor(+m[0],+m[1],+m[2]); else pdf.setFillColor(String(bg)); pdf.rect(0,0,W,Hmm,'F'); }catch(e){}
+      pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,W,cv.height*W/cv.width);
+      // Blob con tipo application/pdf explícito + nombre .pdf (algunos destinos pierden el tipo si solo va la extensión).
+      const blob=new Blob([pdf.output('arraybuffer')],{type:'application/pdf'}); const url=URL.createObjectURL(blob);
+      const el=document.createElement('a'); el.href=url; el.download=nombre+'.pdf'; el.type='application/pdf'; document.body.appendChild(el); el.click();
+      setTimeout(()=>{ try{ document.body.removeChild(el); URL.revokeObjectURL(url); }catch(e){} },4000); return true;
     } finally { setTimeout(()=>{ try{ document.body.removeChild(fr); }catch(e){} },500); }
   }
   _docHtmlViejo(html, nombre){ const h2=html.replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>');
