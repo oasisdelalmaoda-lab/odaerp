@@ -13022,7 +13022,7 @@ Instrucciones de respuesta:
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
-  descargarCotizacion(c){ const html=this.cotDocHtml(c).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Cotizacion-'+(c.numero||'OdA')+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Cotización descargada · ábrela para guardarla como PDF'); }catch(e){ this.toast('No se pudo descargar la cotización'); } }
+  descargarCotizacion(c){ this._descargarDoc(this.cotDocHtml(c), 'Cotizacion-'+(c.numero||'OdA'), 'Cotización'); }
   previewCotizacion(c){ this.setState({modal:'cotpreview', cotPreviewHtml:this.cotDocHtml(c), cotPreviewNum:(c.numero||''), cotPreviewC:c, cotPreviewKind:'cotizacion'}); }
   previewPedido(v){ this._pedidoPagoAviso(v); this.setState({modal:'cotpreview', cotPreviewHtml:this.pedidoDocHtml(v), cotPreviewNum:(v.ov||v.pedido||''), cotPreviewC:v, cotPreviewKind:'pedido'}); }
   borrarCotizacion(id){ const c=(this.state.cotizaciones||[]).find(x=>x.id===id); if(!c) return; if(!window.confirm('¿Eliminar la cotización '+(c.numero||'')+'? Esta acción no se puede deshacer.')) return; const list=(this.state.cotizaciones||[]).filter(x=>x.id!==id); this.setState({cotizaciones:list,modal:null},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteCotizacion(id); this.toast('Cotización eliminada'); }
@@ -13096,7 +13096,40 @@ Instrucciones de respuesta:
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
-  descargarPedido(v){ this._pedidoPagoAviso(v); const html=this.pedidoDocHtml(v).replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>'); try{ const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Pedido-'+((v.ov||v.pedido||'OdA').replace(/[^\w-]/g,''))+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); this.toast('Pedido descargado · ábrelo para guardarlo como PDF'); }catch(e){ this.toast('No se pudo descargar el pedido'); } }
+  // PDF REAL (15-oct): antes se descargaba un .html que había que «imprimir como PDF» y por WhatsApp llegaba mal.
+  // Ahora el documento se pinta en un iframe oculto, se fotografía con html2canvas y se arma un PDF A4 con jsPDF
+  // (varias páginas si es largo). Si algo falla, cae al método viejo (.html + imprimir).
+  _cargarJs(src){ return new Promise((ok,ko)=>{ if(document.querySelector('script[data-src="'+src+'"]')) return ok(); const s=document.createElement('script'); s.src=src; s.dataset.src=src; s.onload=()=>ok(); s.onerror=()=>ko(new Error('no cargó '+src)); document.head.appendChild(s); }); }
+  async _docAPdf(html, nombre){
+    await this._cargarJs('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
+    await this._cargarJs('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    const fr=document.createElement('iframe'); fr.setAttribute('aria-hidden','true');
+    fr.style.cssText='position:fixed;left:-10000px;top:0;width:820px;height:1200px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(fr);
+    try{
+      const d=fr.contentDocument; d.open(); d.write(html); d.close();
+      await new Promise(r=>{ if(d.readyState==='complete') r(); else fr.onload=()=>r(); setTimeout(r,2500); });
+      try{ if(d.fonts&&d.fonts.ready) await Promise.race([d.fonts.ready, new Promise(r=>setTimeout(r,2000))]); }catch(e){}
+      await Promise.all([...d.images].map(im=>im.complete?null:new Promise(r=>{ im.onload=im.onerror=r; setTimeout(r,2500); })));
+      const body=d.body; fr.style.height=Math.max(1200, body.scrollHeight+40)+'px';
+      const bg=getComputedStyle(body).backgroundColor||'#ffffff';
+      const cv=await window.html2canvas(body,{scale:2, useCORS:true, backgroundColor:(bg==='rgba(0, 0, 0, 0)'?'#ffffff':bg), windowWidth:820, width:body.scrollWidth, height:body.scrollHeight});
+      const { jsPDF }=window.jspdf; const pdf=new jsPDF({unit:'mm', format:'a4', orientation:'portrait', compress:true});
+      const W=210, H=297; const pxPorMm=cv.width/W; const altoPag=Math.floor(H*pxPorMm);
+      for(let y=0, pag=0; y<cv.height; y+=altoPag, pag++){
+        const h=Math.min(altoPag, cv.height-y); const c2=document.createElement('canvas'); c2.width=cv.width; c2.height=h;
+        const g=c2.getContext('2d'); g.fillStyle=(bg==='rgba(0, 0, 0, 0)'?'#ffffff':bg); g.fillRect(0,0,c2.width,h); g.drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+        if(pag>0) pdf.addPage(); pdf.addImage(c2.toDataURL('image/jpeg',0.92),'JPEG',0,0,W,h/pxPorMm);
+      }
+      pdf.save(nombre+'.pdf'); return true;
+    } finally { setTimeout(()=>{ try{ document.body.removeChild(fr); }catch(e){} },500); }
+  }
+  _docHtmlViejo(html, nombre){ const h2=html.replace('</body>', '<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},350);};<\/scr'+'ipt></body>');
+    const blob=new Blob([h2],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=nombre+'.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} },1500); }
+  async _descargarDoc(html, nombre, etiqueta){ this.toast('Generando PDF…');
+    try{ await this._docAPdf(html, nombre); this.toast(etiqueta+' descargado en PDF · listo para enviar por WhatsApp'); }
+    catch(e){ try{ window.odaEstado&&window.odaEstado('pdf: '+((e&&e.message)||e)); }catch(_){} try{ this._docHtmlViejo(html, nombre); this.toast('No se pudo armar el PDF · se descargó el documento para guardarlo como PDF'); }catch(_){ this.toast('No se pudo descargar'); } } }
+  descargarPedido(v){ this._pedidoPagoAviso(v); this._descargarDoc(this.pedidoDocHtml(v), 'Pedido-'+String(v.ov||v.pedido||'OdA').replace(/[^\w-]/g,''), 'Pedido'); }
 
   cotProdOptionsLabeled(){ return this.cotItemOptions().map(o=>{ const esCost=(o.tipo==='materia'||o.tipo==='mezcla'); const suf=esCost?(' · costo '+this.fmt(Math.round(o.costo))+' (solo costo)'):(o.precio?(' ('+this.fmt(o.precio)+')'):''); return {codigo:o.codigo, precio:o.precio, label:({producto:'PT',kit:'Kit',materia:'Materia',mezcla:'Mezcla'}[o.tipo]||'')+' · '+o.nombre+suf}; }); }
   onPickVenProd(e){ const val=String(e.target.value||''); const list=this.ventasProductoOptions(); const lbl=(o)=>o.codigo+' · '+o.nombre+' ('+this.fmt(o.precio)+')'; let opt=list.find(o=>lbl(o)===val); if(!opt){ const k=this.normKey(val); opt=list.find(o=>this.normKey(o.nombre)===k) || list.find(o=>this.normKey(o.codigo)===k) || list.find(o=>this.normKey(o.nombre).includes(k) && k.length>=3); } this.setState(s=>({draft:{...s.draft,_selProdText:val,_selProd:(opt?opt.codigo:''),_selValor:(opt?opt.precio:s.draft._selValor),_selDesc:''}})); }
