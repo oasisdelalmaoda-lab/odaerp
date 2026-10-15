@@ -13019,7 +13019,6 @@ Instrucciones de respuesta:
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
-      +this.pedidoPagoHtml(v)
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
@@ -13093,6 +13092,7 @@ Instrucciones de respuesta:
         +(pagado>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#4C6149;font-weight:700;margin-top:4px;"><span>Pagado</span><span>'+this.fmt(pagado)+'</span></div>'):'')
         +(saldo>0?('<div style="display:flex;justify-content:space-between;padding:5px 0;color:#B5503C;font-weight:700;"><span>Saldo por cobrar</span><span>'+this.fmt(saldo)+'</span></div>'):'')
       +'</div>'
+      +this.pedidoPagoHtml(v)
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
