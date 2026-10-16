@@ -12858,7 +12858,7 @@ Instrucciones de respuesta:
     if((d.origen||'manual')==='manual' && _esNueva){ const cel=String(d.celular||'').replace(/\D/g,''); const dir=String(d.direccion||'').trim();
       if(cel.length<10){ this.toast('Falta el celular del cliente (10 dígitos)'); return; }
       if(!String(d.ciudad||'').trim()){ this.toast('Falta la ciudad del cliente'); return; }
-      if(dir.length<6){ this.toast('Falta la dirección de entrega · si recoge, escribe «Recoge en oficina»'); return; } } if(!(d.items||[]).length){ this.toast('Agrega al menos un producto'); return; } if((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && !d.consignTienda){ this.toast('Elige la tienda o vendedor del que se descuenta la consignación'); return; }
+      /* 16-oct: la dirección ya NO bloquea el guardado (pedidos que recogen, entregas a mano, etc.) */ if(dir.length<6 && !d.direccion){ d.direccion=''; } } if(!(d.items||[]).length){ this.toast('Agrega al menos un producto'); return; } if((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && !d.consignTienda){ this.toast('Elige la tienda o vendedor del que se descuenta la consignación'); return; }
     // BLOQUEO: no registrar dos ventas con el mismo número de pedido.
     { const _pn=this.pedidoNum({pedido:d.pedido||''});
       if(_pn){ const _dup=(this.state.ventas||[]).find(v=>v.id!==d.id && !v.cancelada && v.origen!=='historico' && this.pedidoNum(v)===_pn);
