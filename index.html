@@ -4761,7 +4761,7 @@
                   <sc-for list="{{ fcjMovs }}" as="m" hint-placeholder-count="5">
                     <div onClick="{{ m.onEdit }}" style="display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border-subtle);font-size:13px;cursor:pointer;">
                       <span style="color:var(--text-muted);width:74px;flex-shrink:0;">{{ m.fechaFmt }}</span>
-                      <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.concepto }}<span style="display:block;font-size:11px;color:var(--text-muted);">{{ m.categoria }} · {{ m.cuenta }}<sc-if value="{{ m.ajustado }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(167,134,89,0.16);color:var(--brand-primary);">Ajustado</span></sc-if></span></span>
+                      <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.concepto }}<span style="display:block;font-size:11px;color:var(--text-muted);">{{ m.categoria }} · {{ m.cuenta }}<sc-if value="{{ m.esFinax }}" hint-placeholder-val="{{ false }}"><span title="Movimiento hecho por el bot Finax" style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(79,120,249,0.14);color:#4F78F9;">{{ m.finax }}</span></sc-if><sc-if value="{{ m.ajustado }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(167,134,89,0.16);color:var(--brand-primary);">Ajustado</span></sc-if></span></span>
                       <span style="font-weight:800;white-space:nowrap;color:{{ m.color }};">{{ m.signo }}{{ m.montoFmt }}</span>
                     </div>
                   </sc-for>
@@ -14853,6 +14853,14 @@ Instrucciones de respuesta:
       out[nueva]=a[k]; delete out[k]; hubo=true; });
     return hubo? out : a; }
   movAjustesGet(){ if(this.state.movAjustes) return this._migrarClavesAjustes(this.state.movAjustes); let a=null; try{ a=JSON.parse(localStorage.getItem('oda_hub_movajustes_v1')); }catch(e){} return this._migrarClavesAjustes(a||{}); }
+  // 20-oct: ¿qué hizo Finax en esta transacción? '' | 'Finax' (lo registró) | 'Editado por Finax'.
+  _movFinax(m){ if(!m) return ''; const es=(o)=>!!o && (o.creadoPor==='Finax' || o.creadoPorId==='finax' || o._origen==='finax' || o.por==='Finax' || o.porId==='finax');
+    const ed=(o)=>!!o && (o.editadoPor==='Finax' || o.editadoPorId==='finax');
+    if(m.cobroId && (m.ventaIds||[])[0]){ const v=(this.state.ventas||[]).find(x=>x.id===m.ventaIds[0]); const c=v&&(v.cobros||[]).find(x=>x.id===m.cobroId); if(es(c)) return 'Finax'; return ''; }
+    let src=null; if(m.origen==='manual') src=(this.state.movimientos||[]).find(x=>x.id===(m.trasladoId||m.id));
+    else if(m.origen==='liquidacion') src=(this.state.liquidaciones||[]).find(x=>String(m.id||'').indexOf(x.id+'-')===0);
+    if(!src && m.gastoFijoId) src=(this.state.gastosFijos||[]).find(x=>x.id===m.gastoFijoId);
+    return es(src)? 'Finax' : (ed(src)? 'Editado por Finax' : ''); }
   setMovAjuste(id, patch){ const m={...this.movAjustesGet()};
     // Cada ajuste lleva sello de tiempo (_ts): así, cuando la config llega de la nube
     // (eco realtime o guardado de otro equipo), el más nuevo gana y el cambio no se pierde.
@@ -18595,7 +18603,7 @@ Instrucciones de respuesta:
       if(cuentaSel!=='todas'){ movs=cm.movs.filter(m=>m.cuenta===cuentaSel); ing=movs.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0); eg=movs.filter(m=>m.tipo==='egreso').reduce((a,m)=>a+m.monto,0); saldoTot=this.cuentaSaldo(cuentaSel); }
       out.fcjTotal=this.fmt(Math.round(saldoTot)); out.fcjTotalColor=(saldoTot<0?'var(--oda-sale)':'var(--text-strong)'); out.fcjTotalLabel=(cuentaSel==='todas'?'Saldo total':'Saldo · '+cuentaSel);
       out.fcjIng=this.fmt(Math.round(ing)); out.fcjEg=this.fmt(Math.round(eg)); out.fcjNeto=this.fmt(Math.round(ing-eg)); out.fcjNetoColor=(ing-eg)>=0?'#4C6149':'var(--oda-sale)';
-      out.fcjMovs=movs.map(m=>({id:m.id, fechaFmt:this.fmtFecha(m.fecha)+(m.ts?(' · '+new Date(m.ts).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})):''), concepto:m.concepto||m.categoria, categoria:m.categoria, cuenta:m.cuenta||'\u2014', signo:(m.tipo==='ingreso'?'+':'\u2212'), montoFmt:this.fmt(Math.round(m.monto)), color:(m.tipo==='ingreso'?'#4C6149':'var(--oda-sale)'), editable:m.editable, ajustado:!!m.ajustado, onEdit:()=>this.verMovimiento(m)}));
+      out.fcjMovs=movs.map(m=>({id:m.id, fechaFmt:this.fmtFecha(m.fecha)+(m.ts?(' · '+new Date(m.ts).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})):''), concepto:m.concepto||m.categoria, categoria:m.categoria, cuenta:m.cuenta||'\u2014', signo:(m.tipo==='ingreso'?'+':'\u2212'), montoFmt:this.fmt(Math.round(m.monto)), color:(m.tipo==='ingreso'?'#4C6149':'var(--oda-sale)'), editable:m.editable, ajustado:!!m.ajustado, finax:this._movFinax(m), esFinax:!!this._movFinax(m), onEdit:()=>this.verMovimiento(m)}));
       out.fcjVacio=movs.length===0;
       // Transacciones anuladas: quedan fuera de la caja pero visibles para poder revertirlas.
       { const _an=this.movsAnulados(); out.fcjAnulHay=_an.length>0 && !!out.isAdmin; out.fcjAnulN=String(_an.length);
