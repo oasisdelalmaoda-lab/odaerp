@@ -412,6 +412,38 @@
             <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);">{{ crumb }}</div>
             <div style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;line-height:1.1;margin-top:1px;">{{ pageTitle }}</div>
           </div>
+          <sc-if value="{{ maBellShow }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;flex-shrink:0;">
+              <button onClick="{{ maCampToggle }}" title="Revisión diaria de anuncios" aria-label="Avisos de Meta Ads" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--border-subtle);background:var(--surface-card);color:{{ maBellColor }};cursor:pointer;padding:0;" style-hover="border-color:var(--border-strong);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                <sc-if value="{{ maBellHayN }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:99px;background:#B5503C;color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ maBellN }}</span></sc-if>
+              </button>
+              <sc-if value="{{ maCampAbierta }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ maCampCerrar }}" style="position:fixed;inset:0;z-index:30;"></div>
+                <div style="position:absolute;right:0;top:46px;z-index:31;width:360px;max-width:calc(100vw - 32px);background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;">
+                  <div style="padding:14px 16px;border-bottom:1px solid var(--border-subtle);">
+                    <div style="font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Meta Ads · revisión diaria</div>
+                    <div style="font-size:14px;font-weight:800;margin-top:3px;">{{ maCampTitulo }}</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;text-wrap:pretty;">{{ maCampTexto }}</div>
+                  </div>
+                  <div style="max-height:320px;overflow-y:auto;">
+                    <sc-for list="{{ maCampItems }}" as="x" hint-placeholder-count="0">
+                      <div style="padding:10px 16px;border-bottom:1px solid var(--border-subtle);">
+                        <div style="font-size:12.5px;font-weight:700;">{{ x.anuncio }}</div>
+                        <div style="font-size:11px;color:var(--text-muted);">{{ x.sub }} · {{ x.dat }}</div>
+                        <div style="font-size:11.5px;color:{{ x.color }};margin-top:3px;text-wrap:pretty;">{{ x.mot }}</div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ maCampHayMas }}" hint-placeholder-val="{{ false }}"><div style="padding:8px 16px;font-size:11.5px;color:var(--text-muted);">{{ maCampMas }}</div></sc-if>
+                  </div>
+                  <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
+                    <button onClick="{{ maCampIr }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border:none;border-radius:var(--radius-pill);background:var(--brand-ink);color:var(--text-on-brand);cursor:pointer;">Ver la revisión completa</button>
+                    <sc-if value="{{ maPushPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ maPushOn }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:7px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ maPushBg }};color:{{ maPushFg }};cursor:pointer;">{{ maPushL }}</button></sc-if>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
           <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px;background:{{ accessBg }};color:{{ accessColor }};">
             <span style="width:7px;height:7px;border-radius:50%;background:currentColor;"></span>{{ accessLabel }}
           </div>
@@ -5309,6 +5341,102 @@
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-top:20px;">
                 <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                  <div style="min-width:0;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Revisión diaria de anuncios</h3>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Cada anuncio, últimos 4, 7 y 8 días completos (sin hoy) · todos los días 9:00 a. m. · solo consulta, no cambia nada en Meta<sc-if value="{{ maHay }}" hint-placeholder-val="{{ false }}"> · {{ maParams }}</sc-if></div>
+                  </div>
+                  <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <sc-if value="{{ maHay }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:800;color:{{ maEstadoColor }};">{{ maEstadoTxt }} · {{ maFecha }}</span></sc-if>
+                    <button onClick="{{ maRevisar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">{{ maCorriendoL }}</button>
+                  </span>
+                </div>
+                <sc-if value="{{ maHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 20px;font-size:12px;color:#8E3F2F;background:rgba(181,80,60,0.08);">{{ maErr }}</div></sc-if>
+                <sc-if value="{{ maNo }}" hint-placeholder-val="{{ true }}"><div style="padding:22px 20px;font-size:12.5px;color:var(--text-muted);text-align:center;text-wrap:pretty;">Todavía no hay una revisión guardada. Corre «Revisar ahora» o espera a la de las 9:00 a. m.</div></sc-if>
+                <sc-if value="{{ maHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
+                    <sc-if value="{{ maIncompleto }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid rgba(181,80,60,0.35);background:rgba(181,80,60,0.06);border-radius:var(--radius-md);padding:10px 14px;font-size:12px;color:#8E3F2F;">
+                        <div style="font-weight:800;margin-bottom:4px;">No se pudo completar la revisión. Falta esta información:</div>
+                        <sc-for list="{{ maErrores }}" as="e" hint-placeholder-count="0"><div>· {{ e.t }}</div></sc-for>
+                      </div>
+                    </sc-if>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+                      <sc-for list="{{ maResumen }}" as="p" hint-placeholder-count="3">
+                        <div onClick="{{ p.on }}" style="cursor:pointer;border:1px solid {{ p.bd }};background:{{ p.bg }};border-radius:var(--radius-md);padding:12px 14px;">
+                          <div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-size:12.5px;font-weight:800;">{{ p.label }}</span><span style="font-size:11px;color:var(--text-muted);">{{ p.fechas }}</span></div>
+                          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:9px;">
+                            <span><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Inversión</span><span style="font-size:13px;font-weight:700;">{{ p.inv }}</span></span>
+                            <span><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Compras</span><span style="font-size:13px;font-weight:700;">{{ p.comp }}</span></span>
+                            <span><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">CPA general</span><span style="font-size:13px;font-weight:700;">{{ p.cpa }}</span></span>
+                            <span><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">ROAS general</span><span style="font-size:13px;font-weight:700;">{{ p.roas }}</span></span>
+                          </div>
+                          <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">{{ p.nAnu }} anuncios · <strong style="color:#B5503C;">{{ p.nCpa }}</strong> CPA alto · <strong style="color:#B5503C;">{{ p.nRoas }}</strong> ROAS bajo · <strong style="color:#7A5E36;">{{ p.nSin }}</strong> sin compras</div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ maHayPrior }}" hint-placeholder-val="{{ false }}">
+                      <div>
+                        <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;">Revisión prioritaria</div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <sc-for list="{{ maPrior }}" as="x" hint-placeholder-count="0">
+                            <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:12.5px;"><a href="{{ x.link }}" target="_blank" rel="noopener" style="font-weight:700;color:var(--brand-primary);">{{ x.anuncio }}</a><span style="color:var(--text-muted);font-size:11.5px;">{{ x.campana }} · {{ x.estado }}</span><span style="flex-basis:100%;color:var(--text-body);font-size:12px;">{{ x.razon }}</span></div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <div>
+                      <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;">Alertas · {{ maPerLabel }}</div>
+                      <sc-if value="{{ maSinAlertasPer }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#4C6149;font-weight:700;">Sin incumplimientos en este periodo.</div></sc-if>
+                      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+                        <sc-for list="{{ maAlertasPer }}" as="a" hint-placeholder-count="0">
+                          <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:11px 14px;background:var(--surface-card);">
+                            <div style="font-size:10.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:{{ a.color }};">{{ a.titulo }} · {{ a.estado }}</div>
+                            <a href="{{ a.link }}" target="_blank" rel="noopener" style="display:block;font-size:13px;font-weight:700;color:var(--text-strong);margin-top:4px;">{{ a.anuncio }}</a>
+                            <div style="font-size:11.5px;color:var(--text-muted);">{{ a.campana }} · {{ a.conjunto }}</div>
+                            <div style="font-size:12px;margin-top:6px;font-variant-numeric:tabular-nums;">{{ a.datos }}</div>
+                            <div style="margin-top:6px;display:flex;flex-direction:column;gap:2px;"><sc-for list="{{ a.motivos }}" as="m" hint-placeholder-count="1"><span style="font-size:12px;color:{{ a.color }};">· {{ m.t }}</span></sc-for></div>
+                            <div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">{{ a.accion }}</div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+                      <sc-for list="{{ maTend }}" as="g" hint-placeholder-count="4">
+                        <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 13px;">
+                          <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:800;">{{ g.t }}</span><span style="font-size:12px;font-weight:800;color:var(--brand-primary);">{{ g.n }}</span></div>
+                          <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="0"><div style="font-size:11.5px;color:var(--text-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="{{ i.t }}">{{ i.t }}</div></sc-for>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div><button onClick="{{ maToggleTabla }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">{{ maVerTablaL }}</button></div>
+                    <sc-if value="{{ maVerTabla }}" hint-placeholder-val="{{ false }}">
+                      <div style="overflow-x:auto;border:1px solid var(--border-subtle);border-radius:var(--radius-md);">
+                        <div style="min-width:1120px;font-size:12px;">
+                          <div style="display:grid;grid-template-columns:200px 220px 80px 110px 70px 110px 70px 90px minmax(200px,1fr);background:var(--surface-linen);font-weight:700;font-size:11px;border-bottom:1px solid var(--border-strong);">
+                            <span style="padding:8px 10px;">Campaña</span><span style="padding:8px 10px;">Anuncio</span><span style="padding:8px 10px;">Estado</span><span style="padding:8px 10px;text-align:right;">Importe gastado</span><span style="padding:8px 10px;text-align:right;">Compras</span><span style="padding:8px 10px;text-align:right;">CPA</span><span style="padding:8px 10px;text-align:right;">ROAS</span><span style="padding:8px 10px;">Cumplimiento</span><span style="padding:8px 10px;">Alertas</span>
+                          </div>
+                          <sc-for list="{{ maFilas }}" as="f" hint-placeholder-count="0">
+                            <div style="display:grid;grid-template-columns:200px 220px 80px 110px 70px 110px 70px 90px minmax(200px,1fr);border-bottom:1px solid var(--border-subtle);align-items:center;">
+                              <span style="padding:7px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="{{ f.campana }}">{{ f.campana }}</span>
+                              <a href="{{ f.link }}" target="_blank" rel="noopener" title="{{ f.anuncio }}" style="padding:7px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;color:var(--brand-primary);">{{ f.anuncio }}</a>
+                              <span style="padding:7px 10px;">{{ f.estado }}</span>
+                              <span style="padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;">{{ f.gasto }}</span>
+                              <span style="padding:7px 10px;text-align:right;">{{ f.compras }}</span>
+                              <span style="padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;">{{ f.cpa }}</span>
+                              <span style="padding:7px 10px;text-align:right;">{{ f.roas }}</span>
+                              <span style="padding:7px 10px;font-weight:700;color:{{ f.cumpleColor }};">{{ f.cumple }}</span>
+                              <span style="padding:7px 10px;font-size:11.5px;color:var(--text-muted);text-wrap:pretty;">{{ f.alertas }}</span>
+                            </div>
+                          </sc-for>
+                          <div style="padding:9px 10px;background:var(--surface-linen);font-weight:700;font-size:11.5px;">{{ maTot }}</div>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-top:20px;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                   <div>
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">De dónde vienen los pedidos</h3>
                     <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Según el enlace por el que entró cada cliente a la tienda (UTM, Google, Meta, referente) · {{ mktPeriodo }}</div>
@@ -9157,6 +9285,46 @@ class Component extends DCLogic {
     return this._mktAplicar('presupuesto', { id, diario:n }, 'Presupuesto diario de '+tipo+' «'+nombre+'» → '+this.fmt(n));
   }
   // Abrir una campaña despliega sus conjuntos y anuncios EN LA MISMA LISTA (acordeón), sin modal.
+  // 21-oct: revisión diaria de Meta Ads por anuncio (función meta-alertas → tabla meta_alertas).
+  async cargarMetaAlertas(){ try{ const sb=this._sbClient(); if(!sb || !this.cloudOn()) return;
+      const { data, error }=await sb.from('meta_alertas').select('id,data,actualizado').order('id',{ascending:false}).limit(1);
+      if(error){ this.setState({ maErr:(/does not exist|relation|schema cache|Could not find the table/i.test(error.message)?'Falta correr supabase-meta-alertas.sql en Supabase':error.message) }); return; }
+      this.setState({ metaAlertas:(data&&data[0]&&data[0].data)||null, maErr:'' }); }catch(e){ this.setState({ maErr:String((e&&e.message)||e) }); } }
+  // 21-oct: avisos de la revisión de Meta Ads en el COMPUTADOR (push del navegador, aunque el Hub esté cerrado) + campanita.
+  VAPID_PUBLIC='BPhTrxupKYDNBKZwzg6XDAM8rIr_EnQMkRHGcleZ0J8uEuoYJGgq_A7a3sIfigki4eurngrMJT12QBCfqeqHc1g';
+  _b64ToU8(b){ const p='='.repeat((4-b.length%4)%4); const s=atob((b+p).replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from([...s].map(c=>c.charCodeAt(0))); }
+  _maPuedeAviso(){ try{ const a=this.access()||{}; return !!a.admin || this._modLevel(a,'marketing')==='write'; }catch(e){ return false; } }
+  _maVeCampana(){ try{ const a=this.access()||{}; return !!a.admin || this._modLevel(a,'marketing')!=='none'; }catch(e){ return false; } }
+  async _maInit(){ if(this._maIniciado || !this._maVeCampana()) return; this._maIniciado=true;
+    try{ const q=new URLSearchParams(location.search); if(q.get('mkt')==='alertas'){ this.setState({ module:'marketing', sub:'mktresumen' }); history.replaceState(null,'',location.pathname); } }catch(e){}
+    try{ navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', (ev)=>{ if(ev.data && ev.data.tipo==='abrir') this.setState({ module:'marketing', sub:'mktresumen', maCampAbierta:false }); }); }catch(e){}
+    await this.cargarMetaAlertas();
+    try{ if('serviceWorker' in navigator){ const reg=await navigator.serviceWorker.getRegistration('./'); const sub=reg && await reg.pushManager.getSubscription(); this.setState({ maPushEstado: sub? 'on' : (('Notification' in window && Notification.permission==='denied')?'denegado':'off') }); } else this.setState({ maPushEstado:'nosoporta' }); }catch(e){}
+    try{ const sb=this._sbClient(); if(sb && !this._maSub) this._maSub=sb.channel('oda-meta-alertas').on('postgres_changes',{event:'*',schema:'public',table:'meta_alertas'},(pl)=>{ const d=pl&&pl.new&&pl.new.data; if(!d) return; this.setState({ metaAlertas:d });
+        if(this.state.maPushEstado!=='on' && d.push && this._maPuedeAviso() && !this._maAvisado){ this._maAvisado=d.fecha; this._deskNotify(d.push.titulo, d.push.texto); } }).subscribe(); }catch(e){} }
+  async maPushToggle(){ if(this.state.maPushBusy) return; this.setState({ maPushBusy:true });
+    try{
+      if(!('serviceWorker' in navigator) || !('PushManager' in window)) throw new Error('Este navegador no permite notificaciones');
+      const reg=await navigator.serviceWorker.register('./hub-sw.js', { scope:'./' }); await navigator.serviceWorker.ready;
+      const sb=this._sbClient(); let sub=await reg.pushManager.getSubscription();
+      if(this.state.maPushEstado==='on'){ if(sub){ try{ await sb.from('push_suscripciones').delete().eq('endpoint', sub.endpoint); }catch(e){} await sub.unsubscribe(); } this.setState({ maPushEstado:'off', maPushBusy:false }); this.toast('Avisos apagados en este computador'); return; }
+      const perm=await Notification.requestPermission(); if(perm!=='granted'){ this.setState({ maPushEstado:(perm==='denied'?'denegado':'off'), maPushBusy:false }); this.toast(perm==='denied'?'El navegador bloqueó las notificaciones: actívalas en la configuración del sitio':'No se activaron'); return; }
+      if(!sub) sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:this._b64ToU8(this.VAPID_PUBLIC) });
+      const u=(this.users||[]).find(x=>x.id===this.state.userId)||{}; const cu=this.state.cloudUser||{};
+      const fila={ endpoint:sub.endpoint, user_key:String(u.email||cu.email||'').toLowerCase(), nombre:u.name||'', sub:sub.toJSON(), ua:('HUB · '+navigator.userAgent).slice(0,180), actualizado:new Date().toISOString(), es_admin:!!(this.isAdminUser&&this.isAdminUser()), user_uid:cu.id||null };
+      let { error }=await sb.from('push_suscripciones').upsert(fila, { onConflict:'endpoint' }).select('endpoint');
+      if(error && /es_admin|user_uid|column/i.test(String(error.message||''))){ delete fila.es_admin; delete fila.user_uid; ({ error }=await sb.from('push_suscripciones').upsert(fila, { onConflict:'endpoint' }).select('endpoint')); }
+      if(error){ await sub.unsubscribe(); throw error; }
+      this.setState({ maPushEstado:'on', maPushBusy:false }); this.toast('Listo: este computador recibirá la revisión diaria de anuncios');
+    }catch(e){ this.setState({ maPushBusy:false }); this.toast('No se pudieron activar: '+((e&&e.message)||e)); try{ window.odaEstado && window.odaEstado('hub-push: '+((e&&e.message)||e)); }catch(_e){} } }
+  maVisto(){ const f=(this.state.metaAlertas&&this.state.metaAlertas.fecha)||''; try{ localStorage.setItem('oda_hub_ma_visto_v1', f); }catch(e){} this.setState({ maVistoF:f }); }
+  async revisarMetaAlertas(){ if(this.state.maCorriendo) return; this.setState({ maCorriendo:true, maErr:'' });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('meta-alertas', { body:{ sinPush:true } });
+      if(error) throw new Error('la función «meta-alertas» no respondió (¿está desplegada?)');
+      if(data && data.periodos) this.setState({ metaAlertas:data }); else await this.cargarMetaAlertas();
+      this.toast(data && data.estado==='completo' ? 'Revisión de anuncios lista' : 'Revisión incompleta: '+(((data&&data.errores)||[])[0]||'sin detalle'));
+    }catch(e){ this.setState({ maErr:String((e&&e.message)||e) }); try{ window.odaEstado && window.odaEstado('meta-alertas: '+((e&&e.message)||e)); }catch(_e){} }
+    this.setState({ maCorriendo:false }); }
   abrirMktCamp(id, nombre){ const cur=this.state.mktExpId||''; const abre=(cur!==id); this.setState({ mktExpId:(abre? (id||'') : ''), mktExpNombre:nombre||'' }); if(abre && id) this.mktCargarAnunciosCamp(id); }
   // 21-oct: al abrir una campaña se piden SOLO sus anuncios con entrega en el periodo elegido (consulta chica).
   _mktAdsKey(id){ return String(id||'')+'|'+(this.state.mktRango||'d30'); }
@@ -16840,6 +17008,22 @@ Instrucciones de respuesta:
 
     if(st.view!=='app') return out;
 
+    { setTimeout(()=>{ try{ this._maInit(); }catch(e){} }, 0);
+      const MA=st.metaAlertas; const vf=(st.maVistoF!=null? st.maVistoF : (()=>{ try{ return localStorage.getItem('oda_hub_ma_visto_v1')||''; }catch(e){ return ''; } })());
+      const a4=(MA && Array.isArray(MA.alertas))? MA.alertas.filter(a=>a.periodo==='d4') : [];
+      out.maBellShow=this._maVeCampana(); out.maBellN=(MA && MA.fecha!==vf)? (a4.length || (MA.estado!=='completo'?1:0)) : 0; out.maBellHayN=out.maBellN>0;
+      out.maBellColor=out.maBellHayN?'#B5503C':'var(--text-muted)';
+      out.maCampAbierta=!!st.maCampAbierta; out.maCampToggle=()=>{ const ab=!this.state.maCampAbierta; this.setState({ maCampAbierta:ab }); if(ab) this.maVisto(); };
+      out.maCampCerrar=()=>this.setState({ maCampAbierta:false });
+      out.maCampIr=()=>this.setState({ module:'marketing', sub:'mktresumen', maCampAbierta:false });
+      out.maCampTitulo=MA? ((MA.push&&MA.push.titulo)||'Revisión de anuncios') : 'Revisión de anuncios';
+      out.maCampTexto=MA? ((MA.push&&MA.push.texto)||'') : 'Todavía no hay una revisión guardada.';
+      const Fm=(n)=>n==null?'Sin datos':this.fmt(Math.round(n));
+      out.maCampItems=a4.slice(0,8).map((a,i)=>({ k:a.adId+i, anuncio:a.anuncio, sub:a.campana+' · '+a.estado, mot:a.motivos.join(' '), dat:'Gasto '+Fm(a.gasto)+' · '+a.compras+' compras', color:(a.tipo==='sin_compras'?'#7A5E36':'#B5503C') }));
+      out.maCampMas=a4.length>8? ('y '+(a4.length-8)+' más'):''; out.maCampHayMas=a4.length>8;
+      const pe=st.maPushEstado||'off'; out.maPushPuede=this._maPuedeAviso() && pe!=='nosoporta';
+      out.maPushL=st.maPushBusy?'…':(pe==='on'?'Avisos en este computador: activados':(pe==='denegado'?'Avisos bloqueados por el navegador':'Activar avisos en este computador'));
+      out.maPushOn=()=>this.maPushToggle(); out.maPushBg=pe==='on'?'rgba(98,123,96,0.14)':'transparent'; out.maPushFg=pe==='on'?'#4C6149':'var(--text-body)'; }
     out.userName=u.name; out.userInitials=u.initials; out.userRole=u.role; out.userColor=u.color; out.isAdmin=isAdmin;
     out.canWrite=canWrite; out.noAdmin=!isAdmin;
     const subVis=(mod,key)=>{ const a=acc||{}; if(a.admin) return true; const k=mod+'__'+key; if(a[k]!==undefined) return a[k]!=='none'; const al=this._subAlias(a,k); if(al!==undefined) return al!=='none'; return (a[mod]||'none')!=='none'; };
@@ -18111,12 +18295,51 @@ Instrucciones de respuesta:
       });
       const _kpiAll=this.mktKpis(); if(_conInv.length && _kpiAll.spend>0 && _kpiAll.roas<2) alerts.unshift({tipo:'Cuenta', txt:'ROAS total '+_kpiAll.roas.toFixed(1)+'x en el periodo: la pauta no se está pagando sola.', color:'#B5503C'});
       const _ord={'Cuenta':0,'Sin ventas':1,'Fatiga de anuncio':2,'ROAS bajo':3,'CTR bajo':4,'Pausada con buen retorno':5,'Oportunidad':6}; alerts.sort((a,b)=>(_ord[a.tipo]??9)-(_ord[b.tipo]??9));
+      // 21-oct: las alertas salen de la revisión diaria por anuncio (reglas del equipo: CPA > $73.000, ROAS < 1,64, gasto > $73.000 sin compras).
+      { if(!this._maTs || Date.now()-this._maTs>10*60*1000){ this._maTs=Date.now(); setTimeout(()=>this.cargarMetaAlertas(),0); }
+        const MA=st.metaAlertas; const F=(n)=>n==null?'Sin datos':this.fmt(Math.round(n)); const R2=(n)=>n==null?'Sin datos':Number(n).toFixed(2).replace('.',',');
+        const fF=(s)=>{ try{ return new Date(s+'T12:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'short'}); }catch(e){ return s; } };
+        out.maHay=!!(MA && Array.isArray(MA.periodos)); out.maNo=!out.maHay; out.maErr=st.maErr||''; out.maHayErr=!!st.maErr;
+        out.maCorriendoL=st.maCorriendo?'Revisando…':'Revisar ahora'; out.maRevisar=()=>this.revisarMetaAlertas();
+        if(out.maHay){
+          const per=st.maPer||'d4'; const P=MA.periodos.find(p=>p.key===per)||MA.periodos[0];
+          out.maFecha=fF(MA.fecha); out.maCompleto=MA.estado==='completo'; out.maIncompleto=!out.maCompleto;
+          out.maEstadoTxt=out.maCompleto?'Revisión completa':'Revisión INCOMPLETA'; out.maEstadoColor=out.maCompleto?'#4C6149':'#B5503C';
+          out.maErrores=(MA.errores||[]).map((e,i)=>({k:'e'+i, t:e}));
+          out.maParams='CPA máx. '+F(MA.params&&MA.params.cpaMax)+' · ROAS mín. '+R2(MA.params&&MA.params.roasMin)+' · gasto sin compras > '+F(MA.params&&MA.params.gastoSinCompras);
+          out.maResumen=MA.periodos.map(p=>{ const r=p.resumen||{}; return { key:p.key, label:p.label.replace(' completos',''), fechas:fF(p.since)+' – '+fF(p.until),
+            inv:F(r.inversion), comp:String(r.compras||0), cpa:F(r.cpa), roas:R2(r.roas), nCpa:r.nCpa||0, nRoas:r.nRoas||0, nSin:r.nSinCompras||0, nAnu:r.nAnuncios||0,
+            bg:(p.key===per?'rgba(167,134,89,0.10)':'transparent'), bd:(p.key===per?'var(--brand-primary)':'var(--border-subtle)'), on:()=>this.setState({maPer:p.key}) }; });
+          out.maPrior=((MA.tendencias&&MA.tendencias.prioritarios)||[]).slice(0,6).map(x=>({ k:x.adId, anuncio:x.anuncio, campana:x.campana, estado:x.estado, razon:x.razon, link:x.link }));
+          out.maHayPrior=out.maPrior.length>0;
+          out.maPerLabel=P.label+' · '+fF(P.since)+' al '+fF(P.until);
+          out.maAlertasPer=(MA.alertas||[]).filter(a=>a.periodo===P.key).map((a,i)=>({ k:a.adId+i, titulo:(a.tipo==='sin_compras'?'Gasto elevado sin compras':'Alerta de Meta Ads'), campana:a.campana, conjunto:a.conjunto, anuncio:a.anuncio, estado:a.estado,
+            datos:'Gasto '+F(a.gasto)+' · Compras '+a.compras+' · CPA '+F(a.cpa)+' · ROAS '+R2(a.roas), motivos:a.motivos.map((m,j)=>({k:j,t:m})), accion:a.accion, link:a.link,
+            color:(a.tipo==='sin_compras'?'#7A5E36':'#B5503C') }));
+          out.maHayAlertasPer=out.maAlertasPer.length>0; out.maSinAlertasPer=!out.maHayAlertasPer;
+          out.maVerTabla=!!st.maVerTabla; out.maVerTablaL=st.maVerTabla?'Ocultar el reporte detallado':'Ver el reporte detallado de este periodo'; out.maToggleTabla=()=>this.setState(s=>({maVerTabla:!s.maVerTabla}));
+          out.maFilas=(P.filas||[]).map(f=>({ k:f.adId, campana:f.campana, anuncio:f.anuncio, estado:f.estado, gasto:F(f.gasto), compras:String(f.compras), cpa:F(f.cpa), roas:R2(f.roas), cumple:f.cumple,
+            cumpleColor:(f.cumple==='Cumple'?'#4C6149':'#B5503C'), alertas:(f.alertas||[]).join(' ')||'—', link:f.link }));
+          const r=P.resumen||{}; out.maTot='Inversión '+F(r.inversion)+' · Compras '+(r.compras||0)+' · CPA '+F(r.cpa)+' · ROAS '+R2(r.roas)+' · '+(r.nCpa||0)+' con CPA alto · '+(r.nRoas||0)+' con ROAS bajo · '+(r.nSinCompras||0)+' sin compras sobre el límite';
+          const T=MA.tendencias||{};
+          out.maTend=[
+            { k:'cpa', t:'CPA aumentando', n:(T.cpaSube||[]).length, items:(T.cpaSube||[]).slice(0,5).map(x=>({k:x.adId, t:x.anuncio+' · '+F(x.cpa8)+' (8 d) → '+F(x.cpa4)+' (4 d)'})) },
+            { k:'roas', t:'ROAS disminuyendo', n:(T.roasBaja||[]).length, items:(T.roasBaja||[]).slice(0,5).map(x=>({k:x.adId, t:x.anuncio+' · '+R2(x.roas8)+' (8 d) → '+R2(x.roas4)+' (4 d)'})) },
+            { k:'sin', t:'Acumulan gasto sin compras', n:(T.gastoSinCompras||[]).length, items:(T.gastoSinCompras||[]).slice(0,5).map(x=>({k:x.adId, t:x.anuncio+' · '+F(x.gasto4)+' / '+F(x.gasto7)+' / '+F(x.gasto8)+' (4/7/8 d)'})) },
+            { k:'ok', t:'Cumplen los objetivos', n:(T.cumplen||[]).length, items:(T.cumplen||[]).slice(0,5).map(x=>({k:x.adId, t:x.anuncio+' · '+x.campana})) } ];
+          // Tarjeta «Alertas» (y app vía marketing_snapshot): las de los últimos 4 días.
+          const a4=(MA.alertas||[]).filter(a=>a.periodo==='d4');
+          alerts.length=0;
+          if(!out.maCompleto) alerts.push({ tipo:'Revisión incompleta', txt:(MA.errores||[]).join(' · ')||'Faltan datos de Meta.', color:'#B5503C' });
+          a4.forEach(a=>alerts.push({ tipo:(a.tipo==='sin_compras'?'Gasto sin compras':'Fuera de objetivo')+' · 4 días · '+a.estado, txt:a.anuncio+' ('+a.campana+'): '+a.motivos.join(' ')+' Gasto '+F(a.gasto)+', '+a.compras+' compras.', color:(a.tipo==='sin_compras'?'#7A5E36':'#B5503C') }));
+          if(out.maCompleto && !a4.length) alerts.push({ tipo:'Revisión '+out.maFecha, txt:'Ningún anuncio incumple los objetivos en los últimos 4 días completos.', color:'#4C6149' });
+        } }
       out.mktAlertas=alerts; out.mktAlertasVacio=alerts.length===0;
       // Resumen de marketing para la app: se publica SOLO desde el render de Marketing → Resumen,
       // con datos reales de Meta (nunca la demo), reutilizando lo ya calculado (misma regla que el informe).
       // ---- De dónde vienen los pedidos (atribución por enlace de entrada: UTM / gclid / fbclid / referente) ----
       { const hoyISO=new Date().toISOString().slice(0,10), ymHoy=hoyISO.slice(0,7);
-        const _vc=(_rk==='d4'||_rk==='d7')? this.mktVentanaCerrada(_rk==='d4'?4:7) : null;
+        const _vc=(_rk==='d4'||_rk==='d7'||_rk==='d30')? this.mktVentanaCerrada(_rk==='d4'?4:(_rk==='d7'?7:30)) : null;
         const rango=(f)=>{ if(!f) return false; if(_vc) return f>=_vc.since && f<=_vc.until; if(_rk==='today') return f===hoyISO; if(_rk==='mes') return f.slice(0,7)===ymHoy; if(_rk==='mesant') return f.slice(0,7)===this.mesShift(ymHoy,-1); return f.slice(0,4)===hoyISO.slice(0,4); };
         const FL={google_ads:['Google Ads','#3F6A7A'], meta_ads:['Meta Ads (Facebook · Instagram)','#7A5E36'], tiktok_ads:['TikTok Ads','#4A4550'], google_organico:['Google (búsqueda orgánica)','#4C6149'], redes:['Redes sociales (orgánico)','#8A5A7A'], email:['Correo','#5F7F8F'], whatsapp:['WhatsApp','#3C8F5A'], referido:['Otros sitios (referido)','#8C7A5B'], otro_utm:['Otro enlace con UTM','#8C7A5B'], directo:['Directo / sin rastro','#9b8e78'] };
         const vs=(this.state.ventas||[]).filter(v=>!v.cancelada && v.origen==='shopify' && !this._esHistorico(v) && rango(this.parseFecha(v.fecha)));
