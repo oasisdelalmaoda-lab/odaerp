@@ -5154,39 +5154,36 @@
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
                   <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Campañas</h3>
-                    <span style="font-size:12px;color:var(--text-muted);">{{ mktTopNota }}</span>
+                    <span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:12px;color:var(--text-muted);">{{ mktTopNota }}</span><button onClick="{{ mktVerTodasOn }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">{{ mktVerTodasL }}</button></span>
                   </div>
-                  <div>
-                    <sc-for list="{{ mktTop }}" as="c" hint-placeholder-count="5">
-                      <div onClick="{{ c.onAbrir }}" style="padding:13px 20px;border-bottom:1px solid var(--border-subtle);cursor:pointer;transition:background 140ms;" style-hover="background:var(--surface-raised);">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                          <span style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:{{ c.moodColor }};"></span>
-                          <span style="flex:1;min-width:0;">
-                            <span style="display:flex;align-items:center;gap:8px;min-width:0;">
-                              <span style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.nombre }}</span>
-                              <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;flex-shrink:0;background:{{ c.estBg }};color:{{ c.estFg }};">{{ c.estLabel }}</span>
-                              <sc-if value="{{ c.ctrl.puede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.ctrl.on }}" style="font-family:inherit;font-size:10.5px;font-weight:700;padding:3px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ c.ctrl.bg }};color:{{ c.ctrl.fg }};cursor:pointer;flex-shrink:0;">{{ c.ctrl.label }}</button></sc-if>
+                  <div style="overflow-x:auto;">
+                    <div style="min-width:1904px;font-size:12.5px;">
+                      <div style="display:grid;grid-template-columns:64px 240px 128px 116px 84px 96px 112px 92px 116px 104px 116px 124px 84px 92px 100px 104px 132px;align-items:stretch;background:var(--surface-linen);border-bottom:1px solid var(--border-strong);font-size:11.5px;font-weight:700;color:var(--text-strong);">
+                        <span onClick="{{ mktSortEntrega }}" style="position:sticky;left:0;z-index:2;background:var(--surface-linen);padding:9px 10px;cursor:pointer;">Act.</span>
+                        <span onClick="{{ mktSortNombre }}" style="position:sticky;left:64px;z-index:2;background:var(--surface-linen);padding:9px 10px;border-right:1px solid var(--border-subtle);cursor:pointer;">Campaña {{ mktSortNombreArr }}</span>
+                        <sc-for list="{{ mktCols }}" as="h" hint-placeholder-count="15">
+                          <span onClick="{{ h.on }}" title="Ordenar por {{ h.label }}" style="padding:9px 10px;text-align:{{ h.align }};line-height:1.25;cursor:pointer;color:{{ h.fg }};" style-hover="background:var(--surface-raised);">{{ h.label }} {{ h.arr }}</span>
+                        </sc-for>
+                      </div>
+                      <sc-for list="{{ mktTop }}" as="c" hint-placeholder-count="6">
+                        <div>
+                          <div style="display:grid;grid-template-columns:64px 240px 128px 116px 84px 96px 112px 92px 116px 104px 116px 124px 84px 92px 100px 104px 132px;align-items:center;border-bottom:1px solid var(--border-subtle);background:var(--surface-card);" style-hover="background:var(--surface-raised);">
+                            <span style="position:sticky;left:0;z-index:1;background:inherit;padding:9px 10px;display:flex;align-items:center;gap:6px;">
+                              <button onClick="{{ c.swOn }}" title="{{ c.swTitle }}" aria-label="{{ c.swTitle }}" style="width:34px;height:19px;border-radius:999px;border:none;padding:0;position:relative;cursor:{{ c.swCursor }};opacity:{{ c.swOp }};background:{{ c.swBg }};transition:background 160ms;flex-shrink:0;"><span style="position:absolute;top:2px;left:{{ c.swKnob }};width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(58,51,38,0.3);transition:left 160ms;"></span></button>
                             </span>
-                            <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:1px;">{{ c.objetivo }} · inversión {{ c.spendFmt }} · <span style="font-weight:700;color:var(--brand-primary);">{{ c.verLabel }}</span></span>
-                          </span>
-                          <span style="text-align:right;flex-shrink:0;">
-                            <span style="display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;line-height:1;color:{{ c.roasColor }};">{{ c.roasFmt }}</span>
-                            <span style="display:block;font-size:11px;color:var(--text-muted);margin-top:2px;">{{ c.ingresosFmt }}</span>
-                          </span>
-                        </div>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px 12px;margin:10px 0 0 21px;">
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Resultados</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.resultados }} <span style="font-weight:500;color:var(--text-muted);">{{ c.resLabel }}</span></span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Costo / resultado</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.cpaFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Carritos</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.carritosFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Pagos iniciados</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.checkoutsFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Costo / pago iniciado</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.cpCheckoutFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Cierre</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;color:{{ c.cierreColor }};">{{ c.cierreFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">CTR</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.ctrFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Alcance</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ c.alcanceFmt }}</span></span>
-                          <span style="min-width:0;"><span style="display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Frecuencia</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;color:{{ c.frecColor }};">{{ c.frecuencia }}</span></span>
-                        </div>
-                        <sc-if value="{{ c.abierto }}" hint-placeholder-val="{{ false }}">
-                          <div onClick="{{ mktStop }}" style="margin:14px 0 2px 21px;border-top:1px solid var(--border-subtle);padding-top:14px;cursor:default;">
+                            <span style="position:sticky;left:64px;z-index:1;background:inherit;padding:9px 10px;border-right:1px solid var(--border-subtle);min-width:0;">
+                              <span onClick="{{ c.onAbrir }}" title="{{ c.nombre }}" style="display:block;font-weight:700;color:var(--brand-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;" style-hover="text-decoration:underline;">{{ c.nombre }}</span>
+                              <span style="display:block;font-size:10.5px;color:var(--text-muted);margin-top:1px;">{{ c.swHint }}</span>
+                            </span>
+                            <span style="padding:9px 10px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><span style="display:block;">{{ c.presuFmt }}</span><span style="display:block;font-size:10.5px;color:var(--text-muted);">{{ c.presuSub }}</span></span>
+                            <span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.gastoT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.comprasT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700;color:{{ c.roasColor }};">{{ c.roasT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.cpaT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.chT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.cpchT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.carT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.cpcarT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.valorT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.ctrT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:{{ c.frecColor }};">{{ c.frecT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.cpcT }}</span><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ c.cpmT }}</span>
+                            <span style="padding:9px 10px;white-space:nowrap;">
+                              <span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ c.entDot }};"></span>{{ c.entrega }}</span>
+                              <sc-if value="{{ c.hayAlerta }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;margin:3px 0 0 14px;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:999px;background:rgba(181,80,60,0.12);color:#8E3F2F;">{{ c.alerta }}</span></sc-if>
+                            </span>
+                          </div>
+                          <sc-if value="{{ c.abierto }}" hint-placeholder-val="{{ false }}">
+                          <div onClick="{{ mktStop }}" style="position:sticky;left:0;max-width:1180px;margin:0;padding:16px 20px 18px;background:var(--surface-raised);border-bottom:1px solid var(--border-subtle);cursor:default;">
                             <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:12px;">{{ c.det.mkcPeriodo }} · {{ c.det.mkcNota }}</div>
                             <sc-if value="{{ c.det.mkcPuede }}" hint-placeholder-val="{{ false }}">
                               <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:rgba(167,134,89,0.08);border:1px solid var(--border-brand);border-radius:var(--radius-md);padding:11px 14px;margin-bottom:16px;">
@@ -5230,52 +5227,52 @@
                             <sc-if value="{{ c.det.mkcVacio }}" hint-placeholder-val="{{ false }}">
                               <div style="padding:18px;border:1px dashed var(--border-strong);border-radius:var(--radius-sm);text-align:center;color:var(--text-muted);font-size:12.5px;text-wrap:pretty;">Sin anuncios para mostrar.</div>
                             </sc-if>
-                            <div style="display:flex;flex-direction:column;gap:10px;">
-                              <sc-for list="{{ c.det.mkcAds }}" as="a" hint-placeholder-count="0">
-                                <div style="display:flex;gap:14px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:13px 15px;background:var(--surface-card);">
-                                  <sc-if value="{{ a.hayThumb }}" hint-placeholder-val="{{ false }}">
-                                    <div role="img" aria-label="Vista del anuncio" style="width:64px;height:64px;flex-shrink:0;border-radius:10px;border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ a.thumbCss }};"></div>
-                                  </sc-if>
-                                  <div style="flex:1;min-width:0;">
-                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                      <span style="font-size:13px;font-weight:700;">{{ a.nombre }}</span>
-                                      <span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:{{ a.estBg }};color:{{ a.estFg }};">{{ a.estLabel }}</span>
-                                      <span style="font-size:11px;color:var(--text-muted);">{{ a.formato }} · {{ a.conjunto }}</span>
-                                    </div>
-                                    <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;line-height:1.45;text-wrap:pretty;">{{ a.copy }}</div>
-                                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(94px,1fr));gap:8px 12px;margin-top:10px;">
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Inversión</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.spendFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">ROAS</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;color:{{ a.roasColor }};">{{ a.roasFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Compras</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.compras }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Costo / compra</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.cpaFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Carritos</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.carritosFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Pagos inic.</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.checkoutsFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Costo / pago inic.</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.cpChFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Cierre</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.cierreFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">CTR</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.ctrFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Alcance</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.alcanceFmt }}</span></span>
-                                      <span><span style="display:block;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Frecuencia</span><span style="display:block;font-size:12.5px;font-weight:700;margin-top:2px;">{{ a.frecuencia }}</span></span>
-                                    </div>
-                                    <div style="display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;">
-                                      <sc-if value="{{ a.hayLink }}" hint-placeholder-val="{{ false }}">
-                                        <a href="{{ a.link }}" target="_blank" rel="noopener" style="font-size:11.5px;font-weight:700;color:var(--brand-primary);">Ver la publicación →</a>
-                                      </sc-if>
-                                      <sc-if value="{{ a.ctrl.puede }}" hint-placeholder-val="{{ false }}">
-                                        <button onClick="{{ a.ctrl.on }}" style="font-family:inherit;font-size:11px;font-weight:700;padding:5px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:{{ a.ctrl.bg }};color:{{ a.ctrl.fg }};cursor:pointer;">{{ a.ctrl.label }}</button>
-                                      </sc-if>
-                                    </div>
-                                  </div>
+                            <sc-if value="{{ c.det.mkcHayAds }}" hint-placeholder-val="{{ false }}"><div style="overflow-x:auto;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-card);">
+                              <div style="min-width:1810px;font-size:12px;">
+                                <div style="display:grid;grid-template-columns:58px 250px 112px 80px 92px 108px 90px 112px 100px 112px 120px 80px 88px 96px 100px 112px;background:var(--surface-linen);border-bottom:1px solid var(--border-strong);font-size:11px;font-weight:700;color:var(--text-strong);">
+                                  <span style="position:sticky;left:0;z-index:2;background:var(--surface-linen);padding:8px 10px;">Act.</span>
+                                  <span onClick="{{ c.det.mkcSortNombre }}" style="position:sticky;left:58px;z-index:2;background:var(--surface-linen);padding:8px 10px;border-right:1px solid var(--border-subtle);cursor:pointer;">Anuncio {{ c.det.mkcSortNombreArr }}</span>
+                                  <sc-for list="{{ c.det.mkcCols }}" as="h" hint-placeholder-count="14"><span onClick="{{ h.on }}" style="padding:8px 10px;text-align:{{ h.align }};line-height:1.25;cursor:pointer;color:{{ h.fg }};" style-hover="background:var(--surface-raised);">{{ h.label }} {{ h.arr }}</span></sc-for>
                                 </div>
-                              </sc-for>
-                            </div>
+                                <sc-for list="{{ c.det.mkcAds }}" as="a" hint-placeholder-count="0">
+                                  <div style="display:grid;grid-template-columns:58px 250px 112px 80px 92px 108px 90px 112px 100px 112px 120px 80px 88px 96px 100px 112px;align-items:center;border-bottom:1px solid var(--border-subtle);background:var(--surface-card);" style-hover="background:var(--surface-raised);">
+                                    <span style="position:sticky;left:0;z-index:1;background:inherit;padding:8px 10px;">
+                                      <button onClick="{{ a.swOn }}" title="{{ a.swTitle }}" aria-label="{{ a.swTitle }}" style="width:34px;height:19px;border-radius:999px;border:none;padding:0;position:relative;cursor:{{ a.swCursor }};opacity:{{ a.swOp }};background:{{ a.swBg }};transition:background 160ms;"><span style="position:absolute;top:2px;left:{{ a.swKnob }};width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(58,51,38,0.3);transition:left 160ms;"></span></button>
+                                    </span>
+                                    <span style="position:sticky;left:58px;z-index:1;background:inherit;padding:6px 10px;border-right:1px solid var(--border-subtle);display:flex;align-items:center;gap:9px;min-width:0;">
+                                      <span role="img" aria-label="Vista del anuncio" style="width:34px;height:34px;flex-shrink:0;border-radius:6px;border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ a.thumbCss }};"></span>
+                                      <span style="min-width:0;flex:1;">
+                                        <sc-if value="{{ a.hayLink }}" hint-placeholder-val="{{ false }}"><a href="{{ a.link }}" target="_blank" rel="noopener" title="{{ a.nombre }} · ver la publicación" style="display:block;font-weight:700;color:var(--brand-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;">{{ a.nombre }}</a></sc-if>
+                                        <sc-if value="{{ a.sinLink }}" hint-placeholder-val="{{ false }}"><span title="{{ a.nombre }}" style="display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ a.nombre }}</span></sc-if>
+                                        <span title="{{ a.copy }}" style="display:block;font-size:10.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ a.swHint }}</span>
+                                      </span>
+                                    </span>
+                                    <span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.gastoT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.comprasT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700;color:{{ a.roasColor }};">{{ a.roasT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.cpaT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.chT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.cpchT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.carT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.cpcarT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.valorT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.ctrT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:{{ a.frecColor }};">{{ a.frecT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.cpcT }}</span><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.cpmT }}</span>
+                                    <span style="padding:8px 10px;white-space:nowrap;display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ a.entDot }};"></span>{{ a.estLabel }}</span>
+                                  </div>
+                                </sc-for>
+                                <div style="display:grid;grid-template-columns:58px 250px 112px 80px 92px 108px 90px 112px 100px 112px 120px 80px 88px 96px 100px 112px;align-items:center;background:var(--surface-linen);font-weight:700;">
+                                  <span style="position:sticky;left:0;z-index:1;background:var(--surface-linen);padding:9px 10px;"></span>
+                                  <span style="position:sticky;left:58px;z-index:1;background:var(--surface-linen);padding:9px 10px;border-right:1px solid var(--border-subtle);font-size:11px;">{{ c.det.mkcTotLabel }}</span>
+                                  <sc-for list="{{ c.det.mkcTot }}" as="x" hint-placeholder-count="14"><span style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ x.v }}</span></sc-for>
+                                </div>
+                              </div>
+                            </div></sc-if>
                           </div>
                         </sc-if>
+                        </div>
+                      </sc-for>
+                      <div style="display:grid;grid-template-columns:64px 240px 128px 116px 84px 96px 112px 92px 116px 104px 116px 124px 84px 92px 100px 104px 132px;align-items:center;background:var(--surface-linen);border-top:1px solid var(--border-strong);font-weight:700;">
+                        <span style="position:sticky;left:0;z-index:1;background:var(--surface-linen);padding:10px;"></span>
+                        <span style="position:sticky;left:64px;z-index:1;background:var(--surface-linen);padding:10px;border-right:1px solid var(--border-subtle);font-size:11.5px;">{{ mktTotLabel }}</span>
+                        <sc-for list="{{ mktTot }}" as="x" hint-placeholder-count="15"><span style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ x.v }}</span></sc-for>
                       </div>
-                    </sc-for>
-                    <sc-if value="{{ mktTopVacio }}" hint-placeholder-val="{{ false }}">
+                    </div>
+                  </div>
+                  <sc-if value="{{ mktTopVacio }}" hint-placeholder-val="{{ false }}">
                       <div style="padding:24px 20px;font-size:13px;color:var(--text-muted);text-align:center;">Ninguna campaña tuvo inversión en este periodo.</div>
                     </sc-if>
-                  </div>
+
                 </div>
                 <sc-if value="{{ mktPuedeEscribir }}" hint-placeholder-val="{{ false }}">
                   <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 20px;">
@@ -9087,6 +9084,7 @@ class Component extends DCLogic {
     // están incompletos y Meta no tiene preset para eso — van por time_range, ver mktSyncReal).
     {key:'d4',label:'Últimos 4 días',dias:4,preset:'last_7d',factor:4/28,periodo:'Últimos 4 días (sin hoy)'},
     {key:'d7',label:'Últimos 7 días',dias:7,preset:'last_7d',factor:7/28,periodo:'Últimos 7 días (sin hoy)'},
+    {key:'d30',label:'Últimos 30 días',dias:30,preset:'last_30d',factor:30/28,periodo:'Últimos 30 días (sin hoy)'},
     {key:'mes',label:'Este mes',preset:'this_month',factor:30/28,periodo:'Este mes'},
     {key:'mesant',label:'Mes anterior',preset:'last_month',factor:30/28,periodo:'Mes anterior'},
     {key:'year',label:'Este año',preset:'this_year',factor:7.4,periodo:'Este año'},
@@ -9159,10 +9157,34 @@ class Component extends DCLogic {
     return this._mktAplicar('presupuesto', { id, diario:n }, 'Presupuesto diario de '+tipo+' «'+nombre+'» → '+this.fmt(n));
   }
   // Abrir una campaña despliega sus conjuntos y anuncios EN LA MISMA LISTA (acordeón), sin modal.
-  abrirMktCamp(id, nombre){ const cur=this.state.mktExpId||''; this.setState({ mktExpId:(cur===id? '' : (id||'')), mktExpNombre:nombre||'' }); }
+  abrirMktCamp(id, nombre){ const cur=this.state.mktExpId||''; const abre=(cur!==id); this.setState({ mktExpId:(abre? (id||'') : ''), mktExpNombre:nombre||'' }); if(abre && id) this.mktCargarAnunciosCamp(id); }
+  // 21-oct: al abrir una campaña se piden SOLO sus anuncios con entrega en el periodo elegido (consulta chica).
+  _mktAdsKey(id){ return String(id||'')+'|'+(this.state.mktRango||'d30'); }
+  async mktCargarAnunciosCamp(id, forzar){
+    if(!this.state.mktUsingLive || !/^\d+$/.test(String(id||''))) return;
+    const k=this._mktAdsKey(id); const cache=(this.state.mktAdsCamp||{})[k];
+    if(cache && !forzar && (cache.loading || (Date.now()-(cache.ts||0))<10*60*1000)) return;
+    const put=(v)=>this.setState(s=>({ mktAdsCamp:{ ...(s.mktAdsCamp||{}), [k]:v } }));
+    put({ loading:true, rows:(cache&&cache.rows)||null, err:'', ts:(cache&&cache.ts)||0 });
+    try{
+      const sb=this._sbClient(); if(!sb) throw new Error('sin conexión');
+      const _r=this.mktRangoActual(); const body={ modo:'anuncios', campanaId:String(id), adAccountId:String(this.state.mktAdAccountId||'').trim(), datePreset:_r.preset||'last_30d' };
+      if(_r.dias) body.timeRange=this.mktVentanaCerrada(_r.dias);
+      const { data, error }=await sb.functions.invoke('meta', { body });
+      if(error) throw new Error('la función «meta» no respondió');
+      if(data && data.error) throw new Error(String(data.error));
+      if(!data || !Array.isArray(data.creativos)) throw new Error('redespliega la función «meta» (21-oct)');
+      const rows=data.creativos.map(cr=>({ nombre:cr.nombre||'(anuncio)', formato:cr.formato||'Anuncio', mood:this.mktMoodFromName(cr.nombre), id:cr.id||'', campanaId:cr.campanaId||String(id), campana:cr.campana||'', conjunto:cr.conjunto||'',
+        titulo:cr.titulo||'', thumb:cr.thumb||'', permalink:cr.permalink||'', estadoRaw:cr.estadoRaw||'', copy:cr.copy||'',
+        impresiones:Number(cr.impresiones)||0, clicks:Number(cr.clicks)||0, spend:Number(cr.spend)||0, resultados:Number(cr.resultados)||0, alcance:Number(cr.alcance)||0, frecuencia:Number(cr.frecuencia)||0,
+        ingresos:Number(cr.ingresos)||0, checkouts:(cr.checkouts==null?null:Number(cr.checkouts)||0), carritos:(cr.carritos==null?null:Number(cr.carritos)||0) }));
+      put({ loading:false, rows, err:'', ts:Date.now() });
+    }catch(e){ put({ loading:false, rows:(cache&&cache.rows)||null, err:String((e&&e.message)||e), ts:Date.now() }); try{ window.odaEstado && window.odaEstado('marketing-anuncios: '+((e&&e.message)||e)); }catch(_e){} }
+  }
   // Anuncios de UNA campaña. La función nueva trae campanaId; para datos guardados por la versión
   // vieja (sin vínculo) se cae al nombre del anuncio, y si nada calza se avisa en la vista.
   mktCreativosDeCampana(id, nombre){
+    const _c=(this.state.mktAdsCamp||{})[this._mktAdsKey(id)]; if(_c && Array.isArray(_c.rows)) return { rows:_c.rows, exacto:true };
     const arr=this.mktCreativoSource()||[];
     const porId=arr.filter(c=>c.campanaId && id && c.campanaId===id);
     if(porId.length) return { rows:porId, exacto:true };
@@ -9170,8 +9192,8 @@ class Component extends DCLogic {
     if(n){ const porNombre=arr.filter(c=>String(c.campana||'').trim()===n); if(porNombre.length) return { rows:porNombre, exacto:true }; }
     return { rows:[], exacto:false };
   }
-  mktRangoActual(){ const rk=this.state.mktRango||'mes'; return this.mktRangoDef().find(r=>r.key===rk)||this.mktRangoDef()[1]; }
-  mktSetRango(key){ this.setState({ mktRango:key }, ()=>{ if(this.state.mktUsingLive) this.mktSyncReal(); }); }
+  mktRangoActual(){ const rk=this.state.mktRango||'d30'; return this.mktRangoDef().find(r=>r.key===rk)||this.mktRangoDef()[1]; }
+  mktSetRango(key){ this.setState({ mktRango:key }, ()=>{ if(this.state.mktUsingLive){ this.mktSyncReal(); if(this.state.mktExpId) this.mktCargarAnunciosCamp(this.state.mktExpId); } }); }
   mktCampSource(){
     const l=this.state.mktLiveCampanas;
     const live = this.state.mktUsingLive && Array.isArray(l) && l.length;
@@ -9220,7 +9242,7 @@ class Component extends DCLogic {
       const pubNorm=pubRaw.map(a=>({ nombre:a.nombre||'(conjunto)', id:a.id||'', campanaId:a.campanaId||'', estadoRaw:a.estadoRaw||'', diario:Number(a.diario)||0, detalle:a.detalle||('Segmentación de Meta'), ubicacion:a.ubicacion||'—', edad:a.edad||'—', tipo:a.tipo||'Interés', spend:Number(a.spend)||0, resultados:Number(a.resultados)||0, alcance:Number(a.alcance)||0, ctr:Number(a.ctr)||0 }));
       const tendRaw=Array.isArray(data.tendencia)?data.tendencia.filter(n=>typeof n==='number'):[];
       const _ts=Date.now();
-      this.setState({ mktLiveCampanas:norm, mktLiveCreativos:(creNorm.length?creNorm:null), mktLivePublicos:(pubNorm.length?pubNorm:null), mktLiveTendencia:(tendRaw.length>1?tendRaw:null), mktUsingLive:true, mktConectado:true, mktLiveLoading:false, mktLiveTs:_ts });
+      this.setState({ mktAdsErr:String((data.errores&&data.errores.anuncios)||''), mktAdsSinCampo:!('errores' in (data||{})), mktLiveCampanas:norm, mktLiveCreativos:(creNorm.length?creNorm:null), mktLivePublicos:(pubNorm.length?pubNorm:null), mktLiveTendencia:(tendRaw.length>1?tendRaw:null), mktUsingLive:true, mktConectado:true, mktLiveLoading:false, mktLiveTs:_ts });
       try{ localStorage.setItem('oda_hub_meta_acct_v1', acct); }catch(e){}
       try{ const _rn={...(this.state.reglasNeg||{}), mktAcct:acct}; this.setState({reglasNeg:_rn}); if(this.cloudOn()) this.cloudSaveConfig({mktAcct:acct}); }catch(e){}
       try{ this._lsSet('oda_hub_meta_live_v1', JSON.stringify({ campanas:norm, creativos:(creNorm.length?creNorm:null), publicos:(pubNorm.length?pubNorm:null), tendencia:(tendRaw.length>1?tendRaw:null), ts:_ts, rango:this.state.mktRango||'mes' })); }catch(e){}
@@ -9381,7 +9403,7 @@ class Component extends DCLogic {
     cotTab:'leads', propuesta:null, propuestaDocCache:'', consignSel:null, segLeadId:null,
     casoOpenId:null, casoModal:false, casoDraft:null, casoWaMsg:null, casoWaTpl:null, qCaso:'', fCasoTipo:'todos', fCasoEstado:'todos', casoItemSel:'', casoItemQty:'1', casoAfectSel:'', casoSegText:'',
     mktAiAnswer:'', mktAiLoading:false, mktAiError:'', mktAiTs:0, mktConectado:false, mktConectando:false, mktCampFiltro:'todas',
-    mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'mes',
+    mktAdAccountId:'', mktLiveCampanas:null, mktLiveCreativos:null, mktLivePublicos:null, mktLiveTendencia:null, mktLiveLoading:false, mktLiveError:'', mktLiveTs:0, mktUsingLive:false, mktRango:'d30', mktAdsCamp:{},
     invFiltroCat:'todos', qInv:'', shopifySyncing:false, shopifyLastTs:0, carritos:null, carritosLoading:false, waCompose:null, histCliente:null, carDesde:'', carHasta:'', qCarrito:'', carSoloRechazo:false,
     canDiag:null, canDiagLoading:false, canDiagErr:'', canDiagTs:0, igNomLoading:false, igNomDetalle:'', envLog:null, waEnvios:null, autoCorriendo:false,
     boldPagos:null, boldRefs:null, boldLoading:false, boldErr:'', boldFiltro:'pendientes', qBold:'', boldVerId:null,
@@ -17939,7 +17961,38 @@ Instrucciones de respuesta:
       out.mktCampanas=_src.filter(c=> filtroC==='todas'?true:(filtroC==='activas'?c.estado==='activa':c.estado==='pausada')).map(mapCamp);
       // Solo campañas con inversión en el periodo (las pausadas sin gasto son ruido: la cuenta real trae ~100).
       const _conInv=_src.filter(c=>(c.spend||0)>0).sort((a,b)=>(b.ingresos-a.ingresos)||(b.spend-a.spend));
-      out.mktTop=_conInv.slice(0,10).map(c=>{ const m=mapCamp(c); m.frecColor=m.fatiga?'var(--oda-sale)':'var(--text-body)'; return m; });
+      // 21-oct: tabla tipo Administrador de anuncios de Meta (mismas columnas, orden por columna).
+      { const D='\u2014', F=(n)=>this.fmt(Math.round(n)), N=(x)=>Number(x)||0;
+        const verT=!!st.mktVerTodas; const base=verT? _src.slice() : _src.filter(c=>N(c.spend)>0 || c.estado==='activa');
+        const sk=st.mktSort||'spend', sd=st.mktSortDir||'desc';
+        const V=(c,k)=>{ const sp=N(c.spend); switch(k){ case 'presu':return N(c.diario); case 'spend':return sp; case 'compras':return N(c.resultados); case 'roas':return sp>0?this.mktRoas(c):null;
+          case 'cpa':return N(c.resultados)>0?sp/N(c.resultados):null; case 'ch':return c.checkouts==null?null:N(c.checkouts); case 'cpch':return N(c.checkouts)>0?sp/N(c.checkouts):null;
+          case 'car':return c.carritos==null?null:N(c.carritos); case 'cpcar':return N(c.carritos)>0?sp/N(c.carritos):null; case 'valor':return N(c.ingresos); case 'ctr':return sp>0?this.mktCtr(c):null;
+          case 'frec':return sp>0?N(c.frecuencia):null; case 'cpc':return N(c.clicks)>0?sp/N(c.clicks):null; case 'cpm':return sp>0?this.mktCpm(c):null; case 'nombre':return String(c.nombre||'').toLowerCase(); case 'entrega':return c.estado==='activa'?1:0; } return 0; };
+        base.sort((a,b)=>{ const x=V(a,sk), y=V(b,sk); if(x==null&&y==null) return N(b.spend)-N(a.spend); if(x==null) return 1; if(y==null) return -1; const r=(typeof x==='string')? x.localeCompare(y) : (x-y); return (sd==='asc'? r : -r) || (N(b.spend)-N(a.spend)); });
+        const setSort=(k)=>()=>this.setState(s=>({ mktSort:k, mktSortDir:(s.mktSort===k? ((s.mktSortDir||'desc')==='desc'?'asc':'desc') : (k==='nombre'?'asc':'desc')) }));
+        const arr=(k)=>sk===k?(sd==='asc'?'\u2191':'\u2193'):'';
+        const cols=[['presu','Presupuesto'],['spend','Monto gastado'],['compras','Compras'],['roas','ROAS de compras'],['cpa','Costo por compra'],['ch','Pagos iniciados'],['cpch','Costo por pago iniciado'],['car','Artículos agregados al carrito'],['cpcar','Costo por artículo agregado'],['valor','Valor de conversión'],['ctr','CTR'],['frec','Frecuencia'],['cpc','CPC (costo por clic)'],['cpm','CPM (costo por mil)'],['entrega','Entrega']];
+        out.mktCols=cols.map(([k,l])=>({ key:k, label:l, arr:arr(k), on:setSort(k), align:(k==='entrega'?'left':'right'), fg:(sk===k?'var(--brand-primary)':'var(--text-strong)') }));
+        out.mktSortNombre=setSort('nombre'); out.mktSortNombreArr=arr('nombre'); out.mktSortEntrega=setSort('entrega');
+        out.mktTop=base.map(c=>{ const m=mapCamp(c); const sp=N(c.spend); const act=c.estado==='activa'; const ct=m.ctrl; const roas=sp>0?this.mktRoas(c):0;
+          const pid=(st.mktConfirm==='estado|'+(c.id||''));
+          m.frecColor=m.fatiga?'var(--oda-sale)':'var(--text-body)';
+          m.presuFmt=N(c.diario)>0?F(c.diario):'Con el presupuesto del conjunto'; m.presuSub=N(c.diario)>0?'Diario':'';
+          m.gastoT=sp>0?F(sp):D; m.comprasT=N(c.resultados)>0?String(N(c.resultados)):D; m.roasT=sp>0&&N(c.ingresos)>0?roas.toFixed(2):D;
+          m.cpaT=N(c.resultados)>0?F(sp/N(c.resultados)):D; m.chT=N(c.checkouts)>0?fmtK(N(c.checkouts)):D; m.cpchT=N(c.checkouts)>0?F(sp/N(c.checkouts)):D;
+          m.carT=N(c.carritos)>0?fmtK(N(c.carritos)):D; m.cpcarT=N(c.carritos)>0?F(sp/N(c.carritos)):D; m.valorT=F(N(c.ingresos));
+          m.ctrT=sp>0?this.mktCtr(c).toFixed(2)+'%':D; m.frecT=sp>0?N(c.frecuencia).toFixed(2):D; m.cpcT=N(c.clicks)>0?F(sp/N(c.clicks)):D; m.cpmT=sp>0?F(this.mktCpm(c)):D;
+          m.entrega=act?'Activa':'Desactivada'; m.entDot=act?'#4C6149':'#C9BFAE';
+          m.alerta=(act&&m.fatiga)?'Frecuencia alta':((act&&sp>0&&c.objetivo==='Ventas'&&roas<1.5)?'Alto costo':''); m.hayAlerta=!!m.alerta;
+          m.swBg=pid?'#B5503C':(act?'var(--brand-primary)':'#CFC6B6'); m.swKnob=act?'17px':'2px'; m.swOp=ct.puede?'1':'0.55'; m.swCursor=ct.puede?'pointer':'default';
+          m.swOn=ct.puede? ct.on : ((e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); });
+          m.swTitle=ct.puede?(act?'Pausar campaña':'Activar campaña'):(act?'Activa':'Desactivada'); m.swHint=pid?(act?'Toca otra vez para pausar':'Toca otra vez para activar'):(c.objetivo||'');
+          return m; });
+        const sum=(k)=>base.reduce((a,c)=>a+N(c[k]),0); const sp=sum('spend'), co=sum('resultados'), ing=sum('ingresos'), ch=sum('checkouts'), car=sum('carritos'), cl=sum('clicks'), imp=sum('impresiones'), alc=sum('alcance');
+        out.mktTotLabel='Resultados de '+base.length+' campaña'+(base.length===1?'':'s');
+        out.mktTot=[{v:''},{v:F(sp)},{v:co||D},{v:sp>0&&ing>0?(ing/sp).toFixed(2):D},{v:co>0?F(sp/co):D},{v:ch>0?fmtK(ch):D},{v:ch>0?F(sp/ch):D},{v:car>0?fmtK(car):D},{v:car>0?F(sp/car):D},{v:F(ing)},{v:imp>0?(cl/imp*100).toFixed(2)+'%':D},{v:alc>0?(imp/alc).toFixed(2):D},{v:cl>0?F(sp/cl):D},{v:imp>0?F(sp/imp*1000):D},{v:''}];
+        out.mktVerTodasL=verT?'Solo con inversión o activas':('Ver todas ('+_src.length+')'); out.mktVerTodasOn=()=>this.setState(s=>({mktVerTodas:!s.mktVerTodas})); }
       out.mktTopVacio=!_conInv.length;
     // Controles de escritura (pausar/activar, presupuesto, duplicar).
     out.mktPuedeEscribir=this.mktPuedeEscribir();
@@ -17977,7 +18030,33 @@ Instrucciones de respuesta:
           ctrFmt:ctr.toFixed(2)+'%', alcanceFmt:fmtK(cr.alcance||0), frecuencia:(Number(cr.frecuencia)||0).toFixed(1),
           fatiga:(Number(cr.frecuencia)||0)>=3,
           hayLink:!!cr.permalink, link:(cr.permalink||'#') }; });
-      out.mkcVacio=out.mkcAds.length===0;
+      { const D='\u2014', F=(x)=>this.fmt(Math.round(x)), N=(x)=>Number(x)||0; const raw=_det.rows||[];
+        const sk=st.mktAdSort||'spend', sd=st.mktAdSortDir||'desc';
+        const V=(r,k)=>{ const sp=N(r.spend), imp=N(r.impresiones), cl=N(r.clicks); switch(k){ case 'spend':return sp; case 'compras':return N(r.resultados); case 'roas':return sp>0?N(r.ingresos)/sp:null;
+          case 'cpa':return N(r.resultados)>0?sp/N(r.resultados):null; case 'ch':return r.checkouts==null?null:N(r.checkouts); case 'cpch':return N(r.checkouts)>0?sp/N(r.checkouts):null;
+          case 'car':return r.carritos==null?null:N(r.carritos); case 'cpcar':return N(r.carritos)>0?sp/N(r.carritos):null; case 'valor':return N(r.ingresos); case 'ctr':return imp>0?cl/imp:null;
+          case 'frec':return sp>0?N(r.frecuencia):null; case 'cpc':return cl>0?sp/cl:null; case 'cpm':return imp>0?sp/imp*1000:null; case 'entrega':return r.estadoRaw==='pausada'?0:1; case 'nombre':return String(r.nombre||'').toLowerCase(); } return 0; };
+        const ord=raw.slice().sort((a,b)=>{ const x=V(a,sk), y=V(b,sk); if(x==null&&y==null) return N(b.spend)-N(a.spend); if(x==null) return 1; if(y==null) return -1; const r=(typeof x==='string')?x.localeCompare(y):(x-y); return (sd==='asc'?r:-r)||(N(b.spend)-N(a.spend)); });
+        const setSort=(k)=>(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); this.setState(s=>({ mktAdSort:k, mktAdSortDir:(s.mktAdSort===k?((s.mktAdSortDir||'desc')==='desc'?'asc':'desc'):(k==='nombre'?'asc':'desc')) })); };
+        const arr=(k)=>sk===k?(sd==='asc'?'\u2191':'\u2193'):'';
+        out.mkcCols=[['spend','Monto gastado'],['compras','Compras'],['roas','ROAS de compras'],['cpa','Costo por compra'],['ch','Pagos iniciados'],['cpch','Costo por pago iniciado'],['car','Artículos agregados al carrito'],['cpcar','Costo por artículo agregado'],['valor','Valor de conversión'],['ctr','CTR'],['frec','Frecuencia'],['cpc','CPC (costo por clic)'],['cpm','CPM (costo por mil)'],['entrega','Entrega']].map(([k,l])=>({ label:l, arr:arr(k), on:setSort(k), align:(k==='entrega'?'left':'right'), fg:(sk===k?'var(--brand-primary)':'var(--text-strong)') }));
+        out.mkcSortNombre=setSort('nombre'); out.mkcSortNombreArr=arr('nombre');
+        const byRow=new Map(); raw.forEach((r,i)=>byRow.set(r, out.mkcAds[raw.slice().sort((a,b)=>b.spend-a.spend).indexOf(r)]));
+        out.mkcAds=ord.map(r=>{ const m=Object.assign({}, byRow.get(r)||{}); const sp=N(r.spend), imp=N(r.impresiones), cl=N(r.clicks), act=(r.estadoRaw!=='pausada');
+          const ct=this.mktCtrl('el anuncio', r); const pid=(st.mktConfirm==='estado|'+(r.id||''));
+          m.gastoT=sp>0?F(sp):D; m.comprasT=N(r.resultados)>0?String(N(r.resultados)):D; m.roasT=(sp>0&&N(r.ingresos)>0)?(N(r.ingresos)/sp).toFixed(2):D;
+          m.cpaT=N(r.resultados)>0?F(sp/N(r.resultados)):D; m.chT=N(r.checkouts)>0?fmtK(N(r.checkouts)):D; m.cpchT=N(r.checkouts)>0?F(sp/N(r.checkouts)):D;
+          m.carT=N(r.carritos)>0?fmtK(N(r.carritos)):D; m.cpcarT=N(r.carritos)>0?F(sp/N(r.carritos)):D; m.valorT=F(N(r.ingresos));
+          m.ctrT=imp>0?(cl/imp*100).toFixed(2)+'%':D; m.frecT=sp>0?N(r.frecuencia).toFixed(2):D; m.frecColor=N(r.frecuencia)>=3?'var(--oda-sale)':'var(--text-body)';
+          m.cpcT=cl>0?F(sp/cl):D; m.cpmT=imp>0?F(sp/imp*1000):D; m.entDot=act?'#4C6149':'#C9BFAE'; m.estLabel=act?'Activo':'Desactivado';
+          m.sinLink=!m.hayLink; m.swHint=pid?(act?'Toca otra vez para pausar':'Toca otra vez para activar'):((r.conjunto||'')+(r.formato?(' · '+r.formato):''));
+          m.swBg=pid?'#B5503C':(act?'var(--brand-primary)':'#CFC6B6'); m.swKnob=act?'17px':'2px'; m.swOp=ct.puede?'1':'0.55'; m.swCursor=ct.puede?'pointer':'default';
+          m.swOn=ct.puede?ct.on:((e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); }); m.swTitle=ct.puede?(act?'Pausar anuncio':'Activar anuncio'):(act?'Activo':'Desactivado');
+          return m; });
+        const sum=(k)=>raw.reduce((a,r)=>a+N(r[k]),0); const sp=sum('spend'), co=sum('resultados'), ing=sum('ingresos'), ch=sum('checkouts'), car=sum('carritos'), cl=sum('clicks'), imp=sum('impresiones'), alc=sum('alcance');
+        out.mkcTotLabel='Resultados de '+raw.length+' anuncio'+(raw.length===1?'':'s');
+        out.mkcTot=[{v:F(sp)},{v:co||D},{v:sp>0&&ing>0?(ing/sp).toFixed(2):D},{v:co>0?F(sp/co):D},{v:ch>0?fmtK(ch):D},{v:ch>0?F(sp/ch):D},{v:car>0?fmtK(car):D},{v:car>0?F(sp/car):D},{v:F(ing)},{v:imp>0?(cl/imp*100).toFixed(2)+'%':D},{v:alc>0?(imp/alc).toFixed(2):D},{v:cl>0?F(sp/cl):D},{v:imp>0?F(sp/imp*1000):D},{v:''}]; }
+      out.mkcVacio=out.mkcAds.length===0; out.mkcHayAds=out.mkcAds.length>0;
       // Controles de escritura del detalle
       out.mkcPuede=this.mktPuedeEscribir() && !!st.mktUsingLive;
       out.mkcCtrl=_c? this.mktCtrl('la campaña', _c) : { puede:false, label:'', bg:'transparent', fg:'var(--text-muted)', on:()=>{} };
@@ -18009,15 +18088,15 @@ Instrucciones de respuesta:
           onPresuGuardar:()=>this.mktPresuGuardar('el conjunto', s.id, s.nombre),
           onPresuCancel:()=>this.mktPresuCerrar() }));
         out.mkcHaySets=out.mkcSets.length>0; }
-      out.mkcNota=out.mkcAds.length? (out.mkcAds.length+(out.mkcAds.length===1?' anuncio':' anuncios')+' · ordenados por inversión')
-        : (st.mktUsingLive? 'Los anuncios guardados no traen el vínculo con la campaña — vuelve a sincronizar con Meta (y redespliega la función «meta»).' : 'Conéctate con Meta para ver los anuncios reales de esta campaña.');
+      out.mkcNota=out.mkcAds.length? (out.mkcAds.length+(out.mkcAds.length===1?' anuncio':' anuncios'))
+        : (st.mktUsingLive? (((st.mktAdsCamp||{})[this._mktAdsKey(_id)]||{}).loading? 'Cargando los anuncios de Meta…' : (((st.mktAdsCamp||{})[this._mktAdsKey(_id)]||{}).err? ('Meta no entregó los anuncios: '+(st.mktAdsCamp||{})[this._mktAdsKey(_id)].err) : (st.mktAdsErr? ('Meta no entregó los anuncios: '+st.mktAdsErr) : (st.mktAdsSinCampo? 'Meta no entregó anuncios · redespliega la función «meta» (21-oct) y vuelve a sincronizar.' : ((this.state.mktLiveCreativos||[]).length? 'Esta campaña no tuvo anuncios en el periodo.' : 'Meta no devolvió anuncios para la cuenta en este periodo.'))))) : 'Conéctate con Meta para ver los anuncios reales de esta campaña.');
     }
       // La fila desplegada lleva su propio detalle (mismas claves mkc*, leídas como c.det.mkcX).
       if(_expId){ const _d={}; Object.keys(out).forEach(k=>{ if(k.indexOf('mkc')===0) _d[k]=out[k]; });
         (out.mktTop||[]).forEach(r=>{ if(r.id===_expId) r.det=_d; }); }
       const _sinInv=_src.length-_conInv.length, _masInv=Math.max(0,_conInv.length-10);
       out.mktTopNota=(_conInv.length? _conInv.length+(_conInv.length===1?' campaña con inversión':' campañas con inversión') : 'sin inversión en el periodo')
-        +(_masInv? ' · mostrando las 10 principales' : '')+(_sinInv? ' · '+_sinInv+' sin inversión' : '');
+        +(_sinInv? ' · '+_sinInv+' sin inversión' : '');
       // alertas
       const alerts=[];
       // Solo sobre campañas con inversión en el periodo (las pausadas sin gasto no pueden alertar nada).
