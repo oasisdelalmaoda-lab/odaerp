@@ -6083,7 +6083,7 @@
                 <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                   <div style="min-width:0;">
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Guías automáticas · {{ gaFechaTxt }}</h3>
-                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Lunes a viernes 7:00 a. m., sin festivos · Página Web fuera de la ciudad de Cali (Jamundí, Yumbo, Palmira… incluidos), pagados o contraentrega confirmada · sin Interrapidísimo ni notas de «no despachar» o fecha puntual · quedan como enviados en Shopify con su guía</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Lunes a viernes 7:00 a. m., sin festivos · Página Web fuera de la ciudad de Cali (Jamundí, Yumbo, Palmira… incluidos), pagados o contraentrega confirmada · sin Interrapidísimo ni notas de «no despachar» o fecha puntual · quedan como enviados en Shopify con su guía (referencia = n.º de Shopify) y se pide la recogida</div>
                   </div>
                   <span style="display:flex;gap:8px;flex-wrap:wrap;">
                     <sc-if value="{{ gaHay }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaPdf }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:none;background:var(--brand-primary);color:var(--text-on-brand);">{{ gaPdfL }}</button></sc-if>
@@ -6094,6 +6094,13 @@
                   </span>
                 </div>
                 <sc-if value="{{ gaHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 20px;font-size:12px;color:#8E3F2F;background:rgba(181,80,60,0.08);">{{ gaErr }}</div></sc-if>
+                <sc-if value="{{ gaRecShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:10px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;">
+                    <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ gaRecColor }};"></span>
+                    <span style="flex:1;min-width:0;font-weight:700;color:{{ gaRecColor }};text-wrap:pretty;">{{ gaRecTxt }}</span>
+                    <sc-if value="{{ gaRecBtn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaRec }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ gaRecL }}</button></sc-if>
+                  </div>
+                </sc-if>
                 <sc-if value="{{ gaVacio }}" hint-placeholder-val="{{ true }}"><div style="padding:14px 20px;font-size:12.5px;color:var(--text-muted);">Hoy no se han creado guías automáticas.</div></sc-if>
                 <sc-if value="{{ gaHay }}" hint-placeholder-val="{{ false }}">
                   <div style="overflow-x:auto;"><div style="min-width:760px;font-size:12.5px;">
@@ -9355,7 +9362,11 @@ class Component extends DCLogic {
   maVisto(){ const f=(this.state.metaAlertas&&this.state.metaAlertas.fecha)||''; try{ localStorage.setItem('oda_hub_ma_visto_v1', f); }catch(e){} this.setState({ maVistoF:f }); }
   async revisarMetaAlertas(){ if(this.state.maCorriendo) return; this.setState({ maCorriendo:true, maErr:'' });
     try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('meta-alertas', { body:{ sinPush:true } });
-      if(error) throw new Error('la función «meta-alertas» no respondió (¿está desplegada?)');
+      if(error){ let det=''; try{ const ctx=error.context; if(ctx && typeof ctx.json==='function'){ const j=await ctx.json(); det=(j&&((j.errores&&j.errores.join(' · '))||j.error||j.message||j.msg))||''; if(!det && ctx.status) det='HTTP '+ctx.status; } else if(ctx && ctx.status) det='HTTP '+ctx.status; }catch(_e){}
+        if(/404|not found/i.test(det)) det='la función «meta-alertas» no existe en Supabase (créala con ese nombre exacto)';
+        else if(/401|jwt|unauthor/i.test(det)) det='la función «meta-alertas» está verificando JWT: despliégala con --no-verify-jwt';
+        else if(/546|timeout|worker|wall/i.test(det)) det='la función «meta-alertas» tardó demasiado: vuelve a intentar en un minuto';
+        throw new Error(det? ('meta-alertas: '+det) : 'la función «meta-alertas» no respondió (¿está desplegada?)'); }
       if(data && data.periodos) this.setState({ metaAlertas:data }); else await this.cargarMetaAlertas();
       this.toast(data && data.estado==='completo' ? 'Revisión de anuncios lista' : 'Revisión incompleta: '+(((data&&data.errores)||[])[0]||'sin detalle'));
     }catch(e){ this.setState({ maErr:String((e&&e.message)||e) }); try{ window.odaEstado && window.odaEstado('meta-alertas: '+((e&&e.message)||e)); }catch(_e){} }
@@ -11871,6 +11882,11 @@ Instrucciones de respuesta:
       if(error) throw new Error('la función «guias-auto» no respondió (¿está desplegada?)');
       if(simular) this.setState({ gaSim:data||null }); else { this.setState({ gaSim:null }); await this.gaCargar(); this.toast((((data&&data.creadas)||[]).length)+' guía(s) creada(s)'); }
     }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); }
+    this.setState({ gaBusy:'' }); }
+  async gaRecogida(){ if(this.state.gaBusy) return; this.setState({ gaBusy:'rec' });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ soloRecogida:true } }); if(error) throw new Error('la función «guias-auto» no respondió');
+      const r=(data&&data.recogida)||{}; this.toast(r.ok? ('Recogida solicitada'+(r.numero?(' · N.º '+r.numero):'')) : ('Coordinadora no confirmó la recogida: '+(r.error||'sin detalle'))); await this.gaCargar();
+    }catch(e){ this.toast('No se pudo pedir la recogida: '+((e&&e.message)||e)); }
     this.setState({ gaBusy:'' }); }
   async gaDescargar(){ if(this.state.gaBusy) return; const rows=(this.state.gaRows||[]).filter(r=>r.remision); if(!rows.length){ this.toast('No hay rótulos para descargar'); return; }
     this.setState({ gaBusy:'pdf' });
@@ -18048,6 +18064,10 @@ Instrucciones de respuesta:
         out.gaSimOmit=Object.keys(om).map(m=>({k:m, t:m+' ('+om[m].length+'): '+om[m].slice(0,12).join(', ')+(om[m].length>12?'…':'')}));
         out.gaSimErr=((D&&D.errores)||[]).map((x,i)=>({k:'e'+i, t:(x.pedido?(x.pedido+': '):'')+x.error})); out.gaSimHayErr=out.gaSimErr.length>0;
         out.gaSimL=st.gaBusy==='sim'?'Revisando…':'Vista previa'; out.gaRunL=st.gaBusy==='run'?'Creando guías…':'Crear ahora'; out.gaPdfL=st.gaBusy==='pdf'?'Armando el PDF…':('Descargar rótulos de hoy ('+guias.length+')');
+        const RC=R.find(r=>r.id && String(r.id).indexOf('recogida-')===0); const rd=(RC&&RC.data)||null;
+        out.gaRecShow=!!rd || guias.length>0; out.gaRecOk=!!(rd&&rd.ok); out.gaRecColor=out.gaRecOk?'#4C6149':'#B5503C';
+        out.gaRecTxt=rd? (rd.ok? ('Recogida solicitada a Coordinadora'+(rd.numero?(' · N.º '+rd.numero):'')+' · '+((rd.guias||[]).length)+' paquete(s)') : ('Recogida NO confirmada: '+(rd.error||'sin detalle')+((rd.metodosRecogida&&rd.metodosRecogida.length)?(' · métodos: '+rd.metodosRecogida.join(', ')):''))) : 'Recogida sin solicitar';
+        out.gaRecBtn=!out.gaRecOk && guias.length>0 && out.gaPuede; out.gaRecL=st.gaBusy==='rec'?'Pidiendo…':'Solicitar recogida'; out.gaRec=()=>this.gaRecogida();
         out.gaSim=()=>this.gaCorrer(true); out.gaRun=()=>this.gaCorrer(false); out.gaPdf=()=>this.gaDescargar(); out.gaRecargar=()=>this.gaCargar(); }
       out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:this.titleCase(v.cliente||'—'), ciudad:(this.titleCase(v.ciudad||'')||'Sin ciudad'), zona:(i.recoge?'Recoge en oficina':(zc[i.zona]+' · '+i.plazo+'d')), fecha:this.fmtFecha(v.fecha),
