@@ -6080,6 +6080,41 @@
                 </div>
               </div>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                  <div style="min-width:0;">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Guías automáticas · {{ gaFechaTxt }}</h3>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Lunes a viernes 7:00 a. m., sin festivos · Página Web fuera de la ciudad de Cali (Jamundí, Yumbo, Palmira… incluidos), pagados o contraentrega confirmada · sin Interrapidísimo ni notas de «no despachar» o fecha puntual · quedan como enviados en Shopify con su guía</div>
+                  </div>
+                  <span style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <sc-if value="{{ gaHay }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaPdf }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:none;background:var(--brand-primary);color:var(--text-on-brand);">{{ gaPdfL }}</button></sc-if>
+                    <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ gaSim }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ gaSimL }}</button>
+                      <button onClick="{{ gaRun }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ gaRunL }}</button>
+                    </sc-if>
+                  </span>
+                </div>
+                <sc-if value="{{ gaHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 20px;font-size:12px;color:#8E3F2F;background:rgba(181,80,60,0.08);">{{ gaErr }}</div></sc-if>
+                <sc-if value="{{ gaVacio }}" hint-placeholder-val="{{ true }}"><div style="padding:14px 20px;font-size:12.5px;color:var(--text-muted);">Hoy no se han creado guías automáticas.</div></sc-if>
+                <sc-if value="{{ gaHay }}" hint-placeholder-val="{{ false }}">
+                  <div style="overflow-x:auto;"><div style="min-width:760px;font-size:12.5px;">
+                    <sc-for list="{{ gaGuias }}" as="g" hint-placeholder-count="0">
+                      <div style="display:grid;grid-template-columns:90px minmax(160px,1.4fr) minmax(110px,1fr) 120px minmax(150px,1.2fr) minmax(120px,1fr);gap:10px;align-items:center;padding:9px 20px;border-bottom:1px solid var(--border-subtle);">
+                        <span style="font-weight:700;">{{ g.pedido }}</span><span>{{ g.cliente }}</span><span style="color:var(--text-muted);">{{ g.ciudad }}</span>
+                        <span style="font-variant-numeric:tabular-nums;font-weight:700;">{{ g.remision }}</span><span style="color:var(--text-muted);">{{ g.pago }}</span><span style="font-weight:700;color:{{ g.shopColor }};">{{ g.shop }}</span>
+                      </div>
+                    </sc-for>
+                  </div></div>
+                </sc-if>
+                <sc-if value="{{ gaSimShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:12px 20px 16px;border-top:1px solid var(--border-subtle);display:flex;flex-direction:column;gap:6px;font-size:12px;">
+                    <div style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">{{ gaSimTxt }}</div>
+                    <sc-for list="{{ gaSimCrea }}" as="x" hint-placeholder-count="0"><div style="color:#4C6149;">✓ {{ x.t }}</div></sc-for>
+                    <sc-for list="{{ gaSimOmit }}" as="x" hint-placeholder-count="0"><div style="color:var(--text-muted);text-wrap:pretty;">· {{ x.t }}</div></sc-for>
+                    <sc-for list="{{ gaSimErr }}" as="x" hint-placeholder-count="0"><div style="color:#B5503C;text-wrap:pretty;">✕ {{ x.t }}</div></sc-for>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--border-subtle);">
                   <div style="display:flex;gap:6px;flex-wrap:wrap;flex:1;">
                     <sc-for list="{{ logFiltros }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.onClick }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-subtle);cursor:pointer;background:{{ f.bg }};color:{{ f.fg }};">{{ f.l }}</button></sc-for>
@@ -11818,6 +11853,36 @@ Instrucciones de respuesta:
       const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='guia-'+rem+'.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000);
       this.toast('No se pudo armar el rótulo 10×10 · se descargó el PDF de Coordinadora'); }
     }
+  // 21-oct: guías automáticas de la mañana (función guias-auto → tabla guias_auto).
+  async _paginas10(b64){ const bin=atob(b64); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+    const lib=await this._pdfjs(); const pdf=await lib.getDocument({data:u}).promise; const pages=[];
+    for(let p=1;p<=pdf.numPages;p++){ const pg=await pdf.getPage(p); const vp=pg.getViewport({scale:4}); const cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+      const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height); await pg.render({canvasContext:cx, viewport:vp}).promise;
+      const c2=this._recorteCanvas(cv); const durl=c2.toDataURL('image/jpeg',0.95); const b=atob(durl.split(',')[1]); const jb=new Uint8Array(b.length); for(let k=0;k<b.length;k++) jb[k]=b.charCodeAt(k);
+      pages.push({w:c2.width, h:c2.height, jpg:jb}); } return pages; }
+  async gaCargar(){ try{ const sb=this._sbClient(); if(!sb||!this.cloudOn()) return; const f=this.state.gaFecha||this._logIso(new Date());
+      const { data, error }=await sb.from('guias_auto').select('id,venta_id,fecha,remision,data,creado_at').eq('fecha', f).order('creado_at',{ascending:true});
+      if(error){ this.setState({ gaErr:(/does not exist|schema cache|Could not find the table/i.test(error.message)?'Falta correr supabase-guias-auto.sql en Supabase':error.message) }); return; }
+      this.setState({ gaRows:data||[], gaErr:'' }); }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); } }
+  async gaCorrer(simular){ if(this.state.gaBusy) return;
+    if(!simular && !window.confirm('¿Crear ahora las guías de los pedidos listos?\nSe crean en Coordinadora, quedan como ENVIADOS en Shopify (el cliente recibe el correo) y se guardan en cada pedido.')) return;
+    this.setState({ gaBusy:(simular?'sim':'run'), gaErr:'' });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ simular:!!simular } });
+      if(error) throw new Error('la función «guias-auto» no respondió (¿está desplegada?)');
+      if(simular) this.setState({ gaSim:data||null }); else { this.setState({ gaSim:null }); await this.gaCargar(); this.toast((((data&&data.creadas)||[]).length)+' guía(s) creada(s)'); }
+    }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); }
+    this.setState({ gaBusy:'' }); }
+  async gaDescargar(){ if(this.state.gaBusy) return; const rows=(this.state.gaRows||[]).filter(r=>r.remision); if(!rows.length){ this.toast('No hay rótulos para descargar'); return; }
+    this.setState({ gaBusy:'pdf' });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.from('guias_auto').select('remision,pdf').in('remision', rows.map(r=>r.remision)); if(error) throw error;
+      const porRem={}; (data||[]).forEach(r=>{ porRem[r.remision]=r.pdf; }); let pages=[], falt=[];
+      for(const r of rows){ let b64=porRem[r.remision]; if(!b64){ try{ const x=await sb.functions.invoke('coordinadora',{ body:{ modo:'rotulo', remision:r.remision } }); b64=x.data&&x.data.pdfBase64; }catch(e){} }
+        if(!b64){ falt.push(r.remision); continue; } try{ pages=pages.concat(await this._paginas10(b64)); }catch(e){ falt.push(r.remision); } }
+      if(!pages.length) throw new Error('Coordinadora no entregó los rótulos');
+      const blob=new Blob([this._pdf10x10(pages)],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='rotulos-10x10-'+(this.state.gaFecha||this._logIso(new Date()))+'.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),120000);
+      this.toast(pages.length+' rótulo(s) en un solo PDF'+(falt.length?(' · faltaron '+falt.join(', ')):''));
+    }catch(e){ this.toast('No se pudieron descargar: '+((e&&e.message)||e)); }
+    this.setState({ gaBusy:'' }); }
   async coordCrearGuia(id){ const v=(this.state.ventas||[]).find(x=>x.id===id); const F=(this._guiaF||{})[id]; if(!v||!F) return; const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
     const dev=F.sentido==='devolucion'; const tel=String(F.telefono||'').replace(/\D/g,'');
     if(!String(F.ciudad||'').trim()||!String(F.direccion||'').trim()||tel.length<7){ this.toast('Completa ciudad, dirección y celular'); return; }
@@ -17971,7 +18036,20 @@ Instrucciones de respuesta:
         out.logVacio=rows.length===0; out.logVacioTxt=filtro==='atrasados'? 'No hay pedidos atrasados. Todo va dentro de la promesa.' : (filtro==='porConfirmar'? 'Ningún pedido espera confirmación del cliente.' : 'No hay pedidos con este filtro.');
         out.logMasShow=rows.length>150; out.logMasTxt='Se muestran 150 de '+rows.length+'. Usa el buscador para encontrar otros.';
         const zc={cali:'Cali', principal:'Principal', otra:'Otra'}; const fu={manual:'a mano', shopify:'Shopify', etiqueta:'etiqueta', coordinadora:'rastreo oficial Coordinadora'};
-        out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
+        { if(!this._gaTs || Date.now()-this._gaTs>5*60*1000){ this._gaTs=Date.now(); setTimeout(()=>this.gaCargar(),0); }
+        const R=st.gaRows||[]; const guias=R.filter(r=>r.remision); const corr=R.filter(r=>r.data&&r.data.tipo==='corrida'); const ult=corr[corr.length-1]; const D=st.gaSim||(ult&&ult.data)||null;
+        out.gaPuede=!!(this.isAdminUser&&this.isAdminUser()) || this._modLevel(this.access()||{},'ventas')==='write';
+        out.gaErr=st.gaErr||''; out.gaHayErr=!!st.gaErr; out.gaN=guias.length; out.gaHay=guias.length>0; out.gaVacio=!guias.length;
+        out.gaFechaTxt=this.fmtFecha(st.gaFecha||this._logIso(new Date()));
+        out.gaGuias=guias.map(r=>{ const d=r.data||{}; return { k:r.remision, pedido:d.pedido||'', cliente:d.cliente||'', ciudad:d.ciudad||'', remision:r.remision, pago:d.pago+(d.recaudo>0?(' · recaudo '+this.fmt(d.recaudo)):''), shop:(d.shopify?'En Shopify ✓':('Shopify: '+(d.shopifyError||'sin marcar'))), shopColor:(d.shopify?'#4C6149':'#B5503C') }; });
+        out.gaSimTxt=st.gaSim? 'Vista previa (no se creó nada)' : (ult? ('Última corrida '+new Date(ult.creado_at).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})) : '');
+        out.gaSimShow=!!D; out.gaSimCrea=((D&&D.creadas)||[]).map((x,i)=>({k:'c'+i, t:(x.pedido||'')+' · '+(x.cliente||'')+' · '+(x.ciudad||'')+' · '+(x.pago||'')+(x.recaudo>0?(' '+this.fmt(x.recaudo)):'')}));
+        const om={}; ((D&&D.omitidas)||[]).forEach(x=>{ (om[x.motivo]=om[x.motivo]||[]).push(x.pedido); });
+        out.gaSimOmit=Object.keys(om).map(m=>({k:m, t:m+' ('+om[m].length+'): '+om[m].slice(0,12).join(', ')+(om[m].length>12?'…':'')}));
+        out.gaSimErr=((D&&D.errores)||[]).map((x,i)=>({k:'e'+i, t:(x.pedido?(x.pedido+': '):'')+x.error})); out.gaSimHayErr=out.gaSimErr.length>0;
+        out.gaSimL=st.gaBusy==='sim'?'Revisando…':'Vista previa'; out.gaRunL=st.gaBusy==='run'?'Creando guías…':'Crear ahora'; out.gaPdfL=st.gaBusy==='pdf'?'Armando el PDF…':('Descargar rótulos de hoy ('+guias.length+')');
+        out.gaSim=()=>this.gaCorrer(true); out.gaRun=()=>this.gaCorrer(false); out.gaPdf=()=>this.gaDescargar(); out.gaRecargar=()=>this.gaCargar(); }
+      out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:this.titleCase(v.cliente||'—'), ciudad:(this.titleCase(v.ciudad||'')||'Sin ciudad'), zona:(i.recoge?'Recoge en oficina':(zc[i.zona]+' · '+i.plazo+'d')), fecha:this.fmtFecha(v.fecha),
             promDesp:this.fmtFecha(i.promDesp), despReal:(i.despIso?this.fmtFecha(i.despIso):(i.despSinFecha?(String(v.guia||'').trim()?'Con guía · sin fecha':'Preparado · sin guía'):'Pendiente')), despFg:(i.despIso?(i.despATiempo?'#4C6149':'#9A3F2E'):(i.despSinFecha?'var(--text-body)':'var(--text-muted)')),
             promEnt:this.fmtFecha(i.promEnt), entReal:(i.entIso?((i.estado==='porVerificar'?'A más tardar ':'')+this.fmtFecha(i.entIso)):(i.estado==='sinfecha'?'Sin fecha':'Pendiente')), entFg:(i.entIso?(i.estado==='atiempo'?'#4C6149':(i.estado==='porVerificar'?'#7A5E36':'#9A3F2E')):'var(--text-muted)'),
