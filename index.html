@@ -6083,7 +6083,7 @@
                 <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                   <div style="min-width:0;">
                     <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin:0;">Guías automáticas · {{ gaFechaTxt }}</h3>
-                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Lunes a viernes 7:00 a. m., sin festivos · Página Web fuera de la ciudad de Cali (Jamundí, Yumbo, Palmira… incluidos), pagados o contraentrega confirmada · sin Interrapidísimo ni notas de «no despachar» o fecha puntual · quedan como enviados en Shopify con su guía (referencia = n.º de Shopify) y se pide la recogida</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;text-wrap:pretty;">Al instante cuando entra, se paga o se confirma un pedido (desde las 2:00 p. m. queda por aprobar) + revisión 7:00 a. m. · solo días hábiles (lunes a viernes sin festivos; lo del fin de semana sale el siguiente día hábil) · avisa a todos «Guía lista para imprimir» · Página Web fuera de la ciudad de Cali (Jamundí, Yumbo, Palmira… incluidos), pagados o contraentrega confirmada · sin Interrapidísimo ni notas de «no despachar» o fecha puntual · quedan como enviados en Shopify con su guía (referencia = n.º de Shopify) y se pide la recogida</div>
                   </div>
                   <span style="display:flex;gap:8px;flex-wrap:wrap;">
                     <sc-if value="{{ gaHay }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaPdf }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:none;background:var(--brand-primary);color:var(--text-on-brand);">{{ gaPdfL }}</button></sc-if>
@@ -6099,6 +6099,25 @@
                     <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ gaRecColor }};"></span>
                     <span style="flex:1;min-width:0;font-weight:700;color:{{ gaRecColor }};text-wrap:pretty;">{{ gaRecTxt }}</span>
                     <sc-if value="{{ gaRecBtn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaRec }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ gaRecL }}</button></sc-if>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ gaAprShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:12px 20px;border-bottom:1px solid var(--border-subtle);background:rgba(167,134,89,0.07);display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                      <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#A78659;"></span>
+                      <span style="flex:1;min-width:0;font-size:12.5px;font-weight:700;color:#7A6241;text-wrap:pretty;">{{ gaAprTit }}</span>
+                      <sc-if value="{{ gaAprTodasShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaAprTodas }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">Aprobar todas</button></sc-if>
+                    </div>
+                    <div style="font-size:11.5px;color:var(--text-muted);text-wrap:pretty;">Coordinadora recoge entre 2 y 4 p. m. Si no las apruebas, se crean solas a las 7:00 a. m. del siguiente día hábil.</div>
+                    <sc-for list="{{ gaAprRows }}" as="a" hint-placeholder-count="0">
+                      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;padding:8px 12px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:12px;">
+                        <span style="font-weight:700;">{{ a.pedido }}</span>
+                        <span style="flex:1;min-width:140px;">{{ a.cliente }} · <span style="color:var(--text-muted);">{{ a.ciudad }}</span></span>
+                        <span style="color:var(--text-muted);">{{ a.pago }}</span>
+                        <span style="color:var(--text-muted);font-size:11.5px;">Llegó {{ a.llegada }}</span>
+                        <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ a.aprobar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ a.btnL }}</button></sc-if>
+                      </div>
+                    </sc-for>
                   </div>
                 </sc-if>
                 <sc-if value="{{ gaVacio }}" hint-placeholder-val="{{ true }}"><div style="padding:14px 20px;font-size:12.5px;color:var(--text-muted);">Hoy no se han creado guías automáticas.</div></sc-if>
@@ -9339,11 +9358,24 @@ class Component extends DCLogic {
   _maVeCampana(){ try{ const a=this.access()||{}; return !!a.admin || this._modLevel(a,'marketing')!=='none'; }catch(e){ return false; } }
   async _maInit(){ if(this._maIniciado || !this._maVeCampana()) return; this._maIniciado=true;
     try{ const q=new URLSearchParams(location.search); if(q.get('mkt')==='alertas'){ this.setState({ module:'marketing', sub:'mktresumen' }); history.replaceState(null,'',location.pathname); } }catch(e){}
-    try{ navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', (ev)=>{ if(ev.data && ev.data.tipo==='abrir') this.setState({ module:'marketing', sub:'mktresumen', maCampAbierta:false }); }); }catch(e){}
+    try{ navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', (ev)=>{ if(ev.data && ev.data.tipo==='abrir' && !/log=guias/.test(String(ev.data.url||''))) this.setState({ module:'marketing', sub:'mktresumen', maCampAbierta:false }); }); }catch(e){}
     await this.cargarMetaAlertas();
     try{ if('serviceWorker' in navigator){ const reg=await navigator.serviceWorker.getRegistration('./'); const sub=reg && await reg.pushManager.getSubscription(); this.setState({ maPushEstado: sub? 'on' : (('Notification' in window && Notification.permission==='denied')?'denegado':'off') }); } else this.setState({ maPushEstado:'nosoporta' }); }catch(e){}
     try{ const sb=this._sbClient(); if(sb && !this._maSub) this._maSub=sb.channel('oda-meta-alertas').on('postgres_changes',{event:'*',schema:'public',table:'meta_alertas'},(pl)=>{ const d=pl&&pl.new&&pl.new.data; if(!d) return; this.setState({ metaAlertas:d });
         if(this.state.maPushEstado!=='on' && d.push && this._maPuedeAviso() && !this._maAvisado){ this._maAvisado=d.fecha; this._deskNotify(d.push.titulo, d.push.texto); } }).subscribe(); }catch(e){} }
+  // 22-oct: guías automáticas al instante → aviso «Guía lista para imprimir» (realtime de guias_auto) + ?log=guias desde el push.
+  _gaVe(){ try{ const a=this.access()||{}; return !!a.admin || this._modLevel(a,'logistica')!=='none' || this._modLevel(a,'ventas')!=='none'; }catch(e){ return false; } }
+  _gaInit(){ if(this._gaIniciado || !this._gaVe()) return; this._gaIniciado=true;
+    const abrir=()=>{ this._gaTs=0; this.setState({ module:'logistica', sub:'seguimiento' }); };
+    try{ const q=new URLSearchParams(location.search); if(q.get('log')==='guias'){ abrir(); history.replaceState(null,'',location.pathname); } }catch(e){}
+    try{ navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', (ev)=>{ if(ev.data && ev.data.tipo==='abrir' && /log=guias/.test(String(ev.data.url||''))) abrir(); }); }catch(e){}
+    try{ const sb=this._sbClient(); if(sb && !this._gaSub) this._gaSub=sb.channel('oda-guias-auto').on('postgres_changes',{event:'INSERT',schema:'public',table:'guias_auto'},(pl)=>{ const r=pl&&pl.new; if(r && String(r.id||'').indexOf('apr-')===0){ if(this.state.module==='logistica') this.gaCargar(); return; } if(!r||!r.remision) return;
+        this._gaNuevas=(this._gaNuevas||[]).concat([{ remision:r.remision, data:r.data||{} }]); clearTimeout(this._gaNotT);
+        this._gaNotT=setTimeout(()=>{ const L=this._gaNuevas||[]; this._gaNuevas=[]; if(!L.length) return; const d=L[0].data||{};
+          const t=L.length===1?('Guía lista para imprimir · '+(d.pedido||L[0].remision)):(L.length+' guías listas para imprimir');
+          const x=L.length===1?[d.cliente,d.ciudad].filter(Boolean).join(' · '):'Logística → Guías automáticas';
+          this.toast(t+(x?' · '+x:'')); if(this.state.maPushEstado!=='on'){ try{ this._deskNotify(t,x); }catch(e){} }
+          this._gaTs=0; if(this.state.module==='logistica') this.gaCargar(); }, 4000); }).subscribe(); }catch(e){} }
   async maPushToggle(){ if(this.state.maPushBusy) return; this.setState({ maPushBusy:true });
     try{
       if(!('serviceWorker' in navigator) || !('PushManager' in window)) throw new Error('Este navegador no permite notificaciones');
@@ -11875,11 +11907,23 @@ Instrucciones de respuesta:
   async gaCargar(){ try{ const sb=this._sbClient(); if(!sb||!this.cloudOn()) return; const f=this.state.gaFecha||this._logIso(new Date());
       const { data, error }=await sb.from('guias_auto').select('id,venta_id,fecha,remision,data,creado_at').eq('fecha', f).order('creado_at',{ascending:true});
       if(error){ this.setState({ gaErr:(/does not exist|schema cache|Could not find the table/i.test(error.message)?'Falta correr supabase-guias-auto.sql en Supabase':error.message) }); return; }
-      this.setState({ gaRows:data||[], gaErr:'' }); }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); } }
+      this.setState({ gaRows:data||[], gaErr:'' });
+      // 22-oct: pedidos que llegaron después del corte de las 2 p. m. y esperan aprobación (filas apr-, últimos 7 días).
+      try{ const h7=this._logIso(new Date(Date.now()-7*86400000)); const ap=await sb.from('guias_auto').select('id,venta_id,fecha,data,creado_at').like('id','apr-%').gte('fecha',h7).order('creado_at',{ascending:true}); if(!ap.error) this.setState({ gaApr:ap.data||[] }); }catch(e){}
+    }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); } }
+  async gaAprobar(ids){ if(this.state.gaBusy || !ids || !ids.length) return;
+    if(!window.confirm('¿Crear ahora '+(ids.length===1?'la guía de este pedido':('las guías de estos '+ids.length+' pedidos'))+'?\nLlegaron después de las 2:00 p. m.: si Coordinadora ya pasó, saldrán en la recogida del siguiente día hábil.')) return;
+    this.setState({ gaBusy:'apr' });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ ventaIds:ids, aprobado:true, origen:'aprobado' } });
+      if(error) throw new Error('la función «guias-auto» no respondió');
+      const c=((data&&data.creadas)||[]).length, om=((data&&data.omitidas)||[]), er=((data&&data.errores)||[]);
+      this.toast(c+' guía(s) creada(s)'+(om.length?(' · '+om.length+' omitida(s): '+om.map(x=>x.pedido+' '+x.motivo).join(', ')):'')+(er.length?(' · error: '+(er[0].error||'')):''));
+      await this.gaCargar(); }catch(e){ this.toast('No se pudo aprobar: '+((e&&e.message)||e)); }
+    this.setState({ gaBusy:'' }); }
   async gaCorrer(simular){ if(this.state.gaBusy) return;
     if(!simular && !window.confirm('¿Crear ahora las guías de los pedidos listos?\nSe crean en Coordinadora, quedan como ENVIADOS en Shopify (el cliente recibe el correo) y se guardan en cada pedido.')) return;
     this.setState({ gaBusy:(simular?'sim':'run'), gaErr:'' });
-    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ simular:!!simular } });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ simular:!!simular, manual:true } });
       if(error) throw new Error('la función «guias-auto» no respondió (¿está desplegada?)');
       if(simular) this.setState({ gaSim:data||null }); else { this.setState({ gaSim:null }); await this.gaCargar(); this.toast((((data&&data.creadas)||[]).length)+' guía(s) creada(s)'); }
     }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); }
@@ -17090,7 +17134,7 @@ Instrucciones de respuesta:
 
     if(st.view!=='app') return out;
 
-    { setTimeout(()=>{ try{ this._maInit(); }catch(e){} }, 0);
+    { setTimeout(()=>{ try{ this._maInit(); }catch(e){} try{ this._gaInit(); }catch(e){} }, 0);
       const MA=st.metaAlertas; const vf=(st.maVistoF!=null? st.maVistoF : (()=>{ try{ return localStorage.getItem('oda_hub_ma_visto_v1')||''; }catch(e){ return ''; } })());
       const a4=(MA && Array.isArray(MA.alertas))? MA.alertas.filter(a=>a.periodo==='d4') : [];
       out.maBellShow=this._maVeCampana(); out.maBellN=(MA && MA.fecha!==vf)? (a4.length || (MA.estado!=='completo'?1:0)) : 0; out.maBellHayN=out.maBellN>0;
@@ -18069,7 +18113,16 @@ Instrucciones de respuesta:
         out.gaRecShow=!!rd || guias.length>0; out.gaRecOk=!!(rd&&rd.ok); out.gaRecColor=out.gaRecOk?'#4C6149':'#B5503C';
         out.gaRecTxt=rd? (rd.ok? ('Recogida solicitada a Coordinadora'+(rd.numero?(' · N.º '+rd.numero):'')+' · '+((rd.guias||[]).length)+' paquete(s)') : ('Recogida NO confirmada: '+(rd.error||'sin detalle')+((rd.metodosRecogida&&rd.metodosRecogida.length)?(' · métodos: '+rd.metodosRecogida.join(', ')):''))) : 'Recogida sin solicitar';
         out.gaRecBtn=!out.gaRecOk && guias.length>0 && out.gaPuede; out.gaRecL=st.gaBusy==='rec'?'Pidiendo…':'Solicitar recogida'; out.gaRec=()=>this.gaRecogida();
-        out.gaSim=()=>this.gaCorrer(true); out.gaRun=()=>this.gaCorrer(false); out.gaPdf=()=>this.gaDescargar(); out.gaRecargar=()=>this.gaCargar(); }
+        out.gaSim=()=>this.gaCorrer(true); out.gaRun=()=>this.gaCorrer(false); out.gaPdf=()=>this.gaDescargar(); out.gaRecargar=()=>this.gaCargar();
+        { const vById={}; (st.ventas||[]).forEach(v=>{ vById[v.id]=v; });
+          const AP=(st.gaApr||[]).filter(r=>{ const v=vById[r.venta_id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); });
+          out.gaAprShow=AP.length>0; out.gaAprN=AP.length; out.gaAprBusy=st.gaBusy==='apr';
+          out.gaAprTit=AP.length+(AP.length===1?' pedido espera aprobación':' pedidos esperan aprobación')+' · llegaron después de las 2:00 p. m.';
+          out.gaAprRows=AP.map(r=>{ const d=r.data||{}; const t=d.llegada?new Date(d.llegada):new Date(r.creado_at);
+            return { k:r.id, pedido:d.pedido||'', cliente:d.cliente||'', ciudad:d.ciudad||'', pago:(d.pago||'')+(d.recaudo>0?(' · recaudo '+this.fmt(d.recaudo)):''),
+              llegada:this.fmtFecha(r.fecha)+' '+t.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), btnL:st.gaBusy==='apr'?'…':'Aprobar y crear guía', aprobar:()=>this.gaAprobar([r.venta_id]) }; });
+          out.gaAprTodas=()=>this.gaAprobar(AP.map(r=>r.venta_id)); out.gaAprTodasShow=AP.length>1 && out.gaPuede; }
+      }
       out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:this.titleCase(v.cliente||'—'), ciudad:(this.titleCase(v.ciudad||'')||'Sin ciudad'), zona:(i.recoge?'Recoge en oficina':(zc[i.zona]+' · '+i.plazo+'d')), fecha:this.fmtFecha(v.fecha),
             promDesp:this.fmtFecha(i.promDesp), despReal:(i.despIso?this.fmtFecha(i.despIso):(i.despSinFecha?(String(v.guia||'').trim()?'Con guía · sin fecha':'Preparado · sin guía'):'Pendiente')), despFg:(i.despIso?(i.despATiempo?'#4C6149':'#9A3F2E'):(i.despSinFecha?'var(--text-body)':'var(--text-muted)')),
