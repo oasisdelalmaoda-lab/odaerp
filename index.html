@@ -1900,6 +1900,33 @@
           <!-- ===== PRODUCCIÓN DE PT (Producción) ===== -->
           <sc-if value="{{ showProduccionPT }}" hint-placeholder-val="{{ false }}">
             <div>
+              <sc-if value="{{ stockSolProdShow }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="font-size:10.5px;font-weight:800;letter-spacing:0.06em;padding:3px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">STOCK</span>
+                    <div style="font-weight:700;font-size:15px;">{{ stockSolProdTit }}</div>
+                    <div style="font-size:12px;color:var(--text-muted);flex-basis:100%;text-wrap:pretty;">El agente de inventario no mueve nada solo: cada ajuste y cada producción espera tu aprobación. Al aprobar se calcula contra el stock de este momento.</div>
+                  </div>
+                  <sc-for list="{{ stockSolProd }}" as="s" hint-placeholder-count="1">
+                    <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface-raised);">
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span style="font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">{{ s.tipoL }}</span>
+                        <span style="font-weight:700;font-size:13.5px;">{{ s.titulo }}</span>
+                        <span style="font-size:11.5px;color:var(--text-muted);margin-left:auto;">{{ s.cuando }}</span>
+                      </div>
+                      <sc-for list="{{ s.lineas }}" as="l" hint-placeholder-count="1"><div style="font-size:12.5px;color:var(--text-body);text-wrap:pretty;">{{ l.t }}</div></sc-for>
+                      <sc-if value="{{ s.nota }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);text-wrap:pretty;"><strong style="color:var(--text-body);">Nota:</strong> {{ s.nota }}</div></sc-if>
+                      <sc-if value="{{ s.aviso }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:700;color:#B5503C;">{{ s.aviso }}</div></sc-if>
+                      <sc-if value="{{ stockSolPuede }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+                          <button onClick="{{ s.rechazar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Rechazar</button>
+                          <button onClick="{{ s.aprobar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">{{ s.aprobarL }}</button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
               <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
                 <p style="font-size:12.5px;color:var(--text-muted);margin:0;max-width:560px;line-height:1.55;text-wrap:pretty;">Registra los lotes producidos de cada producto terminado. Al producir, se descuentan las materias de la fórmula (PEPS) y sube el stock disponible.</p>
                 <div style="flex:1;"></div>
@@ -1937,7 +1964,7 @@
                     <sc-for list="{{ produccionesView }}" as="op" hint-placeholder-count="3">
                       <div style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border-subtle);">
                         <span style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;width:118px;flex-shrink:0;">{{ op.numero }}</span>
-                        <span onClick="{{ op.onVer }}" style="flex:1;min-width:0;cursor:pointer;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ op.resumen }}</span><span style="display:block;font-size:11.5px;color:var(--text-muted);">{{ op.fechaFmt }} · {{ op.nLineas }} producto(s)<sc-if value="{{ op.esRecarga }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#4C6149;background:rgba(98,123,96,0.14);border:1px solid rgba(98,123,96,0.35);border-radius:999px;padding:1px 7px;vertical-align:middle;white-space:nowrap;">Recarga</span></sc-if></span></span>
+                        <span onClick="{{ op.onVer }}" style="flex:1;min-width:0;cursor:pointer;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ op.resumen }}</span><span style="display:block;font-size:11.5px;color:var(--text-muted);">{{ op.fechaFmt }} · {{ op.nLineas }} producto(s)<sc-if value="{{ op.esStock }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.04em;padding:1px 7px;border-radius:999px;background:rgba(67,197,114,0.15);color:#1E7A3F;vertical-align:middle;white-space:nowrap;">{{ op.stockTag }}</span></sc-if><sc-if value="{{ op.esRecarga }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#4C6149;background:rgba(98,123,96,0.14);border:1px solid rgba(98,123,96,0.35);border-radius:999px;padding:1px 7px;vertical-align:middle;white-space:nowrap;">Recarga</span></sc-if></span></span>
                         <span style="font-size:13px;font-weight:800;width:70px;text-align:right;">{{ op.cantidad }} und</span>
                         <span style="font-size:12.5px;font-weight:700;width:104px;text-align:right;color:var(--text-body);">{{ op.totalFmt }}</span>
                         <div style="display:flex;gap:6px;flex-shrink:0;">
@@ -3241,6 +3268,33 @@
           <!-- ===== INVENTARIO · KARDEX ===== -->
           <sc-if value="{{ showInvConteos }}" hint-placeholder-val="{{ false }}">
             <div>
+              <sc-if value="{{ stockSolAjuShow }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="font-size:10.5px;font-weight:800;letter-spacing:0.06em;padding:3px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">STOCK</span>
+                    <div style="font-weight:700;font-size:15px;">{{ stockSolAjuTit }}</div>
+                    <div style="font-size:12px;color:var(--text-muted);flex-basis:100%;text-wrap:pretty;">El agente de inventario no mueve nada solo: cada ajuste y cada producción espera tu aprobación. Al aprobar se calcula contra el stock de este momento.</div>
+                  </div>
+                  <sc-for list="{{ stockSolAju }}" as="s" hint-placeholder-count="1">
+                    <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface-raised);">
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span style="font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">{{ s.tipoL }}</span>
+                        <span style="font-weight:700;font-size:13.5px;">{{ s.titulo }}</span>
+                        <span style="font-size:11.5px;color:var(--text-muted);margin-left:auto;">{{ s.cuando }}</span>
+                      </div>
+                      <sc-for list="{{ s.lineas }}" as="l" hint-placeholder-count="1"><div style="font-size:12.5px;color:var(--text-body);text-wrap:pretty;">{{ l.t }}</div></sc-for>
+                      <sc-if value="{{ s.nota }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);text-wrap:pretty;"><strong style="color:var(--text-body);">Nota:</strong> {{ s.nota }}</div></sc-if>
+                      <sc-if value="{{ s.aviso }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:700;color:#B5503C;">{{ s.aviso }}</div></sc-if>
+                      <sc-if value="{{ stockSolPuede }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+                          <button onClick="{{ s.rechazar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Rechazar</button>
+                          <button onClick="{{ s.aprobar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">{{ s.aprobarL }}</button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
               <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:760px;line-height:1.55;">Cada conteo físico queda registrado con su fecha, quién lo hizo y el motivo. La diferencia contra el sistema solo mueve el inventario cuando el Administrador la aprueba, y queda visible en el kardex de la materia.</p>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
                 <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1020px;">
@@ -3265,7 +3319,7 @@
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;font-weight:800;color:{{ c.difColor }};">{{ c.difTxt }}</td>
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;color:{{ c.valorColor }};" title="{{ c.valorNota }}">{{ c.valorTxt }}</td>
                         <td style="padding:13px 16px;">{{ c.motivo }}<span style="display:block;font-size:12px;color:var(--text-muted);">{{ c.nota }}</span></td>
-                        <td style="padding:13px 16px;white-space:nowrap;">{{ c.quien }}</td>
+                        <td style="padding:13px 16px;white-space:nowrap;">{{ c.quien }}<sc-if value="{{ c.esStock }}" hint-placeholder-val="{{ false }}"><span style="margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:0.04em;padding:1px 7px;border-radius:999px;background:rgba(67,197,114,0.15);color:#1E7A3F;vertical-align:middle;white-space:nowrap;">{{ c.stockTag }}</span></sc-if></td>
                         <td style="padding:13px 16px;white-space:nowrap;">
                           <span style="font-size:10.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:{{ c.estadoBg }};color:{{ c.estadoFg }};">{{ c.estadoLabel }}</span>
                           <span style="display:block;font-size:11.5px;color:var(--text-muted);margin-top:4px;">{{ c.aprobTxt }}</span>
@@ -9417,6 +9471,48 @@ class Component extends DCLogic {
           const x=L.length===1?[d.cliente,d.ciudad].filter(Boolean).join(' · '):'Logística → Guías automáticas';
           this.toast(t+(x?' · '+x:'')); if(this.state.maPushEstado!=='on'){ try{ this._deskNotify(t,x); }catch(e){} }
           this._gaTs=0; if(this.state.module==='logistica') this.gaCargar(); }, 4000); }).subscribe(); }catch(e){} }
+  // ===== STOCK · agente de inventario y producción por API (28-oct) =====
+  // La función `stock` NO escribe en el inventario: todo queda en `stock_solicitudes` y SOLO el Administrador lo aprueba aquí.
+  // Al aprobar se crea el conteo (aprobado, contra el stock de HOY) o la OP (consecutivo nuevo), con la firma «Stock» (verde #43C572).
+  _stockPuede(){ return !!(this.isAdminUser && this.isAdminUser()); }
+  _stockTag(o){ if(!o) return ''; if(o.creadoPor==='Stock'||o.creadoPorId==='stock'||o._origen==='stock'||o.solicitadoPor==='Stock') return 'Stock'; if(o.editadoPor==='Stock') return 'Editado por Stock'; return ''; }
+  async stockCargar(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('stock_solicitudes').select('*').eq('estado','pendiente').order('creado_at',{ascending:true}).limit(100); if(error) throw error; this.setState({stockSol:data||[]}); }catch(e){ /* tabla aún no creada */ } }
+  _stockInit(){ if(this._stockIniciado) return; try{ const a=this.access()||{}; if(!a.admin && this._modLevel(a,'inventario')==='none' && this._modLevel(a,'produccion')==='none') return; }catch(e){ return; } this._stockIniciado=true; this.stockCargar();
+    try{ const sb=this._sbClient(); if(sb && !this._stockSub) this._stockSub=sb.channel('oda-stock-sol').on('postgres_changes',{event:'*',schema:'public',table:'stock_solicitudes'},(pl)=>{ this.stockCargar(); if(pl&&pl.eventType==='INSERT'&&this._stockPuede()) this.toast('Stock pidió '+((pl.new&&pl.new.tipo)==='produccion'?'registrar una producción · Producción':'un ajuste de inventario · Inventario → Conteos')); }).subscribe(); }catch(e){} }
+  _stockCerrarSol(s, estado, nota, resultado){ const sb=this._sbClient(); return sb.from('stock_solicitudes').update({ estado, resuelto_por:this._auditUser()||'', resuelto_at:new Date().toISOString(), nota_resolucion:nota||'', ...(resultado?{resultado}:{}) }).eq('id',s.id).eq('estado','pendiente').select('id'); }
+  async stockRechazar(s){ if(!this._stockPuede()){ this.toast('Solo el Administrador resuelve lo de Stock'); return; } const nota=window.prompt('¿Por qué se rechaza? (Stock lo verá)',''); if(nota===null) return;
+    const {data,error}=await this._stockCerrarSol(s,'rechazada',nota); if(error||!data||!data.length) this.toast('No se pudo rechazar: '+(error?error.message:'ya estaba resuelta')); else this.toast('Solicitud de Stock rechazada'); this.stockCargar(); }
+  async stockAprobar(s){ if(!this._stockPuede()){ this.toast('Solo el Administrador aprueba lo de Stock'); return; } if(this._stockBusy) return; const sb=this._sbClient(); if(!sb) return; this._stockBusy=true; this.forceUpdate();
+    const yo=this._auditUser(); const ahora=new Date().toISOString(); const d=s.datos||{};
+    try{
+      if(s.tipo==='ajuste'){
+        const sistema=this.conteoSistema(d.codigo);
+        // contado = lo que hay (gana el conteo) · ajuste = se respeta la diferencia pedida (+N/−N) sobre el stock de hoy.
+        const contado=(d.modo==='ajuste')? Math.round((sistema+(Number(d.ajuste)||0))*1000)/1000 : Number(d.contado)||0;
+        if(contado<0) throw new Error('el ajuste deja el stock negativo (hoy hay '+this.fmtCant(sistema)+')');
+        const dif=Math.round((contado-sistema)*1000)/1000; if(dif===0) throw new Error('hoy el stock ya coincide: rechaza la solicitud');
+        const cu=this.conteoCostoUnit(d.codigo); const sinGasto=this.CONTEO_SIN_GASTO.indexOf(d.motivo)>=0;
+        const row={ id:'CF-'+Date.now(), codigo:d.codigo, nombre:d.nombre||'', unidad:d.unidad||'und', clase:d.clase||'materia', fecha:d.fecha||ahora.slice(0,10), sistema, contado, diferencia:dif,
+          motivo:d.motivo||'Otro', nota:('[Stock #'+s.id+'] '+(d.nota||'')).trim(), solicitadoPor:'Stock', solicitadoAt:s.creado_at||ahora, estado:'aprobado', costoUnit:cu, valor:(sinGasto?0:-dif*cu), aprobadoPor:yo, aprobadoAt:ahora };
+        const {data,error}=await sb.from('conteos').upsert(this._conteoToDb(row)).select('id'); if(error||!data||!data.length) throw (error||new Error('la nube no confirmó el conteo'));
+        this.setState(st=>({conteos:[...(st.conteos||[]), row]}),()=>this.persist()); this._snapSoon(3000);
+        const r=await this._stockCerrarSol(s,'aprobada','',{ conteoId:row.id, sistema, contado, diferencia:dif }); if(r.error) throw r.error;
+        this.toast('Ajuste de Stock aplicado · '+d.codigo+' '+(dif>0?'+':'')+this.fmtCant(dif));
+      } else if(s.tipo==='produccion'){
+        const prods=this.state.productos||[]; const its=(d.items||[]).filter(it=>it&&it.codigo&&(Number(it.cantidad)||0)>0);
+        if(!its.length) throw new Error('la solicitud no trae líneas');
+        const falta=its.filter(it=>!prods.some(p=>p.codigo===it.codigo)); if(falta.length) throw new Error('productos que ya no existen: '+falta.map(x=>x.codigo).join(', '));
+        if(its.some(it=>it.recarga && it.recargaDestino!=='consumo' && it.recargaDestino!=='venta')) throw new Error('una recarga no dice si es consumo interno o para venta');
+        const num=this.nextCodeProduccion(); const fecha=d.fecha||ahora.slice(0,10); const ts=Date.now();
+        const nuevos=its.map((it,idx)=>({ id:'op'+ts+idx, numero:num, productoCodigo:it.codigo, cantidad:Number(it.cantidad)||0, recarga:!!it.recarga, ...(it.recarga?{recargaDestino:(it.recargaDestino==='venta'?'venta':'consumo')}:{}), fecha,
+          creadoPor:'Stock', creadoPorId:'stock', _origen:'stock', creadoEn:s.creado_at||ahora, aprobadoPor:yo, aprobadoEn:ahora, stockSolId:s.id, ...(d.nota?{nota:d.nota}:{}) }));
+        const {data,error}=await sb.from('producciones').upsert(nuevos.map(o=>this._opToDb(o))).select('id'); if(error||!data||data.length!==nuevos.length) throw (error||new Error('la nube no confirmó la producción'));
+        this.setState(st=>({producciones:nuevos.concat(st.producciones||[])}),()=>this.persist()); this._snapSoon(3000);
+        const r=await this._stockCerrarSol(s,'aprobada','',{ numero:num, lineas:nuevos.length }); if(r.error) throw r.error;
+        this.toast('Producción de Stock registrada · '+num);
+      } else throw new Error('tipo desconocido');
+    }catch(e){ this.toast('No se aplicó: '+((e&&e.message)||e)); }
+    finally{ this._stockBusy=false; this.forceUpdate(); this.stockCargar(); } }
   // ===== DESK · agente comercial por API (23-oct) =====
   // La función `desk` crea leads/cotizaciones/pedidos directo; editar o borrar lo suyo queda en `desk_solicitudes` y se aprueba aquí.
   _deskPuede(){ try{ const a=this.access()||{}; return !!a.admin || this._modLevel(a,'ventas')==='write'; }catch(e){ return false; } }
@@ -17248,7 +17344,7 @@ Instrucciones de respuesta:
 
     if(st.view!=='app') return out;
 
-    { setTimeout(()=>{ try{ this._maInit(); }catch(e){} try{ this._gaInit(); }catch(e){} try{ this._deskInit(); }catch(e){} }, 0);
+    { setTimeout(()=>{ try{ this._maInit(); }catch(e){} try{ this._gaInit(); }catch(e){} try{ this._deskInit(); }catch(e){} try{ this._stockInit(); }catch(e){} }, 0);
       const MA=st.metaAlertas; const vf=(st.maVistoF!=null? st.maVistoF : (()=>{ try{ return localStorage.getItem('oda_hub_ma_visto_v1')||''; }catch(e){ return ''; } })());
       const a4=(MA && Array.isArray(MA.alertas))? MA.alertas.filter(a=>a.periodo==='d4') : [];
       out.maBellShow=this._maVeCampana(); out.maBellN=(MA && MA.fecha!==vf)? (a4.length || (MA.estado!=='completo'?1:0)) : 0; out.maBellHayN=out.maBellN>0;
@@ -20681,6 +20777,27 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
     out.confirmDelTipo=(()=>{ const t=st.confirmDel&&st.confirmDel.tipo; if(t==='kit') return 'este kit'; if(t==='materia') return 'esta materia / insumo'; if(t==='orden') return 'esta orden de compra'; if(t==='borrarordenes') return 'TODAS las órdenes'; if(t==='lead') return 'este lead'; if(t==='liquidacion') return 'este recaudo (se revierte el cruce y se borra el movimiento en banco)'; return 'este producto'; })();
     out.onConfirmDel=()=>this.confirmDeleteItem();
     out.onCancelDel=()=>this.setState({confirmDel:null});
+    // 28-oct: solicitudes de Stock (inventario y producción) por aprobar — solo el Administrador.
+    try{ const S=st.stockSol||[]; out.stockSolShow=S.length>0; out.stockSolPuede=this._stockPuede(); out.stockSolTit=S.length+(S.length===1?' solicitud de Stock por aprobar':' solicitudes de Stock por aprobar');
+      out.stockSolRows=S.map(s=>{ const d=s.datos||{}; const cuando=new Date(s.creado_at).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+        if(s.tipo==='ajuste'){ const hoy=this.conteoSistema(d.codigo); const contado=(d.modo==='ajuste')?Math.round((hoy+(Number(d.ajuste)||0))*1000)/1000:(Number(d.contado)||0); const dif=Math.round((contado-hoy)*1000)/1000; const u=d.unidad||'';
+          const val=(this.CONTEO_SIN_GASTO.indexOf(d.motivo)>=0)?'sin efecto en PyG':((dif<0?'−':'+')+this.fmt(Math.abs(Math.round(dif*this.conteoCostoUnit(d.codigo))))+' en inventario');
+          return { k:String(s.id), tipoL:'Ajuste de inventario', titulo:(d.codigo||'')+' · '+(d.nombre||''), cuando,
+            lineas:[{ t:'Hoy en sistema '+this.fmtCant(hoy)+' '+u+' → queda '+this.fmtCant(contado)+' '+u+' ('+(dif>0?'+':'')+this.fmtCant(dif)+') · '+val },
+              { t:(d.modo==='ajuste'?('Pidió ajustar '+((Number(d.ajuste)||0)>0?'+':'')+this.fmtCant(Number(d.ajuste)||0)):('Contó '+this.fmtCant(Number(d.contado)||0)))+' '+u+' · motivo: '+(d.motivo||'')+' · fecha '+this.fmtFecha(d.fecha||'') }],
+            nota:d.nota||'', aviso:(dif===0?'Hoy el stock ya coincide: no hay nada que ajustar.':(contado<0?'Dejaría el stock negativo.':'')),
+            aprobarL:this._stockBusy?'…':'Aprobar ajuste', aprobar:()=>this.stockAprobar(s), rechazar:()=>this.stockRechazar(s) }; }
+        const its=d.items||[];
+        return { k:String(s.id), tipoL:'Producción', titulo:its.length+(its.length===1?' producto':' productos')+' · '+its.reduce((a,it)=>a+(Number(it.cantidad)||0),0)+' und · fecha '+this.fmtFecha(d.fecha||''), cuando,
+          lineas:its.map(it=>{ const p=(st.productos||[]).find(x=>x.codigo===it.codigo); return { t:(Number(it.cantidad)||0)+' × '+it.codigo+' · '+((p&&p.nombre)||it.nombre||'')+(it.recarga?(' · Recarga '+(it.recargaDestino==='venta'?'para venta':'consumo interno')):'')+(p?'':' · ⚠ el producto ya no existe') }; }),
+          nota:d.nota||'', aviso:'', aprobarL:this._stockBusy?'…':'Aprobar · crear '+this.nextCodeProduccion(), aprobar:()=>this.stockAprobar(s), rechazar:()=>this.stockRechazar(s) }; });
+      out.stockSolProd=out.stockSolRows.filter((r,i)=>(S[i].tipo==='produccion')); out.stockSolAju=out.stockSolRows.filter((r,i)=>(S[i].tipo==='ajuste'));
+      out.stockSolProdShow=out.stockSolProd.length>0; out.stockSolAjuShow=out.stockSolAju.length>0;
+      out.stockSolProdTit=out.stockSolProd.length+(out.stockSolProd.length===1?' producción de Stock por aprobar':' producciones de Stock por aprobar');
+      out.stockSolAjuTit=out.stockSolAju.length+(out.stockSolAju.length===1?' ajuste de Stock por aprobar':' ajustes de Stock por aprobar');
+    }catch(e){ out.stockSolProdShow=false; out.stockSolAjuShow=false; }
+    try{ if(Array.isArray(out.conteosRows)) out.conteosRows=out.conteosRows.map(r=>{ const c=(st.conteos||[]).find(x=>x.id===r.id); const tag=this._stockTag(c); return {...r, stockTag:tag, esStock:!!tag}; });
+      if(Array.isArray(out.produccionesView)) out.produccionesView=out.produccionesView.map(r=>{ const o=(st.producciones||[]).find(x=>x.numero===r.numero && this._stockTag(x)); const tag=o?this._stockTag(o):''; return {...r, stockTag:tag, esStock:!!tag}; }); }catch(e){}
     // 23-oct: solicitudes de Desk (agente comercial) por aprobar.
     try{ const S=st.deskSol||[]; out.deskSolShow=S.length>0; out.deskSolPuede=this._deskPuede(); out.deskSolTit=S.length+(S.length===1?' solicitud de Desk por aprobar':' solicitudes de Desk por aprobar');
       const fv=(x)=>{ if(x==null||x==='') return '—'; if(Array.isArray(x)) return x.map(it=>(it.unidades||0)+'× '+(it.producto||it.productoCodigo||'')).join(', '); return String(x); };
