@@ -6123,8 +6123,13 @@
                 <sc-if value="{{ gaHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 20px;font-size:12px;color:#8E3F2F;background:rgba(181,80,60,0.08);">{{ gaErr }}</div></sc-if>
                 <sc-if value="{{ gaRecShow }}" hint-placeholder-val="{{ false }}">
                   <div style="padding:10px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;">
-                    <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ gaRecColor }};"></span>
-                    <span style="flex:1;min-width:0;font-weight:700;color:{{ gaRecColor }};text-wrap:pretty;">{{ gaRecTxt }}</span>
+                    <sc-if value="{{ gaRecHayLista }}" hint-placeholder-val="{{ false }}">
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;"><sc-for list="{{ gaRecList }}" as="r" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:10px;"><span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ r.color }};"></span><span style="font-weight:700;color:{{ r.color }};text-wrap:pretty;">{{ r.txt }}</span></div></sc-for></div>
+                    </sc-if>
+                    <sc-if value="{{ gaRecTxt }}" hint-placeholder-val="{{ false }}">
+                      <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ gaRecColor }};"></span>
+                      <span style="flex:1;min-width:0;font-weight:700;color:{{ gaRecColor }};text-wrap:pretty;">{{ gaRecTxt }}</span>
+                    </sc-if>
                     <sc-if value="{{ gaRecBtn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaRec }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ gaRecL }}</button></sc-if>
                   </div>
                 </sc-if>
@@ -11324,7 +11329,9 @@ class Component extends DCLogic {
     const done=[]; const list=vs.map(v=>{ if(!v||!v._pendHub) return v;
       const items=(v.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); return {...it, referencia:code, productoCodigo:code, costoUnit:this._itemConCosto(it, code, v.fecha), kitItems:this._itemKitSnap(it, code, v.fecha)}; });
       const mp=String(v._metodoShopify||v.metodoPago||''); const dif=(this.metodoTipo(mp)==='diferido'); const tot=Math.round(this.ventaTotal({items, envio:v.envio}));
-      let nv={...v, items, cliente:this.titleCase(v.cliente||''), ciudad:this.canonCiudad(v.ciudad||''), canal:this.canonCanalVenta(v), pagado:(v.cancelada?0:(dif?tot:(Number(v.pagado)||0)))};
+      // 28-oct: un pedido MANUAL (Desk) con Bold/Addi NO queda pagado al completarlo — espera el link pagado / el cobro (= ventaAutoPagado).
+      const _autoPag=dif && (v.origen||'manual')!=='manual';
+      let nv={...v, items, cliente:this.titleCase(v.cliente||''), ciudad:this.canonCiudad(v.ciudad||''), canal:this.canonCanalVenta(v), pagado:(v.cancelada?0:(_autoPag?tot:(Number(v.pagado)||0)))};
       delete nv._pendHub; delete nv._metodoShopify; if(typeof this.applyPackagingRules==='function') nv=this.applyPackagingRules(nv); done.push(nv); return nv; });
     if(!done.length) return; this.setState({ventas:list},()=>this.persist()); if(this.cloudOn()) this.cloudBulkVentas(done); }
   ventaItemCosto(it, fecha){ const snap=Number(it&&it.costoUnit)||0; if(snap>0) return snap; return this.ventaItemCostoVivo(it&&it.productoCodigo, fecha); }
@@ -11642,7 +11649,7 @@ Instrucciones de respuesta:
           // Excepción ACOTADA al congelado (30-sep, #5216 Addi falló → pagó Bold): si la función resolvió el
           // método por la transacción exitosa y el pedido sigue con el método del primer intento (nadie lo
           // cambió), sin liquidar y sin abonos manuales, se corrige el método. Lo demás financiero no se toca.
-          if(merged.guia && ex.guia && merged.guia!==ex.guia){ merged.guiaAnterior=ex.guia; merged.guiaCambioAt=new Date().toISOString(); ['coordRevisado','coordError','coordEstado','coordEventos'].forEach(k=>{ delete merged[k]; }); if(ex.entregaFuente==='coordinadora'){ delete merged.entregadoAt; delete merged.entregaFuente; } guiasCambiadas.push(String(ex.pedido||'')+' '+ex.guia+'→'+merged.guia); }
+          if(merged.guia && ex.guia && merged.guia!==ex.guia){ merged.guiaAnterior=ex.guia; merged.guiaCambioAt=new Date().toISOString(); if(ex.guiaCoord && String(ex.guiaCoord.remision||'')===String(ex.guia)){ merged.guiaCoordAnterior=ex.guiaCoord; delete merged.guiaCoord; } ['coordRevisado','coordError','coordEstado','coordEventos'].forEach(k=>{ delete merged[k]; }); if(ex.entregaFuente==='coordinadora'){ delete merged.entregadoAt; delete merged.entregaFuente; } guiasCambiadas.push(String(ex.pedido||'')+' '+ex.guia+'→'+merged.guia); }
           if(o.metodoPorTransaccion && o.metodoPago && o.metodoPago!==ex.metodoPago && ex.metodoPago===o.metodoPrimerIntento && !ex.liquidada && !(Array.isArray(ex.abonos)&&ex.abonos.length) && !o.cancelado){
             merged.metodoPago=o.metodoPago; merged.metodoCorregidoDe=ex.metodoPago; merged.metodoCorregidoAt=new Date().toISOString(); metodosCorregidos.push(String(ex.pedido||'')); }
           // Logística: la entrega se fecha cuando Shopify la marca delivered o cuando APARECE la etiqueta
@@ -11982,6 +11989,8 @@ Instrucciones de respuesta:
       const { data, error }=await sb.from('guias_auto').select('id,venta_id,fecha,remision,data,creado_at').eq('fecha', f).order('creado_at',{ascending:true});
       if(error){ this.setState({ gaErr:(/does not exist|schema cache|Could not find the table/i.test(error.message)?'Falta correr supabase-guias-auto.sql en Supabase':error.message) }); return; }
       this.setState({ gaRows:data||[], gaErr:'' });
+      // 27-oct: recogidas de las 5 p. m. — la fila va con la fecha de RECOGIDA (siguiente día hábil), así que se traen aparte (hoy en adelante).
+      try{ const rc=await sb.from('guias_auto').select('id,fecha,data,creado_at').like('id','recogida-%').gte('fecha',f).order('fecha',{ascending:true}).limit(3); if(!rc.error) this.setState({ gaRecs:rc.data||[] }); }catch(e){}
       // 22-oct: pedidos que llegaron después del corte de las 2 p. m. y esperan aprobación (filas apr-, últimos 7 días).
       try{ const h7=this._logIso(new Date(Date.now()-7*86400000)); const ap=await sb.from('guias_auto').select('id,venta_id,fecha,data,creado_at').like('id','apr-%').gte('fecha',h7).order('creado_at',{ascending:true}); if(!ap.error) this.setState({ gaApr:ap.data||[] }); }catch(e){}
     }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); } }
@@ -12003,8 +12012,8 @@ Instrucciones de respuesta:
     }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); }
     this.setState({ gaBusy:'' }); }
   async gaRecogida(){ if(this.state.gaBusy) return; this.setState({ gaBusy:'rec' });
-    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ soloRecogida:true } }); if(error) throw new Error('la función «guias-auto» no respondió');
-      const r=(data&&data.recogida)||{}; this.toast(r.ok? ('Recogida solicitada'+(r.numero?(' · N.º '+r.numero):'')) : ('Coordinadora no confirmó la recogida: '+(r.error||'sin detalle'))); await this.gaCargar();
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ modo:'recogida5pm' } }); if(error) throw new Error('la función «guias-auto» no respondió');
+      const r=(data&&data.recogida)||{}; this.toast(r.ok? ((r.ya?'Ya estaba pedida':'Recogida solicitada')+(r.fechaRecogida?(' para el '+this.fmtFecha(r.fechaRecogida)):'')+(r.numero?(' · N.º '+r.numero):'')) : ('Coordinadora no confirmó la recogida: '+(r.error||'sin detalle'))); await this.gaCargar();
     }catch(e){ this.toast('No se pudo pedir la recogida: '+((e&&e.message)||e)); }
     this.setState({ gaBusy:'' }); }
   async gaDescargar(){ if(this.state.gaBusy) return; const rows=(this.state.gaRows||[]).filter(r=>r.remision); if(!rows.length){ this.toast('No hay rótulos para descargar'); return; }
@@ -12043,8 +12052,12 @@ Instrucciones de respuesta:
   // con la cancelada). Sí, si la del Hub vino de Shopify (o es un pedido de Shopify sin marca) y NO la creó el Hub
   // en Coordinadora ni alguien la escribió a mano después.
   _guiaShopVigente(ex, o){ const nueva=String(o&&o.guia||'').trim(); const vieja=String(ex&&ex.guia||'').trim(); if(!nueva || !vieja || nueva===vieja) return false;
-    if(ex.guiaCoord && ex.guiaCoord.remision && !ex.guiaCoord.anulada && String(ex.guiaCoord.remision)===vieja) return false;
-    if(ex.guiaShop) return vieja===String(ex.guiaShop);
+    // 28-oct (#5318–#5324): las guías creadas por la automatización quedaban CONGELADAS — la regla de abajo protegía toda guía
+    // hecha desde el Hub/guias-auto aunque Shopify ya la hubiera reemplazado. Si Shopify YA tenía esa misma guía (guiaShop===vieja)
+    // y ahora trae otra, se rehízo allá → gana Shopify. Solo se protege la guía del Hub que Shopify nunca llegó a tener.
+    if(ex.guiaShop && vieja===String(ex.guiaShop)) return true;
+    if(ex.guiaCoord && ex.guiaCoord.remision && !ex.guiaCoord.anulada && String(ex.guiaCoord.remision)===vieja) return !!(ex.guiaCoord.auto);
+    if(ex.guiaShop) return false;
     return ex.origen==='shopify'; }
   async coordRotulo(id, rem){ const v=(this.state.ventas||[]).find(x=>x.id===id); const g=v&&([v.guiaCoord, ...(v.guiaDev||[])].find(x=>x&&x.remision===rem));
     const sb=this._sbClient(); if(!sb) return; this._coordPdfBusy=rem; this.forceUpdate();
@@ -14445,9 +14458,19 @@ Instrucciones de respuesta:
       if(n < count){ try{ console.warn('OdA · copia local corta de '+tabla+': '+n+' de '+count+' → carga completa'); }catch(e){} return false; }
       this._cntOk[tabla]=true; return true;
     }catch(e){ return true; } }
-  _reintentoCarga(tabla, fn, err){ this._retryN=this._retryN||{}; const n=(this._retryN[tabla]||0)+1;
+  // 28-oct: el aviso salía con todo cargando bien — el contador nunca se reiniciaba en las cargas exitosas (varias rutas no llaman
+  // _cargaOk) y el sondeo de cada 15 s iba sumando fallas sueltas del día (red, pestaña en segundo plano, token renovándose).
+  // Ahora cuenta solo fallas SEGUIDAS (si la anterior fue hace >60 s, arranca de cero), no avisa con la pestaña oculta ni sin red,
+  // no avisa si ya hay datos en pantalla (la próxima pasada los actualiza) y máximo un aviso cada 10 min por tabla.
+  _reintentoCarga(tabla, fn, err){ this._retryN=this._retryN||{}; this._retryT=this._retryT||{}; this._retryAviso=this._retryAviso||{};
+    const ahora=Date.now(); if(ahora-(this._retryT[tabla]||0)>60000) this._retryN[tabla]=0; this._retryT[tabla]=ahora;
+    const n=(this._retryN[tabla]||0)+1;
     try{ console.warn('OdA · falló la carga de '+tabla, err); }catch(e){}
-    if(n>3){ this._retryN[tabla]=0; this.toast('No se pudo cargar '+tabla+' desde la nube · usa «Descargar todo otra vez» en Administración'); return; }
+    if(n>3){ this._retryN[tabla]=0;
+      const _k=tabla.replace(/_(\w)/g,(m,c)=>c.toUpperCase()); const _hay=Array.isArray(this.state[_k]) && this.state[_k].length>0;
+      const _oculta=(typeof document!=='undefined' && document.hidden) || (typeof navigator!=='undefined' && navigator.onLine===false);
+      if(!_hay && !_oculta && ahora-(this._retryAviso[tabla]||0)>600000){ this._retryAviso[tabla]=ahora; this.toast('No se pudo cargar '+tabla+' desde la nube · usa «Descargar todo otra vez» en Administración'); }
+      return; }
     this._retryN[tabla]=n; setTimeout(()=>{ try{ fn(); }catch(e){} }, n*2500); }
   _cargaOk(tabla){ if(this._retryN) this._retryN[tabla]=0; }
   async _cloudLoadList(table, key, seedList, _retry){ const sb=this._sbClient(); if(!sb) return;
@@ -18201,9 +18224,18 @@ Instrucciones de respuesta:
         out.gaSimErr=((D&&D.errores)||[]).map((x,i)=>({k:'e'+i, t:(x.pedido?(x.pedido+': '):'')+x.error})); out.gaSimHayErr=out.gaSimErr.length>0;
         out.gaSimL=st.gaBusy==='sim'?'Revisando…':'Vista previa'; out.gaRunL=st.gaBusy==='run'?'Creando guías…':'Crear ahora'; out.gaPdfL=st.gaBusy==='pdf'?'Armando el PDF…':('Descargar rótulos de hoy ('+guias.length+')');
         const RC=R.find(r=>r.id && String(r.id).indexOf('recogida-')===0); const rd=(RC&&RC.data)||null;
-        out.gaRecShow=!!rd || guias.length>0; out.gaRecOk=!!(rd&&rd.ok); out.gaRecColor=out.gaRecOk?'#4C6149':'#B5503C';
-        out.gaRecTxt=rd? (rd.ok? ('Recogida solicitada a Coordinadora'+(rd.numero?(' · N.º '+rd.numero):'')+' · '+((rd.guias||[]).length)+' paquete(s)') : ('Recogida NO confirmada: '+(rd.error||'sin detalle')+((rd.metodosRecogida&&rd.metodosRecogida.length)?(' · métodos: '+rd.metodosRecogida.join(', ')):''))) : 'Recogida sin solicitar';
-        out.gaRecBtn=!out.gaRecOk && guias.length>0 && out.gaPuede; out.gaRecL=st.gaBusy==='rec'?'Pidiendo…':'Solicitar recogida'; out.gaRec=()=>this.gaRecogida();
+        // 27-oct: con la recogida de las 5 p. m. hay hasta dos filas: la de HOY (pedida ayer) y la del siguiente día hábil (pedida hoy).
+        const _hoyR=st.gaFecha||this._logIso(new Date()); const _recs=(st.gaRecs||[]).filter(r=>r&&r.data);
+        const _rTxt=(x)=>{ const d=x.data||{}; const est=d.estado||(d.ok?'pedida':'fallo'); const cuando=(x.fecha===_hoyR?'hoy':('el '+this.fmtFecha(x.fecha))); const n=Number(d.unidades)||((d.guias||[]).length)||0;
+          if(d.ok) return 'Recogida '+cuando+' solicitada a Coordinadora'+(d.numero?(' · N.º '+d.numero):'')+(n?(' · '+n+' paquete(s)'):'')+(d.origen==='5pm'?' · pedida a las 5 p. m.':'');
+          if(est==='pidiendo') return 'Recogida '+cuando+': pidiéndola a Coordinadora…';
+          if(est==='incierto') return 'Recogida '+cuando+': Coordinadora no respondió claro — revisa en su portal antes de volver a pedirla';
+          return 'Recogida '+cuando+' NO confirmada: '+(d.error||'sin detalle'); };
+        out.gaRecList=_recs.map((x,i)=>({ k:'r'+i, txt:_rTxt(x), color:(x.data.ok?'#4C6149':(x.data.estado==='pidiendo'?'#8A8073':'#B5503C')) }));
+        out.gaRecHayLista=out.gaRecList.length>0;
+        out.gaRecShow=!!rd || guias.length>0 || out.gaRecHayLista; out.gaRecOk=!!(rd&&rd.ok) || _recs.some(x=>x.fecha>_hoyR && x.data.ok); out.gaRecColor=out.gaRecOk?'#4C6149':'#B5503C';
+        out.gaRecTxt=out.gaRecHayLista? '' : rd? (rd.ok? ('Recogida solicitada a Coordinadora'+(rd.numero?(' · N.º '+rd.numero):'')+' · '+((rd.guias||[]).length)+' paquete(s)') : ('Recogida NO confirmada: '+(rd.error||'sin detalle')+((rd.metodosRecogida&&rd.metodosRecogida.length)?(' · métodos: '+rd.metodosRecogida.join(', ')):''))) : 'Recogida sin solicitar';
+        out.gaRecBtn=!_recs.some(x=>x.fecha>_hoyR && (x.data.ok || /^(pidiendo|incierto)$/.test(String(x.data.estado||'')))) && out.gaPuede; out.gaRecL=st.gaBusy==='rec'?'Pidiendo…':'Pedir recogida del siguiente día hábil'; out.gaRec=()=>this.gaRecogida();
         out.gaSim=()=>this.gaCorrer(true); out.gaRun=()=>this.gaCorrer(false); out.gaPdf=()=>this.gaDescargar(); out.gaRecargar=()=>this.gaCargar();
         { const vById={}; (st.ventas||[]).forEach(v=>{ vById[v.id]=v; });
           const AP=(st.gaApr||[]).filter(r=>{ const v=vById[r.venta_id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); });
