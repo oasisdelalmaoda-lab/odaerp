@@ -9888,7 +9888,29 @@ class Component extends DCLogic {
     document.addEventListener('focusout',(e)=>{ const el=e.target; if(!el||el.tagName!=='INPUT'||el.dataset.dlPrev===undefined) return;
       const prev=el.dataset.dlPrev, typed=el.dataset.dlTyped==='1'; el.setAttribute('placeholder', el.dataset.dlPh||'');
       if(!typed && !el.value) el.value=prev; delete el.dataset.dlPrev; delete el.dataset.dlPh; delete el.dataset.dlTyped; },true); }
-  componentDidMount(){ try{ window.__odaHub=this; }catch(e){} try{ this._dlInstall(); }catch(e){} try{ this.shopAutoInstall(); }catch(e){} try{ this._dvObsInstall(); }catch(e){}
+  // 29-oct: clic derecho (o clic con la rueda / Cmd-Ctrl+clic) en el menú lateral → «Abrir en pestaña nueva». El destino se obtiene
+  // ejecutando el onClick del ítem con setState CAPTURADO (no cambia la pestaña actual) y se abre ?nav=modulo|sub en otra pestaña.
+  _navDestino(el){ try{ const k=Object.keys(el).find(x=>x.indexOf('__reactProps')===0); const fn=k&&el[k]&&el[k].onClick; if(typeof fn!=='function') return null;
+      const orig=this.setState; const cap={}; this.setState=(p)=>{ try{ if(typeof p==='function') p=p(this.state,this.props); if(p&&typeof p==='object') Object.assign(cap,p); }catch(e){} };
+      try{ fn({ stopPropagation(){}, preventDefault(){}, target:el, currentTarget:el }); }catch(e){} finally{ this.setState=orig; }
+      return cap.module? { module:cap.module, sub:(cap.sub||'') } : null; }catch(e){ return null; } }
+  _navAbrirNueva(el){ const d=this._navDestino(el); if(!d){ this.toast('No se pudo abrir esa pantalla en otra pestaña'); return; }
+    window.open(location.pathname+'?nav='+encodeURIComponent(d.module+'|'+d.sub), '_blank'); }
+  _ctxInstall(){ if(this._ctxOn) return; this._ctxOn=true; const self=this; let menu=null;
+    const cerrar=()=>{ if(menu){ menu.remove(); menu=null; } };
+    document.addEventListener('contextmenu',(e)=>{ const el=e.target&&e.target.closest&&e.target.closest('.oda-navitem'); cerrar(); if(!el) return; e.preventDefault();
+      menu=document.createElement('div'); menu.setAttribute('role','menu');
+      menu.style.cssText='position:fixed;z-index:99999;left:'+Math.min(e.clientX,window.innerWidth-230)+'px;top:'+Math.min(e.clientY,window.innerHeight-60)+'px;min-width:210px;background:#FFFFFF;border:1px solid #E4DBCC;border-radius:12px;box-shadow:0 12px 32px rgba(58,51,38,0.18);padding:6px;font-family:Mulish,system-ui,sans-serif;color-scheme:light;';
+      const b=document.createElement('button'); b.type='button'; b.textContent='Abrir en pestaña nueva';
+      b.style.cssText='display:block;width:100%;text-align:left;font:700 13px Mulish,system-ui,sans-serif;padding:9px 12px;border:none;border-radius:8px;background:transparent;color:#3A3326;cursor:pointer;';
+      b.onmouseenter=()=>{ b.style.background='#F3EDE2'; }; b.onmouseleave=()=>{ b.style.background='transparent'; };
+      b.onclick=(ev)=>{ ev.stopPropagation(); cerrar(); self._navAbrirNueva(el); };
+      menu.appendChild(b); document.body.appendChild(menu); },true);
+    document.addEventListener('mousedown',(e)=>{ if(menu && !menu.contains(e.target)) cerrar(); },true);
+    window.addEventListener('scroll',cerrar,true); window.addEventListener('blur',cerrar); document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') cerrar(); });
+    document.addEventListener('auxclick',(e)=>{ if(e.button!==1) return; const el=e.target&&e.target.closest&&e.target.closest('.oda-navitem'); if(!el) return; e.preventDefault(); self._navAbrirNueva(el); },true);
+    document.addEventListener('click',(e)=>{ if(!(e.metaKey||e.ctrlKey)) return; const el=e.target&&e.target.closest&&e.target.closest('.oda-navitem'); if(!el) return; e.preventDefault(); e.stopPropagation(); self._navAbrirNueva(el); },true); }
+  componentDidMount(){ try{ window.__odaHub=this; }catch(e){} try{ this._dlInstall(); }catch(e){} try{ this._ctxInstall(); }catch(e){} try{ this.shopAutoInstall(); }catch(e){} try{ this._dvObsInstall(); }catch(e){}
     try{ this._odaEstadoInstall(); }catch(e){}
     setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
     setTimeout(()=>{ try{ this._backupDiario(); }catch(e){} }, 12000);
@@ -17429,6 +17451,14 @@ Instrucciones de respuesta:
 
     if(st.view!=='app') return out;
 
+    // 29-oct: al recargar la página se vuelve a la MISMA pantalla (módulo + submódulo), no a Inicio. Por pestaña (sessionStorage).
+    if(!this._navRestaurado){ this._navRestaurado=true; try{ const q=location.search||''; let g=JSON.parse(sessionStorage.getItem('oda_hub_nav_v1')||'null');
+        // pestaña abierta con clic derecho → ?nav=modulo|sub gana sobre lo guardado
+        try{ const nv=new URLSearchParams(q).get('nav'); if(nv){ const [mo,su]=nv.split('|'); if(mo) g={module:mo, sub:(su||null)}; const u=new URLSearchParams(q); u.delete('nav'); history.replaceState(null,'',location.pathname+(u.toString()?('?'+u.toString()):'')+location.hash); } }catch(e){}
+        if(g && g.module && g.module!=='inicio' && !/[?&](mkt|log|conv|conteos)=/.test(q) && (g.module!==st.module || (g.sub||null)!==(st.sub||null))){
+          const a=this.access()||{}; const ok=this.isAdminUser() || (this._modHasAccess? this._modHasAccess(a,g.module) : true);
+          if(ok){ setTimeout(()=>{ try{ this.setState({ module:g.module, sub:(g.sub||null) }); }catch(e){} }, 0); } } }catch(e){} }
+    else { try{ const k=JSON.stringify({module:st.module||'inicio', sub:st.sub||null}); if(k!==this._navUlt){ this._navUlt=k; sessionStorage.setItem('oda_hub_nav_v1',k); } }catch(e){} }
     { setTimeout(()=>{ try{ this._maInit(); }catch(e){} try{ this._gaInit(); }catch(e){} try{ this._deskInit(); }catch(e){} try{ this._stockInit(); }catch(e){} }, 0);
       const MA=st.metaAlertas; const vf=(st.maVistoF!=null? st.maVistoF : (()=>{ try{ return localStorage.getItem('oda_hub_ma_visto_v1')||''; }catch(e){ return ''; } })());
       const a4=(MA && Array.isArray(MA.alertas))? MA.alertas.filter(a=>a.periodo==='d4') : [];
