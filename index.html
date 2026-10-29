@@ -1907,9 +1907,18 @@
                     <div style="font-weight:700;font-size:15px;">{{ stockSolProdTit }}</div>
                     <div style="font-size:12px;color:var(--text-muted);flex-basis:100%;text-wrap:pretty;">El agente de inventario no mueve nada solo: cada ajuste y cada producción espera tu aprobación. Al aprobar se calcula contra el stock de este momento.</div>
                   </div>
+<sc-if value="{{ stockBulkP.show }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-md);background:rgba(67,197,114,0.08);border:1px solid rgba(67,197,114,0.3);">
+                      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text-body);cursor:pointer;"><input type="checkbox" checked="{{ stockBulkP.todas }}" onChange="{{ stockBulkP.onTodas }}" style="width:17px;height:17px;margin:0;accent-color:#43C572;cursor:pointer;">Seleccionar todas</label>
+                      <div style="flex:1;"></div>
+                      <sc-if value="{{ stockBulkP.aprobarSelShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ stockBulkP.aprobarSel }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--brand-primary);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">{{ stockBulkP.aprobarSelL }}</button></sc-if>
+                      <button onClick="{{ stockBulkP.aprobarTodas }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">{{ stockBulkP.aprobarTodasL }}</button>
+                    </div>
+                  </sc-if>
                   <sc-for list="{{ stockSolProd }}" as="s" hint-placeholder-count="1">
                     <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface-raised);">
                       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <sc-if value="{{ stockSolPuede }}" hint-placeholder-val="{{ false }}"><input type="checkbox" checked="{{ s.sel }}" onChange="{{ s.onSel }}" title="Seleccionar" style="width:17px;height:17px;margin:0;accent-color:#43C572;cursor:pointer;"></sc-if>
                         <span style="font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">{{ s.tipoL }}</span>
                         <span style="font-weight:700;font-size:13.5px;">{{ s.titulo }}</span>
                         <span style="font-size:11.5px;color:var(--text-muted);margin-left:auto;">{{ s.cuando }}</span>
@@ -3275,9 +3284,18 @@
                     <div style="font-weight:700;font-size:15px;">{{ stockSolAjuTit }}</div>
                     <div style="font-size:12px;color:var(--text-muted);flex-basis:100%;text-wrap:pretty;">El agente de inventario no mueve nada solo: cada ajuste y cada producción espera tu aprobación. Al aprobar se calcula contra el stock de este momento.</div>
                   </div>
+<sc-if value="{{ stockBulkA.show }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-md);background:rgba(67,197,114,0.08);border:1px solid rgba(67,197,114,0.3);">
+                      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text-body);cursor:pointer;"><input type="checkbox" checked="{{ stockBulkA.todas }}" onChange="{{ stockBulkA.onTodas }}" style="width:17px;height:17px;margin:0;accent-color:#43C572;cursor:pointer;">Seleccionar todas</label>
+                      <div style="flex:1;"></div>
+                      <sc-if value="{{ stockBulkA.aprobarSelShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ stockBulkA.aprobarSel }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--brand-primary);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">{{ stockBulkA.aprobarSelL }}</button></sc-if>
+                      <button onClick="{{ stockBulkA.aprobarTodas }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">{{ stockBulkA.aprobarTodasL }}</button>
+                    </div>
+                  </sc-if>
                   <sc-for list="{{ stockSolAju }}" as="s" hint-placeholder-count="1">
                     <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface-raised);">
                       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <sc-if value="{{ stockSolPuede }}" hint-placeholder-val="{{ false }}"><input type="checkbox" checked="{{ s.sel }}" onChange="{{ s.onSel }}" title="Seleccionar" style="width:17px;height:17px;margin:0;accent-color:#43C572;cursor:pointer;"></sc-if>
                         <span style="font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">{{ s.tipoL }}</span>
                         <span style="font-weight:700;font-size:13.5px;">{{ s.titulo }}</span>
                         <span style="font-size:11.5px;color:var(--text-muted);margin-left:auto;">{{ s.cuando }}</span>
@@ -3295,10 +3313,24 @@
                   </sc-for>
                 </div>
               </sc-if>
+              <sc-if value="{{ ctBulkShow }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;margin-bottom:14px;border-radius:var(--radius-lg);background:var(--surface-card);border:1px solid var(--border-subtle);">
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--text-body);cursor:pointer;"><input type="checkbox" checked="{{ ctBulkTodas }}" onChange="{{ ctBulkOnTodas }}" style="width:17px;height:17px;margin:0;accent-color:var(--brand-primary);cursor:pointer;">{{ ctBulkTxt }}</label>
+                  <div style="flex:1;"></div>
+                  <sc-if value="{{ ctBulkHaySel }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <button onClick="{{ ctBulkRechazarSel }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Rechazar seleccionados</button>
+                      <button onClick="{{ ctBulkAprobarSel }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--brand-primary);background:var(--surface-card);color:var(--brand-ink);cursor:pointer;">{{ ctBulkAprobarSelL }}</button>
+                    </div>
+                  </sc-if>
+                  <button onClick="{{ ctBulkAprobarTodos }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">{{ ctBulkAprobarTodosL }}</button>
+                </div>
+              </sc-if>
               <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px;max-width:760px;line-height:1.55;">Cada conteo físico queda registrado con su fecha, quién lo hizo y el motivo. La diferencia contra el sistema solo mueve el inventario cuando el Administrador la aprueba, y queda visible en el kardex de la materia.</p>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow-x:auto;">
                 <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:1020px;">
                   <thead><tr style="background:var(--surface-raised);text-align:left;">
+                    <th style="padding:12px 0 12px 16px;width:20px;"></th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Fecha</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Material</th>
                     <th style="padding:12px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;text-align:right;">Sistema</th>
@@ -3312,6 +3344,7 @@
                   <tbody>
                     <sc-for list="{{ conteosRows }}" as="c" hint-placeholder-count="3">
                       <tr class="oda-row" style="border-top:1px solid var(--border-subtle);vertical-align:top;">
+                        <td style="padding:14px 0 13px 16px;width:20px;"><sc-if value="{{ c.puedeResolver }}" hint-placeholder-val="{{ false }}"><input type="checkbox" checked="{{ c.sel }}" onChange="{{ c.onSel }}" title="Seleccionar" style="width:16px;height:16px;margin:0;accent-color:var(--brand-primary);cursor:pointer;"></sc-if></td>
                         <td style="padding:13px 16px;white-space:nowrap;color:var(--text-body);">{{ c.fechaFmt }}</td>
                         <td style="padding:13px 16px;"><span style="font-weight:700;color:var(--brand-ink);">{{ c.codigo }}</span><span style="display:block;font-size:12px;color:var(--text-muted);">{{ c.nombre }}</span></td>
                         <td style="padding:13px 16px;text-align:right;white-space:nowrap;color:var(--text-muted);">{{ c.sistemaTxt }}</td>
@@ -9482,7 +9515,15 @@ class Component extends DCLogic {
   _stockCerrarSol(s, estado, nota, resultado){ const sb=this._sbClient(); return sb.from('stock_solicitudes').update({ estado, resuelto_por:this._auditUser()||'', resuelto_at:new Date().toISOString(), nota_resolucion:nota||'', ...(resultado?{resultado}:{}) }).eq('id',s.id).eq('estado','pendiente').select('id'); }
   async stockRechazar(s){ if(!this._stockPuede()){ this.toast('Solo el Administrador resuelve lo de Stock'); return; } const nota=window.prompt('¿Por qué se rechaza? (Stock lo verá)',''); if(nota===null) return;
     const {data,error}=await this._stockCerrarSol(s,'rechazada',nota); if(error||!data||!data.length) this.toast('No se pudo rechazar: '+(error?error.message:'ya estaba resuelta')); else this.toast('Solicitud de Stock rechazada'); this.stockCargar(); }
-  async stockAprobar(s){ if(!this._stockPuede()){ this.toast('Solo el Administrador aprueba lo de Stock'); return; } if(this._stockBusy) return; const sb=this._sbClient(); if(!sb) return; this._stockBusy=true; this.forceUpdate();
+  // 29-oct: aprobar varias solicitudes de Stock seguidas (una por una, cada una contra el stock de ese momento).
+  async stockAprobarVarios(lista){ if(!this._stockPuede()){ this.toast('Solo el Administrador aprueba lo de Stock'); return; } const L=(lista||[]).filter(Boolean); if(!L.length){ this.toast('No hay solicitudes seleccionadas'); return; }
+    if(!window.confirm('¿Aprobar '+L.length+' solicitud'+(L.length===1?'':'es')+' de Stock?\n\nCada una se calcula contra el stock de este momento.')) return;
+    const opts={ok:0, err:[]}; this._stockBulk=true; this.forceUpdate();
+    for(const s of L){ await this.stockAprobar(s, opts); }
+    this._stockBulk=false; this.setState({stockSelA:{}, stockSelP:{}}); this.stockCargar();
+    this.toast(opts.ok+' aprobada'+(opts.ok===1?'':'s')+(opts.err.length?(' · '+opts.err.length+' no se aplicaron: '+opts.err.slice(0,3).join(' · ')+(opts.err.length>3?' …':'')):''));
+    if(opts.err.length) try{ console.warn('Stock · no aplicadas', opts.err); }catch(e){} }
+  async stockAprobar(s, opts){ if(!this._stockPuede()){ this.toast('Solo el Administrador aprueba lo de Stock'); return; } if(this._stockBusy) return; const sb=this._sbClient(); if(!sb) return; this._stockBusy=true; this.forceUpdate();
     const yo=this._auditUser(); const ahora=new Date().toISOString(); const d=s.datos||{};
     try{
       if(s.tipo==='ajuste'){
@@ -9497,7 +9538,7 @@ class Component extends DCLogic {
         const {data,error}=await sb.from('conteos').upsert(this._conteoToDb(row)).select('id'); if(error||!data||!data.length) throw (error||new Error('la nube no confirmó el conteo'));
         this.setState(st=>({conteos:[...(st.conteos||[]), row]}),()=>this.persist()); this._snapSoon(3000);
         const r=await this._stockCerrarSol(s,'aprobada','',{ conteoId:row.id, sistema, contado, diferencia:dif }); if(r.error) throw r.error;
-        this.toast('Ajuste de Stock aplicado · '+d.codigo+' '+(dif>0?'+':'')+this.fmtCant(dif));
+        if(opts) opts.ok++; else this.toast('Ajuste de Stock aplicado · '+d.codigo+' '+(dif>0?'+':'')+this.fmtCant(dif));
       } else if(s.tipo==='produccion'){
         const prods=this.state.productos||[]; const its=(d.items||[]).filter(it=>it&&it.codigo&&(Number(it.cantidad)||0)>0);
         if(!its.length) throw new Error('la solicitud no trae líneas');
@@ -9509,10 +9550,10 @@ class Component extends DCLogic {
         const {data,error}=await sb.from('producciones').upsert(nuevos.map(o=>this._opToDb(o))).select('id'); if(error||!data||data.length!==nuevos.length) throw (error||new Error('la nube no confirmó la producción'));
         this.setState(st=>({producciones:nuevos.concat(st.producciones||[])}),()=>this.persist()); this._snapSoon(3000);
         const r=await this._stockCerrarSol(s,'aprobada','',{ numero:num, lineas:nuevos.length }); if(r.error) throw r.error;
-        this.toast('Producción de Stock registrada · '+num);
+        if(opts) opts.ok++; else this.toast('Producción de Stock registrada · '+num);
       } else throw new Error('tipo desconocido');
-    }catch(e){ this.toast('No se aplicó: '+((e&&e.message)||e)); }
-    finally{ this._stockBusy=false; this.forceUpdate(); this.stockCargar(); } }
+    }catch(e){ const msg=((e&&e.message)||e); if(opts) opts.err.push((d.codigo||('#'+s.id))+': '+msg); else this.toast('No se aplicó: '+msg); }
+    finally{ this._stockBusy=false; this.forceUpdate(); if(!opts) this.stockCargar(); else if(!this._stockBulk) this.stockCargar(); } }
   // ===== DESK · agente comercial por API (23-oct) =====
   // La función `desk` crea leads/cotizaciones/pedidos directo; editar o borrar lo suyo queda en `desk_solicitudes` y se aprueba aquí.
   _deskPuede(){ try{ const a=this.access()||{}; return !!a.admin || this._modLevel(a,'ventas')==='write'; }catch(e){ return false; } }
@@ -15120,6 +15161,20 @@ Instrucciones de respuesta:
     if(this.cloudOn()){ this.cloudBulkConteos([row]); this._snapSoon(3000); }
     this.toast(aprobar? ('Conteo aprobado · stock de '+c.codigo+' actualizado') : 'Conteo rechazado');
   }
+  // 29-oct: aprobar/rechazar varios conteos a la vez (misma regla que resolverConteo: se recalcula contra el stock de HOY).
+  resolverConteosVarios(ids, aprobar){
+    if(!this.isAdminUser()){ this.toast('Solo el Administrador puede aprobar un conteo'); return; }
+    const set=new Set(ids||[]); const pend=(this.state.conteos||[]).filter(c=>set.has(c.id)&&c.estado==='pendiente'); if(!pend.length){ this.toast('No hay conteos pendientes seleccionados'); return; }
+    if(!window.confirm((aprobar?'¿Aprobar ':'¿Rechazar ')+pend.length+' conteo'+(pend.length===1?'':'s')+'?'+(aprobar?'\n\nCada uno se calcula contra el stock de hoy.':''))) return;
+    const yo=this._auditUser(), ahora=new Date().toISOString(); const rows={};
+    pend.forEach(c=>{ if(aprobar){ const sistema=this.conteoSistema(c.codigo); const dif=Math.round((Number(c.contado)-sistema)*1000)/1000; const cu=this.conteoCostoUnit(c.codigo); const sinGasto=this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0;
+        rows[c.id]={...c, estado:'aprobado', sistemaAlAprobar:sistema, diferencia:dif, costoUnit:cu, valor:(sinGasto?0:-dif*cu), aprobadoPor:yo, aprobadoAt:ahora}; }
+      else rows[c.id]={...c, estado:'rechazado', aprobadoPor:yo, aprobadoAt:ahora}; });
+    const list=(this.state.conteos||[]).map(x=>rows[x.id]||x);
+    this.setState({conteos:list, ctSel:{}},()=>this.persist());
+    if(this.cloudOn()){ this.cloudBulkConteos(Object.values(rows)); this._snapSoon(3000); }
+    this.toast(pend.length+' conteo'+(pend.length===1?'':'s')+(aprobar?' aprobado':' rechazado')+(pend.length===1?'':'s')+(aprobar?' · stock actualizado':''));
+  }
   conteosPendientes(){ return (this.state.conteos||[]).filter(c=>c.estado==='pendiente').length; }
   // ---- conteos compartidos (nube) ----
   _conteoToDb(c){ return { id:c.id, codigo:c.codigo, nombre:c.nombre||'', unidad:c.unidad||'und', clase:c.clase||'materia', fecha:c.fecha||null,
@@ -19122,7 +19177,7 @@ Instrucciones de respuesta:
           valorNota:(this.CONTEO_SIN_GASTO.indexOf(c.motivo)>=0? 'Corrección de registro: no se contabiliza como pérdida' : 'Va al estado de resultados como Ajustes de inventario. No mueve caja.'),
           estadoLabel:e.l, estadoBg:e.bg, estadoFg:e.fg,
           aprobTxt:(c.estado==='pendiente'? 'Esperando aprobación' : ((c.estado==='aprobado'?'Aprobó ':'Rechazó ')+(c.aprobadoPor||'—'))),
-          puedeResolver:(_adm && c.estado==='pendiente'),
+          puedeResolver:(_adm && c.estado==='pendiente'), sel:!!((st.ctSel||{})[c.id]), onSel:((cid)=>(e)=>{ const v=e.target.checked; this.setState(x=>({ctSel:{...(x.ctSel||{}), [cid]:v}})); })(c.id),
           puedeAnular:(_adm && c.estado==='aprobado'),
           onAnular:()=>this.anularConteo(c.id),
           onAprobar:()=>this.resolverConteo(c.id,true), onRechazar:()=>this.resolverConteo(c.id,false) }; });
@@ -19691,7 +19746,7 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
     const nombreItem=(it)=>{ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||it.referencia||'—')); };
     const mapV=(v)=>{ const cs=this.canalStyle(v.canal); const ep=this.ventaEstadoPago(v); const its=v.items||[]; const total=this.ventaTotal(v); const saldo=this.ventaSaldo(v); const metOpts=this.metodoOptsVenta(v, metodoBaseOpts);
       const _probs=this.ventaProblemas(v);
-      return {...v, tieneProblema:_probs.length>0, problemaTxt:(_probs.length? (_probs.map(p=>p.sku+': '+p.motivo).join(' · ')) : ''), cliente:this.titleCase(v.cliente), fechaFmt:this.fmtFecha(v.fecha), canalBg:cs.bg, canalFg:cs.fg, productoResumen: its.length? (nombreItem(its[0]) + (its.length>1? ('  +'+(its.length-1)):'')) : '—', unidades:this.ventaUnidades(v), totalFmt:this.fmt(Math.round(total)), netoFmt:this.fmt(Math.round(this.ventaNeta(v))), ivaFmt:this.fmt(Math.round(this.ventaIvaTotal(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.max(0,Math.round(saldo))), saldoPos:saldo>0, hayExc:saldo<-0.5, excFmt:this.fmt(Math.round(-saldo)), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), pagada:(ep.key==='pagada'), editable:(!v.cancelada && ep.key!=='pagada'), origenLabel:this.origenLabel(v.origen), metodoPagoTxt:v.metodoPago||'—', metodoOptions:metOpts, onSetMetodo:(e)=>this.setVentaMetodo(v.id, e.target.value), necesitaBanco:this.metodoNecesitaBanco(v.metodoPago), cuentaRecaudo:v.cuentaRecaudo||'', hayCuentaRec:!!v.cuentaRecaudo, cuentasOptions:this.cuentasParaMetodo(v.metodoPago), onSetCuenta:(e)=>this.setVentaCuenta(v.id, e.target.value), stopRow:(e)=>{ e.stopPropagation(); }, guiaTxt:v.guia||'—', ciudadTxt:this.titleCase(v.ciudad)||'—', pedidoTxt:v.pedido||'—', waTiene:!!String(v.celular||'').replace(/\D/g,''), waMenuOpen:this.state.waMenuId===v.id, onWaToggle:(e)=>{ if(e)e.stopPropagation(); this.setState(s=>({waMenuId:(s.waMenuId===v.id?null:v.id)})); }, waOpts:(this.state.waMenuId===v.id? Object.entries(this.waTemplates()).map(([key,t])=>({label:t.label, enviado:this.waYaEnviado(v,key), onClick:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); this.waSendManual(v,key); }})) : []), onWaCerrar:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); }, onWaChat:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); const to=String(v.celular||'').replace(/\D/g,''); window.open('https://wa.me/'+(to.length===10?'57'+to:to),'_blank'); }, onVer:()=>this.verVenta(v), onEdit:()=>this.editVenta(v), esManual:(v.origen==='manual'), onDescargar:(e)=>{ if(e)e.stopPropagation(); this.descargarPedido(v); }, onPreview:(e)=>{ if(e)e.stopPropagation(); this.previewPedido(v); } }; };
+      return {...v, tieneProblema:_probs.length>0, problemaTxt:(_probs.length? (_probs.map(p=>p.sku+': '+p.motivo).join(' · ')) : ''), cliente:this.titleCase(v.cliente), fechaFmt:this.fmtFecha(v.fecha), canalBg:cs.bg, canalFg:cs.fg, productoResumen: its.length? (nombreItem(its[0]) + (its.length>1? ('  +'+(its.length-1)):'')) : '—', unidades:this.ventaUnidades(v), totalFmt:this.fmt(Math.round(total)), netoFmt:this.fmt(Math.round(this.ventaNeta(v))), ivaFmt:this.fmt(Math.round(this.ventaIvaTotal(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.max(0,Math.round(saldo))), saldoPos:saldo>0, hayExc:saldo<-0.5, excFmt:this.fmt(Math.round(-saldo)), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), pagada:(ep.key==='pagada'), editable:(!v.cancelada && ep.key!=='pagada'), origenLabel:this.origenLabel(v.origen), metodoPagoTxt:v.metodoPago||'—', metodoOptions:metOpts, onSetMetodo:(e)=>this.setVentaMetodo(v.id, e.target.value), necesitaBanco:this.metodoNecesitaBanco(v.metodoPago), cuentaRecaudo:v.cuentaRecaudo||'', hayCuentaRec:!!v.cuentaRecaudo, cuentasOptions:this.cuentasParaMetodo(v.metodoPago), onSetCuenta:(e)=>this.setVentaCuenta(v.id, e.target.value), stopRow:(e)=>{ e.stopPropagation(); }, guiaTxt:v.guia||'—', ciudadTxt:this.titleCase(v.ciudad)||'—', pedidoTxt:v.pedido||'—', waTiene:false /* 29-oct: botón WhatsApp de la fila oculto a pedido del usuario; para volver: !!String(v.celular||'').replace(/\D/g,'') */, waMenuOpen:this.state.waMenuId===v.id, onWaToggle:(e)=>{ if(e)e.stopPropagation(); this.setState(s=>({waMenuId:(s.waMenuId===v.id?null:v.id)})); }, waOpts:(this.state.waMenuId===v.id? Object.entries(this.waTemplates()).map(([key,t])=>({label:t.label, enviado:this.waYaEnviado(v,key), onClick:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); this.waSendManual(v,key); }})) : []), onWaCerrar:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); }, onWaChat:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); const to=String(v.celular||'').replace(/\D/g,''); window.open('https://wa.me/'+(to.length===10?'57'+to:to),'_blank'); }, onVer:()=>this.verVenta(v), onEdit:()=>this.editVenta(v), esManual:(v.origen==='manual'), onDescargar:(e)=>{ if(e)e.stopPropagation(); this.descargarPedido(v); }, onPreview:(e)=>{ if(e)e.stopPropagation(); this.previewPedido(v); } }; };
     if(out.showVentasReg){
       out.qVenta=st.qVenta; out.onQVenta=(e)=>this.setState({qVenta:e.target.value});
       out.filtroCanal=st.filtroCanal||'todos'; out.onFiltroCanal=(e)=>this.setState({filtroCanal:e.target.value});
@@ -20777,6 +20832,15 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
     out.confirmDelTipo=(()=>{ const t=st.confirmDel&&st.confirmDel.tipo; if(t==='kit') return 'este kit'; if(t==='materia') return 'esta materia / insumo'; if(t==='orden') return 'esta orden de compra'; if(t==='borrarordenes') return 'TODAS las órdenes'; if(t==='lead') return 'este lead'; if(t==='liquidacion') return 'este recaudo (se revierte el cruce y se borra el movimiento en banco)'; return 'este producto'; })();
     out.onConfirmDel=()=>this.confirmDeleteItem();
     out.onCancelDel=()=>this.setState({confirmDel:null});
+    // 29-oct: aprobación masiva de conteos pendientes.
+    try{ const _pc=(st.conteos||[]).filter(c=>c.estado==='pendiente'); const _cs=st.ctSel||{}; const _el=_pc.filter(c=>_cs[c.id]);
+      out.ctBulkShow=!!(this.isAdminUser&&this.isAdminUser()) && _pc.length>0; out.ctBulkN=_pc.length; out.ctBulkSelN=_el.length; out.ctBulkHaySel=_el.length>0;
+      out.ctBulkTodas=_pc.length>0 && _el.length===_pc.length; out.ctBulkTxt=_pc.length+(_pc.length===1?' conteo pendiente':' conteos pendientes')+(_el.length?(' · '+_el.length+' seleccionado'+(_el.length===1?'':'s')):'');
+      out.ctBulkOnTodas=(e)=>{ const v=e.target.checked; const m={}; if(v) _pc.forEach(c=>{ m[c.id]=true; }); this.setState({ctSel:m}); };
+      out.ctBulkAprobarSel=()=>this.resolverConteosVarios(_el.map(c=>c.id), true); out.ctBulkRechazarSel=()=>this.resolverConteosVarios(_el.map(c=>c.id), false);
+      out.ctBulkAprobarTodos=()=>this.resolverConteosVarios(_pc.map(c=>c.id), true); out.ctBulkAprobarTodosL='Aprobar todos ('+_pc.length+')';
+      out.ctBulkAprobarSelL='Aprobar '+_el.length+' seleccionado'+(_el.length===1?'':'s');
+    }catch(e){ out.ctBulkShow=false; }
     // 28-oct: solicitudes de Stock (inventario y producción) por aprobar — solo el Administrador.
     try{ const S=st.stockSol||[]; out.stockSolShow=S.length>0; out.stockSolPuede=this._stockPuede(); out.stockSolTit=S.length+(S.length===1?' solicitud de Stock por aprobar':' solicitudes de Stock por aprobar');
       out.stockSolRows=S.map(s=>{ const d=s.datos||{}; const cuando=new Date(s.creado_at).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
@@ -20791,7 +20855,18 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
         return { k:String(s.id), tipoL:'Producción', titulo:its.length+(its.length===1?' producto':' productos')+' · '+its.reduce((a,it)=>a+(Number(it.cantidad)||0),0)+' und · fecha '+this.fmtFecha(d.fecha||''), cuando,
           lineas:its.map(it=>{ const p=(st.productos||[]).find(x=>x.codigo===it.codigo); return { t:(Number(it.cantidad)||0)+' × '+it.codigo+' · '+((p&&p.nombre)||it.nombre||'')+(it.recarga?(' · Recarga '+(it.recargaDestino==='venta'?'para venta':'consumo interno')):'')+(p?'':' · ⚠ el producto ya no existe') }; }),
           nota:d.nota||'', aviso:'', aprobarL:this._stockBusy?'…':'Aprobar · crear '+this.nextCodeProduccion(), aprobar:()=>this.stockAprobar(s), rechazar:()=>this.stockRechazar(s) }; });
+      const _selA=st.stockSelA||{}, _selP=st.stockSelP||{};
+      out.stockSolRows=out.stockSolRows.map((r,i)=>{ const s=S[i]; const key=(s.tipo==='ajuste'?'stockSelA':'stockSelP'); const sel=!!((s.tipo==='ajuste'?_selA:_selP)[s.id]);
+        return {...r, sel, onSel:(e)=>{ const v=e.target.checked; this.setState(x=>({[key]:{...(x[key]||{}), [s.id]:v}})); }}; });
       out.stockSolProd=out.stockSolRows.filter((r,i)=>(S[i].tipo==='produccion')); out.stockSolAju=out.stockSolRows.filter((r,i)=>(S[i].tipo==='ajuste'));
+      const _SA=S.filter(s=>s.tipo==='ajuste'), _SP=S.filter(s=>s.tipo==='produccion');
+      const _bulk=(arr,sel,key,nom)=>{ const elegidas=arr.filter(s=>sel[s.id]); const todas=arr.length>0 && elegidas.length===arr.length; const ocup=!!(this._stockBusy||this._stockBulk);
+        return { show:out.stockSolPuede && arr.length>1, todas, n:elegidas.length,
+          onTodas:(e)=>{ const v=e.target.checked; const m={}; if(v) arr.forEach(s=>{ m[s.id]=true; }); this.setState({[key]:m}); },
+          aprobarSelL:(ocup?'Aprobando…':('Aprobar '+elegidas.length+' seleccionad'+(elegidas.length===1?'a':'as'))), aprobarSelShow:elegidas.length>0,
+          aprobarSel:()=>{ if(!ocup) this.stockAprobarVarios(elegidas); },
+          aprobarTodasL:(ocup?'Aprobando…':('Aprobar todas ('+arr.length+')')), aprobarTodas:()=>{ if(!ocup) this.stockAprobarVarios(arr); } }; };
+      out.stockBulkA=_bulk(_SA,_selA,'stockSelA','ajuste'); out.stockBulkP=_bulk(_SP,_selP,'stockSelP','produccion');
       out.stockSolProdShow=out.stockSolProd.length>0; out.stockSolAjuShow=out.stockSolAju.length>0;
       out.stockSolProdTit=out.stockSolProd.length+(out.stockSolProd.length===1?' producción de Stock por aprobar':' producciones de Stock por aprobar');
       out.stockSolAjuTit=out.stockSolAju.length+(out.stockSolAju.length===1?' ajuste de Stock por aprobar':' ajustes de Stock por aprobar');
