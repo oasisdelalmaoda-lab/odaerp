@@ -6559,11 +6559,11 @@
               </div>
               <sc-if value="{{ svcProrrShow }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:16px;padding:14px 16px;border:1px solid var(--border-brand);background:rgba(167,134,89,0.07);border-radius:var(--radius-sm);">
-                  <div style="font-size:12px;font-weight:800;color:var(--brand-ink);">Prorratear en el estado de resultados <span style="font-weight:400;color:var(--text-muted);">· solo Administrador</span></div>
-                  <p style="font-size:11.5px;color:var(--text-muted);margin:5px 0 12px;line-height:1.5;text-wrap:pretty;">Para servicios que cubren varios meses (anualidades, pólizas, licencias, mantenimientos). El pago y el IVA quedan en su fecha; solo el <strong>gasto</strong> se reparte. Déjalo vacío o en 1 para no prorratear.</p>
+                  <div style="font-size:12px;font-weight:800;color:var(--brand-ink);">Mes del gasto en el estado de resultados <span style="font-weight:400;color:var(--text-muted);">· solo Administrador</span></div>
+                  <p style="font-size:11.5px;color:var(--text-muted);margin:5px 0 12px;line-height:1.5;text-wrap:pretty;">Para servicios que cubren varios meses (anualidades, pólizas, licencias, mantenimientos). El pago y el IVA quedan en su fecha; solo el <strong>gasto</strong> se mueve. <strong>Llevarlo a otro mes:</strong> deja 1 mes y elige el mes. <strong>Prorratear:</strong> pon cuántos meses y desde cuál.</p>
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
                     <label style="font-size:12px;font-weight:700;color:var(--text-body);">¿En cuántos meses?<input name="prorrN" type="number" min="1" max="36" defaultValue="{{ draft.prorrN }}" data-v="{{ draft.prorrN }}" onInput="{{ onDraftInput }}" placeholder="1" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
-                    <label style="font-size:12px;font-weight:700;color:var(--text-body);">Desde el mes<input name="prorrDesde" type="month" value="{{ draft.prorrDesde }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);margin-top:4px;">Vacío: el mes de la factura.</span></label>
+                    <label style="font-size:12px;font-weight:700;color:var(--text-body);">Mes del gasto · o desde el mes<input name="prorrDesde" type="month" value="{{ draft.prorrDesde }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);margin-top:4px;">Vacío: el mes de la factura.</span></label>
                   </div>
                   <div style="margin-top:11px;font-size:12px;color:var(--text-body);text-transform:capitalize;">{{ svcProrrRango }}</div>
                   <div style="font-size:12.5px;font-weight:800;color:var(--brand-ink);margin-top:3px;">{{ svcProrrCuota }}</div>
@@ -8207,11 +8207,11 @@
               </div>
               <sc-if value="{{ movProrrShow }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:16px;padding:14px 16px;border:1px solid var(--border-brand);background:rgba(167,134,89,0.07);border-radius:var(--radius-sm);">
-                  <div style="font-size:12px;font-weight:800;color:var(--brand-ink);">Prorratear en el estado de resultados <span style="font-weight:400;color:var(--text-muted);">· solo Administrador</span></div>
-                  <p style="font-size:11.5px;color:var(--text-muted);margin:5px 0 12px;line-height:1.5;text-wrap:pretty;">Para pagos que cubren varios meses (anualidades, pólizas, licencias, arriendos adelantados). El dinero sigue saliendo en su fecha y el IVA en su bimestre; solo el <strong>gasto</strong> se reparte. Déjalo vacío o en 1 para no prorratear.</p>
+                  <div style="font-size:12px;font-weight:800;color:var(--brand-ink);">Mes del gasto en el estado de resultados <span style="font-weight:400;color:var(--text-muted);">· solo Administrador</span></div>
+                  <p style="font-size:11.5px;color:var(--text-muted);margin:5px 0 12px;line-height:1.5;text-wrap:pretty;">Para pagos que cubren varios meses (anualidades, pólizas, licencias, arriendos adelantados). El dinero sigue saliendo en su fecha y el IVA en su bimestre; solo el <strong>gasto</strong> se mueve. <strong>Llevarlo a otro mes:</strong> deja 1 mes y elige el mes. <strong>Prorratear:</strong> pon cuántos meses y desde cuál.</p>
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
                     <label style="font-size:12px;font-weight:700;color:var(--text-body);">¿En cuántos meses?<input name="prorrN" type="number" min="1" max="36" defaultValue="{{ draft.prorrN }}" data-v="{{ draft.prorrN }}" onInput="{{ onDraftInput }}" placeholder="1" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
-                    <label style="font-size:12px;font-weight:700;color:var(--text-body);">Desde el mes<input name="prorrDesde" type="month" value="{{ draft.prorrDesde }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);margin-top:4px;">Vacío: el mes del movimiento.</span></label>
+                    <label style="font-size:12px;font-weight:700;color:var(--text-body);">Mes del gasto · o desde el mes<input name="prorrDesde" type="month" value="{{ draft.prorrDesde }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted);margin-top:4px;">Vacío: el mes del movimiento.</span></label>
                   </div>
                   <div style="margin-top:11px;font-size:12px;color:var(--text-body);text-transform:capitalize;">{{ movProrrRango }}</div>
                   <div style="font-size:12.5px;font-weight:800;color:var(--brand-ink);margin-top:3px;">{{ movProrrCuota }}</div>
@@ -15791,7 +15791,8 @@ Instrucciones de respuesta:
   // NETO en el estado de resultados: n meses desde `desde`, cuota igual y el último mes
   // absorbe el redondeo. Vive en el movimiento (`prorr:{n,desde}`); un egreso de servicio
   // hereda el prorrateo del servicio si no tiene el suyo.
-  _prorrNorm(p){ if(!p) return null; const n=Math.round(Number(p.n)||0); const desde=String(p.desde||'').slice(0,7); if(!(n>1)||!/^\d{4}-\d{2}$/.test(desde)) return null; return {n:n, desde:desde}; }
+  // 29-oct: n=1 + desde = LLEVAR todo el gasto a un mes específico (imputación) sin repartirlo; misma ruta del prorrateo.
+  _prorrNorm(p){ if(!p) return null; const n=Math.round(Number(p.n)||0); const desde=String(p.desde||'').slice(0,7); if(!(n>=1)||!/^\d{4}-\d{2}$/.test(desde)) return null; return {n:n, desde:desde}; }
   _prorrDe(m){ if(!m||m.tipo!=='egreso') return null; let p=this._prorrNorm(m.prorr);
     if(!p && m.servicioCodigo){ const s=(this.state.servicios||[]).find(x=>x.codigo===m.servicioCodigo); if(s) p=this._prorrNorm(s.prorr); }
     return p; }
@@ -15799,12 +15800,17 @@ Instrucciones de respuesta:
   movPyGAplica(m,ym){ if(m&&m.odaLabsGasto) return false; const ms=this.prorrMeses(m); return ms? ms.indexOf(ym)>=0 : this.mesDe(m.fecha)===ym; }
   movGastoPyG(m,ym){ const neto=this.movGastoNeto(m); const ms=this.prorrMeses(m); if(!ms) return this.mesDe(m.fecha)===ym? neto : 0;
     const i=ms.indexOf(ym); if(i<0) return 0; const cuota=Math.round(neto/ms.length); return i===ms.length-1? Math.round(neto-cuota*(ms.length-1)) : cuota; }
-  prorrNota(m,ym){ const ms=this.prorrMeses(m); if(!ms) return ''; const i=ms.indexOf(ym); return ' \u00b7 prorrateo '+(i+1)+'/'+ms.length; }
+  prorrNota(m,ym){ const ms=this.prorrMeses(m); if(!ms) return ''; if(ms.length===1) return (this.mesDe(m.fecha)===ms[0]? '' : ' \u00b7 llevado a '+this.mesLabel(ms[0])); const i=ms.indexOf(ym); return ' \u00b7 prorrateo '+(i+1)+'/'+ms.length; }
   // Lee los dos campos del formulario (meses + mes inicial) y devuelve el prorrateo a guardar.
-  _prorrDraft(d, defFecha){ if(!d) return null; const n=Math.round(Number(d.prorrN)||0); if(!(n>1)) return null;
-    let desde=String(d.prorrDesde||'').slice(0,7); if(!/^\d{4}-\d{2}$/.test(desde)) desde=String(this.mesDe(defFecha)||'').slice(0,7);
+  _prorrDraft(d, defFecha){ if(!d) return null; const n=Math.max(1, Math.round(Number(d.prorrN)||0)); const nat=String(this.mesDe(defFecha)||'').slice(0,7);
+    let desde=String(d.prorrDesde||'').slice(0,7);
+    if(n===1){ return (/^\d{4}-\d{2}$/.test(desde) && desde!==nat)? {n:1, desde:desde} : null; } // un solo mes: solo se guarda si es OTRO mes
+    if(!/^\d{4}-\d{2}$/.test(desde)) desde=nat;
     if(!/^\d{4}-\d{2}$/.test(desde)) return null; return {n:Math.min(n,36), desde:desde}; }
-  prorrRangoTxt(d, defFecha){ const p=this._prorrDraft(d, defFecha); if(!p) return 'Sin prorrateo \u00b7 se reconoce todo en su mes'; return p.n+' meses \u00b7 '+this.mesLabel(p.desde)+' \u2192 '+this.mesLabel(this.mesShift(p.desde,p.n-1)); }
+  prorrRangoTxt(d, defFecha){ const p=this._prorrDraft(d, defFecha); const nat=String(this.mesDe(defFecha)||'').slice(0,7);
+    if(!p) return 'Todo el gasto en su mes'+(nat?(' \u00b7 '+this.mesLabel(nat)):'');
+    if(p.n===1) return 'Todo el gasto se lleva a '+this.mesLabel(p.desde)+(nat?(' \u00b7 se pagó en '+this.mesLabel(nat)):'');
+    return p.n+' meses \u00b7 '+this.mesLabel(p.desde)+' \u2192 '+this.mesLabel(this.mesShift(p.desde,p.n-1)); }
   servicioSaldo(s){ return this.servicioTotal(s) - (Number(s.pagado)||0); }
   finServiciosPorPagar(){ return (this.state.servicios||[]).filter(s=> (Number(s.costo)||0)>0 && this.servicioSaldo(s)>0.5 ); }
   pagarServicio(s){ const saldo=this.servicioSaldo(s); if(saldo<=0){ this.toast('Este servicio ya est\u00e1 pagado'); return; } this.open('pagarsvc',{ _svcCodigo:s.codigo, nombre:(s.nombre||s.codigo), proveedor:(this.provNombre(s.proveedorCodigo)||''), saldoEstim:Math.round(saldo), monto:Math.round(saldo), fecha:new Date().toISOString().slice(0,10), cuenta:this.primeraCuenta() }); }
