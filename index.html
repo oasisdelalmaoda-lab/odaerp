@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
-<meta name="color-scheme" content="light"><style>:root{color-scheme:light;}</style>
+<meta name="color-scheme" content="light"><meta name="color-scheme" content="light only"><style>:root{color-scheme:light only;}</style>
 </head>
 <body>
 <x-dc>
@@ -25,6 +25,11 @@
 <style>
   *{box-sizing:border-box;}
   body{margin:0;}
+  html,body{color-scheme:light only;}
+  select,option,optgroup,input,textarea,datalist{color-scheme:light only;}
+  select{background-color:#FFFFFF;color:#3A3326;}
+  option,optgroup{background-color:#FFFFFF;color:#3A3326;}
+  option:checked{background-color:#EFE6D6;color:#3A3326;}
   .oda-scroll::-webkit-scrollbar{width:10px;height:10px;}
   .oda-scroll::-webkit-scrollbar-thumb{background:#D9CFBC;border-radius:99px;border:3px solid transparent;background-clip:content-box;}
   .oda-row:hover{background:#FBF8F2;}
@@ -2154,6 +2159,12 @@
                 <div style="display:flex;gap:7px;flex-wrap:wrap;">
                   <sc-for list="{{ invCatFiltros }}" as="c" hint-placeholder-count="5">
                     <button onClick="{{ c.on }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:var(--radius-pill);cursor:pointer;white-space:nowrap;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}<span style="margin-left:6px;opacity:0.62;font-weight:600;">{{ c.n }}</span></button>
+                  </sc-for>
+                </div>
+                <div style="flex-basis:100%;display:flex;gap:7px;flex-wrap:wrap;align-items:center;">
+                  <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-right:2px;">Estado</span>
+                  <sc-for list="{{ invEstFiltros }}" as="c" hint-placeholder-count="4">
+                    <button onClick="{{ c.on }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 13px;border-radius:var(--radius-pill);cursor:pointer;white-space:nowrap;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}<span style="margin-left:6px;opacity:0.7;font-weight:600;">{{ c.n }}</span></button>
                   </sc-for>
                 </div>
                 <div style="flex:1;min-width:12px;"></div>
@@ -9866,7 +9877,18 @@ class Component extends DCLogic {
     conteos:[], fConteoEstado:'pendiente',
   };
 
-  componentDidMount(){ try{ window.__odaHub=this; }catch(e){} try{ this.shopAutoInstall(); }catch(e){} try{ this._dvObsInstall(); }catch(e){}
+  // 29-oct: buscadores con lista (input list=…): al volver a entrar, el texto elegido filtraba la lista a solo ese ítem y había que
+  // borrarlo todo. Ahora al enfocarlo se vacía (el valor queda como placeholder y en el estado), la lista sale completa; si sales sin
+  // escribir nada, vuelve el valor que tenía. Un solo listener global, sirve para los 27 buscadores.
+  _dlInstall(){ if(this._dlOn) return; this._dlOn=true; const self=this;
+    document.addEventListener('focusin',(e)=>{ const el=e.target; if(!el||el.tagName!=='INPUT'||!el.getAttribute('list')||el.dataset.dlPrev!==undefined) return;
+      if(!el.value) return; el.dataset.dlPrev=el.value; el.dataset.dlPh=el.getAttribute('placeholder')||''; el.dataset.dlTyped='';
+      el.setAttribute('placeholder', el.value); el.value=''; },true);
+    document.addEventListener('input',(e)=>{ const el=e.target; if(el&&el.dataset&&el.dataset.dlPrev!==undefined) el.dataset.dlTyped='1'; },true);
+    document.addEventListener('focusout',(e)=>{ const el=e.target; if(!el||el.tagName!=='INPUT'||el.dataset.dlPrev===undefined) return;
+      const prev=el.dataset.dlPrev, typed=el.dataset.dlTyped==='1'; el.setAttribute('placeholder', el.dataset.dlPh||'');
+      if(!typed && !el.value) el.value=prev; delete el.dataset.dlPrev; delete el.dataset.dlPh; delete el.dataset.dlTyped; },true); }
+  componentDidMount(){ try{ window.__odaHub=this; }catch(e){} try{ this._dlInstall(); }catch(e){} try{ this.shopAutoInstall(); }catch(e){} try{ this._dvObsInstall(); }catch(e){}
     try{ this._odaEstadoInstall(); }catch(e){}
     setTimeout(()=>{ try{ this._backfillOMSnaps(); }catch(e){} }, 2500);
     setTimeout(()=>{ try{ this._backupDiario(); }catch(e){} }, 12000);
@@ -16159,7 +16181,8 @@ Instrucciones de respuesta:
     if(key==='envios'){ const fsV=byF(ventas.filter(v=>(Number(v.envio)||0)>0).map(v=>({_f:v.fecha||'', label:this.ventaRef(v), sub:cli(v)+' \u00b7 '+this.fmtFecha(v.fecha), val:Number(v.envio)||0}))); const rend=this.cajaMovs().filter(m=>m.tipo==='ingreso' && this.mesDe(m.fecha)===ym && m.categoria==='Rendimientos financieros'); const fsR=byF(rend.map(m=>({_f:m.fecha||'', label:m.concepto||'Rendimientos financieros', sub:(m.cuenta||'\u2014')+' \u00b7 '+this.fmtFecha(m.fecha), val:Number(m.monto)||0}))); const fsO=byF(this._odlDelMes(ym).map(r=>({_f:String(r.fecha_pago||'').slice(0,10), label:'ODA Labs \u00b7 '+r.factura_num, sub:(r.cliente||'\u2014')+' \u00b7 sin IVA \u00b7 '+this.fmtFecha(String(r.fecha_pago||'').slice(0,10)), val:Math.round(Number(r.valor_cop)||0)-this._odlIva(r)}))); const fs=fsV.concat(fsR).concat(fsO); return {titulo:'Ingresos no operacionales', nota:'Envíos cobrados al cliente, rendimientos financieros e ingresos de ODA Labs (base sin IVA; las retenciones no lo reducen: son anticipo de impuestos).', filas:fs, pos:true, totalLabel:fs.length+' ítems', totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='ajusteinv'){ const cs=(this.state.conteos||[]).filter(c=>c.estado==='aprobado' && this.mesDe(c.fecha)===ym && this.conteoValor(c)!==0);
       const fs=byF(cs.map(c=>({_f:c.fecha||'', label:(c.codigo+' \u00b7 '+(c.nombre||'')), sub:(c.motivo||'')+' \u00b7 '+((Number(c.diferencia)||0)>0?'+':'')+this.fmtCant(Number(c.diferencia)||0)+' '+(c.unidad||'')+' \u00b7 aprob\u00f3 '+(c.aprobadoPor||'\u2014'), val:this.conteoValor(c)})));
-      return {titulo:'Ajustes de inventario', nota:'Faltantes y sobrantes de los conteos f\u00edsicos aprobados en el mes, valorados al costo. No mueven caja: el dinero no sali\u00f3 del banco, se perdi\u00f3 (o apareci\u00f3) producto. Los conteos con motivo \u00abError de registro anterior\u00bb no cuentan como p\u00e9rdida.', filas:fs, neg:true, totalLabel:fs.length+' conteo'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
+      const _falt=cs.reduce((s,c)=>{ const v=this.conteoValor(c); return v>0? s+v : s; },0), _sobr=cs.reduce((s,c)=>{ const v=this.conteoValor(c); return v<0? s-v : s; },0);
+      return {titulo:'Ajustes de inventario', nota:'Faltantes \u2212'+this.fmt(Math.round(_falt))+' \u00b7 sobrantes +'+this.fmt(Math.round(_sobr))+' \u00b7 neto '+(_falt-_sobr>=0?'\u2212':'+')+this.fmt(Math.abs(Math.round(_falt-_sobr)))+'. Los sobrantes restan a la p\u00e9rdida de los faltantes (se compensan). Conteos f\u00edsicos aprobados en el mes, valorados al costo. No mueven caja: el dinero no sali\u00f3 del banco, se perdi\u00f3 (o apareci\u00f3) producto. Los conteos con motivo \u00abError de registro anterior\u00bb no cuentan como p\u00e9rdida.', filas:fs, neg:true, totalLabel:fs.length+' conteo'+(fs.length===1?'':'s'), totalVal:fs.reduce((a,x)=>a+x.val,0)}; }
     if(key==='dianajuste'){ const ms=(this.state.movimientos||[]).filter(m=>m.categoria==='Impuestos DIAN' && m.dianDifEstado==='nooper' && this.mesDe(m.fecha)===ym && Math.round(Number(m.dianDif)||0)!==0);
       const fs=byF(ms.map(m=>({_f:m.fecha||'', label:(m.concepto||'Impuestos DIAN'), sub:'Sugerido '+this.fmt(Math.round(Number(m.dianSug)||0))+' \u00b7 pagado '+this.fmt(Math.round(m.monto||0)), val:Math.round(Number(m.dianDif)||0)})));
       return {titulo:'Ajuste de impuestos DIAN', nota:'Diferencia entre la obligaci\u00f3n calculada y lo realmente pagado, que se decidi\u00f3 reconocer en el resultado. No mueve caja: el pago ya qued\u00f3 registrado. Positivo = se pag\u00f3 menos de lo calculado (el IVA recaudado que se queda es ingreso); negativo = se pag\u00f3 de m\u00e1s.', filas:fs}; }
@@ -19053,12 +19076,21 @@ Instrucciones de respuesta:
         const matRows=mkRows(m=>mpTipos.includes(m.tipo)||esInsumoMat(m)||empTipos.includes(m.tipo)||envTipos.includes(m.tipo)).map(m=>{ const cat=catOf(m); return {...m, cat, catLabel:catMeta[cat].label, catBg:catMeta[cat].bg, catFg:catMeta[cat].fg, stockTxt:m.stockActual+' '+(m.unidad||''), subTxt:'mín. '+(Number(m.stockMinimo)||0), valorNum:Math.round(this.materiaValor(m)), verInicial:esAdmin}; });
         const mezRows=(st.mezclas||[]).map(mz=>{ const ml=Math.round(this.mezclaMlStock(mz.codigo)); const val=Math.round(this.mezclaValorStock(mz.codigo)); const cu=ml>0? (val/ml) : this.mezclaCostoMlActual(mz.codigo); const lot=this.mezclaLotesProducidos(mz.codigo); const bajo=ml<=0; return {codigo:mz.codigo, nombre:'Mezcla '+mz.nombre, cat:'mez', catLabel:catMeta.mez.label, catBg:catMeta.mez.bg, catFg:catMeta.mez.fg, stockTxt:this.fmtCant(ml)+' ml', subTxt:Math.round(lot)+' lote(s)', stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu))+'/ml', valorFmt:this.fmt(val), valorNum:val, estadoLabel:bajo?'Sin stock':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', verInicial:false, onConteo:()=>this.nuevoConteo(mz.codigo)}; });
         const ptRows=st.productos.map(p=>{ const stock=this.productoStockActual(p); const cu=this.productoCosto(p); const bajo=stock<=0; return {codigo:p.codigo, nombre:p.nombre, cat:'pt', catLabel:catMeta.pt.label, catBg:catMeta.pt.bg, catFg:catMeta.pt.fg, stockTxt:stock+' und', subTxt:this.formatoLabel(p.formato), stockColor:bajo?'var(--oda-sale)':'var(--text-strong)', costoFmt:this.fmt(Math.round(cu)), valorFmt:this.fmt(Math.round(stock*cu)), valorNum:Math.round(stock*cu), estadoLabel:bajo?'Sin stock':'OK', estadoBg:bajo?'rgba(181,80,60,0.12)':'rgba(98,123,96,0.14)', estadoFg:bajo?'#B5503C':'#4C6149', verInicial:false, onConteo:()=>this.nuevoConteo(p.codigo)}; });
-        const todos=matRows.concat(mezRows).concat(ptRows).map(r=>({...r, onProgramar:()=>this.programarConteo(r.codigo), onKardex:()=>this.abrirKardexTab(r.codigo)}));
+        // 29-oct: stock y mínimo numéricos para el filtro de estado (negativo / bajo mínimo / sin stock).
+        const _num=(r)=>{ if(r.cat==='mez') return this.mezclaMlStock(r.codigo); if(r.cat==='pt'){ const p=(st.productos||[]).find(x=>x.codigo===r.codigo); return p?this.productoStockActual(p):0; } return Number(r.stockActual)||0; };
+        const _min=(r)=>{ if(r.cat==='pt'){ const p=(st.productos||[]).find(x=>x.codigo===r.codigo); return Number(p&&p.stockMinimo)||0; } if(r.cat==='mez'){ const z=(st.mezclas||[]).find(x=>x.codigo===r.codigo); return Number(z&&z.stockMinimo)||0; } return Number(r.stockMinimo)||0; };
+        const todos=matRows.concat(mezRows).concat(ptRows).map(r=>({...r, _s:_num(r), _m:_min(r), onProgramar:()=>this.programarConteo(r.codigo), onKardex:()=>this.abrirKardexTab(r.codigo)}));
+        const enEst=(r,e)=> e==='todos'? true : e==='neg'? r._s<0 : e==='bajo'? (r._m>0 && r._s<r._m) : e==='cero'? r._s<=0 : true;
+        const est=st.invFiltroEst||'todos';
         const cat=st.invFiltroCat||'todos'; const q=(st.qInv||'').trim().toLowerCase();
         const enCat=(r,c)=> c==='todos'? true : (c==='empenv'? (r.cat==='emp'||r.cat==='env') : r.cat===c);
-        const filtradas=todos.filter(r=>enCat(r,cat)).filter(r=>!q || (r.codigo||'').toLowerCase().includes(q) || (r.nombre||'').toLowerCase().includes(q));
+        const filtradas=todos.filter(r=>enCat(r,cat)).filter(r=>enEst(r,est)).filter(r=>!q || (r.codigo||'').toLowerCase().includes(q) || (r.nombre||'').toLowerCase().includes(q));
         const defs=[{k:'todos',label:'Todos'},{k:'mp',label:'Materia prima'},{k:'ins',label:'Insumos'},{k:'empenv',label:'Empaques y envases'},{k:'mez',label:'Mezclas'},{k:'pt',label:'Producto terminado'}];
         out.invCatFiltros=defs.map(d=>{ const act=d.k===cat; return {label:d.label, n:todos.filter(r=>enCat(r,d.k)).length, on:()=>this.setState({invFiltroCat:d.k}), bg:act?'var(--brand-ink)':'var(--surface-card)', fg:act?'#fff':'var(--text-muted)', bd:act?'var(--brand-ink)':'var(--border-strong)'}; });
+        const _enCatQ=todos.filter(r=>enCat(r,cat));
+        out.invEstFiltros=[{k:'todos',label:'Cualquier stock'},{k:'neg',label:'Negativo'},{k:'bajo',label:'Bajo el mínimo'},{k:'cero',label:'Sin stock (≤ 0)'}].map(d=>{ const act=d.k===est; const alerta=d.k!=='todos';
+          return {label:d.label, n:_enCatQ.filter(r=>enEst(r,d.k)).length, on:()=>this.setState({invFiltroEst:(act&&alerta)?'todos':d.k}), bg:act?(alerta?'#B5503C':'var(--brand-ink)'):'var(--surface-card)', fg:act?'#fff':(alerta?'#B5503C':'var(--text-muted)'), bd:act?(alerta?'#B5503C':'var(--brand-ink)'):(alerta?'rgba(181,80,60,0.4)':'var(--border-strong)')}; });
+        if(est==='neg') filtradas.sort((a,b)=>a._s-b._s); else if(est==='bajo') filtradas.sort((a,b)=>(a._s/(a._m||1))-(b._s/(b._m||1)));
         out.qInv=st.qInv||''; out.setQInv=(e)=>this.setState({qInv:e.target.value});
         out.invItemsRows=filtradas; out.invItemsVacio=filtradas.length===0; out.invItemsCount=filtradas.length;
         out.invItemsTotal=this.fmt(filtradas.reduce((a,r)=>a+(r.valorNum||0),0));
