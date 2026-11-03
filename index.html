@@ -14871,7 +14871,7 @@ Instrucciones de respuesta:
   async _recepSupplyTick(){ if(this._recepSupBusy || !this.cloudOn() || !this.recepPuede()) return;
     const cand=(this.state.recepciones||[]).find(r=>(r.estado||'pendiente')==='pendiente' && r.supplyAsignacion && !r.supplyClaim && !r.supplyError); if(!cand) return;
     const sb=this._sbClient(); if(!sb) return; this._recepSupBusy=true;
-    try{ const {data:filas}=await sb.from('recepciones').select('id,data').eq('id',cand.id).limit(1); const fr=filas&&filas[0]&&filas[0].data;
+    try{ const {data:filas}=await sb.from('recepciones').select('id,data').eq('id',cand.id).limit(1); const fr=filas&&filas[0]&&filas[0].data? {...filas[0].data, id:filas[0].id} : null; // las filas que crea la app no traen id dentro de data
       if(!fr || (fr.estado||'pendiente')!=='pendiente' || !fr.supplyAsignacion || fr.supplyClaim || fr.supplyError) return;
       const yo=this._auditUser()||'Hub'; const claim={...fr, supplyClaim:yo, supplyClaimAt:new Date().toISOString()};
       const {data:ok}=await sb.from('recepciones').update({data:claim, actualizado:new Date().toISOString()}).eq('id',cand.id).is('data->>supplyClaim',null).select('id');
