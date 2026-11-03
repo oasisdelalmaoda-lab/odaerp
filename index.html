@@ -13799,7 +13799,7 @@ Instrucciones de respuesta:
       const cv=await window.html2canvas(body,{scale:2, useCORS:true, backgroundColor:bg, windowWidth:820, width:body.scrollWidth, height:body.scrollHeight});
       // UNA sola página del alto exacto del documento (ancho A4): sin cortes ni espacio en blanco al final.
       const { jsPDF }=window.jspdf; const W=210; const Hmm=Math.max(120, cv.height*W/cv.width);
-      const pdf=new jsPDF({unit:'mm', format:[W,Hmm], orientation:'portrait', compress:true});
+      const pdf=new jsPDF({unit:'mm', format:[W,Hmm], orientation:(Hmm<W?'landscape':'portrait'), compress:true}); // 3-nov: con 'portrait' fijo, un documento más ancho que alto (cotización corta) salía con la página girada: cortado a la derecha y franja blanca abajo
       try{ const m=String(bg).match(/\d+(\.\d+)?/g); if(m&&m.length>=3) pdf.setFillColor(+m[0],+m[1],+m[2]); else pdf.setFillColor(String(bg)); pdf.rect(0,0,W,Hmm,'F'); }catch(e){}
       pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,W,cv.height*W/cv.width);
       // Blob con tipo application/pdf explícito + nombre .pdf (algunos destinos pierden el tipo si solo va la extensión).
