@@ -13677,7 +13677,7 @@ Instrucciones de respuesta:
     const row={ id:d.id||('c'+Date.now()), numero:d._numero||this.nextCotizacion(), fecha:d.fecha||new Date().toISOString().slice(0,10), cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', items:(d.items||[]).map(it=>({referencia:it.referencia||'', producto:it.producto||'', productoCodigo:it.productoCodigo||'', tipo:it.tipo||'producto', unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:Number(it.valorBruto!=null?it.valorBruto:it.valorUnit)||0, descPct:Number(it.descPct)||0})), envio:Number(d.envio)||0, descuentoPct:Number(d.descuentoPct)||0, validez:Number(d.validez)||15, nota:d.nota||'', escala:(d.escala||''), estado:d.estado||'borrador' };
     let list=(this.state.cotizaciones||[]).slice(); const i=list.findIndex(x=>x.id===row.id); if(i>=0 && !d._new) list[i]=row; else list.unshift(row);
     this.setState({cotizaciones:list,modal:null,draft:{}},()=>this.persist()); if(this.cloudOn()) this.cloudSaveCotizacion(row); this.toast('Cotización '+row.numero+' guardada'); }
-  cotDocHtml(c){ const hayDesc=(c.items||[]).some(it=>(Number(it.descPct)||0)>0 || (Number(it.valorBruto)||0)>(Number(it.valorUnit)||0));
+  cotDocHtml(c, ficha){ const hayDesc=(c.items||[]).some(it=>(Number(it.descPct)||0)>0 || (Number(it.valorBruto)||0)>(Number(it.valorUnit)||0));
     const filas=(c.items||[]).map(it=>{ const u=Number(it.unidades)||0; const neto=Number(it.valorUnit)||0; const bruto=Number(it.valorBruto!=null?it.valorBruto:neto)||0; const sub=u*neto; const dpct=bruto>0?Math.round((1-neto/bruto)*100):0;
       return '<tr><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;">'+(it.producto||it.referencia)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;">'+u+'</td>'+(hayDesc?('<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;color:#8A8073;">'+(dpct>0?this.fmt(bruto):'—')+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:center;color:#B5503C;font-weight:700;">'+(dpct>0?('-'+dpct+'%'):'—')+'</td>'):'')+'<td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;">'+this.fmt(neto)+'</td><td style="padding:10px 14px;border-bottom:1px solid #E4DBCC;text-align:right;font-weight:700;">'+this.fmt(sub)+'</td></tr>'; }).join('');
     const total=this.cotTotal(c);
@@ -13699,11 +13699,45 @@ Instrucciones de respuesta:
         +'<div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid #A78659;margin-top:6px;font-size:21px;font-weight:700;color:#5A4A33;"><span>Total</span><span>'+this.fmt(total)+'</span></div>'
       +'</div>'
       +(c.nota?('<div style="margin-top:26px;font-size:12.5px;color:#5A4A33;background:#F2ECE0;border-left:3px solid #A78659;padding:12px 14px;border-radius:4px;"><strong>Nota:</strong> '+c.nota+'</div>'):'')
+      +this._cotFichaHtml(ficha)
       +'<div style="margin-top:34px;border-top:1px solid #E4DBCC;padding-top:14px;font-size:11px;color:#8A8073;text-align:center;line-height:1.7;">Precios en COP. Aceites esenciales 100% puros · Cruelty free · Hecho en Colombia<br>WhatsApp +57 313 406 3259 · @oasisdelalma · www.oasisdelalma.co</div>'
       +'</body></html>');
     return html; }
-  descargarCotizacion(c){ this._descargarDoc(this.cotDocHtml(c), 'Cotizacion-'+(c.numero||'OdA'), 'Cotización'); }
-  previewCotizacion(c){ this.setState({modal:'cotpreview', cotPreviewHtml:this.cotDocHtml(c), cotPreviewNum:(c.numero||''), cotPreviewC:c, cotPreviewKind:'cotizacion'}); }
+  // 3-nov: antes de generar se pregunta si la cotización lleva la ficha de productos (contenido de los kits + foto de la
+  // página). Es por cotización: solo para las que se elija. Desde la vista previa se reusa la respuesta (no pregunta dos veces).
+  _cotPreguntaFicha(c){ if(!((c&&c.items)||[]).length) return false;
+    return window.confirm('¿Incluir la información de los productos en esta cotización?\n\nSale el contenido de cada kit y la foto de la página web.\n\nAceptar = incluir la ficha · Cancelar = cotización normal'); }
+  async descargarCotizacion(c, ficha){ if(ficha===undefined){ ficha=this._cotPreguntaFicha(c)? await this._cotFicha(c) : null; }
+    this._descargarDoc(this.cotDocHtml(c, ficha), 'Cotizacion-'+(c.numero||'OdA'), 'Cotización'); }
+  async previewCotizacion(c){ const ficha=this._cotPreguntaFicha(c)? await this._cotFicha(c) : null;
+    this.setState({modal:'cotpreview', cotPreviewHtml:this.cotDocHtml(c, ficha), cotPreviewNum:(c.numero||''), cotPreviewC:c, cotPreviewKind:'cotizacion', cotPreviewFicha:ficha}); }
+  // Ficha: un bloque por ítem (sin repetir). Kit = sus productos vigentes a la fecha de la cotización (el empaque y las
+  // materias no se listan). Foto = la del Hub (kit/producto) y si no hay, la de la página (products.json); se pasa a
+  // data:URL para que el PDF la pueda dibujar. Si la foto no carga, el bloque sale sin foto.
+  async _cotFicha(c){ this.toast('Armando la ficha de productos…');
+    let web={}; try{ web=await this._waCatalogoImgs(); }catch(e){}
+    const fotoWeb=(nombre)=>{ const n=this._waNorm(nombre); if(!n) return ''; if(web[n]) return web[n]; const k=Object.keys(web).find(x=>x[0]!=='v' && (x.includes(n)||n.includes(x))); return k? web[k] : ''; };
+    const aDataUrl=async(url)=>{ if(!url) return ''; if(/^data:/.test(url)) return url; try{ const u=/cdn\.shopify\.com/.test(url)? (url+(url.includes('?')?'&':'?')+'width=400') : url; const r=await fetch(u,{mode:'cors'}); if(!r.ok) return ''; const b=await r.blob(); return await new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(String(fr.result||'')); fr.onerror=()=>res(''); fr.readAsDataURL(b); }); }catch(e){ return ''; } };
+    const out=[]; const vistos={};
+    for(const it of ((c&&c.items)||[])){ const code=it.productoCodigo||it.referencia||''; const key=code||it.producto; if(!key || vistos[key]) continue; vistos[key]=1;
+      const k=(this.state.kits||[]).find(x=>x.codigo===code); const p=k? null : (this.state.productos||[]).find(x=>x.codigo===code);
+      if(!k && !p) continue;
+      const nombre=(k||p).nombre||it.producto||code;
+      let contenido=[];
+      if(k){ contenido=(this.kitItemsEn(k.codigo, c.fecha, null)||k.items||[]).filter(ki=>ki.tipo==='producto').map(ki=>{ const r=(this.state.productos||[]).find(x=>x.codigo===ki.codigo); const n=(r&&r.nombre)||ki.codigo; const q=Number(ki.cantidad)||1; return n+(q>1?(' ×'+q):''); }); }
+      const det=p? [p.formato, p.tamano].filter(Boolean).join(' · ') : '';
+      const foto=await aDataUrl((k||p).foto || fotoWeb(nombre));
+      out.push({nombre, esKit:!!k, contenido, det, foto}); }
+    return out.length? out : null; }
+  _cotFichaHtml(ficha){ if(!ficha||!ficha.length) return '';
+    const card=(f)=>'<div style="display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid #E4DBCC;border-radius:12px;padding:14px;break-inside:avoid;page-break-inside:avoid;">'
+      +(f.foto? ('<img src="'+f.foto+'" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:8px;flex-shrink:0;background:#F2ECE0;">') : '')
+      +'<div style="font-size:12.5px;line-height:1.55;color:#3A3326;min-width:0;"><div style="font-size:15px;font-weight:700;color:#5A4A33;margin-bottom:4px;">'+f.nombre+'</div>'
+      +(f.det? ('<div style="color:#8A8073;">'+f.det+'</div>') : '')
+      +(f.contenido.length? ('<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#A78659;margin:6px 0 2px;">Incluye</div><div>'+f.contenido.map(x=>'· '+x).join('<br>')+'</div>') : '')
+      +'</div></div>';
+    return '<div style="margin-top:30px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:#A78659;font-weight:700;border-bottom:1px solid #E4DBCC;padding-bottom:8px;margin-bottom:14px;">Información de los productos</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+ficha.map(card).join('')+'</div></div>'; }
   previewPedido(v){ this._pedidoPagoAviso(v); this.setState({modal:'cotpreview', cotPreviewHtml:this.pedidoDocHtml(v), cotPreviewNum:(v.ov||v.pedido||''), cotPreviewC:v, cotPreviewKind:'pedido'}); }
   borrarCotizacion(id){ const c=(this.state.cotizaciones||[]).find(x=>x.id===id); if(!c) return; if(!window.confirm('¿Eliminar la cotización '+(c.numero||'')+'? Esta acción no se puede deshacer.')) return; const list=(this.state.cotizaciones||[]).filter(x=>x.id!==id); this.setState({cotizaciones:list,modal:null},()=>this.persist()); if(this.cloudOn()) this.cloudDeleteCotizacion(id); this.toast('Cotización eliminada'); }
   printCotPreview(){ try{ const f=document.getElementById('cotPreviewFrame'); if(f&&f.contentWindow){ f.contentWindow.focus(); f.contentWindow.print(); } }catch(e){} }
@@ -20679,7 +20713,7 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
       out.rvToggle=()=>this.recEstado(r.id, r.estado==='hecho'?'pendiente':'hecho');
       out.rvToggleTxt=(r.estado==='hecho')?'Reabrir':'Marcar hecho';
     }
-    out.isModalLead=st.modal==='lead'; out.isModalLeadSeg=st.modal==='leadseg'; out.isModalBaseDet=st.modal==='basedetalle'; out.isModalCotPreview=st.modal==='cotpreview'; out.cotPreviewHtml=st.cotPreviewHtml||''; out.cotPreviewNum=st.cotPreviewNum||''; out.cotPreviewNoun=(st.cotPreviewKind==='pedido'?'del pedido':(st.cotPreviewKind==='credito'?'del documento de condiciones':(st.cotPreviewKind==='pagare'?'del pagaré':(st.cotPreviewKind==='carta'?'de la carta de instrucciones':'de la cotización')))); out.cotPreviewEsPagare=(st.cotPreviewKind==='pagare'||st.cotPreviewKind==='carta'); out.onPrintCotPreview=()=>this.printCotPreview(); out.onDescargarCotPreview=()=>{ if(st.cotPreviewC){ if(st.cotPreviewKind==='pedido') this.descargarPedido(st.cotPreviewC); else if(st.cotPreviewKind==='credito') this.descargarCredito(st.cotPreviewC); else if(st.cotPreviewKind==='pagare'||st.cotPreviewKind==='carta') this.descargarCreditoDoc(st.cotPreviewC, st.cotPreviewKind); else this.descargarCotizacion(st.cotPreviewC); } }; out.leadEstadoOptions=this.LEAD_ESTADOS; out.leadOrigenOptions=this.LEAD_ORIGENES; out.leadUserOptions=this.users.map(x=>({id:x.id,name:x.name})); out.leadDraftCreador=(st.draft&&st.draft.creadoPor)?this.uName(st.draft.creadoPor):''; out.leadDraftHasCreador=!!(st.draft&&st.draft.creadoPor&&!st.draft._new);
+    out.isModalLead=st.modal==='lead'; out.isModalLeadSeg=st.modal==='leadseg'; out.isModalBaseDet=st.modal==='basedetalle'; out.isModalCotPreview=st.modal==='cotpreview'; out.cotPreviewHtml=st.cotPreviewHtml||''; out.cotPreviewNum=st.cotPreviewNum||''; out.cotPreviewNoun=(st.cotPreviewKind==='pedido'?'del pedido':(st.cotPreviewKind==='credito'?'del documento de condiciones':(st.cotPreviewKind==='pagare'?'del pagaré':(st.cotPreviewKind==='carta'?'de la carta de instrucciones':'de la cotización')))); out.cotPreviewEsPagare=(st.cotPreviewKind==='pagare'||st.cotPreviewKind==='carta'); out.onPrintCotPreview=()=>this.printCotPreview(); out.onDescargarCotPreview=()=>{ if(st.cotPreviewC){ if(st.cotPreviewKind==='pedido') this.descargarPedido(st.cotPreviewC); else if(st.cotPreviewKind==='credito') this.descargarCredito(st.cotPreviewC); else if(st.cotPreviewKind==='pagare'||st.cotPreviewKind==='carta') this.descargarCreditoDoc(st.cotPreviewC, st.cotPreviewKind); else this.descargarCotizacion(st.cotPreviewC, (st.cotPreviewFicha||null)); } }; out.leadEstadoOptions=this.LEAD_ESTADOS; out.leadOrigenOptions=this.LEAD_ORIGENES; out.leadUserOptions=this.users.map(x=>({id:x.id,name:x.name})); out.leadDraftCreador=(st.draft&&st.draft.creadoPor)?this.uName(st.draft.creadoPor):''; out.leadDraftHasCreador=!!(st.draft&&st.draft.creadoPor&&!st.draft._new);
     if(st.modal==='leadseg'){ const l=this.leadById(st.segLeadId)||{}; const sty=this.leadEstadoStyle(l.estado); const todaySeg=new Date().toISOString().slice(0,10);
       out.segNombre=l.nombre||'Lead'; out.segEstado=l.estado||'Nuevo'; out.segEstadoBg=sty.bg; out.segEstadoFg=sty.fg; out.segAsignado=(l.asignadoA?('Responsable: '+this.leadUName(l.asignadoA)):'Sin responsable asignado');
       out.segComment=(st.draft&&st.draft._segComment)||''; out.onSegComment=(e)=>this.updateDraft('_segComment',e.target.value); out.addLeadComment=()=>this.addLeadComment();
