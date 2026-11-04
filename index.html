@@ -3569,6 +3569,7 @@
                   <button onClick="{{ shopifySyncBtn }}" disabled="{{ shopifySyncing }}" title="Traer pedidos en vivo desde Shopify" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:#5E8E3E;color:#fff;border:none;border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg>{{ shopifySyncLabel }}</button>
                   <button onClick="{{ nuevaVentaImport }}" title="Importar el export de Shopify" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>Importar</button>
                   <button onClick="{{ nuevaMsvc }}" title="Registrar muestras sin valor comercial (descuenta inventario)" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"></path><path d="M14 9.3V2"></path><path d="M8.5 2h7"></path><path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path><path d="M5.52 16h12.96"></path></svg>MSVC</button>
+                  <button onClick="{{ openFichas }}" title="Fichas de clientes B2B y tiendas: contacto y datos del RUT para facturar" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Clientes</button>
                   <button onClick="{{ onVerMsvc }}" title="Ver muestras sin valor comercial registradas" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="border-color:var(--brand-primary);color:var(--brand-primary);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>Ver MSVC</button>
                   <button onClick="{{ nuevaVenta }}" style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" style-hover="background:var(--brand-hover);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Venta</button>
                 </sc-if>
@@ -7459,6 +7460,16 @@
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Canal<select name="canal" value="{{ draft.canal }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><sc-for list="{{ canalesOptionsModal }}" as="c" hint-placeholder-count="5"><option value="{{ c }}">{{ c }}</option></sc-for></select></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Bodega<select name="bodega" value="{{ draft.bodega }}" onChange="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><sc-for list="{{ bodegasOptions }}" as="b" hint-placeholder-count="2"><option value="{{ b }}">{{ b }}</option></sc-for></select></label>
                 <sc-if value="{{ venClienteHay }}" hint-placeholder-val="{{ false }}"><label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--brand-primary);">Traer cliente existente <span style="font-weight:400;color:var(--text-muted);">· escribe para autocompletar celular, correo y ciudad</span><input list="venCliDL" onInput="{{ onPickVenCliente }}" placeholder="Escribe un nombre…" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><datalist id="venCliDL"><sc-for list="{{ venClienteOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.label }}"></option></sc-for></datalist></label></sc-if>
+                <sc-if value="{{ venFichaShow }}" hint-placeholder-val="{{ false }}"><div style="grid-column:1/3;background:rgba(167,134,89,0.08);border:1px solid var(--border-brand);border-radius:var(--radius-md);padding:10px 12px;">
+                  <div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;">
+                    <label style="flex:1;min-width:220px;font-size:12px;font-weight:700;color:var(--brand-primary);">Ficha del cliente <span style="font-weight:400;color:var(--text-muted);">· datos del RUT para facturar</span><select value="{{ venFichaId }}" onChange="{{ onVenFicha }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-card);"><option value="">— Sin ficha (datos a mano) —</option><sc-for list="{{ venFichaOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></label>
+                    <button onClick="{{ onVenFichaNueva }}" style="font-family:inherit;font-size:11.5px;font-weight:700;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;cursor:pointer;">+ Nueva ficha</button>
+                    <sc-if value="{{ venFichaHay }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onVenFichaEditar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 12px;cursor:pointer;">Editar ficha</button></sc-if>
+                  </div>
+                  <sc-if value="{{ venFichaHay }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-body);margin-top:7px;line-height:1.5;">{{ venFichaResumen }}</div></sc-if>
+                  <sc-if value="{{ venFichaFaltaHay }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#B5503C;font-weight:700;margin-top:4px;">Para facturar falta en la ficha: {{ venFichaFalta }}</div></sc-if>
+                  <sc-if value="{{ venFichaSugerir }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">Este cliente B2B no tiene ficha: créala con «+ Nueva ficha» (puedes subir el RUT) para poder facturarle.</div></sc-if>
+                </div></sc-if>
                 <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Cliente<input name="cliente" defaultValue="{{ draft.cliente }}" data-v="{{ draft.cliente }}" onInput="{{ onDraftInput }}" placeholder="Nombre del cliente" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Cédula / NIT <span style="font-weight:400;color:var(--text-muted);">· opcional</span><input name="cedula" defaultValue="{{ draft.cedula }}" data-v="{{ draft.cedula }}" onInput="{{ onDraftInput }}" placeholder="Ej. 1130668556" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
                 <label style="font-size:12px;font-weight:700;color:var(--text-body);">Celular<input name="celular" defaultValue="{{ draft.celular }}" data-v="{{ draft.celular }}" onInput="{{ onDraftInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13.5px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
@@ -9310,6 +9321,114 @@
       </div>
     </sc-if>
 
+    <!-- FICHAS DE CLIENTE (4-nov): lista -->
+    <sc-if value="{{ fichaListOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeFichas }}" style="position:fixed;inset:0;z-index:95;background:rgba(58,51,38,0.4);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;">
+        <div onClick="{{ stop }}" style="background:var(--surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:820px;padding:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin:0;">Clientes · fichas para facturar</h3>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ fichaNueva }}" style="font-family:inherit;font-size:12px;font-weight:700;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:8px 14px;cursor:pointer;">+ Nueva ficha</button>
+              <button onClick="{{ closeFichas }}" style="font-family:inherit;font-size:12px;font-weight:700;background:transparent;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:8px 14px;cursor:pointer;">Cerrar</button>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">B2B, tiendas y distribuidores: nombre comercial, contacto y los datos del RUT. Se llenan una vez; al crear el pedido eliges la ficha y la factura sale con estos datos. Sube el PDF del RUT y el Hub llena los campos.</p>
+          <input defaultValue="{{ fichaQ }}" onInput="{{ onFichaQ }}" placeholder="Buscar por nombre, NIT, contacto o ciudad…" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);margin-bottom:12px;">
+          <sc-if value="{{ fichaVacio }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--text-muted);padding:18px 4px;">Todavía no hay fichas. Crea la primera con «+ Nueva ficha».</div></sc-if>
+          <sc-if value="{{ fichaHay }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;">
+              <sc-for list="{{ fichaFilas }}" as="f" hint-placeholder-count="2">
+                <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1.3fr) auto;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border-subtle);">
+                  <div style="min-width:0;"><div style="font-size:13.5px;font-weight:700;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.nombre }} <span style="font-size:10px;font-weight:700;color:var(--brand-primary);text-transform:uppercase;letter-spacing:0.06em;">{{ f.tipo }}</span></div><div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.fiscal }}</div></div>
+                  <div style="font-size:12px;color:var(--text-body);"><div style="font-weight:700;">{{ f.doc }}</div><div style="color:var(--text-muted);">{{ f.ciudad }}</div></div>
+                  <div style="font-size:11.5px;min-width:0;"><div style="color:var(--text-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.contacto }}</div>
+                    <sc-if value="{{ f.lista }}" hint-placeholder-val="{{ false }}"><div style="color:#4C6149;font-weight:700;">{{ f.faltaTxt }}</div></sc-if>
+                    <sc-if value="{{ f.noLista }}" hint-placeholder-val="{{ true }}"><div style="color:#B5503C;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ f.faltaTxt }}">{{ f.faltaTxt }}</div></sc-if></div>
+                  <button onClick="{{ f.onEditar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;background:var(--surface-card);color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 12px;cursor:pointer;">Editar</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- FICHAS DE CLIENTE (4-nov): editor -->
+    <sc-if value="{{ fichaOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeFicha }}" style="position:fixed;inset:0;z-index:100;background:rgba(58,51,38,0.45);display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;">
+        <div onClick="{{ stop }}" style="background:var(--surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:760px;padding:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;">
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0;">{{ fdTitulo }}</h3>
+            <button onClick="{{ closeFicha }}" style="font-family:inherit;font-size:16px;font-weight:700;width:30px;height:30px;border:1px solid var(--border-strong);border-radius:99px;background:transparent;color:var(--text-muted);cursor:pointer;">×</button>
+          </div>
+
+          <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.12em;color:var(--brand-primary);font-weight:700;margin-bottom:8px;">Comercial</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Tipo de cliente<select name="tipoCliente" value="{{ fd.tipoCliente }}" onChange="{{ onFichaInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><option value="B2B">B2B</option><option value="Tiendas">Tienda</option><option value="Distribuidor">Distribuidor</option></select></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Tienda vinculada <span style="font-weight:400;color:var(--text-muted);">· opcional</span><select name="tiendaId" value="{{ fd.tiendaId }}" onChange="{{ onFichaInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><option value="">— Ninguna —</option><sc-for list="{{ fdTiendaOptions }}" as="t" hint-placeholder-count="0"><option value="{{ t.id }}">{{ t.nombre }}</option></sc-for></select></label>
+            <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Nombre comercial<input name="nombreComercial" defaultValue="{{ fd.nombreComercial }}" data-v="{{ fd.nombreComercial }}" onInput="{{ onFichaInput }}" placeholder="Como lo conocemos · ej. Go Healthy" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Contacto<input name="contacto" defaultValue="{{ fd.contacto }}" data-v="{{ fd.contacto }}" onInput="{{ onFichaInput }}" placeholder="Nombre de la persona" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Teléfono del contacto<input name="telContacto" defaultValue="{{ fd.telContacto }}" data-v="{{ fd.telContacto }}" onInput="{{ onFichaInput }}" placeholder="300 000 0000" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Correo del contacto <span style="font-weight:400;color:var(--text-muted);">· pedidos, cotizaciones</span><input name="correoContacto" defaultValue="{{ fd.correoContacto }}" data-v="{{ fd.correoContacto }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:20px 0 8px;">
+            <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.12em;color:var(--brand-primary);font-weight:700;">RUT · facturación electrónica</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <sc-if value="{{ fdHayRut }}" hint-placeholder-val="{{ false }}"><button onClick="{{ fichaVerRut }}" title="{{ fdRutTxt }}" style="font-family:inherit;font-size:11.5px;font-weight:700;background:transparent;color:var(--brand-ink);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:6px 12px;cursor:pointer;">Ver RUT guardado</button></sc-if>
+              <label style="font-family:inherit;font-size:11.5px;font-weight:700;background:var(--brand-primary);color:var(--text-on-brand);border-radius:var(--radius-pill);padding:7px 13px;cursor:pointer;">Subir RUT (PDF)<input type="file" accept="application/pdf,.pdf" onChange="{{ fichaSubirRut }}" style="display:none;"></label>
+            </div>
+          </div>
+          <sc-if value="{{ fdAvisosHay }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(167,134,89,0.1);border:1px solid var(--border-brand);border-radius:var(--radius-md);padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--text-body);line-height:1.55;"><sc-for list="{{ fdAvisos }}" as="a" hint-placeholder-count="0"><div>{{ a.t }}</div></sc-for></div></sc-if>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 80px;gap:12px;">
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Tipo de persona<select name="tipoPersona" value="{{ fd.tipoPersona }}" onChange="{{ onFichaInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><option value="juridica">Jurídica (empresa)</option><option value="natural">Natural</option></select></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Documento<select name="tipoDoc" value="{{ fd.tipoDoc }}" onChange="{{ onFichaInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><option value="NIT">NIT</option><option value="CC">Cédula</option><option value="CE">Cédula de extranjería</option><option value="PAS">Pasaporte</option></select></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Número<input name="nit" defaultValue="{{ fd.nit }}" data-v="{{ fd.nit }}" onInput="{{ onFichaInput }}" placeholder="900123456" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">DV<input name="dv" defaultValue="{{ fd.dv }}" data-v="{{ fd.dv }}" onInput="{{ onFichaInput }}" placeholder="{{ fdDvCalc }}" maxlength="1" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+          </div>
+          <sc-if value="{{ fdEsJuridica }}" hint-placeholder-val="{{ true }}">
+            <label style="display:block;margin-top:12px;font-size:12px;font-weight:700;color:var(--text-body);">Razón social <span style="font-weight:400;color:var(--text-muted);">· tal cual el RUT (casilla 35)</span><input name="razonSocial" defaultValue="{{ fd.razonSocial }}" data-v="{{ fd.razonSocial }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+          </sc-if>
+          <sc-if value="{{ fdEsNatural }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Primer nombre<input name="primerNombre" defaultValue="{{ fd.primerNombre }}" data-v="{{ fd.primerNombre }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Otros nombres<input name="otrosNombres" defaultValue="{{ fd.otrosNombres }}" data-v="{{ fd.otrosNombres }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Primer apellido<input name="primerApellido" defaultValue="{{ fd.primerApellido }}" data-v="{{ fd.primerApellido }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-body);">Segundo apellido<input name="segundoApellido" defaultValue="{{ fd.segundoApellido }}" data-v="{{ fd.segundoApellido }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            </div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+            <label style="grid-column:1/3;font-size:12px;font-weight:700;color:var(--text-body);">Dirección fiscal<input name="direccion" defaultValue="{{ fd.direccion }}" data-v="{{ fd.direccion }}" onInput="{{ onFichaInput }}" placeholder="Como aparece en el RUT" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Ciudad / municipio<input name="ciudad" defaultValue="{{ fd.ciudad }}" data-v="{{ fd.ciudad }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Departamento<input name="departamento" defaultValue="{{ fd.departamento }}" data-v="{{ fd.departamento }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Correo de facturación electrónica<input name="correoFE" type="email" defaultValue="{{ fd.correoFE }}" data-v="{{ fd.correoFE }}" onInput="{{ onFichaInput }}" placeholder="Donde llega la factura (RUT casilla 42)" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Teléfono (RUT)<input name="telefono" defaultValue="{{ fd.telefono }}" data-v="{{ fd.telefono }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">¿Responsable de IVA?<select name="responsableIva" value="{{ fdIva }}" onChange="{{ onFichaInput }}" style="display:block;width:100%;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"><option value="">— Sin definir —</option><option value="si">Sí (responsabilidad 48)</option><option value="no">No (49 / 53)</option></select></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Actividad económica (CIIU)<input name="actividadPrincipal" defaultValue="{{ fd.actividadPrincipal }}" data-v="{{ fd.actividadPrincipal }}" onInput="{{ onFichaInput }}" placeholder="Ej. 4774" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-body);margin:14px 0 6px;">Responsabilidades del RUT <span style="font-weight:400;color:var(--text-muted);">· casilla 53, toca para marcar</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <sc-for list="{{ fdResp }}" as="r" hint-placeholder-count="4"><button onClick="{{ r.onToggle }}" style="font-family:inherit;font-size:11px;font-weight:700;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:5px 10px;cursor:pointer;{{ r.estilo }}">{{ r.txt }}</button></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Representante legal<input name="representanteLegal" defaultValue="{{ fd.representanteLegal }}" data-v="{{ fd.representanteLegal }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+            <label style="font-size:12px;font-weight:700;color:var(--text-body);">Documento del representante<input name="repDocumento" defaultValue="{{ fd.repDocumento }}" data-v="{{ fd.repDocumento }}" onInput="{{ onFichaInput }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);"></label>
+          </div>
+
+          <sc-if value="{{ fdFaltaHay }}" hint-placeholder-val="{{ false }}"><div style="margin-top:14px;font-size:12px;color:#B5503C;font-weight:700;line-height:1.5;">Para facturar falta: {{ fdFaltaTxt }}</div></sc-if>
+          <sc-if value="{{ fdLista }}" hint-placeholder-val="{{ false }}"><div style="margin-top:14px;font-size:12px;color:#4C6149;font-weight:700;">Ficha completa: lista para facturación electrónica.</div></sc-if>
+          <div style="display:flex;justify-content:space-between;gap:10px;margin-top:18px;">
+            <sc-if value="{{ fdNoNueva }}" hint-placeholder-val="{{ false }}"><button onClick="{{ fichaEliminar }}" style="font-family:inherit;font-size:12px;font-weight:700;background:transparent;color:#B5503C;border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 14px;cursor:pointer;">Eliminar ficha</button></sc-if>
+            <span></span>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ closeFicha }}" style="font-family:inherit;font-size:12px;font-weight:700;background:transparent;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--radius-pill);padding:9px 14px;cursor:pointer;">Cancelar</button>
+              <button onClick="{{ fichaGuardar }}" disabled="{{ fdBusy }}" style="font-family:inherit;font-size:12px;font-weight:700;background:var(--brand-primary);color:var(--text-on-brand);border:none;border-radius:var(--radius-pill);padding:9px 18px;cursor:pointer;">Guardar ficha</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
     <!-- CAMBIAR CONTRASEÑA -->
     <sc-if value="{{ pwdModalOpen }}" hint-placeholder-val="{{ false }}">
       <div onClick="{{ closeChangePwd }}" style="position:fixed;inset:0;z-index:90;background:rgba(58,51,38,0.4);display:flex;align-items:center;justify-content:center;padding:24px;">
@@ -10227,13 +10346,14 @@ class Component extends DCLogic {
 
   // Los avisos largos (errores de Meta, explicaciones) no alcanzan a leerse en 2,3 s.
   // `tono` es explícito ('error'|'ok'); sin él se adivina por el texto (los ~100 avisos viejos).
-  toast(m, tono){ const dur=(String(m||'').length>90)?6500:2300;
+  toast(m, tono){ if(/permission denied for table|JWT expired|Invalid Refresh Token/i.test(String(m||''))) this._sesionVerificar('toast');
+    const dur=(String(m||'').length>90)?6500:2300;
     this.setState({toast:m, toastTono:tono||''}); clearTimeout(this._t);
     this._t=setTimeout(()=>this.setState({toast:null, toastTono:''}),dur); }
 
   // ---- session ----
   login(id){ this.setState({userId:id,view:'app',module:'compras',sub:'resumen',loginStep:'select',loginPendingId:null,loginPwd:'',loginError:''}); try{localStorage.setItem(this.SESSION,JSON.stringify({userId:id}));}catch(e){} }
-  logout(){ try{ const sb=this._sb; if(sb){ sb.auth.signOut().catch(()=>{}); } if(this._sbSub){ this._sbSub.unsubscribe(); this._sbSub=null; } }catch(e){} this.setState({userId:null,view:'login',loginStep:'select',loginPendingId:null,loginEmail:'',loginPwd:'',loginError:'',cloudUser:null,cloudLeads:[],cloudProfiles:[]}); try{localStorage.removeItem(this.SESSION);}catch(e){} }
+  logout(){ this._saliendo=true; setTimeout(()=>{ this._saliendo=false; },3000); try{ const sb=this._sb; if(sb){ sb.auth.signOut().catch(()=>{}); } if(this._sbSub){ this._sbSub.unsubscribe(); this._sbSub=null; } }catch(e){} this.setState({userId:null,view:'login',loginStep:'select',loginPendingId:null,loginEmail:'',loginPwd:'',loginError:'',cloudUser:null,cloudLeads:[],cloudProfiles:[]}); try{localStorage.removeItem(this.SESSION);}catch(e){} }
   // ---- inicio de sesión único (nube) ----
   onLoginEmailInput(e){ this.setState({loginEmail:e.target.value,loginError:'',loginInfo:''}); }
   async sendRecovery(){ const sb=this._sbClient(); if(!sb){ this.setState({loginError:'Conectando con la nube… intenta de nuevo en un momento.'}); this.cloudInit(); return; }
@@ -12254,7 +12374,7 @@ Instrucciones de respuesta:
       pages.push({w:c2.width, h:c2.height, jpg:jb}); } return pages; }
   async gaCargar(){ try{ const sb=this._sbClient(); if(!sb||!this.cloudOn()) return; const f=this.state.gaFecha||this._logIso(new Date());
       const { data, error }=await sb.from('guias_auto').select('id,venta_id,fecha,remision,data,creado_at').eq('fecha', f).order('creado_at',{ascending:true});
-      if(error){ this.setState({ gaErr:(/does not exist|schema cache|Could not find the table/i.test(error.message)?'Falta correr supabase-guias-auto.sql en Supabase':error.message) }); return; }
+      if(error){ if(/permission denied/i.test(error.message||'')) this._sesionVerificar('guias'); this.setState({ gaErr:(/does not exist|schema cache|Could not find the table/i.test(error.message)?'Falta correr supabase-guias-auto.sql en Supabase':error.message) }); return; }
       this.setState({ gaRows:data||[], gaErr:'' });
       // 27-oct: recogidas de las 5 p. m. — la fila va con la fecha de RECOGIDA (siguiente día hábil), así que se traen aparte (hoy en adelante).
       try{ const rc=await sb.from('guias_auto').select('id,fecha,data,creado_at').like('id','recogida-%').gte('fecha',f).order('fecha',{ascending:true}).limit(3); if(!rc.error) this.setState({ gaRecs:rc.data||[] }); }catch(e){}
@@ -13575,9 +13695,9 @@ Instrucciones de respuesta:
     // Mientras el link no se pague, la venta queda con pagado=0 (no se asume cobrada como el resto de Bold).
     const _linkBold=!!(d._new && (d.origen||'manual')==='manual' && this._esBold(d.metodoPago) && d.boldLinkGen!==false);
     const _linkPend=_linkBold || !!(d.boldLink && d.boldLink.estado!=='PAID' && this._esBold(d.metodoPago));
-    const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, boldLink:(d.boldLink||undefined), boldLinkRefs:(Array.isArray(d.boldLinkRefs)?d.boldLinkRefs:undefined), canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', direccion:d.direccion||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || (this.ventaAutoPagado(d, d.metodoPago) && !_linkPend))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true), tipoPedido:(d.tipoPedido||'venta'), creadoPor:(d.creadoPor||(d._new?this.casoUserName():'')), nota:String(d.nota||''), notaAlist:String(d.notaAlist||'').trim() };
+    const row={ id:d.id||('v'+Date.now()), fecha:_fecha, pedido:d.pedido||'', ov:_ov, boldLink:(d.boldLink||undefined), boldLinkRefs:(Array.isArray(d.boldLinkRefs)?d.boldLinkRefs:undefined), canal:_canal, bodega:d.bodega||'Principal', cliente:d.cliente, celular:d.celular||'', cedula:d.cedula||'', correo:d.correo||'', ciudad:d.ciudad||'', direccion:d.direccion||'', items:_items, envio:Number(d.envio)||0, fleteEntrega:Number(d.fleteEntrega)||0, fleteCuenta:d.fleteCuenta||'', guia:d.guia||'', metodoPago:d.metodoPago||'', esObsequio:(d.esObsequio===true), liquidada:(d.liquidada===true), liquidacionId:d.liquidacionId||null, pagado:(d._pagoTotal===true || (this.ventaAutoPagado(d, d.metodoPago) && !_linkPend))? this.ventaTotal({items:_items,envio:d.envio}) : ((d.pagado===''||d.pagado===undefined)? 0 : Number(d.pagado)||0), origen:d.origen||'manual', cobraIva:(d.cobraIva!==false), consignTienda:(((d.canal==='Tiendas'||d.canal==='Distribuidor') && d.consignDescuenta && d.consignTienda)? d.consignTienda : ''), cuentaRecaudo:(d.cuentaRecaudo||''), fechaCobro:(d.fechaCobro||''), abono:((d.abono===''||d.abono===undefined)?0:Number(d.abono)||0), abonoCuenta:(d.abonoCuenta||''), abonoMetodo:(d.abonoMetodo||''), abonoFecha:(d.abonoFecha||''), empaques:(Array.isArray(d.empaques)?d.empaques:[]), empExcluidos:(Array.isArray(d.empExcluidos)?d.empExcluidos:[]), cancelada:(d.cancelada===true), liqForma:d.liqForma, liqAlt:(d.liqAlt===true), tipoPedido:(d.tipoPedido||'venta'), creadoPor:(d.creadoPor||(d._new?this.casoUserName():'')), nota:String(d.nota||''), notaAlist:String(d.notaAlist||'').trim(), clienteFichaId:(d.clienteFichaId||''), fact:(()=>{ const _fc=d.clienteFichaId? this.fichasList().find(x=>x.id===d.clienteFichaId) : null; return _fc? this._fichaFact(_fc) : (d.clienteFichaId? (d.fact||undefined) : undefined); })() };
     // 30-oct: también se conservan el alistamiento enviado, la cotización de origen y la firma de los agentes (Desk/Finax) al editar.
-    { const _prevV=(this.state.ventas||[]).find(x=>x.id===row.id); if(_prevV) Object.keys(_prevV).forEach(k=>{ if(row[k]===undefined && /^(despacho|entrega|log|coord|guiaCoord|guiaDev|transportadora|tracking|metodoCorregido|alist|cotizacionId|creadoPorId|_origen|editadoPor|editadoEn|mensajero)/.test(k)) row[k]=_prevV[k]; }); }
+    { const _prevV=(this.state.ventas||[]).find(x=>x.id===row.id); if(_prevV) Object.keys(_prevV).forEach(k=>{ if(row[k]===undefined && /^(despacho|entrega|log|coord|guiaCoord|guiaDev|transportadora|tracking|metodoCorregido|alist|cotizacionId|creadoPorId|_origen|editadoPor|editadoEn|mensajero|siigo)/.test(k)) row[k]=_prevV[k]; }); }
     let list=(this.state.ventas||[]).slice(); const rowFinal=d._new?this.applyPackagingRules(row):row;
     // Si un humano edita a mano los ítems de un pedido que vino de Shopify, esa corrección queda protegida:
     // la próxima sincronización ya no puede sobrescribir sus referencias/SKU.
@@ -13651,7 +13771,79 @@ Instrucciones de respuesta:
     if(v.esObsequio || (v.tipoPedido && v.tipoPedido!=='venta')) return {ok:false, motivo:'No es una venta (obsequio o muestra)'};
     if(!(this.ventaTotal(v)>0)) return {ok:false, motivo:'Total en cero'};
     return {ok:true}; }
-  _siigoDatosFaltan(v){ const out=[]; const doc=String(v.cedula||v.nit||'').replace(/\D/g,'');
+  // ===== FICHAS DE CLIENTE (4-nov) · B2B, tiendas y distribuidores: contacto + datos del RUT para facturación electrónica =====
+  // Viven en la tabla clientes_fact (id, data). Se llenan una vez (a mano o leyendo el PDF del RUT con la función rut-leer) y el
+  // pedido toma de ahí el cliente; al guardar el pedido queda una COPIA de los datos fiscales en v.fact (lo que se facturó).
+  FICHA_RESP=[['05','Renta régimen ordinario'],['07','Retención en la fuente renta'],['09','Agente retenedor de IVA'],['13','Gran contribuyente'],['14','Informante de exógena'],['15','Autorretenedor'],['42','Obligado a llevar contabilidad'],['47','Régimen simple (SIMPLE)'],['48','Responsable de IVA'],['49','No responsable de IVA'],['52','Facturador electrónico'],['53','Persona jurídica no responsable de IVA']];
+  fichasList(){ const l=this.state.fichasCli; return Array.isArray(l)? l : []; }
+  cloudLoadFichas(){ this._cloudLoadList('clientes_fact','fichasCli', []); }
+  cloudSubscribeFichas(){ this._cloudSubTable('clientes_fact','_fichaSub','fichasCli'); }
+  fichaNombreFiscal(f){ f=f||{}; if(f.tipoPersona==='natural'){ const n=[f.primerNombre,f.otrosNombres,f.primerApellido,f.segundoApellido].map(x=>String(x||'').trim()).filter(Boolean).join(' '); return n; } return String(f.razonSocial||'').trim(); }
+  fichaNombre(f){ f=f||{}; return String(f.nombreComercial||'').trim() || this.fichaNombreFiscal(f) || 'Sin nombre'; }
+  fichaDoc(f){ f=f||{}; const n=String(f.nit||'').replace(/\D/g,''); if(!n) return ''; return (f.tipoDoc==='NIT'||f.tipoPersona==='juridica')? (n+'-'+(String(f.dv||'').replace(/\D/g,'')||this._dvNit(n))) : n; }
+  _dvNit(n){ const p=[3,7,13,17,19,23,29,37,41,43,47,53,59,67,71]; const d=String(n||'').replace(/\D/g,'').split('').reverse(); let s=0; d.forEach((x,i)=>s+=Number(x)*p[i]); const r=s%11; return String(r>1?11-r:r); }
+  fichaFaltan(f){ f=f||{}; const out=[]; const nit=String(f.nit||'').replace(/\D/g,'');
+    if(!nit) out.push('NIT o documento'); else if((f.tipoDoc==='NIT'||f.tipoPersona==='juridica') && f.dv && String(f.dv)!==this._dvNit(nit)) out.push('DV no cuadra con el NIT (debería ser '+this._dvNit(nit)+')');
+    if(f.tipoPersona==='natural'){ if(!String(f.primerNombre||'').trim()||!String(f.primerApellido||'').trim()) out.push('Nombres y apellidos'); } else if(!String(f.razonSocial||'').trim()) out.push('Razón social');
+    if(!String(f.direccion||'').trim()) out.push('Dirección fiscal'); if(!String(f.ciudad||'').trim()) out.push('Ciudad');
+    if(!/@/.test(String(f.correoFE||''))) out.push('Correo de facturación electrónica');
+    if(f.responsableIva!==true && f.responsableIva!==false) out.push('¿Responsable de IVA?');
+    return out; }
+  _fichaFact(f){ if(!f) return null; const k=['tipoPersona','tipoDoc','nit','dv','razonSocial','primerNombre','otrosNombres','primerApellido','segundoApellido','nombreComercial','direccion','ciudad','departamento','correoFE','telefono','contacto','telContacto','responsabilidades','responsableIva','actividadPrincipal'];
+    const o={fichaId:f.id, tomadoEn:new Date().toISOString()}; k.forEach(x=>{ if(f[x]!==undefined && f[x]!=='') o[x]=f[x]; }); if(o.tipoDoc==='NIT'||o.tipoPersona==='juridica'){ o.tipoDoc='NIT'; o.dv=String(o.dv||'')||this._dvNit(o.nit); } return o; }
+  // Copia los datos de la ficha al borrador del pedido (sin pisar la dirección de entrega si ya la escribieron).
+  _fichaAplicarAVenta(f, d){ d=d||{}; const doc=this.fichaDoc(f); return {...d, clienteFichaId:f.id, cliente:this.fichaNombre(f), cedula:doc||d.cedula||'', correo:(f.correoContacto||f.correoFE||d.correo||''), celular:(String(f.telContacto||f.telefono||'').replace(/\D/g,'')||d.celular||''), ciudad:(d.ciudad||f.ciudad||''), direccion:(d.direccion||f.direccionEntrega||f.direccion||'')}; }
+  openFichas(){ this.setState({fichaListOpen:true, fichaQ:''}); }
+  closeFichas(){ this.setState({fichaListOpen:false}); }
+  openFichaNueva(pre, volverVenta){ const d=pre||{}; const doc=String(d.cedula||'').replace(/[^\d-]/g,''); const m=doc.match(/^(\d+)-(\d)$/);
+    const canal=(d.canal==='Tiendas'||d.canal==='Distribuidor')? d.canal : 'B2B';
+    const nueva={ id:'cf'+Date.now()+Math.floor(Math.random()*1000), _new:true, tipoCliente:canal, tiendaId:(d.consignTienda||''), nombreComercial:String(d.cliente||'').trim(), contacto:'', telContacto:String(d.celular||'').replace(/\D/g,''), correoContacto:String(d.correo||''),
+      tipoPersona:(m||/^[89]\d{8}$/.test(doc.replace(/\D/g,'')))?'juridica':'juridica', tipoDoc:'NIT', nit:m?m[1]:doc.replace(/\D/g,''), dv:m?m[2]:'', razonSocial:'', primerNombre:'', otrosNombres:'', primerApellido:'', segundoApellido:'',
+      direccion:String(d.direccion||''), ciudad:String(d.ciudad||''), departamento:'', correoFE:String(d.correo||''), telefono:'', actividadPrincipal:'', responsabilidades:[], responsableIva:null, representanteLegal:'', repDocumento:'' };
+    this.setState({fichaDraft:nueva, fichaAvisos:[], fichaBusy:false, fichaVolverVenta:!!volverVenta}); }
+  openFichaEditar(id, volverVenta){ const f=this.fichasList().find(x=>x.id===id); if(!f){ this.toast('No encontré la ficha'); return; } this.setState({fichaDraft:JSON.parse(JSON.stringify(f)), fichaAvisos:[], fichaBusy:false, fichaVolverVenta:!!volverVenta}); }
+  closeFicha(){ this.setState({fichaDraft:null, fichaAvisos:[], fichaBusy:false}); }
+  onFichaInput(e){ const t=e&&e.target; if(!t||!t.name) return; let v=t.value; if(t.name==='responsableIva') v=(v==='si')?true:(v==='no'?false:null);
+    this.setState(s=>{ const d={...(s.fichaDraft||{}), [t.name]:v}; if(t.name==='tipoPersona' && v==='juridica') d.tipoDoc='NIT'; if(t.name==='tipoPersona' && v==='natural' && d.tipoDoc==='NIT') d.tipoDoc='CC'; return {fichaDraft:d}; }); }
+  fichaToggleResp(code){ this.setState(s=>{ const d={...(s.fichaDraft||{})}; const r=new Set(Array.isArray(d.responsabilidades)?d.responsabilidades:[]); if(r.has(code)) r.delete(code); else r.add(code);
+    d.responsabilidades=[...r].sort(); if(code==='48' && r.has('48')) d.responsableIva=true; if((code==='49'||code==='53') && r.has(code)) d.responsableIva=false; return {fichaDraft:d}; }); }
+  async fichaGuardar(){ const d=this.state.fichaDraft; if(!d) return; const nombre=this.fichaNombre(d); if(!nombre||nombre==='Sin nombre'){ this.toast('Escribe al menos el nombre comercial o la razón social'); return; }
+    const nit=String(d.nit||'').replace(/\D/g,''); const dup=nit && this.fichasList().find(x=>x.id!==d.id && String(x.nit||'').replace(/\D/g,'')===nit);
+    if(dup){ this.toast('Ya existe una ficha con ese documento: '+this.fichaNombre(dup)); return; }
+    const {_new, ...resto}=d; const ahora=new Date().toISOString(); const row={...resto, nit, dv:String(d.dv||'').replace(/\D/g,'').slice(0,1), correoFE:String(d.correoFE||'').trim().toLowerCase(), actualizadoEn:ahora, actualizadoPor:this.casoUserName(), ...(_new?{creadoEn:ahora, creadoPor:this.casoUserName()}:{})};
+    const list=this.fichasList().slice(); const i=list.findIndex(x=>x.id===row.id); if(i>=0) list[i]=row; else list.unshift(row);
+    const volver=this.state.fichaVolverVenta; const patch={fichasCli:list, fichaDraft:null, fichaAvisos:[], fichaBusy:false};
+    if(volver && this.state.modal==='venta') patch.draft=this._fichaAplicarAVenta(row, this.state.draft);
+    this.setState(patch,()=>this.persist()); if(this.cloudOn()) this._cloudBulk('clientes_fact',[row]);
+    const fal=this.fichaFaltan(row); this.toast('Ficha guardada'+(fal.length?(' · para facturar falta: '+fal.join(', ')):' · lista para facturar')); }
+  async fichaEliminar(){ const d=this.state.fichaDraft; if(!d||d._new){ this.closeFicha(); return; } if(!window.confirm('¿Eliminar la ficha de '+this.fichaNombre(d)+'? Los pedidos ya creados conservan sus datos.')) return;
+    this.setState(s=>({fichasCli:this.fichasList().filter(x=>x.id!==d.id), fichaDraft:null}),()=>this.persist()); if(this.cloudOn()) this._cloudDelOne('clientes_fact', d.id); this.toast('Ficha eliminada'); }
+  // Lee el PDF del RUT con la función rut-leer (IA) y llena el borrador; además guarda el PDF en adjuntos/ruts/.
+  async fichaSubirRut(e){ const file=e&&e.target&&e.target.files&&e.target.files[0]; if(e&&e.target) try{ e.target.value=''; }catch(_){} if(!file) return;
+    if(!/pdf/i.test(file.type||'') && !/\.pdf$/i.test(file.name||'')){ this.toast('Sube el RUT en PDF'); return; }
+    if(file.size>9*1024*1024){ this.toast('El PDF pesa más de 9 MB'); return; }
+    const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
+    this.setState({fichaBusy:true, fichaAvisos:['Leyendo el RUT…']});
+    try{ const b64=await new Promise((ok,ko)=>{ const r=new FileReader(); r.onload=()=>ok(String(r.result||'').replace(/^data:[^,]*,/,'')); r.onerror=()=>ko(new Error('no se pudo leer el archivo')); r.readAsDataURL(file); });
+      const id=(this.state.fichaDraft&&this.state.fichaDraft.id)||('cf'+Date.now()); let rutPath='';
+      try{ const path='ruts/'+id+'_'+Date.now()+'.pdf'; const up=await sb.storage.from('adjuntos').upload(path,file,{contentType:'application/pdf',upsert:false}); if(!up.error) rutPath=path; }catch(_){}
+      const {data,error}=await sb.functions.invoke('rut-leer',{body:{pdfBase64:b64}}); if(error) throw error; if(!data||!data.ok) throw new Error((data&&data.error)||'no respondió');
+      const x=data.datos||{}; this.setState(s=>{ const d={...(s.fichaDraft||{})}; const set=(k,v)=>{ if(v!==undefined && v!==null && String(v).trim()!=='') d[k]=v; };
+        set('tipoPersona',x.tipoPersona); set('tipoDoc',x.tipoDoc||(x.tipoPersona==='juridica'?'NIT':'')); set('nit',x.nit); set('dv',x.dv); set('razonSocial',x.razonSocial);
+        set('primerNombre',x.primerNombre); set('otrosNombres',x.otrosNombres); set('primerApellido',x.primerApellido); set('segundoApellido',x.segundoApellido);
+        if(!String(d.nombreComercial||'').trim()) set('nombreComercial',x.nombreComercial||x.razonSocial); set('direccion',x.direccion); set('ciudad',x.ciudad); set('departamento',x.departamento);
+        set('correoFE',x.correo); set('telefono',x.telefono1||x.telefono2); set('actividadPrincipal',x.actividadPrincipal); set('representanteLegal',x.representanteLegal); set('repDocumento',x.repDocumento);
+        if(Array.isArray(x.responsabilidades) && x.responsabilidades.length) d.responsabilidades=x.responsabilidades; if(x.responsableIva===true||x.responsableIva===false) d.responsableIva=x.responsableIva;
+        if(rutPath){ d.rutPath=rutPath; d.rutNombre=file.name; d.rutSubido=new Date().toISOString(); } if(x.fechaDocumento) d.rutFecha=x.fechaDocumento;
+        return {fichaDraft:d, fichaBusy:false, fichaAvisos:['RUT leído: revisa los datos antes de guardar.'].concat(data.avisos||[]).concat(rutPath?[]:['El PDF no se pudo guardar (los datos sí se leyeron).'])}; });
+    }catch(err){ this.setState({fichaBusy:false, fichaAvisos:['No se pudo leer el RUT: '+((err&&err.message)||err)+'. Puedes llenar los datos a mano.']}); } }
+  async fichaVerRut(){ const d=this.state.fichaDraft; const sb=this._sbClient(); if(!d||!d.rutPath||!sb) return; try{ const {data,error}=await sb.storage.from('adjuntos').createSignedUrl(d.rutPath, 600); if(error) throw error; window.open(data.signedUrl,'_blank'); }catch(e){ this.toast('No se pudo abrir el RUT: '+((e&&e.message)||e)); } }
+  _siigoDatosFaltan(v){ const out=[];
+    // 4-nov: con ficha de cliente (v.fact o la ficha vinculada) se valida contra los datos del RUT.
+    { const fv=v.clienteFichaId? this.fichasList().find(x=>x.id===v.clienteFichaId) : null; const ff=fv||(v.fact&&v.fact.nit?v.fact:null);
+      if(ff){ this.fichaFaltan(ff).forEach(x=>out.push('Ficha del cliente: falta '+x)); if((Number(v.pagado)||0)>0 && !String(v.metodoPago||v.abonoMetodo||'').trim()) out.push('Pagado sin método de pago'); return out; }
+      if(/^b2b$/i.test(String(v.canal||'').trim())) out.push('Pedido B2B sin ficha de cliente: créala (con el RUT) desde el pedido'); }
+    const doc=String(v.cedula||v.nit||'').replace(/\D/g,'');
     if(!doc) out.push(/^b2b$/i.test(String(v.canal||'').trim())? 'Pedido B2B sin NIT: es obligatorio' : 'Sin NIT ni cédula: saldría a nombre de Consumidor Final');
     else if(/^b2b$/i.test(String(v.canal||'').trim()) && !/-\s*\d\s*$/.test(String(v.cedula||v.nit||'')) && !(doc.length>=9 && /^[89]/.test(doc))) out.push('Pedido B2B: el documento no parece un NIT de empresa (ej. 900123456-7)');
     if(!String(v.ciudad||'').trim()) out.push('Sin ciudad (Siigo la pide con código DANE para crear el cliente)');
@@ -14079,11 +14271,22 @@ Instrucciones de respuesta:
       removeItem:(k)=>{ try{ localStorage.removeItem(k); }catch(e){} delete mem[k]; } };
     return this._authSt; }
   _sbClient(){ if(this._sb) return this._sb; try{ if(window.supabase&&window.supabase.createClient){ this._sb=window.supabase.createClient(this.CLOUD_URL,this.CLOUD_KEY,{auth:{persistSession:true,storageKey:'oda_cloud_auth_v1',storage:this._authStorage()}}); } }catch(e){} return this._sb; }
+  // 4-nov (caso Andrés, «permission denied for table ventas/guias_auto»): con DOS pestañas del Hub abiertas, la otra pestaña
+  // renovó/cerró la sesión de Supabase (misma llave en localStorage) y esta se quedó sin token: la pantalla seguía «adentro»
+  // pero cada consulta salía como anónimo y la base la rechazaba. Ahora, si la sesión desaparece, el Hub lo detecta (aviso de
+  // otra pestaña, volver a la pestaña o un «permission denied») y manda a entrar de nuevo con un mensaje claro.
+  async _sesionVerificar(motivo){ try{ const sb=this._sb; if(!sb || this.state.view!=='app' || this._sesionRevisando) return true;
+      if(this._sesionUlt && Date.now()-this._sesionUlt<5000) return true; this._sesionRevisando=true; this._sesionUlt=Date.now();
+      const { data }=await sb.auth.getSession(); const ok=!!(data&&data.session&&data.session.user); this._sesionRevisando=false;
+      if(ok) return true;
+      this.logout(); this.setState({loginError:'Tu sesión se cerró (pasa cuando el Hub está abierto en otra pestaña o equipo y esa sesión se renueva). Vuelve a entrar; si tienes el Hub en varias pestañas, deja solo una.'});
+      return false; }catch(e){ this._sesionRevisando=false; return true; } }
   cloudInit(){ const sb=this._sbClient(); if(!sb){ // librería aún no cargó: reintenta
       if((this._cloudTries=(this._cloudTries||0)+1)<40){ setTimeout(()=>this.cloudInit(),250); } return; }
     this.setState({cloudReady:true});
     sb.auth.getSession().then(({data})=>{ const s=data&&data.session; if(s&&s.user){ if(this.state.view!=='app') this._enterAppFromCloud(s.user); else { this._afterCloudLogin(s.user); const _k=this._kardexPedido(); if(_k) setTimeout(()=>this._kardexDesdeUrl(_k),300); } } });
-    try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); } }); }catch(e){}
+    try{ if(!this._sesionStorageOn){ this._sesionStorageOn=true; window.addEventListener('storage',(ev)=>{ if(ev && ev.key==='oda_cloud_auth_v1' && !ev.newValue) setTimeout(()=>this._sesionVerificar('otra-pestana'),800); }); } }catch(e){}
+    try{ sb.auth.onAuthStateChange((_e,session)=>{ if(_e==='PASSWORD_RECOVERY' && session && session.user){ this._enterAppFromCloud(session.user); this.setState({pwdModalOpen:true, pwdRecovery:true, pwdNew:'', pwdNew2:'', pwdError:'', pwdBusy:false}); return; } if(session&&session.user){ if(!this.state.cloudUser){ if(this.state.view!=='app') this._enterAppFromCloud(session.user); else this._afterCloudLogin(session.user); } } else { const _adentro=(this.state.view==='app' && !!this.state.cloudUser); this.setState({cloudUser:null,cloudLeads:[],cloudProfiles:[]}); if(_adentro && _e==='SIGNED_OUT' && !this._saliendo) setTimeout(()=>this._sesionVerificar('signed-out'),300); } }); }catch(e){}
   }
   // Al entrar se bajaban ~28 tablas y se abrían ~25 suscripciones EN EL MISMO instante; con esa
   // avalancha la API rechazaba algunas y (antes del reintento) la tabla quedaba vacía en silencio
@@ -14097,11 +14300,11 @@ Instrucciones de respuesta:
       ()=>{ this.cloudLoadMaterias(); this.cloudLoadProveedores(); this.cloudLoadOrdenes(); this.cloudLoadProfiles(); this.cloudLoadLeads(); this.cloudLoadRecepciones(); },
       ()=>{ this.cloudLoadProducciones(); this.cloudLoadProdMez(); this.cloudLoadCotizaciones(); this.cloudLoadServicios(); this.cloudLoadConteos(); },
       ()=>{ this.cloudLoadCuentas(); this.cloudLoadMetodos(); this.cloudLoadMovimientos(); this.cloudLoadGastos(); this.cloudLoadLiquidaciones(); },
-      ()=>{ this.cloudLoadTiendas(); this.cloudLoadRemisiones(); this.cloudLoadMsvc(); this.cloudLoadUgc(); this.cloudLoadCasos(); this.cloudLoadCreditos(); },
+      ()=>{ this.cloudLoadTiendas(); this.cloudLoadFichas(); this.cloudLoadRemisiones(); this.cloudLoadMsvc(); this.cloudLoadUgc(); this.cloudLoadCasos(); this.cloudLoadCreditos(); },
       ()=>{ this.cloudLoadConvs(); this.cloudLoadAgenteCfg(); this.cloudLoadRecordatorios(); },
       ()=>{ this.cloudSubscribePermisos(); this.cloudSubscribeProveedores(); this.cloudSubscribeMaterias(); this.cloudSubscribeProductos(); this.cloudSubscribeKits(); this.cloudSubscribeMezclas(); },
       ()=>{ this.cloudSubscribeProducciones(); this.cloudSubscribeProdMez(); this.cloudSubscribeVentas(); this.cloudSubscribeCotizaciones(); this.cloudSubscribeCuentas(); this.cloudSubscribeMovimientos(); },
-      ()=>{ this.cloudSubscribeGastos(); this.cloudSubscribeMetodos(); this.cloudSubscribeLiquidaciones(); this.cloudSubscribeServicios(); this.cloudSubscribeOrdenes(); this.cloudSubscribeTiendas(); this.cloudSubscribeRecepciones(); },
+      ()=>{ this.cloudSubscribeFichas(); this.cloudSubscribeGastos(); this.cloudSubscribeMetodos(); this.cloudSubscribeLiquidaciones(); this.cloudSubscribeServicios(); this.cloudSubscribeOrdenes(); this.cloudSubscribeTiendas(); this.cloudSubscribeRecepciones(); },
       ()=>{ this.cloudSubscribeRemisiones(); this.cloudSubscribeMsvc(); this.cloudSubscribeCasos(); this.cloudSubscribeCreditos(); this.cloudSubscribeConvs(); this.cloudSubscribeRecordatorios(); },
     ];
     tandas.forEach((f,ix)=>{ if(ix===0){ try{ f(); }catch(e){} return; } setTimeout(()=>{ try{ f(); }catch(e){} }, ix*450); });
@@ -14990,7 +15193,7 @@ Instrucciones de respuesta:
     // Red de seguridad del "en vivo": al volver a la pestaña se pide el delta de las tablas
     // de trabajo (barato: si nada cambió no trae filas ni re-renderiza). Cubre el caso de que
     // el realtime se haya caído mientras la pestaña estaba en segundo plano.
-    this._cloudFocus=()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles();
+    this._cloudFocus=async()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ if(!(await this._sesionVerificar('foco'))) return; this.cloudLoadLeads(); this.cloudLoadCotizaciones(); this.cloudLoadProfiles();
       this.cloudLoadVentas(); this.cloudLoadOrdenes(); this.cloudLoadMaterias(); this.cloudLoadProductos(); setTimeout(()=>this.boldLinksRevisar(null,false), 4000); setTimeout(()=>this.coordSync(null,false), 9000); setTimeout(()=>this._alistSincronizar(), 3000); } };
     try{ document.addEventListener('visibilitychange',this._cloudFocus); window.addEventListener('focus',this._cloudFocus); }catch(e){}
     this._cloudPoll=setInterval(()=>{ if(this.cloudOn() && document.visibilityState==='visible'){ this.cloudLoadLeads(); this.cloudLoadCotizaciones(); } },15000);
@@ -18015,6 +18218,25 @@ Instrucciones de respuesta:
     out.logout=()=>this.logout(); out.ventasCargando=!!st.ventasCargando;
     out.openChangePwd=()=>this.openChangePwd(); out.closeChangePwd=()=>this.closeChangePwd();
     out.pwdModalOpen=!!st.pwdModalOpen; out.pwdNew=st.pwdNew||''; out.pwdNew2=st.pwdNew2||'';
+    // ---- Fichas de cliente (4-nov) ----
+    { const FL=this.fichasList(); const q=String(st.fichaQ||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+      out.openFichas=()=>this.openFichas(); out.closeFichas=()=>this.closeFichas(); out.fichaListOpen=!!st.fichaListOpen; out.fichaQ=st.fichaQ||'';
+      out.onFichaQ=(e)=>this.setState({fichaQ:e.target.value}); out.fichaNueva=()=>this.openFichaNueva({},false);
+      const filas=FL.filter(f=>{ if(!q) return true; const t=[this.fichaNombre(f),f.razonSocial,f.nit,f.contacto,f.ciudad].join(' ').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); return t.includes(q); })
+        .sort((a,b)=>this.fichaNombre(a).localeCompare(this.fichaNombre(b)))
+        .map(f=>{ const fal=this.fichaFaltan(f); return { id:f.id, nombre:this.fichaNombre(f), fiscal:(this.fichaNombreFiscal(f)&&this.fichaNombreFiscal(f)!==this.fichaNombre(f))?this.fichaNombreFiscal(f):'', doc:this.fichaDoc(f)||'Sin documento', tipo:f.tipoCliente||'B2B',
+          contacto:[f.contacto, f.telContacto].filter(Boolean).join(' · ')||'Sin contacto', ciudad:f.ciudad||'', lista:fal.length===0, noLista:fal.length>0, faltaTxt:fal.length?('Falta: '+fal.join(', ')):'Lista para facturar', onEditar:()=>this.openFichaEditar(f.id,false) }; });
+      out.fichaFilas=filas; out.fichaHay=filas.length>0; out.fichaVacio=filas.length===0; out.fichaTotal=FL.length;
+      const d=st.fichaDraft; out.fichaOpen=!!d; const D=d||{};
+      out.fd=D; out.fdEsNatural=D.tipoPersona==='natural'; out.fdEsJuridica=D.tipoPersona!=='natural'; out.fdEsNueva=!!D._new; out.fdNoNueva=!!d && !D._new; out.fdTitulo=D._new?'Nueva ficha de cliente':('Ficha · '+this.fichaNombre(D));
+      out.fdIva=(D.responsableIva===true)?'si':(D.responsableIva===false?'no':''); out.fdDvCalc=D.nit?this._dvNit(D.nit):''; out.fdEsNit=(D.tipoDoc==='NIT'||D.tipoPersona!=='natural');
+      out.fdTiendaOptions=this.consignTiendas().map(t=>({id:t.id, nombre:t.nombre+(t.ciudad?(' · '+t.ciudad):'')}));
+      const rs=new Set(Array.isArray(D.responsabilidades)?D.responsabilidades:[]);
+      out.fdResp=this.FICHA_RESP.map(([c,t])=>({ code:c, txt:c+' · '+t, on:rs.has(c), estilo:rs.has(c)?'background:var(--brand-primary);color:var(--text-on-brand);border-color:var(--brand-primary);':'background:var(--surface-card);color:var(--text-body);', onToggle:()=>this.fichaToggleResp(c) }));
+      const fal=d?this.fichaFaltan(D):[]; out.fdFaltaHay=fal.length>0; out.fdFaltaTxt=fal.join(' · '); out.fdLista=!!d && fal.length===0;
+      out.fdAvisos=(st.fichaAvisos||[]).map(t=>({t})); out.fdAvisosHay=(st.fichaAvisos||[]).length>0; out.fdBusy=!!st.fichaBusy; out.fdHayRut=!!D.rutPath; out.fdRutTxt=D.rutPath?((D.rutNombre||'RUT.pdf')+(D.rutFecha?(' · generado '+D.rutFecha):'')):'';
+      out.onFichaInput=(e)=>this.onFichaInput(e); out.fichaGuardar=()=>this.fichaGuardar(); out.fichaEliminar=()=>this.fichaEliminar(); out.closeFicha=()=>this.closeFicha();
+      out.fichaSubirRut=(e)=>this.fichaSubirRut(e); out.fichaVerRut=()=>this.fichaVerRut(); }
     out.onPwdNew=(e)=>this.onPwdNew(e); out.onPwdNew2=(e)=>this.onPwdNew2(e); out.onPwdKey=(e)=>this.onPwdKey(e);
     out.pwdError=st.pwdError||''; out.pwdHasError=!!st.pwdError; out.pwdBusy=!!st.pwdBusy; out.pwdBtnLabel=st.pwdBusy?'Guardando…':'Guardar'; out.submitChangePwd=()=>this.submitChangePwd();
     out.shellNavClass=(st.sidebarOpen?'oda-nav-open':'')+(st.navCollapsed?' oda-nav-rail':'');
@@ -20582,6 +20804,14 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
         const _seenV={}; const _optsV=[]; this.clientesData().forEach(c=>{ if(_seenV[c.key]) return; _seenV[c.key]=1; _optsV.push({key:c.key, label:c.cliente+(c.ciudad?(' · '+c.ciudad):'')}); });
         out.venClienteOptions=_optsV.sort((a,b)=>a.label.localeCompare(b.label)); out.venClienteHay=_optsV.length>0;
         out.onPickVenCliente=(e)=>{ const val=String(e.target.value||''); const opt=_optsV.find(o=>o.label===val); if(!opt) return; const c=this.clientesData().find(x=>x.key===opt.key); if(c){ const cd=this.clienteDatosPara(c); this.setState(s=>({draft:{...s.draft, cliente:c.cliente, celular:c.celular||cd.celular||'', correo:c.correo||cd.correo||'', ciudad:cd.ciudad||c.ciudad||'', direccion:(cd.direccion||s.draft.direccion||''), cedula:(c.cedula||cd.cedula||s.draft.cedula||'')}})); if(!cd.direccion) this.toast('Este cliente no tiene dirección guardada · escríbela'); } };
+        { const _esF=(d.canal==='B2B'||d.canal==='Tiendas'||d.canal==='Distribuidor'); out.venFichaShow=_esF || !!d.clienteFichaId;
+          const _FL=this.fichasList(); const _tid=d.consignTienda||'';
+          out.venFichaOptions=_FL.slice().sort((a,b)=>((_tid&&b.tiendaId===_tid)?1:0)-((_tid&&a.tiendaId===_tid)?1:0) || this.fichaNombre(a).localeCompare(this.fichaNombre(b))).map(f=>({id:f.id, label:this.fichaNombre(f)+(this.fichaDoc(f)?(' · '+this.fichaDoc(f)):'')+((_tid&&f.tiendaId===_tid)?' · tienda del pedido':'')}));
+          const _f=d.clienteFichaId? _FL.find(x=>x.id===d.clienteFichaId) : null; out.venFichaId=_f?_f.id:''; out.venFichaHay=!!_f;
+          out.venFichaResumen=_f? [this.fichaNombreFiscal(_f), this.fichaDoc(_f), _f.ciudad, _f.contacto?('Contacto: '+_f.contacto+(_f.telContacto?(' '+_f.telContacto):'')):'', _f.responsableIva===true?'Responsable de IVA':(_f.responsableIva===false?'No responsable de IVA':'')].filter(Boolean).join(' · ') : '';
+          const _fal=_f? this.fichaFaltan(_f) : []; out.venFichaFaltaHay=_fal.length>0; out.venFichaFalta=_fal.join(', '); out.venFichaSugerir=!_f && d.canal==='B2B';
+          out.onVenFicha=(e)=>{ const id=String(e.target.value||''); if(!id){ this.setState(s=>({draft:{...s.draft, clienteFichaId:'', fact:undefined}})); return; } const f=this.fichasList().find(x=>x.id===id); if(f) this.setState(s=>({draft:this._fichaAplicarAVenta(f, s.draft)})); };
+          out.onVenFichaNueva=()=>this.openFichaNueva(this.state.draft, true); out.onVenFichaEditar=()=>{ if(this.state.draft.clienteFichaId) this.openFichaEditar(this.state.draft.clienteFichaId, true); }; }
         out.onPickVenProd=(e)=>this.onPickVenProd(e);
       }
       if(st.modal==='msvc'){
