@@ -17936,6 +17936,9 @@ Instrucciones de respuesta:
     this._mensajeroGuardarLista(nueva); this.toast('Mensajero '+nom+' guardado'); return nid; }
   mensajeroQuitar(id){ const m=this.mensajerosList().find(x=>x.id===id); if(!m) return; if(!window.confirm('¿Quitar a '+(m.nombre||m.celular)+' de la lista de mensajeros? Los pedidos ya enviados conservan su nombre.')) return; this._mensajeroGuardarLista(this.mensajerosList().filter(x=>x.id!==id)); }
   _mensajeroGuardarLista(lista){ const rn={...(this.state.reglasNeg||{}), mensajeros:lista}; this.setState({reglasNeg:rn}); try{ localStorage.setItem('oda_hub_reglas_v1',JSON.stringify(rn)); }catch(e){} if(this.cloudOn()) this.cloudSaveConfig({mensajeros:lista}); }
+  // 6-nov (usuario): el mensajero SOLO cobra los pedidos contraentrega. Bank Deposit / transferencia / link pendientes los cobra la oficina.
+  // Shopify COD se guarda con metodoPago «Coordinadora» (ver sync); manuales: «Contraentrega» / «Contra entrega».
+  ventaEsContraentrega(v){ const mp=String((v&&v.metodoPago)||''); return /cash on delivery|contra\s*-?\s*entrega|\bcod\b/i.test(mp) || /^coordinadora$/i.test(mp.trim()); }
   mensajeroTexto(v){ const _eA=(v&&v.entregaA&&v.entregaA.nombre)?v.entregaA:null; const cD=_eA?{direccion:_eA.direccion,ciudad:_eA.ciudad}:(this.clienteDatosPara?this.clienteDatosPara({cliente:v.cliente, celular:v.celular}):{}); const dir=String((_eA?_eA.direccion:v.direccion)||cD.direccion||'').trim(); const ciudad=String((_eA?_eA.ciudad:'')||v.ciudad||cD.ciudad||'').trim();
     const L=[]; L.push('*ENTREGA · Pedido '+(v.pedido||v.ov||'')+(v.pedido&&v.ov?(' ('+v.ov+')'):'')+'*'); L.push('');
     { const _d=this.ventaDestinatario(v); L.push('*Cliente:* '+this.titleCase(_d.nombre||'')+(_d.otro?(' (factura '+this.titleCase(v.cliente||'')+')'):'')); if(_d.celular) L.push('*Teléfono:* '+String(_d.celular).replace(/\D/g,'')); }
@@ -17945,7 +17948,8 @@ Instrucciones de respuesta:
     (v.items||[]).forEach(it=>{ if(it.soloIngreso) return; const code=it.productoCodigo||it.referencia; const k=(this.state.kits||[]).find(x=>x.codigo===code); L.push('• '+(Number(it.unidades)||1)+' × '+(this.pedidoNombreItem?this.pedidoNombreItem(it):(it.producto||(k&&k.nombre)||code))+(it.obsequio===true?' (obsequio)':'')); });
     const saldo=Math.round(this.ventaSaldo(v)); L.push('');
     if(v.cancelada) L.push('*⚠ PEDIDO ANULADO · no entregar*');
-    else if(saldo>0) L.push('*COBRAR AL ENTREGAR: '+this.fmt(saldo)+'*'+(v.metodoPago?(' · '+v.metodoPago):''));
+    else if(saldo>0 && this.ventaEsContraentrega(v)) L.push('*COBRAR AL ENTREGAR: '+this.fmt(saldo)+'*'+(v.metodoPago?(' · '+v.metodoPago):''));
+    else if(saldo>0) L.push('*No cobrar nada al cliente* (el pago lo gestiona la oficina)');
     else L.push('*Pagado · no cobrar nada*');
     return L.join('\n'); }
   // 31-oct: guarda mensajero + lo que se le paga (fleteEntrega, de qué cuenta salió) → el egreso «Flete de entregas» lleva su nombre.
@@ -21072,7 +21076,7 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
           out.detMensOnValor=(e)=>setF({valor:e.target.value}); out.detMensOnCuenta=(e)=>setF({cuenta:e.target.value}); out.detMensCuentas=this.cuentasList().map(c=>c.nombre);
           out.detMensEnviar=()=>this.mensajeroAplicar(v, selId, out.detMensValor, out.detMensCuenta, true); out.detMensGuardar=()=>this.mensajeroAplicar(v, selId, out.detMensValor, out.detMensCuenta, false); out.detMensCopiar=()=>this.mensajeroCopiar(v);
           out.detMensInfo=me? ('Enviado a '+(me.nombre||me.celular)+(me.por?(' por '+me.por):'')+' · '+new Date(me.at).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})) : 'Le llega por WhatsApp: cliente, teléfono, dirección con mapa, productos y cuánto cobrar. El pago al mensajero queda como gasto de logística con su nombre.';
-          const sd=Math.round(this.ventaSaldo(v)); out.detMensCobro=(sd>0? ('Cobra al entregar '+this.fmt(sd)) : 'Pagado · no cobra'); out.detMensCobroColor=(sd>0?'#B5503C':'#4C6149');
+          const sd=Math.round(this.ventaSaldo(v)); const _cod=this.ventaEsContraentrega(v); out.detMensCobro=(sd>0? (_cod? ('Cobra al entregar '+this.fmt(sd)) : ('No cobra · saldo '+this.fmt(sd)+' lo gestiona la oficina'+(v.metodoPago?(' ('+v.metodoPago+')'):''))) : 'Pagado · no cobra'); out.detMensCobroColor=(sd>0&&_cod?'#B5503C':(sd>0?'#8A6D3B':'#4C6149'));
           // 31-oct: bloques plegables (como consignación) — se abren con clic.
           const O=(st.detOpen||{}); const tg=(k)=>()=>this.setState(s=>({ detOpen:{...(s.detOpen||{}), [v.id+'|'+k]:!((s.detOpen||{})[v.id+'|'+k])} }));
           out.detNotaOpen=!!O[v.id+'|nota']; out.detNotaToggle=tg('nota'); out.detNotaChev=out.detNotaOpen?'▾':'▸'; const _na=String(v.notaAlist||'').trim(); out.detNotaRes=_na? ('· '+(_na.length>60?(_na.slice(0,60)+'…'):_na)) : '· sin nota';
