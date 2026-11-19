@@ -1250,7 +1250,7 @@
                   <button onClick="{{ onCorregirBankDeposit }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:var(--brand-hover);">Corregir Bank Deposit</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
-                  <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Unificar canales en la nube</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Corrige y reescribe en la nube los canales con variantes (ej. «Pagina Web» sin tilde → «Página Web», «Shopify»/«Web» → «Página Web»), para que dejen de aparecer duplicados en Inteligencia de ventas.</div></div>
+                  <div style="flex:1;min-width:220px;"><div style="font-weight:700;font-size:13.5px;">Unificar canales en la nube</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.45;">Corrige y reescribe en la nube los canales con variantes (ej. «Pagina Web» sin tilde → «Página Web», «Shopify»/«Web» → «Página Web», pedidos de «Shopify Grok Connector App» → «WhatsApp»), para que dejen de aparecer duplicados en Inteligencia de ventas.</div></div>
                   <button onClick="{{ onCanonCanales }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);background:var(--brand-primary);color:var(--text-on-brand);border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:var(--brand-hover);">Unificar canales</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:16px;padding:15px 20px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
@@ -4550,6 +4550,38 @@
                 </sc-for>
                 <sc-if value="{{ credCobrarVacio }}" hint-placeholder-val="{{ true }}"><div style="padding:30px 20px;text-align:center;color:var(--text-muted);font-size:13px;">No hay préstamos otorgados. Pulsa «Registrar préstamo» para anotar dinero que la empresa le prestó a un empleado, socio o tercero.</div></sc-if>
               </div>
+              <sc-if value="{{ fcMsgShow }}" hint-placeholder-val="{{ false }}">
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+                <div onClick="{{ fcMsgToggle }}" style="display:flex;align-items:center;gap:14px;padding:15px 20px;cursor:pointer;flex-wrap:wrap;">
+                  <div style="flex:1;min-width:200px;"><h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin:0;">Mensajes de cobro por cliente</h3><span style="font-size:11.5px;color:var(--text-muted);">{{ fcMsgSub }}</span></div>
+                  <div style="text-align:right;"><span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Vencido por cobrar</span><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--oda-sale);">{{ fcMsgVencFmt }}</div></div>
+                  <span style="font-size:12px;font-weight:700;color:var(--brand-primary);">{{ fcMsgToggleL }}</span>
+                </div>
+                <sc-if value="{{ fcMsgOpen }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ fcMsgRows }}" as="m" hint-placeholder-count="2">
+                    <div style="border-top:1px solid var(--border-subtle);">
+                      <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;flex-wrap:wrap;font-size:13px;">
+                        <span style="flex:1;min-width:180px;"><span style="font-weight:700;">{{ m.nombre }}</span><span style="display:block;font-size:11.5px;color:var(--text-muted);">{{ m.meta }}</span></span>
+                        <span style="width:110px;text-align:right;"><span style="font-size:10.5px;color:var(--text-muted);display:block;">Saldo</span><strong>{{ m.saldoFmt }}</strong></span>
+                        <span style="width:110px;text-align:right;"><span style="font-size:10.5px;color:var(--text-muted);display:block;">Vencido</span><strong style="color:{{ m.vencColor }};">{{ m.vencFmt }}</strong></span>
+                        <span style="display:flex;gap:6px;flex-wrap:wrap;">
+                          <button onClick="{{ m.onVer }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ m.verL }}</button>
+                          <button onClick="{{ m.onCopiar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">Copiar</button>
+                          <sc-if value="{{ m.waShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.onWa }}" title="{{ m.waTitle }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:none;background:#4C6149;color:#fff;">WhatsApp</button></sc-if>
+                        </span>
+                      </div>
+                      <sc-if value="{{ m.abierto }}" hint-placeholder-val="{{ false }}">
+                        <div style="padding:0 20px 14px;">
+                          <textarea key="{{ m.taKey }}" defaultValue="{{ m.texto }}" onInput="{{ m.onEdit }}" rows="{{ m.filas }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:12.5px;line-height:1.5;padding:10px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface-page);color:var(--text-body);resize:vertical;"></textarea>
+                          <div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;font-size:11.5px;color:var(--text-muted);"><span style="flex:1;">{{ m.notaEdit }}</span><sc-if value="{{ m.editado }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.onRestaurar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-muted);">Volver al mensaje automático</button></sc-if></div>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                  <div style="padding:10px 20px 14px;border-top:1px solid var(--border-subtle);font-size:11.5px;color:var(--text-muted);line-height:1.5;text-wrap:pretty;">Agrupa por cliente las ventas con saldo (respeta los filtros de arriba). Vence = fecha del pedido + plazo de pago de la factura o de la ficha (tiendas y distribuidores 30 días; sin plazo = contado, vence el mismo día). No incluye contraentregas: esas las recauda la transportadora. Los datos de pago salen de Caja y bancos (llave de ODA LABS para ventas con IVA, cuenta Nu para las sin IVA).</div>
+                </sc-if>
+              </div>
+              </sc-if>
               <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
                 <div style="display:flex;padding:11px 20px;background:var(--surface-raised);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);font-weight:700;"><span style="flex:1;">Cliente / venta</span><span style="width:96px;text-align:right;">Total</span><span style="width:96px;text-align:right;">Abonado</span><span style="width:104px;text-align:right;">Saldo</span><span style="width:90px;text-align:right;">Días</span><span style="width:90px;"></span></div>
                 <sc-for list="{{ fcList }}" as="v" hint-placeholder-count="4">
@@ -12016,7 +12048,15 @@ Instrucciones de respuesta:
   canonCanal(c){ c=String(c==null?'':c).trim(); if(!c) return c; if(/^(p[aá]gina\s*web|sitio\s*web|web|tienda\s*(online|web|virtual)|online\s*store|shopify)$/i.test(c)) return 'Página Web'; if(/^(instagram|ig|whats\s*app|wa)$/i.test(c)) return 'WhatsApp'; return c; }
   // Canal de una venta completa: los pedidos preliminares de Shopify (creados a mano, sourceName
   // 'shopify_draft_order') van al canal WhatsApp aunque hayan entrado como «Página Web».
-  canonCanalVenta(v){ const c=this.canonCanal(v&&v.canal); if(v && v.sourceName==='shopify_draft_order' && (!c||c==='Página Web')) return 'WhatsApp'; return c; }
+  // 19-nov (usuario): los pedidos del canal de Shopify «Shopify Grok Connector App» (los que monta Desk desde el chat) son WhatsApp.
+  // Shopify los manda con el id numérico de la app como sourceName; ese id se aprende de pedidos que sabemos que son de Grok
+  // (#5362, #5366, #5373, #5376, #5378, vistos en Shopify el 19-nov) y queda fijo mientras esos pedidos estén en el Hub.
+  _grokFuentes(){ const L=this.state.ventas||[]; if(this._grokF && this._grokF.n===L.length) return this._grokF.s;
+    const SEM=[5362,5366,5373,5376,5378]; const s=new Set();
+    L.forEach(v=>{ const src=String((v&&v.sourceName)||'').trim(); if(!src || /^(web|pos|iphone|android|shopify_draft_order)$/i.test(src)) return; if(SEM.includes(this.pedidoNum(v)) && v.origen!=='manual') s.add(src); });
+    this._grokF={ n:L.length, s }; return s; }
+  esPedidoGrok(v){ if(!v) return false; if(/grok/i.test(String(v.canal||''))||/grok/i.test(String(v.sourceName||''))) return true; const src=String(v.sourceName||'').trim(); return !!src && this._grokFuentes().has(src); }
+  canonCanalVenta(v){ const c=this.canonCanal(v&&v.canal); if(v && v.sourceName==='shopify_draft_order' && (!c||c==='Página Web')) return 'WhatsApp'; if(this.esPedidoGrok(v) && (!c || c==='Página Web' || /grok/i.test(c))) return 'WhatsApp'; return c; }
   // Un tono de la paleta de aromas por canal, sin repetir (8-sep): Web=dorado marca, WhatsApp=eucalipto,
   // B2B=calma (azul), Distribuidor=descansa (azul pizarra), Ferias=naranja, Tiendas=lavanda, Venta Directa=limoncillo.
   canalStyle(c){ const m={ 'Página Web':{bg:'rgba(167,134,89,0.22)',fg:'#7A5E36'}, 'WhatsApp':{bg:'rgba(63,125,70,0.18)',fg:'#2F6B37'}, 'Instagram':{bg:'rgba(63,125,70,0.18)',fg:'#2F6B37'}, 'B2B':{bg:'rgba(74,140,168,0.2)',fg:'#245C78'}, 'Distribuidor':{bg:'rgba(120,95,160,0.2)',fg:'#5A3F8C'}, 'Ferias':{bg:'rgba(232,150,60,0.26)',fg:'#9A5410'}, 'Tiendas':{bg:'rgba(181,80,60,0.18)',fg:'#8F3A28'}, 'Venta Directa':{bg:'rgba(200,170,40,0.3)',fg:'#7A6410'}, 'MSVC':{bg:'rgba(90,120,120,0.2)',fg:'#3E5F5F'} }; return m[c]||{bg:'#EFE9DD',fg:'#8A8073'}; }
@@ -12081,6 +12121,9 @@ Instrucciones de respuesta:
       list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const pn=this.pedidoNum(v); if(pn) idxByPed.set(pn,i); });
       const reindex=()=>{ idxByShop.clear(); idxByPed.clear(); list.forEach((v,i)=>{ if(v.shopifyId) idxByShop.set(String(v.shopifyId),i); const p=this.pedidoNum(v); if(p) idxByPed.set(p,i); }); };
       let added=0, updated=0, cancelados=0, saltadosFecha=0; const despachados=[]; const metodosCorregidos=[]; const guiasCambiadas=[]; const touched=new Set();
+      // 19-nov: aprender el id de la app Grok también de lo que llega (por si los pedidos semilla aún no estaban en el Hub).
+      { const SEM=[5362,5366,5373,5376,5378]; const nuevos=incoming.filter(o=>SEM.includes(this.pedidoNum(o)) && o.sourceName && !/^(web|pos|iphone|android|shopify_draft_order)$/i.test(String(o.sourceName)));
+        if(nuevos.length){ const s0=this._grokFuentes(); nuevos.forEach(o=>s0.add(String(o.sourceName).trim())); } }
       incoming.forEach(o=>{
         if(!o.fecha || o.fecha < CUTOFF){ saltadosFecha++; return; } // piso de fecha
         const pn=this.pedidoNum(o);
@@ -16443,6 +16486,39 @@ Instrucciones de respuesta:
   finServiciosPorPagar(){ return (this.state.servicios||[]).filter(s=> (Number(s.costo)||0)>0 && this.servicioSaldo(s)>0.5 ); }
   pagarServicio(s){ const saldo=this.servicioSaldo(s); if(saldo<=0){ this.toast('Este servicio ya est\u00e1 pagado'); return; } this.open('pagarsvc',{ _svcCodigo:s.codigo, nombre:(s.nombre||s.codigo), proveedor:(this.provNombre(s.proveedorCodigo)||''), saldoEstim:Math.round(saldo), monto:Math.round(saldo), fecha:new Date().toISOString().slice(0,10), cuenta:this.primeraCuenta() }); }
   confirmarPagoServicio(){ const d=this.state.draft; const s=(this.state.servicios||[]).find(x=>x.codigo===d._svcCodigo); if(!s){ this.toast('No se encontr\u00f3 el servicio'); return; } if(!d.fecha){ this.toast('Confirma la fecha de pago'); return; } if(!d.cuenta){ this.toast('Indica de qu\u00e9 cuenta se pag\u00f3'); return; } const saldo=this.servicioSaldo(s); let monto=Number(d.monto)||0; if(monto<=0){ this.toast('Escribe el monto pagado'); return; } if(monto>saldo) monto=saldo; const mv={id:'mv'+Date.now(), tipo:'egreso', fecha:d.fecha, cuenta:d.cuenta, monto:Math.round(monto), categoria:'Servicios', concepto:'Servicio '+(s.codigo||'')+' \u00b7 '+(s.nombre||'')+(s.proveedorCodigo?(' \u00b7 '+this.provNombre(s.proveedorCodigo)):''), servicioCodigo:s.codigo}; const mlist=[mv].concat(this.state.movimientos||[]); const nuevoPagado=Math.round((Number(s.pagado)||0)+monto); const slist=(this.state.servicios||[]).map(x=> x.codigo===s.codigo? {...x, pagado:nuevoPagado} : x); this.setState({movimientos:mlist, servicios:slist, modal:null, draft:{}},()=>this.persist()); if(this.cloudOn()){ this.cloudSaveMovimiento(mv); const sv=slist.find(x=>x.codigo===s.codigo); if(sv) this.cloudSaveServicio(sv); } this.toast('Pago registrado \u00b7 '+this.fmtFecha(d.fecha)); }
+  // 19-nov (usuario): mensaje de cobro por cliente desde Cuentas por cobrar — estado de pago de cada pedido con saldo
+  // y el valor VENCIDO por cancelar. Vence = fecha + plazo (factura → ficha → tienda/distribuidor 30 → contado 0).
+  _cobroPlazo(v){ const fp=v&&v.fact&&v.fact.plazoDias; if(fp!==undefined && fp!==null && fp!=='' && isFinite(Number(fp))) return Math.max(0,Math.round(Number(fp)));
+    const f=(v&&v.clienteFichaId)? this.fichasList().find(x=>x.id===v.clienteFichaId) : ((v&&v.consignTienda)? this.fichaDeTienda(v.consignTienda) : null);
+    const pz=f? this.fichaPlazo(f) : null; if(pz!==null && pz!==undefined) return pz;
+    return (v && (v.canal==='Tiendas'||v.canal==='Distribuidor'))? 30 : 0; }
+  _cobroVence(v){ const f=this.parseFecha(v.fecha)||this._logIso(new Date()); const d=new Date(f+'T12:00:00'); d.setDate(d.getDate()+this._cobroPlazo(v)); return d.toISOString().slice(0,10); }
+  _cobroClave(v){ if(v.clienteFichaId) return 'f:'+v.clienteFichaId; if(v.consignTienda) return 't:'+v.consignTienda; const cel=String(v.celular||'').replace(/\D/g,'').slice(-10); if(cel.length===10) return 'c:'+cel; return 'n:'+this.fixTxt(v.cliente||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); }
+  _cobroPagoDatos(v){ if(this.ventaConIva(v)){ const o=this.pedidoLlaveOda(); return o? {banco:o.banco, llave:o.llave, titular:o.titular} : null; }
+    const c=this.pedidoCuentaNu(); if(!c || !String(c.numeroCuenta||c.llave||'').trim()) return null; return { banco:String(c.banco||'Nu'), llave:String(c.numeroCuenta||c.llave).trim(), titular:String(c.titular||'') }; }
+  cobroGrupos(vs){ const hoy=this._logIso(new Date()); const G={};
+    (vs||[]).forEach(v=>{ if(this.ventaEsContraentrega(v)) return; const saldo=this.ventaSaldo(v); if(saldo<=0.5) return;
+      const k=this._cobroClave(v); const g=G[k]||(G[k]={ k, ventas:[], saldo:0, vencido:0, nombre:'', cel:'', fichaId:v.clienteFichaId||'', tiendaId:v.consignTienda||'' });
+      const vence=this._cobroVence(v); const venc=vence<hoy; g.ventas.push({ v, saldo, vence, venc }); g.saldo+=saldo; if(venc) g.vencido+=saldo; });
+    return Object.values(G).map(g=>{ const f=g.fichaId? this.fichasList().find(x=>x.id===g.fichaId) : (g.tiendaId? this.fichaDeTienda(g.tiendaId) : null);
+      const t=g.tiendaId? (this.consignTiendas().find(x=>x.id===g.tiendaId)||null) : null; const v0=g.ventas[0].v;
+      g.nombre=(f&&this.fichaNombre(f)) || (t&&t.nombre) || this.fixTxt(v0.cliente||'') || 'Cliente';
+      g.contacto=String((f&&f.contacto)||'').trim();
+      const tels=[f&&f.telContacto, f&&f.telefono, t&&(t.telefono||t.celular), ...g.ventas.map(x=>x.v.celular)].map(x=>String(x||'').replace(/\D/g,'').replace(/^57(?=3\d{9}$)/,'')).filter(x=>/^3\d{9}$/.test(x));
+      g.cel=tels[0]||''; g.ventas.sort((a,b)=>String(a.vence).localeCompare(String(b.vence))); return g; }).sort((a,b)=>(b.vencido-a.vencido)||(b.saldo-a.saldo)); }
+  cobroMensaje(g){ const hoy=this._logIso(new Date()); const F=(n)=>this.fmt(Math.round(n));
+    const dd=(iso)=>{ const n=Math.round((Date.parse(hoy+'T12:00:00')-Date.parse(iso+'T12:00:00'))/86400000); return n; };
+    const saludo=(g.contacto? g.contacto.split(/\s+/)[0] : g.nombre);
+    const L=['Hola '+saludo+', te saludamos de Oasis del Alma 🌿','','Te compartimos el estado de pago de tus pedidos con saldo pendiente al '+this.fmtFecha(hoy)+(g.contacto?(' ('+g.nombre+')'):'')+':',''];
+    g.ventas.forEach(x=>{ const v=x.v; const tot=this.ventaTotal(v); const ab=tot-x.saldo; const n=dd(x.vence);
+      const est=x.venc? ('VENCIDO hace '+n+' día'+(n===1?'':'s')+' (venció el '+this.fmtFecha(x.vence)+')') : (n===0? 'vence hoy' : ('al día · vence el '+this.fmtFecha(x.vence)));
+      L.push('• Pedido '+(v.ov||v.pedido||'')+(v.pedido&&v.ov&&v.pedido!==v.ov?(' ('+v.pedido+')'):'')+' del '+this.fmtFecha(v.fecha)+' · total '+F(tot)+(ab>0.5?(' · abonado '+F(ab)):'')+' · saldo '+F(x.saldo)+' · '+est); });
+    L.push('','Total pendiente: '+F(g.saldo)); L.push('*Valor vencido por cancelar: '+F(g.vencido)+'*');
+    const pagos=[]; const vistos=new Set(); g.ventas.forEach(x=>{ const d=this._cobroPagoDatos(x.v); if(!d) return; const k=d.llave; if(vistos.has(k)) return; vistos.add(k); pagos.push(d); });
+    if(pagos.length){ L.push('', 'Puedes pagar'+(pagos.length>1?' (según el pedido)':'')+' a:'); pagos.forEach(d=>L.push('• '+(/@/.test(d.llave)?'Llave ':'Llave Bre-B ')+d.llave+(d.banco?(' · '+d.banco):'')+(d.titular?(' · a nombre de '+d.titular):''))); }
+    L.push('', g.vencido>0? 'Te agradecemos ponerte al día con el valor vencido y enviarnos el comprobante por este medio. Si ya realizaste el pago, compártenos el soporte y lo aplicamos. ¡Gracias!' : 'Por ahora todo está al día; te lo compartimos para tu control. Si ya realizaste algún pago, envíanos el soporte y lo aplicamos. ¡Gracias!');
+    return L.join('\n'); }
+  async _copiarTexto(t){ try{ await navigator.clipboard.writeText(t); return true; }catch(e){ try{ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); return ok; }catch(e2){ return false; } } }
   finPorCobrar(){ return (this.state.ventas||[]).filter(v=>v.origen!=='historico' && !v.cancelada && this.ventaSaldo(v)>0.5 && this.metodoTipo(v.metodoPago)!=='diferido'); }
 
   // --- créditos y préstamos (otorgado = por cobrar · recibido = por pagar) ---
@@ -20147,6 +20223,20 @@ Instrucciones de respuesta:
       out.fcHayFiltros=!!((st.fcBuscar||'').trim()||fcCanalF!=='todos'||fcMetF!=='todos'||fcD||fcH);
       out.fcLimpiarTodo=()=>this.setState({fcBuscar:'', fcCanal:'todos', fcMetodo:'todos', fcDesde:'', fcHasta:''});
       const list=vs.map(v=>{ const saldo=this.ventaSaldo(v); const dias=this.diasDesde(v.fecha); const bucket=this.agingBucket(dias); return {id:v.id, _fecha:(this.parseFecha(v.fecha)||''), ov:v.ov||v.pedido||'\u2014', metaTxt:[(v.ov||v.pedido||'\u2014'), (v.pedido && v.pedido!==v.ov? v.pedido : null), (v.canal||null), this.fmtFecha(v.fecha)].filter(Boolean).join(' \u00b7 '), cliente:v.cliente||'\u2014', canal:v.canal||'', fechaFmt:this.fmtFecha(v.fecha), totalFmt:this.fmt(Math.round(this.ventaTotal(v))), pagadoFmt:this.fmt(Math.round(Number(v.pagado)||0)), saldo, saldoFmt:this.fmt(Math.round(saldo)), dias, diasTxt:(dias>30?dias+' d\u00edas':(dias+' d\u00edas')), vencido:dias>30, onCobrar:()=>this.cobrarVenta(v)}; }).sort((a,b)=>{ const c=b._fecha.localeCompare(a._fecha); if(c!==0) return c; const na=parseInt(String(a.ov).match(/(\d+)/)?RegExp.$1:0,10)||0, nb=parseInt(String(b.ov).match(/(\d+)/)?RegExp.$1:0,10)||0; return nb-na; });
+      { const GR=this.cobroGrupos(vs); const ed=st.fcMsgEdit||{}; const open=!!st.fcMsgOpen; const vis=st.fcMsgVer||'';
+        const tv=GR.reduce((a,g)=>a+g.vencido,0); const nV=GR.filter(g=>g.vencido>0.5).length;
+        out.fcMsgShow=GR.length>0; out.fcMsgOpen=open; out.fcMsgToggle=()=>this.setState({fcMsgOpen:!open}); out.fcMsgToggleL=open?'Ocultar':('Ver '+GR.length+' cliente'+(GR.length===1?'':'s'));
+        out.fcMsgVencFmt=this.fmt(Math.round(tv)); out.fcMsgSub=GR.length+' cliente'+(GR.length===1?'':'s')+' con saldo · '+nV+' con valor vencido · mensaje listo para copiar o enviar por WhatsApp';
+        out.fcMsgRows=GR.map(g=>{ const auto=this.cobroMensaje(g); const txt=(ed[g.k]!==undefined)? ed[g.k] : auto; const ab=vis===g.k;
+          return { k:g.k, nombre:g.nombre, meta:[g.ventas.length+' pedido'+(g.ventas.length===1?'':'s'), (g.cel?('cel. '+g.cel):'sin celular'), (g.contacto?('contacto '+g.contacto):'')].filter(Boolean).join(' · '),
+            saldoFmt:this.fmt(Math.round(g.saldo)), vencFmt:this.fmt(Math.round(g.vencido)), vencColor:(g.vencido>0.5?'var(--oda-sale)':'#4C6149'),
+            abierto:ab, verL:ab?'Cerrar':'Ver mensaje', onVer:()=>this.setState({fcMsgVer:ab?'':g.k}), texto:txt, taKey:g.k+'-'+(ed[g.k]!==undefined?'e':'a'), filas:Math.min(22, txt.split('\n').length+1),
+            editado:ed[g.k]!==undefined, notaEdit:(ed[g.k]!==undefined?'Editado a mano (solo en esta sesión).':'Puedes editarlo antes de copiar o enviar.'),
+            onEdit:(e)=>{ this.state.fcMsgEdit={...(this.state.fcMsgEdit||{}), [g.k]:e.target.value}; },
+            onRestaurar:()=>{ const n={...(this.state.fcMsgEdit||{})}; delete n[g.k]; this.setState({fcMsgEdit:n}); },
+            onCopiar:async()=>{ const t=((this.state.fcMsgEdit||{})[g.k]!==undefined)? this.state.fcMsgEdit[g.k] : auto; this.toast((await this._copiarTexto(t))?('Mensaje de '+g.nombre+' copiado'):'No se pudo copiar: ábrelo y cópialo a mano'); },
+            waShow:!!g.cel, waTitle:'Abre WhatsApp con el mensaje para 57'+g.cel,
+            onWa:()=>{ const t=((this.state.fcMsgEdit||{})[g.k]!==undefined)? this.state.fcMsgEdit[g.k] : auto; window.open('https://wa.me/57'+g.cel+'?text='+encodeURIComponent(t),'_blank','noopener'); } }; }); }
       out.fcList=list; out.fcVacio=list.length===0;
       const tot=vs.reduce((a,v)=>a+this.ventaSaldo(v),0); out.fcTotal=this.fmt(Math.round(tot));
       const ag={corriente:0,d30:0,d60:0,d60p:0}; vs.forEach(v=>{ ag[this.agingBucket(this.diasDesde(v.fecha))]+=this.ventaSaldo(v); });
