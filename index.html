@@ -6218,13 +6218,29 @@
                   </div>
                   <span style="display:flex;gap:8px;flex-wrap:wrap;">
                     <sc-if value="{{ gaHay }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaPdf }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:none;background:var(--brand-primary);color:var(--text-on-brand);">{{ gaPdfL }}</button></sc-if>
+                    <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaPausaClick }}" title="{{ gaPausaTitle }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid {{ gaPausaBd }};background:{{ gaPausaBg }};color:{{ gaPausaFg }};">{{ gaPausaL }}</button></sc-if>
                     <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}">
                       <button onClick="{{ gaSim }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ gaSimL }}</button>
                       <button onClick="{{ gaRun }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ gaRunL }}</button>
                     </sc-if>
                   </span>
                 </div>
-                <sc-if value="{{ gaHayErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 20px;font-size:12px;color:#8E3F2F;background:rgba(181,80,60,0.08);">{{ gaErr }}</div></sc-if>
+                <sc-if value="{{ gaPausaOn }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:12px 20px;border-bottom:1px solid var(--border-subtle);background:rgba(181,80,60,0.09);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <span style="font-size:15px;">⏸</span>
+                    <div style="flex:1;min-width:220px;"><div style="font-size:13px;font-weight:800;color:#8E3F2F;">{{ gaPausaTxt }}</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;text-wrap:pretty;">No se crea ninguna guía sola (ni la revisión de las 7 a. m. ni al entrar o pagarse un pedido). Cada pedido listo queda abajo para crearlo cuando quieras; la guía sale con lo que tenga el pedido en Shopify en ese momento.</div></div>
+                    <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaTraer }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ gaTraerL }}</button></sc-if>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ gaPausaForm }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:12px 20px;border-bottom:1px solid var(--border-subtle);background:var(--surface-page);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;font-size:12px;">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-weight:700;color:var(--text-body);">Hasta (opcional)<input type="datetime-local" value="{{ gaPausaHasta }}" onInput="{{ onGaPausaHasta }}" style="font-family:inherit;font-size:12.5px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface-card);color:var(--text-body);"></label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-weight:700;color:var(--text-body);flex:1;min-width:180px;">Motivo<input defaultValue="{{ gaPausaMotivo }}" onInput="{{ onGaPausaMotivo }}" placeholder="Ej.: Black Days — promo para agregar productos" style="font-family:inherit;font-size:12.5px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface-card);color:var(--text-body);"></label>
+                    <button onClick="{{ gaPausaConfirmar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:none;background:#B5503C;color:#fff;">{{ gaPausaConfL }}</button>
+                    <button onClick="{{ gaPausaCancelar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">Cancelar</button>
+                    <div style="flex-basis:100%;font-size:11.5px;color:var(--text-muted);">Sin fecha, queda en pausa hasta que la reanudes. Con fecha, se reanuda sola a esa hora (lo retenido sale en la revisión de las 7 a. m. del siguiente día hábil o cuando lo crees aquí).</div>
+                  </div>
+                </sc-if>
                 <sc-if value="{{ gaRecShow }}" hint-placeholder-val="{{ false }}">
                   <div style="padding:10px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;">
                     <sc-if value="{{ gaRecHayLista }}" hint-placeholder-val="{{ false }}">
@@ -6242,16 +6258,25 @@
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                       <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#A78659;"></span>
                       <span style="flex:1;min-width:0;font-size:12.5px;font-weight:700;color:#7A6241;text-wrap:pretty;">{{ gaAprTit }}</span>
-                      <sc-if value="{{ gaAprTodasShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaAprTodas }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">Aprobar todas</button></sc-if>
+                      <sc-if value="{{ gaAprTodasShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gaAprTodas }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Crear todas ({{ gaAprN }})</button></sc-if>
                     </div>
-                    <div style="font-size:11.5px;color:var(--text-muted);text-wrap:pretty;">Coordinadora recoge entre 2 y 4 p. m.: lo que llega después de las 2 se crea solo a las 7:00 a. m. del siguiente día hábil si no lo apruebas. Las direcciones por revisar NO se crean solas: corrígelas en Shopify y aprueba.</div>
+                    <sc-if value="{{ gaSelBar }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text-body);cursor:pointer;"><input type="checkbox" checked="{{ gaSelTodas }}" onChange="{{ gaSelTodasToggle }}" style="width:17px;height:17px;margin:0;accent-color:#7A6241;cursor:pointer;">Seleccionar todas</label>
+                        <span style="flex:1;font-size:12px;color:var(--text-muted);">{{ gaSelTxt }}</span>
+                        <button onClick="{{ gaCrearSel }}" disabled="{{ gaSelNone }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;border:none;background:{{ gaSelBtnBg }};color:#fff;cursor:pointer;">{{ gaCrearSelL }}</button>
+                      </div>
+                    </sc-if>
+                    <div style="font-size:11.5px;color:var(--text-muted);text-wrap:pretty;">{{ gaAprAyuda }}</div>
                     <sc-for list="{{ gaAprRows }}" as="a" hint-placeholder-count="0">
-                      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;padding:8px 12px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:12px;">
+                      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;padding:8px 12px;background:{{ a.bg }};border:1px solid {{ a.bd }};border-radius:12px;">
+                        <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><input type="checkbox" checked="{{ a.sel }}" onChange="{{ a.onSel }}" title="Seleccionar" style="width:17px;height:17px;margin:0;accent-color:#7A6241;cursor:pointer;"></sc-if>
                         <span style="font-weight:700;">{{ a.pedido }}</span>
                         <span style="flex:1;min-width:140px;">{{ a.cliente }} · <span style="color:var(--text-muted);">{{ a.ciudad }}</span></span>
                         <span style="color:var(--text-muted);">{{ a.pago }}</span>
                         <span style="color:var(--text-muted);font-size:11.5px;">Llegó {{ a.llegada }}</span>
                         <sc-if value="{{ a.esDir }}" hint-placeholder-val="{{ false }}"><span style="flex-basis:100%;font-size:12px;font-weight:600;color:#B5503C;text-wrap:pretty;">{{ a.motivo }}</span></sc-if>
+                        <sc-if value="{{ a.etqShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(167,134,89,0.16);color:#7A6241;">{{ a.etq }}</span></sc-if>
                         <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ a.aprobar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ a.btnL }}</button></sc-if>
                       </div>
                     </sc-for>
@@ -12426,18 +12451,50 @@ Instrucciones de respuesta:
       // 27-oct: recogidas de las 5 p. m. — la fila va con la fecha de RECOGIDA (siguiente día hábil), así que se traen aparte (hoy en adelante).
       try{ const rc=await sb.from('guias_auto').select('id,fecha,data,creado_at').like('id','recogida-%').gte('fecha',f).order('fecha',{ascending:true}).limit(3); if(!rc.error) this.setState({ gaRecs:rc.data||[] }); }catch(e){}
       // 22-oct: pedidos que llegaron después del corte de las 2 p. m. y esperan aprobación (filas apr-, últimos 7 días).
-      try{ const h7=this._logIso(new Date(Date.now()-7*86400000)); const ap=await sb.from('guias_auto').select('id,venta_id,fecha,data,creado_at').like('id','apr-%').gte('fecha',h7).order('creado_at',{ascending:true}); if(!ap.error) this.setState({ gaApr:ap.data||[] }); }catch(e){}
+      try{ const h7=this._logIso(new Date(Date.now()-21*86400000)); const ap=await sb.from('guias_auto').select('id,venta_id,fecha,data,creado_at').like('id','apr-%').gte('fecha',h7).order('creado_at',{ascending:true}); if(!ap.error) this.setState({ gaApr:ap.data||[] }); }catch(e){}
+      // 19-nov: interruptor de la corrida automática (fila pausa-auto; vence sola en «hasta»).
+      try{ const pz=await sb.from('guias_auto').select('data').eq('id','pausa-auto').maybeSingle(); if(!pz.error){ const d=(pz.data&&pz.data.data)||null; this.setState({ gaPausa:(d&&d.activa&&!(d.hasta&&Date.now()>=Date.parse(d.hasta)))? d : null }); } }catch(e){}
     }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); } }
-  async gaAprobar(ids){ if(this.state.gaBusy || !ids || !ids.length) return;
-    if(!window.confirm('¿Crear ahora '+(ids.length===1?'la guía de este pedido':('las guías de estos '+ids.length+' pedidos'))+'?\nLlegaron después de las 2:00 p. m.: si Coordinadora ya pasó, saldrán en la recogida del siguiente día hábil.')) return;
-    this.setState({ gaBusy:'apr' });
-    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ ventaIds:ids, aprobado:true, origen:'aprobado' } });
-      if(error) throw new Error('la función «guias-auto» no respondió');
-      const c=((data&&data.creadas)||[]).length, om=((data&&data.omitidas)||[]), er=((data&&data.errores)||[]);
-      this.toast(c+' guía(s) creada(s)'+(om.length?(' · '+om.length+' omitida(s): '+om.map(x=>x.pedido+' '+x.motivo).join(', ')):'')+(er.length?(' · error: '+(er[0].error||'')):''));
-      await this.gaCargar(); }catch(e){ this.toast('No se pudo aprobar: '+((e&&e.message)||e)); }
+  // 19-nov: se crean por LOTES de 12 (cada guía llama a Coordinadora y a Shopify; un lote grande se pasaba del tiempo de la función).
+  async gaAprobar(ids, sinConfirmar){ if(this.state.gaBusy || !ids || !ids.length) return;
+    if(!sinConfirmar && !window.confirm('¿Crear ahora '+(ids.length===1?'la guía de este pedido':('las guías de estos '+ids.length+' pedidos'))+'?\nSe crean en Coordinadora, quedan como ENVIADOS en Shopify (el cliente recibe el correo) con lo que tenga cada pedido en Shopify ahora mismo.\nSi Coordinadora ya pasó hoy, salen en la recogida del siguiente día hábil.')) return;
+    this.setState({ gaBusy:'apr' }); let c=0; const om=[], er=[]; const L=12;
+    try{ const sb=this._sbClient();
+      for(let i=0;i<ids.length;i+=L){ const lote=ids.slice(i,i+L); if(ids.length>L) this.toast('Creando guías '+(i+1)+'–'+Math.min(ids.length,i+L)+' de '+ids.length+'…');
+        const { data, error }=await sb.functions.invoke('guias-auto', { body:{ ventaIds:lote, aprobado:true, origen:'aprobado' } });
+        if(error){ er.push({ error:'la función «guias-auto» no respondió en el lote '+(Math.floor(i/L)+1)+' (revisa antes de repetir: Coordinadora pudo crear alguna)' }); break; }
+        c+=((data&&data.creadas)||[]).length; om.push(...((data&&data.omitidas)||[])); er.push(...((data&&data.errores)||[])); }
+      this.toast(c+' guía(s) creada(s)'+(om.length?(' · '+om.length+' omitida(s): '+om.slice(0,6).map(x=>x.pedido+' '+x.motivo).join(', ')+(om.length>6?'…':'')):'')+(er.length?(' · error: '+(er[0].error||'')):''));
+      const sel={...(this.state.gaSel||{})}; ids.forEach(id=>{ delete sel[id]; }); this.setState({ gaSel:sel });
+      await this.gaCargar(); }catch(e){ this.toast('No se pudo crear: '+((e&&e.message)||e)); }
     this.setState({ gaBusy:'' }); }
+  // 19-nov (usuario · Black Days): apagar/prender la corrida automática desde Logística.
+  gaPausaClick(){ if(this.state.gaBusy) return; if(this.state.gaPausa) return this.gaPausaGuardar(false); this.setState({ gaPausaForm:!this.state.gaPausaForm, gaPausaHasta:'', gaPausaMotivo:'' }); }
+  async gaPausaGuardar(activa){ if(this.state.gaBusy) return;
+    if(activa){ const h=this.state.gaPausaHasta; if(h && Date.parse(h)<=Date.now()){ this.toast('La hora de «hasta» ya pasó'); return; }
+      if(!window.confirm('¿Pausar las guías automáticas'+(h?(' hasta el '+new Date(h).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})):' hasta que las reanudes')+'?\nNingún pedido tendrá guía sola: quedan en la lista para crearlos desde aquí.')) return; }
+    else if(!window.confirm('¿Reanudar las guías automáticas?\nLos pedidos nuevos vuelven a tener guía sola (antes de las 2:00 p. m.).')) return;
+    this.setState({ gaBusy:'pausa' });
+    try{ const sb=this._sbClient(); const body={ modo:'pausa', activa:!!activa };
+      if(activa){ if(this.state.gaPausaHasta) body.hasta=new Date(this.state.gaPausaHasta).toISOString(); body.motivo=String(this.state.gaPausaMotivo||'').trim(); }
+      const { data, error }=await sb.functions.invoke('guias-auto', { body });
+      if(error || !data || data.ok===false) throw new Error((data&&data.error)||'la función «guias-auto» no respondió (¿está desplegada la versión del 19-nov?)');
+      this.setState({ gaPausa:data.pausa||null, gaPausaForm:false, gaBusy:'' });
+      this.toast(activa?'Guías automáticas en pausa':'Guías automáticas reanudadas');
+      await this.gaCargar();
+      if(!activa){ const ret=this._gaAprVisibles().filter(r=>(r.data||{}).motivo==='pausa'||(r.data||{}).motivo==='lista');
+        if(ret.length && window.confirm('Quedaron '+ret.length+' pedido(s) retenidos por la pausa.\n¿Crear sus guías ahora? (Si no, salen en la revisión de las 7 a. m. del siguiente día hábil.)')) await this.gaAprobar(ret.map(r=>r.venta_id), true); }
+    }catch(e){ this.setState({ gaBusy:'' }); this.toast('No se pudo cambiar: '+((e&&e.message)||e)); } }
+  // Barrido que NO crea nada: trae a la lista todos los pedidos que hoy tendrían guía.
+  async gaTraer(){ if(this.state.gaBusy) return; this.setState({ gaBusy:'traer' });
+    try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ soloRetener:true } }); if(error) throw new Error('la función «guias-auto» no respondió');
+      this.toast(((data&&data.porAprobar)||[]).length+' pedido(s) listos en la lista'+(((data&&data.omitidas)||[]).length?(' · '+data.omitidas.length+' no aplican'):'')); await this.gaCargar();
+    }catch(e){ this.toast('No se pudo revisar: '+((e&&e.message)||e)); }
+    this.setState({ gaBusy:'' }); }
+  _gaAprVisibles(){ const st=this.state; const vById={}; (st.ventas||[]).forEach(v=>{ vById[v.id]=v; });
+    return (st.gaApr||[]).filter(r=>{ const v=vById[r.venta_id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); }); }
   async gaCorrer(simular){ if(this.state.gaBusy) return;
+    if(!simular && this.state.gaPausa && !window.confirm('Las guías automáticas están EN PAUSA.\n«Crear ahora» crea las guías de TODOS los pedidos listos igual. Si solo quieres algunos, usa la lista y «Crear seleccionadas».\n\n¿Seguir?')) return;
     if(!simular && !window.confirm('¿Crear ahora las guías de los pedidos listos?\nSe crean en Coordinadora, quedan como ENVIADOS en Shopify (el cliente recibe el correo) y se guardan en cada pedido.')) return;
     this.setState({ gaBusy:(simular?'sim':'run'), gaErr:'' });
     try{ const sb=this._sbClient(); const { data, error }=await sb.functions.invoke('guias-auto', { body:{ simular:!!simular, manual:true } });
@@ -19154,14 +19211,32 @@ Instrucciones de respuesta:
         out.gaRecTxt=out.gaRecHayLista? '' : rd? (rd.ok? ('Recogida solicitada a Coordinadora'+(rd.numero?(' · N.º '+rd.numero):'')+' · '+((rd.guias||[]).length)+' paquete(s)') : ('Recogida NO confirmada: '+(rd.error||'sin detalle')+((rd.metodosRecogida&&rd.metodosRecogida.length)?(' · métodos: '+rd.metodosRecogida.join(', ')):''))) : 'Recogida sin solicitar';
         out.gaRecBtn=!_recs.some(x=>x.fecha>_hoyR && (x.data.ok || /^(pidiendo|incierto)$/.test(String(x.data.estado||'')))) && out.gaPuede; out.gaRecL=st.gaBusy==='rec'?'Pidiendo…':'Pedir recogida del siguiente día hábil'; out.gaRec=()=>this.gaRecogida();
         out.gaSim=()=>this.gaCorrer(true); out.gaRun=()=>this.gaCorrer(false); out.gaPdf=()=>this.gaDescargar(); out.gaRecargar=()=>this.gaCargar();
-        { const vById={}; (st.ventas||[]).forEach(v=>{ vById[v.id]=v; });
-          const AP=(st.gaApr||[]).filter(r=>{ const v=vById[r.venta_id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); });
+        { const AP=this._gaAprVisibles(); const PZ=st.gaPausa||null;
+          // 19-nov: interruptor + selección múltiple
+          out.gaPausaOn=!!PZ; out.gaPausaForm=!PZ && !!st.gaPausaForm && out.gaPuede;
+          out.gaPausaL=st.gaBusy==='pausa'?'…':(PZ?'▶ Reanudar automáticas':'⏸ Pausar automáticas'); out.gaPausaTitle=PZ?'La corrida automática está apagada':'Apagar la creación automática de guías';
+          out.gaPausaBg=PZ?'#4C6149':'var(--surface-card)'; out.gaPausaFg=PZ?'#fff':'#8E3F2F'; out.gaPausaBd=PZ?'#4C6149':'rgba(181,80,60,0.45)';
+          out.gaPausaClick=()=>this.gaPausaClick(); out.gaPausaConfirmar=()=>this.gaPausaGuardar(true); out.gaPausaCancelar=()=>this.setState({ gaPausaForm:false });
+          out.gaPausaConfL=st.gaBusy==='pausa'?'Pausando…':'Pausar guías automáticas'; out.gaPausaHasta=st.gaPausaHasta||''; out.gaPausaMotivo=st.gaPausaMotivo||'';
+          out.onGaPausaHasta=(e)=>this.setState({ gaPausaHasta:e.target.value }); out.onGaPausaMotivo=(e)=>{ this.state.gaPausaMotivo=e.target.value; };
+          out.gaPausaTxt=PZ? ('Guías automáticas EN PAUSA'+(PZ.motivo?(' · '+PZ.motivo):'')+(PZ.hasta?(' · se reanudan solas el '+new Date(PZ.hasta).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})):' · hasta que las reanudes')+(PZ.por?(' · '+String(PZ.por).split('@')[0]):'')) : '';
+          out.gaTraer=()=>this.gaTraer(); out.gaTraerL=st.gaBusy==='traer'?'Revisando…':'Traer pedidos listos a la lista';
+          const sel=st.gaSel||{}; const ids=AP.map(r=>r.venta_id); const nSel=ids.filter(id=>sel[id]).length;
           out.gaAprShow=AP.length>0; out.gaAprN=AP.length; out.gaAprBusy=st.gaBusy==='apr';
-          const nDir=AP.filter(r=>(r.data||{}).motivo==='direccion').length; out.gaAprTit=AP.length+(AP.length===1?' pedido espera aprobación':' pedidos esperan aprobación')+(nDir?(' · '+nDir+' con la dirección por revisar'):' · llegaron después de las 2:00 p. m.');
-          out.gaAprRows=AP.map(r=>{ const d=r.data||{}; const t=d.llegada?new Date(d.llegada):new Date(r.creado_at);
-            return { k:r.id, pedido:d.pedido||'', cliente:d.cliente||'', ciudad:d.ciudad||'', pago:(d.pago||'')+(d.recaudo>0?(' · recaudo '+this.fmt(d.recaudo)):''),
-              llegada:this.fmtFecha(r.fecha)+' '+t.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), esDir:d.motivo==='direccion', motivo:d.motivo==='direccion'?('Dirección por revisar: '+(d.problema||'')+(d.direccion?(' · «'+d.direccion+'»'):'')+'. Corrígela en Shopify y luego aprueba.'):'', btnL:st.gaBusy==='apr'?'…':(d.motivo==='direccion'?'Ya la corregí · crear guía':'Aprobar y crear guía'), aprobar:()=>this.gaAprobar([r.venta_id]) }; });
-          out.gaAprTodas=()=>this.gaAprobar(AP.map(r=>r.venta_id)); out.gaAprTodasShow=AP.length>1 && out.gaPuede; }
+          const nDir=AP.filter(r=>(r.data||{}).motivo==='direccion').length, nPz=AP.filter(r=>/^(pausa|lista)$/.test((r.data||{}).motivo||'')).length;
+          out.gaAprTit=AP.length+(AP.length===1?' pedido listo para crear guía':' pedidos listos para crear guía')+(nPz?(' · '+nPz+' por la pausa'):'')+(nDir?(' · '+nDir+' con la dirección por revisar'):'')+((!nPz&&!nDir)?' · llegaron después de las 2:00 p. m.':'');
+          out.gaAprAyuda=PZ? 'Selecciona los que ya están listos (p. ej., los que no van a agregar nada) y créalos. La guía toma los productos y el recaudo que tenga el pedido en Shopify al momento de crearla.' : 'Coordinadora recoge entre 2 y 4 p. m.: lo que llega después de las 2 se crea solo a las 7:00 a. m. del siguiente día hábil si no lo creas antes. Las direcciones por revisar NO se crean solas: corrígelas en Shopify y créalas.';
+          out.gaSelBar=out.gaPuede && AP.length>0; out.gaSelTodas=AP.length>0 && nSel===AP.length; out.gaSelNone=nSel===0;
+          out.gaSelTxt=nSel? (nSel+' seleccionado(s)') : 'Marca los pedidos que quieres crear';
+          out.gaSelBtnBg=nSel?'var(--brand-primary)':'rgba(120,110,95,0.35)'; out.gaCrearSelL=st.gaBusy==='apr'?'Creando…':('Crear seleccionadas'+(nSel?(' ('+nSel+')'):''));
+          out.gaSelTodasToggle=()=>{ const all=nSel!==AP.length; const n={}; if(all) ids.forEach(id=>{ n[id]=true; }); this.setState({ gaSel:n }); };
+          out.gaCrearSel=()=>{ const s2=ids.filter(id=>sel[id]); if(s2.length) this.gaAprobar(s2); };
+          out.gaAprRows=AP.map(r=>{ const d=r.data||{}; const t=d.llegada?new Date(d.llegada):new Date(r.creado_at); const on=!!sel[r.venta_id];
+            return { k:r.id, sel:on, bg:on?'rgba(167,134,89,0.10)':'var(--surface-card)', bd:on?'#A78659':'var(--border-subtle)', onSel:()=>this.setState({ gaSel:{...(this.state.gaSel||{}), [r.venta_id]:!on} }),
+              etqShow:/^(pausa|lista)$/.test(d.motivo||''), etq:'Retenido por la pausa',
+              pedido:d.pedido||'', cliente:d.cliente||'', ciudad:d.ciudad||'', pago:(d.pago||'')+(d.recaudo>0?(' · recaudo '+this.fmt(d.recaudo)):''),
+              llegada:this.fmtFecha(r.fecha)+' '+t.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), esDir:d.motivo==='direccion', motivo:d.motivo==='direccion'?('Dirección por revisar: '+(d.problema||'')+(d.direccion?(' · «'+d.direccion+'»'):'')+'. Corrígela en Shopify y luego crea la guía.'):'', btnL:st.gaBusy==='apr'?'…':(d.motivo==='direccion'?'Ya la corregí · crear guía':'Crear guía'), aprobar:()=>this.gaAprobar([r.venta_id]) }; });
+          out.gaAprTodas=()=>this.gaAprobar(ids); out.gaAprTodasShow=AP.length>1 && out.gaPuede; }
       }
       out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:(this.ventaClienteTxt(v)||'—'), ciudad:(this.titleCase((v.entregaA&&v.entregaA.ciudad)||v.ciudad||'')||'Sin ciudad'), zona:(i.recoge?'Recoge en oficina':(zc[i.zona]+' · '+i.plazo+'d')), fecha:this.fmtFecha(v.fecha),
