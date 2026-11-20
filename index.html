@@ -1910,7 +1910,7 @@
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                     <span style="font-size:10.5px;font-weight:800;letter-spacing:0.06em;padding:3px 9px;border-radius:99px;background:rgba(67,197,114,0.15);color:#1E7A3F;">STOCK</span>
                     <div style="font-weight:700;font-size:15px;">{{ stockSolProdTit }}</div>
-                    <div style="font-size:12px;color:var(--text-muted);flex-basis:100%;text-wrap:pretty;">El agente de inventario no mueve nada solo: cada ajuste y cada producción espera tu aprobación. Al aprobar se calcula contra el stock de este momento.</div>
+                    <div style="font-size:12px;color:var(--text-muted);flex-basis:100%;text-wrap:pretty;">El agente de inventario no mueve nada solo: cada ajuste, producción o producto nuevo espera tu aprobación. Al aprobar se calcula contra el stock de este momento; los productos reciben el siguiente código PT-.</div>
                   </div>
 <sc-if value="{{ stockBulkP.show }}" hint-placeholder-val="{{ false }}">
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-md);background:rgba(67,197,114,0.08);border:1px solid rgba(67,197,114,0.3);">
@@ -4567,7 +4567,7 @@
                         <span style="display:flex;gap:6px;flex-wrap:wrap;">
                           <button onClick="{{ m.onVer }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">{{ m.verL }}</button>
                           <button onClick="{{ m.onCopiar }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">Copiar</button>
-                          <sc-if value="{{ m.waShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.onWa }}" title="{{ m.waTitle }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:none;background:#4C6149;color:#fff;">WhatsApp</button></sc-if>
+                          <sc-if value="{{ m.waShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.onWa }}" title="{{ m.waTitle }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;border:none;background:#4C6149;color:#fff;">WhatsApp</button><button onClick="{{ m.onWaWeb }}" title="Abrir en WhatsApp Web" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);">Web</button></sc-if>
                         </span>
                       </div>
                       <sc-if value="{{ m.abierto }}" hint-placeholder-val="{{ false }}">
@@ -9812,7 +9812,7 @@ class Component extends DCLogic {
   _stockTag(o){ if(!o) return ''; if(o.creadoPor==='Stock'||o.creadoPorId==='stock'||o._origen==='stock'||o.solicitadoPor==='Stock') return 'Stock'; if(o.editadoPor==='Stock') return 'Editado por Stock'; return ''; }
   async stockCargar(){ const sb=this._sbClient(); if(!sb) return; try{ const {data,error}=await sb.from('stock_solicitudes').select('*').eq('estado','pendiente').order('creado_at',{ascending:true}).limit(100); if(error) throw error; this.setState({stockSol:data||[]}); }catch(e){ /* tabla aún no creada */ } }
   _stockInit(){ if(this._stockIniciado) return; try{ const a=this.access()||{}; if(!a.admin && this._modLevel(a,'inventario')==='none' && this._modLevel(a,'produccion')==='none') return; }catch(e){ return; } this._stockIniciado=true; this.stockCargar();
-    try{ const sb=this._sbClient(); if(sb && !this._stockSub) this._stockSub=sb.channel('oda-stock-sol').on('postgres_changes',{event:'*',schema:'public',table:'stock_solicitudes'},(pl)=>{ this.stockCargar(); if(pl&&pl.eventType==='INSERT'&&this._stockPuede()) this.toast('Stock pidió '+((pl.new&&pl.new.tipo)==='produccion'?'registrar una producción · Producción':'un ajuste de inventario · Inventario → Conteos')); }).subscribe(); }catch(e){} }
+    try{ const sb=this._sbClient(); if(sb && !this._stockSub) this._stockSub=sb.channel('oda-stock-sol').on('postgres_changes',{event:'*',schema:'public',table:'stock_solicitudes'},(pl)=>{ this.stockCargar(); if(pl&&pl.eventType==='INSERT'&&this._stockPuede()) this.toast('Stock pidió '+((pl.new&&pl.new.tipo)==='produccion'?'registrar una producción · Producción':((pl.new&&pl.new.tipo)==='producto'?'crear un producto · Producción':'un ajuste de inventario · Inventario → Conteos'))); }).subscribe(); }catch(e){} }
   _stockCerrarSol(s, estado, nota, resultado){ const sb=this._sbClient(); return sb.from('stock_solicitudes').update({ estado, resuelto_por:this._auditUser()||'', resuelto_at:new Date().toISOString(), nota_resolucion:nota||'', ...(resultado?{resultado}:{}) }).eq('id',s.id).eq('estado','pendiente').select('id'); }
   async stockRechazar(s){ if(!this._stockPuede()){ this.toast('Solo el Administrador resuelve lo de Stock'); return; } const nota=window.prompt('¿Por qué se rechaza? (Stock lo verá)',''); if(nota===null) return;
     const {data,error}=await this._stockCerrarSol(s,'rechazada',nota); if(error||!data||!data.length) this.toast('No se pudo rechazar: '+(error?error.message:'ya estaba resuelta')); else this.toast('Solicitud de Stock rechazada'); this.stockCargar(); }
@@ -9852,6 +9852,23 @@ class Component extends DCLogic {
         this.setState(st=>({producciones:nuevos.concat(st.producciones||[])}),()=>this.persist()); this._snapSoon(3000);
         const r=await this._stockCerrarSol(s,'aprobada','',{ numero:num, lineas:nuevos.length }); if(r.error) throw r.error;
         if(opts) opts.ok++; else this.toast('Producción de Stock registrada · '+num);
+      } else if(s.tipo==='producto'){
+        // 20-nov (usuario): Stock pide crear o duplicar productos; aquí se crea con el código PT- siguiente (o el pedido si está libre).
+        const P=d.producto||{}; const nom=String(P.nombre||'').trim(); if(!nom) throw new Error('la solicitud no trae nombre');
+        // al aprobar varias seguidas, el estado aún no trae los recién creados: se suman para no repetir código ni nombre
+        const prods=(this.state.productos||[]).concat((this._stockProdNuevos||[]).filter(n=>!(this.state.productos||[]).some(p=>p.codigo===n.codigo))); const nk=(x)=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+        if(prods.some(p=>nk(p.nombre)===nk(nom))) throw new Error('ya existe un producto llamado «'+nom+'»');
+        const mats=new Set([...(this.state.materias||[]),...(this.state.mezclas||[])].map(x=>String(x.codigo||'').toUpperCase()));
+        const form=(P.esReventa?[]:(P.formula||[])).map(f=>({materiaCodigo:String(f.materiaCodigo||'').toUpperCase(), cantidad:Number(f.cantidad)||0}));
+        const malas=form.filter(f=>!mats.has(f.materiaCodigo)||!(f.cantidad>0)); if(malas.length) throw new Error('la fórmula trae materias que ya no existen: '+malas.map(f=>f.materiaCodigo).join(', '));
+        const cod=(P.codigo && !prods.some(p=>String(p.codigo).toUpperCase()===String(P.codigo).toUpperCase()))? String(P.codigo).toUpperCase() : this.nextCode('PT-',prods);
+        const row={ codigo:cod, nombre:nom, formato:P.formato||'', tamano:P.tamano||'', precio:Math.round(Number(P.precio)||0), cobraIva:(P.cobraIva!==false), iva:19, stockInicial:0, esReventa:(P.esReventa===true), costoCompra:(P.esReventa?(Number(P.costoCompra)||0):0), foto:'', formula:form,
+          creadoPor:'Stock', creadoPorId:'stock', _origen:'stock', creadoEn:s.creado_at||ahora, aprobadoPor:yo, aprobadoEn:ahora, stockSolId:s.id, ...(d.duplicarDe?{duplicadoDe:d.duplicarDe}:{}) };
+        const {data,error}=await sb.from('productos').upsert(this._prodToDb(row)).select('codigo'); if(error||!data||!data.length) throw (error||new Error('la nube no confirmó el producto'));
+        this._stockProdNuevos=(this._stockProdNuevos||[]).concat([row]);
+        this.setState(st=>({productos:(st.productos||[]).concat([row])}),()=>this.persist()); this._snapSoon(3000);
+        const r=await this._stockCerrarSol(s,'aprobada','',{ codigo:cod, nombre:nom }); if(r.error) throw r.error;
+        if(opts) opts.ok++; else this.toast('Producto de Stock creado · '+cod+' '+nom);
       } else throw new Error('tipo desconocido');
     }catch(e){ const msg=((e&&e.message)||e); if(opts) opts.err.push((d.codigo||('#'+s.id))+': '+msg); else this.toast('No se aplicó: '+msg); }
     finally{ this._stockBusy=false; this.forceUpdate(); if(!opts) this.stockCargar(); else if(!this._stockBulk) this.stockCargar(); } }
@@ -16518,6 +16535,14 @@ Instrucciones de respuesta:
     if(pagos.length){ L.push('', 'Puedes pagar'+(pagos.length>1?' (según el pedido)':'')+' a:'); pagos.forEach(d=>L.push('• '+(/@/.test(d.llave)?'Llave ':'Llave Bre-B ')+d.llave+(d.banco?(' · '+d.banco):'')+(d.titular?(' · a nombre de '+d.titular):''))); }
     L.push('', g.vencido>0? 'Te agradecemos ponerte al día con el valor vencido y enviarnos el comprobante por este medio. Si ya realizaste el pago, compártenos el soporte y lo aplicamos. ¡Gracias!' : 'Por ahora todo está al día; te lo compartimos para tu control. Si ya realizaste algún pago, envíanos el soporte y lo aplicamos. ¡Gracias!');
     return L.join('\n'); }
+  // 19-nov (usuario, en el Mac): «WhatsApp» abre la app de escritorio (la misma cuenta del celular, vinculada) con el mensaje escrito;
+  // en el celular abre la app. «Web» abre WhatsApp Web. Si en el computador no hay app instalada, avisa y cae a WhatsApp Web.
+  _abrirWhatsApp(tel, texto, web){ const q='phone='+encodeURIComponent(tel)+'&text='+encodeURIComponent(texto); const movil=/android|iphone|ipad|ipod/i.test(navigator.userAgent||'');
+    if(web){ window.open('https://web.whatsapp.com/send?'+q,'_blank','noopener'); return; }
+    if(movil){ window.location.href='https://wa.me/'+tel+'?text='+encodeURIComponent(texto); return; }
+    let salio=false; const onBlur=()=>{ salio=true; }; window.addEventListener('blur',onBlur,{once:true});
+    window.location.href='whatsapp://send?'+q;
+    setTimeout(()=>{ window.removeEventListener('blur',onBlur); if(!salio && document.hasFocus()){ this.toast('No encontré la app de WhatsApp en este computador: lo abro en WhatsApp Web'); window.open('https://web.whatsapp.com/send?'+q,'_blank','noopener'); } }, 1600); }
   async _copiarTexto(t){ try{ await navigator.clipboard.writeText(t); return true; }catch(e){ try{ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); return ok; }catch(e2){ return false; } } }
   finPorCobrar(){ return (this.state.ventas||[]).filter(v=>v.origen!=='historico' && !v.cancelada && this.ventaSaldo(v)>0.5 && this.metodoTipo(v.metodoPago)!=='diferido'); }
 
@@ -20235,8 +20260,9 @@ Instrucciones de respuesta:
             onEdit:(e)=>{ this.state.fcMsgEdit={...(this.state.fcMsgEdit||{}), [g.k]:e.target.value}; },
             onRestaurar:()=>{ const n={...(this.state.fcMsgEdit||{})}; delete n[g.k]; this.setState({fcMsgEdit:n}); },
             onCopiar:async()=>{ const t=((this.state.fcMsgEdit||{})[g.k]!==undefined)? this.state.fcMsgEdit[g.k] : auto; this.toast((await this._copiarTexto(t))?('Mensaje de '+g.nombre+' copiado'):'No se pudo copiar: ábrelo y cópialo a mano'); },
-            waShow:!!g.cel, waTitle:'Abre WhatsApp con el mensaje para 57'+g.cel,
-            onWa:()=>{ const t=((this.state.fcMsgEdit||{})[g.k]!==undefined)? this.state.fcMsgEdit[g.k] : auto; window.open('https://wa.me/57'+g.cel+'?text='+encodeURIComponent(t),'_blank','noopener'); } }; }); }
+            waShow:!!g.cel, waTitle:'Abre la app de WhatsApp del computador (vinculada a tu celular) con el mensaje para 57'+g.cel,
+            onWa:()=>this._abrirWhatsApp('57'+g.cel, ((this.state.fcMsgEdit||{})[g.k]!==undefined)? this.state.fcMsgEdit[g.k] : auto, false),
+            onWaWeb:()=>this._abrirWhatsApp('57'+g.cel, ((this.state.fcMsgEdit||{})[g.k]!==undefined)? this.state.fcMsgEdit[g.k] : auto, true) }; }); }
       out.fcList=list; out.fcVacio=list.length===0;
       const tot=vs.reduce((a,v)=>a+this.ventaSaldo(v),0); out.fcTotal=this.fmt(Math.round(tot));
       const ag={corriente:0,d30:0,d60:0,d60p:0}; vs.forEach(v=>{ ag[this.agingBucket(this.diasDesde(v.fecha))]+=this.ventaSaldo(v); });
@@ -21877,6 +21903,13 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
               { t:(d.modo==='ajuste'?('Pidió ajustar '+((Number(d.ajuste)||0)>0?'+':'')+this.fmtCant(Number(d.ajuste)||0)):('Contó '+this.fmtCant(Number(d.contado)||0)))+' '+u+' · motivo: '+(d.motivo||'')+' · fecha '+this.fmtFecha(d.fecha||'') }],
             nota:d.nota||'', aviso:(dif===0?'Hoy el stock ya coincide: no hay nada que ajustar.':(contado<0?'Dejaría el stock negativo.':'')),
             aprobarL:this._stockBusy?'…':'Aprobar ajuste', aprobar:()=>this.stockAprobar(s), rechazar:()=>this.stockRechazar(s) }; }
+        if(s.tipo==='producto'){ const P=d.producto||{}; const orig=d.duplicarDe? (st.productos||[]).find(x=>String(x.codigo).toUpperCase()===String(d.duplicarDe).toUpperCase()) : null;
+          const nk=(x)=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); const yaExiste=(st.productos||[]).some(p=>nk(p.nombre)===nk(P.nombre));
+          const fTxt=(P.formula||[]).map(f=>{ const m=[...(st.materias||[]),...(st.mezclas||[])].find(x=>String(x.codigo).toUpperCase()===String(f.materiaCodigo).toUpperCase()); return f.cantidad+' × '+f.materiaCodigo+(m&&m.nombre?(' '+m.nombre):''); }).join(' · ');
+          return { k:String(s.id), tipoL:(d.accion==='duplicar'?'Duplicar producto':'Producto nuevo'), titulo:(P.nombre||'')+(P.codigo?(' · '+P.codigo):''), cuando,
+            lineas:[{ t:(d.duplicarDe?('Copia de '+d.duplicarDe+(orig?(' · '+orig.nombre):' (ya no existe)')+' · '):'')+[P.formato,P.tamano].filter(Boolean).join(' ')+' · precio '+this.fmt(Number(P.precio)||0)+(P.cobraIva===false?' · sin IVA':' · con IVA')+(P.esReventa?(' · reventa, costo '+this.fmt(Number(P.costoCompra)||0)):'') },
+              { t:P.esReventa? 'Sin fórmula (producto de reventa)' : (fTxt? ('Fórmula: '+fTxt) : 'Sin fórmula: no se podrá producir hasta cargarla') }],
+            nota:d.nota||'', aviso:(yaExiste?'Ya existe un producto con ese nombre: recházala.':''), aprobarL:this._stockBusy?'…':'Aprobar y crear producto', aprobar:()=>this.stockAprobar(s), rechazar:()=>this.stockRechazar(s) }; }
         const its=d.items||[];
         return { k:String(s.id), tipoL:'Producción', titulo:its.length+(its.length===1?' producto':' productos')+' · '+its.reduce((a,it)=>a+(Number(it.cantidad)||0),0)+' und · fecha '+this.fmtFecha(d.fecha||''), cuando,
           lineas:its.map(it=>{ const p=(st.productos||[]).find(x=>x.codigo===it.codigo); return { t:(Number(it.cantidad)||0)+' × '+it.codigo+' · '+((p&&p.nombre)||it.nombre||'')+(it.recarga?(' · Recarga '+(it.recargaDestino==='venta'?'para venta':'consumo interno')):'')+(p?'':' · ⚠ el producto ya no existe') }; }),
@@ -21884,8 +21917,8 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
       const _selA=st.stockSelA||{}, _selP=st.stockSelP||{};
       out.stockSolRows=out.stockSolRows.map((r,i)=>{ const s=S[i]; const key=(s.tipo==='ajuste'?'stockSelA':'stockSelP'); const sel=!!((s.tipo==='ajuste'?_selA:_selP)[s.id]);
         return {...r, sel, onSel:(e)=>{ const v=e.target.checked; this.setState(x=>({[key]:{...(x[key]||{}), [s.id]:v}})); }}; });
-      out.stockSolProd=out.stockSolRows.filter((r,i)=>(S[i].tipo==='produccion')); out.stockSolAju=out.stockSolRows.filter((r,i)=>(S[i].tipo==='ajuste'));
-      const _SA=S.filter(s=>s.tipo==='ajuste'), _SP=S.filter(s=>s.tipo==='produccion');
+      out.stockSolProd=out.stockSolRows.filter((r,i)=>(S[i].tipo==='produccion'||S[i].tipo==='producto')); out.stockSolAju=out.stockSolRows.filter((r,i)=>(S[i].tipo==='ajuste'));
+      const _SA=S.filter(s=>s.tipo==='ajuste'), _SP=S.filter(s=>s.tipo==='produccion'||s.tipo==='producto');
       const _bulk=(arr,sel,key,nom)=>{ const elegidas=arr.filter(s=>sel[s.id]); const todas=arr.length>0 && elegidas.length===arr.length; const ocup=!!(this._stockBusy||this._stockBulk);
         return { show:out.stockSolPuede && arr.length>1, todas, n:elegidas.length,
           onTodas:(e)=>{ const v=e.target.checked; const m={}; if(v) arr.forEach(s=>{ m[s.id]=true; }); this.setState({[key]:m}); },
@@ -21894,7 +21927,7 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
           aprobarTodasL:(ocup?'Aprobando…':('Aprobar todas ('+arr.length+')')), aprobarTodas:()=>{ if(!ocup) this.stockAprobarVarios(arr); } }; };
       out.stockBulkA=_bulk(_SA,_selA,'stockSelA','ajuste'); out.stockBulkP=_bulk(_SP,_selP,'stockSelP','produccion');
       out.stockSolProdShow=out.stockSolProd.length>0; out.stockSolAjuShow=out.stockSolAju.length>0;
-      out.stockSolProdTit=out.stockSolProd.length+(out.stockSolProd.length===1?' producción de Stock por aprobar':' producciones de Stock por aprobar');
+      out.stockSolProdTit=out.stockSolProd.length+(out.stockSolProd.length===1?' solicitud de Stock por aprobar (producción o producto)':' solicitudes de Stock por aprobar (producción o productos)');
       out.stockSolAjuTit=out.stockSolAju.length+(out.stockSolAju.length===1?' ajuste de Stock por aprobar':' ajustes de Stock por aprobar');
     }catch(e){ out.stockSolProdShow=false; out.stockSolAjuShow=false; }
     try{ if(Array.isArray(out.conteosRows)) out.conteosRows=out.conteosRows.map(r=>{ const c=(st.conteos||[]).find(x=>x.id===r.id); const tag=this._stockTag(c); return {...r, stockTag:tag, esStock:!!tag}; });
