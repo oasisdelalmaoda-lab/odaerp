@@ -6302,13 +6302,14 @@
                     <div style="font-size:11.5px;color:var(--text-muted);text-wrap:pretty;">{{ gaAprAyuda }}</div>
                     <sc-for list="{{ gaAprRows }}" as="a" hint-placeholder-count="0">
                       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;padding:8px 12px;background:{{ a.bg }};border:1px solid {{ a.bd }};border-radius:12px;">
-                        <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><input type="checkbox" checked="{{ a.sel }}" onChange="{{ a.onSel }}" title="Seleccionar" style="width:17px;height:17px;margin:0;accent-color:#7A6241;cursor:pointer;"></sc-if>
+                        <sc-if value="{{ a.selShow }}" hint-placeholder-val="{{ false }}"><input type="checkbox" checked="{{ a.sel }}" onChange="{{ a.onSel }}" title="Seleccionar" style="width:17px;height:17px;margin:0;accent-color:#7A6241;cursor:pointer;"></sc-if>
                         <span style="font-weight:700;">{{ a.pedido }}</span>
                         <span style="flex:1;min-width:140px;">{{ a.cliente }} · <span style="color:var(--text-muted);">{{ a.ciudad }}</span></span>
                         <span style="color:var(--text-muted);">{{ a.pago }}</span>
                         <span style="color:var(--text-muted);font-size:11.5px;">Llegó {{ a.llegada }}</span>
                         <sc-if value="{{ a.esDir }}" hint-placeholder-val="{{ false }}"><span style="flex-basis:100%;font-size:12px;font-weight:600;color:#B5503C;text-wrap:pretty;">{{ a.motivo }}</span></sc-if>
                         <sc-if value="{{ a.etqShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(167,134,89,0.16);color:#7A6241;">{{ a.etq }}</span></sc-if>
+                        <sc-if value="{{ a.esInc }}" hint-placeholder-val="{{ false }}"><span style="flex-basis:100%;font-size:12px;font-weight:600;color:#B5503C;text-wrap:pretty;">{{ a.incTxt }}</span></sc-if>
                         <sc-if value="{{ gaPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ a.aprobar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">{{ a.btnL }}</button></sc-if>
                       </div>
                     </sc-for>
@@ -12512,6 +12513,8 @@ Instrucciones de respuesta:
       try{ const rc=await sb.from('guias_auto').select('id,fecha,data,creado_at').like('id','recogida-%').gte('fecha',f).order('fecha',{ascending:true}).limit(3); if(!rc.error) this.setState({ gaRecs:rc.data||[] }); }catch(e){}
       // 22-oct: pedidos que llegaron después del corte de las 2 p. m. y esperan aprobación (filas apr-, últimos 7 días).
       try{ const h7=this._logIso(new Date(Date.now()-21*86400000)); const ap=await sb.from('guias_auto').select('id,venta_id,fecha,data,creado_at').like('id','apr-%').gte('fecha',h7).order('creado_at',{ascending:true}); if(!ap.error) this.setState({ gaApr:ap.data||[] }); }catch(e){}
+      // 20-nov: reservas «incierto» (Coordinadora no respondió al crear la guía): el pedido queda bloqueado y hay que resolverlo a mano.
+      try{ const ri=await sb.from('guias_auto').select('id,venta_id,fecha,data,creado_at').like('id','res-%'); if(!ri.error) this.setState({ gaInc:(ri.data||[]).filter(r=>/^(incierto|llamando)$/.test(String((r.data||{}).estado||'')) || ((r.data||{}).estado==='creando' && Date.now()-Date.parse((r.data||{}).tomado||r.creado_at)>30*60000)) }); }catch(e){}
       // 19-nov: interruptor de la corrida automática (fila pausa-auto; vence sola en «hasta»).
       try{ const pz=await sb.from('guias_auto').select('data').eq('id','pausa-auto').maybeSingle(); if(!pz.error){ const d=(pz.data&&pz.data.data)||null; this.setState({ gaPausa:(d&&d.activa&&!(d.hasta&&Date.now()>=Date.parse(d.hasta)))? d : null }); } }catch(e){}
     }catch(e){ this.setState({ gaErr:String((e&&e.message)||e) }); } }
@@ -12552,7 +12555,25 @@ Instrucciones de respuesta:
     }catch(e){ this.toast('No se pudo revisar: '+((e&&e.message)||e)); }
     this.setState({ gaBusy:'' }); }
   _gaAprVisibles(){ const st=this.state; const vById={}; (st.ventas||[]).forEach(v=>{ vById[v.id]=v; });
-    return (st.gaApr||[]).filter(r=>{ const v=vById[r.venta_id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); }); }
+    const sinGuia=(id)=>{ const v=vById[id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); };
+    const inc={}; (st.gaInc||[]).forEach(r=>{ inc[r.venta_id]=r; });
+    const L=(st.gaApr||[]).filter(r=>sinGuia(r.venta_id)).map(r=>inc[r.venta_id]? {...r, _inc:inc[r.venta_id]} : r);
+    (st.gaInc||[]).forEach(r=>{ if(sinGuia(r.venta_id) && !L.some(x=>x.venta_id===r.venta_id)) L.push({ id:'inc-'+r.venta_id, venta_id:r.venta_id, fecha:r.fecha, creado_at:r.creado_at, data:{...(r.data||{}), llegada:(r.data||{}).tomado}, _inc:r }); });
+    return L; }
+  // 20-nov: resolver una guía «incierta»: si existe en Coordinadora se registra su número; si no, se libera y se crea de nuevo.
+  async gaIncierto(r){ if(this.state.gaBusy) return; const d=r.data||{}; const ped=d.pedido||'';
+    const num=window.prompt('Coordinadora no respondió cuando se creó la guía de '+ped+' ('+(d.cliente||'')+'), así que pudo quedar creada.\n\nBúscala en el portal de Coordinadora (referencia '+ped+').\n· Si EXISTE: escribe aquí su número de guía y la registro (queda en el pedido y como enviado en Shopify).\n· Si NO existe: deja vacío y acepta para crearla de nuevo.','');
+    if(num===null) return; const rem=String(num).replace(/\D/g,'');
+    this.setState({ gaBusy:'apr' });
+    try{ const sb=this._sbClient();
+      if(rem){ const { data, error }=await sb.functions.invoke('guias-auto',{ body:{ modo:'incierto', ventaId:r.venta_id, accion:'registrar', remision:rem } });
+        if(error||!data||data.ok===false) throw new Error((data&&data.error)||'la función «guias-auto» no respondió (¿está desplegada la versión del 20-nov?)');
+        this.toast('Guía '+rem+' registrada en '+ped+(data.shopify?' · enviado en Shopify':(' · Shopify: '+(data.shopifyError||'sin marcar')))); this.setState({ gaBusy:'' }); await this.gaCargar(); return; }
+      if(!window.confirm('¿Seguro que NO existe en Coordinadora? Si existe y la creo de nuevo, quedan dos guías para '+ped+'.')){ this.setState({ gaBusy:'' }); return; }
+      const { data, error }=await sb.functions.invoke('guias-auto',{ body:{ modo:'incierto', ventaId:r.venta_id, accion:'liberar' } });
+      if(error||!data||data.ok===false) throw new Error((data&&data.error)||'la función «guias-auto» no respondió');
+      this.setState({ gaBusy:'' }); await this.gaAprobar([r.venta_id], true);
+    }catch(e){ this.setState({ gaBusy:'' }); this.toast('No se pudo: '+((e&&e.message)||e)); } }
   async gaCorrer(simular){ if(this.state.gaBusy) return;
     if(!simular && this.state.gaPausa && !window.confirm('Las guías automáticas están EN PAUSA.\n«Crear ahora» crea las guías de TODOS los pedidos listos igual. Si solo quieres algunos, usa la lista y «Crear seleccionadas».\n\n¿Seguir?')) return;
     if(!simular && !window.confirm('¿Crear ahora las guías de los pedidos listos?\nSe crean en Coordinadora, quedan como ENVIADOS en Shopify (el cliente recibe el correo) y se guardan en cada pedido.')) return;
@@ -18215,7 +18236,10 @@ Instrucciones de respuesta:
     const data0=this._pedAlistData(v, modo); if(!data0.items.length){ this.toast('El pedido no tiene productos para alistar'); return; }
     if(modo!=='recoge' && !String(data0.direccion||'').trim() && !window.confirm('El pedido no tiene dirección. ¿Enviar a alistar igual?')) return;
     this._pedAlistBusy=v.id; this.forceUpdate(); const dst=this._alistDestino(); const who=this.recMeNombre(); const prev=v.alist||{}; const id='alist-v-'+v.id;
-    try{ let _exPrev=[]; if(prev.creadoAt){ await this._alistSincEmpaques(sb, v.id); const vF=(this.state.ventas||[]).find(x=>x.id===v.id)||v; Object.assign(data0, { empaques:this._pedAlistEmpaques(vF) });
+    // 20-nov: la tarjeta pudo crearla bodega desde la app (pedido de Shopify sin «Enviar a alistar»): se respeta su empaque extra aunque
+    // el pedido no tenga v.alist. Antes solo se leía si el Hub ya la había enviado y se podía perder lo que bodega sumó.
+    try{ let _exPrev=[]; let _ya=null; try{ const {data:ar}=await sb.from('alertas_app').select('data').eq('id',id).maybeSingle(); _ya=ar; }catch(_e){}
+      if(prev.creadoAt || _ya){ await this._alistSincEmpaques(sb, v.id); const vF=(this.state.ventas||[]).find(x=>x.id===v.id)||v; Object.assign(data0, { empaques:this._pedAlistEmpaques(vF) });
         try{ const {data:ar}=await sb.from('alertas_app').select('data').eq('id',id).maybeSingle(); _exPrev=((ar&&ar.data&&ar.data.empaquesExtra)||[]); }catch(_e){} }
       data0.empaquesExtra=_exPrev;
       const data={ ...data0, creadoPor:prev.por||who, creadoAt:prev.creadoAt||new Date().toISOString(), actualizadoAt:new Date().toISOString() };
@@ -19322,22 +19346,23 @@ Instrucciones de respuesta:
           out.onGaPausaHasta=(e)=>this.setState({ gaPausaHasta:e.target.value }); out.onGaPausaMotivo=(e)=>{ this.state.gaPausaMotivo=e.target.value; };
           out.gaPausaTxt=PZ? ('Guías automáticas EN PAUSA'+(PZ.motivo?(' · '+PZ.motivo):'')+(PZ.hasta?(' · se reanudan solas el '+new Date(PZ.hasta).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})):' · hasta que las reanudes')+(PZ.por?(' · '+String(PZ.por).split('@')[0]):'')) : '';
           out.gaTraer=()=>this.gaTraer(); out.gaTraerL=st.gaBusy==='traer'?'Revisando…':'Traer pedidos listos a la lista';
-          const sel=st.gaSel||{}; const ids=AP.map(r=>r.venta_id); const nSel=ids.filter(id=>sel[id]).length;
+          const sel=st.gaSel||{}; const ids=AP.filter(r=>!r._inc).map(r=>r.venta_id); const nSel=ids.filter(id=>sel[id]).length;
           out.gaAprShow=AP.length>0; out.gaAprN=AP.length; out.gaAprBusy=st.gaBusy==='apr';
-          const nDir=AP.filter(r=>(r.data||{}).motivo==='direccion').length, nPz=AP.filter(r=>/^(pausa|lista)$/.test((r.data||{}).motivo||'')).length;
-          out.gaAprTit=AP.length+(AP.length===1?' pedido listo para crear guía':' pedidos listos para crear guía')+(nPz?(' · '+nPz+' por la pausa'):'')+(nDir?(' · '+nDir+' con la dirección por revisar'):'')+((!nPz&&!nDir)?' · llegaron después de las 2:00 p. m.':'');
+          const nDir=AP.filter(r=>(r.data||{}).motivo==='direccion').length, nPz=AP.filter(r=>/^(pausa|lista)$/.test((r.data||{}).motivo||'')).length, nInc=AP.filter(r=>r._inc).length;
+          out.gaAprTit=AP.length+(AP.length===1?' pedido listo para crear guía':' pedidos listos para crear guía')+(nPz?(' · '+nPz+' por la pausa'):'')+(nDir?(' · '+nDir+' con la dirección por revisar'):'')+(nInc?(' · '+nInc+' con guía incierta (revisar en Coordinadora)'):'')+((!nPz&&!nDir&&!nInc)?' · llegaron después de las 2:00 p. m.':'');
           out.gaAprAyuda=PZ? 'Selecciona los que ya están listos (p. ej., los que no van a agregar nada) y créalos. La guía toma los productos y el recaudo que tenga el pedido en Shopify al momento de crearla.' : 'Coordinadora recoge entre 2 y 4 p. m.: lo que llega después de las 2 se crea solo a las 7:00 a. m. del siguiente día hábil si no lo creas antes. Las direcciones por revisar NO se crean solas: corrígelas en Shopify y créalas.';
-          out.gaSelBar=out.gaPuede && AP.length>0; out.gaSelTodas=AP.length>0 && nSel===AP.length; out.gaSelNone=nSel===0;
+          out.gaSelBar=out.gaPuede && ids.length>0; out.gaSelTodas=ids.length>0 && nSel===ids.length; out.gaSelNone=nSel===0;
           out.gaSelTxt=nSel? (nSel+' seleccionado(s)') : 'Marca los pedidos que quieres crear';
           out.gaSelBtnBg=nSel?'var(--brand-primary)':'rgba(120,110,95,0.35)'; out.gaCrearSelL=st.gaBusy==='apr'?'Creando…':('Crear seleccionadas'+(nSel?(' ('+nSel+')'):''));
-          out.gaSelTodasToggle=()=>{ const all=nSel!==AP.length; const n={}; if(all) ids.forEach(id=>{ n[id]=true; }); this.setState({ gaSel:n }); };
+          out.gaSelTodasToggle=()=>{ const all=nSel!==ids.length; const n={}; if(all) ids.forEach(id=>{ n[id]=true; }); this.setState({ gaSel:n }); };
           out.gaCrearSel=()=>{ const s2=ids.filter(id=>sel[id]); if(s2.length) this.gaAprobar(s2); };
           out.gaAprRows=AP.map(r=>{ const d=r.data||{}; const t=d.llegada?new Date(d.llegada):new Date(r.creado_at); const on=!!sel[r.venta_id];
             return { k:r.id, sel:on, bg:on?'rgba(167,134,89,0.10)':'var(--surface-card)', bd:on?'#A78659':'var(--border-subtle)', onSel:()=>this.setState({ gaSel:{...(this.state.gaSel||{}), [r.venta_id]:!on} }),
-              etqShow:/^(pausa|lista)$/.test(d.motivo||''), etq:'Retenido por la pausa',
+              etqShow:!!r._inc || /^(pausa|lista)$/.test(d.motivo||''), etq:(r._inc?'Guía incierta':'Retenido por la pausa'),
+              selShow:(out.gaPuede && !r._inc), esInc:!!r._inc, incTxt:(r._inc? ('Coordinadora no respondió al crear la guía'+(r._inc.data&&r._inc.data.tomado?(' ('+new Date(r._inc.data.tomado).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+')'):'')+': pudo quedar creada. El pedido está bloqueado para no duplicar. Búscala en Coordinadora y registra su número, o confirma que no existe para crearla.') : ''),
               pedido:d.pedido||'', cliente:d.cliente||'', ciudad:d.ciudad||'', pago:(d.pago||'')+(d.recaudo>0?(' · recaudo '+this.fmt(d.recaudo)):''),
-              llegada:this.fmtFecha(r.fecha)+' '+t.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), esDir:d.motivo==='direccion', motivo:d.motivo==='direccion'?('Dirección por revisar: '+(d.problema||'')+(d.direccion?(' · «'+d.direccion+'»'):'')+'. Corrígela en Shopify y luego crea la guía.'):'', btnL:st.gaBusy==='apr'?'…':(d.motivo==='direccion'?'Ya la corregí · crear guía':'Crear guía'), aprobar:()=>this.gaAprobar([r.venta_id]) }; });
-          out.gaAprTodas=()=>this.gaAprobar(ids); out.gaAprTodasShow=AP.length>1 && out.gaPuede; }
+              llegada:this.fmtFecha(r.fecha)+' '+t.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), esDir:d.motivo==='direccion', motivo:d.motivo==='direccion'?('Dirección por revisar: '+(d.problema||'')+(d.direccion?(' · «'+d.direccion+'»'):'')+'. Corrígela en Shopify y luego crea la guía.'):'', btnL:st.gaBusy==='apr'?'…':(r._inc?'Resolver guía':(d.motivo==='direccion'?'Ya la corregí · crear guía':'Crear guía')), aprobar:()=>(r._inc? this.gaIncierto(r) : this.gaAprobar([r.venta_id])) }; });
+          out.gaAprTodas=()=>this.gaAprobar(ids); out.gaAprTodasShow=ids.length>1 && out.gaPuede; }
       }
       out.logRows=rows.slice(0,150).map(v=>{ const i=I(v); const m=this.logEstadoMeta(i.estado); const open=st.logOpenId===v.id; const url=this.logTracking(v);
           return { id:v.id, pedido:(v.pedido||v.ov||'—'), cliente:(this.ventaClienteTxt(v)||'—'), ciudad:(this.titleCase((v.entregaA&&v.entregaA.ciudad)||v.ciudad||'')||'Sin ciudad'), zona:(i.recoge?'Recoge en oficina':(zc[i.zona]+' · '+i.plazo+'d')), fecha:this.fmtFecha(v.fecha),
