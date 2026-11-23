@@ -13052,6 +13052,21 @@ Instrucciones de respuesta:
       guiaBtnTxt:(busy?'Creando guía…':'Crear guía'), crearGuia:()=>{ if(!busy) this.msvcGuiaCrear(m.id, u); }, errShow:!!er, err:er?er.msg:'',
       alistPuede:!!puede, alistOn:!!al, alistToggle:()=>this.msvcAlistToggle(m, u), alistTxt:(this._alistBusy===('msvc-'+m.id)?'Guardando…':('Enviar a alistar · '+dst.nombre)),
       alistEst:(!al?'Le llega en la app móvil con dirección, guía y productos.':(est&&est.estado==='alistado'?('✓ Alistado por '+(est.por||'bodega')+(est.at?' · '+fmtD(est.at):'')):((al.alistadoAt)?('✓ Alistado por '+(al.alistadoPor||'bodega')+' · '+fmtD(al.alistadoAt)):'Alerta creada · pendiente de alistar'))) }; }
+  // 20-nov (usuario: «no tiene la información del cliente precargada»): la MSVC solo guarda destinatario y ciudad. Para la guía se
+  // completan dirección, celular y cédula con lo que ya sabe el Hub: el caso de servicio (si salió de un caso), sus ventas
+  // (misma regla que el alistamiento), la ficha de cliente o el lead con ese nombre. Gana el primero que tenga el dato.
+  _msvcDestDatos(m){ const nk=(x)=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); const nom=nk(m.destinatario);
+    const c=m.casoId? (this.state.casos||[]).find(x=>x.id===m.casoId) : null; const vL=(c&&this.casoVentaLink)? (this.casoVentaLink(c)||{}) : {};
+    const telC=c? ((this.casoTel&&this.casoTel(c))||c.celular||c.telefono||vL.celular||'') : '';
+    const cD=this.clienteDatosPara({cliente:(c&&c.cliente)||m.destinatario, celular:telC});
+    const f=nom? this.fichasList().find(x=>nk(this.fichaNombre(x))===nom || nk(this.fichaNombreFiscal(x))===nom || nk(x.contacto)===nom) : null;
+    const l=nom? (this.state.leads||[]).find(x=>nk(x.nombre)===nom) : null;
+    const pick=(...xs)=>{ for(const x of xs){ const t=String(x==null?'':x).trim(); if(t) return t; } return ''; };
+    return { nombre:pick(m.destinatario, c&&c.cliente),
+      ciudad:pick(m.ciudad, c&&c.ciudad, vL.ciudad, cD.ciudad, f&&f.ciudad, l&&l.ciudad),
+      direccion:pick(m.direccion, c&&c.direccion, vL.direccion, cD.direccion, f&&f.direccion, l&&l.direccion),
+      celular:pick(m.celular, m.telefono, telC, cD.celular, f&&(f.telContacto||f.telefono), l&&l.celular).replace(/\D/g,'').replace(/^57(?=3\d{9}$)/,''),
+      cedula:pick(m.cedula, c&&c.cedula, cD.cedula, f&&f.nit) }; }
   async msvcGuiaCrear(id, u){ const m=(this.state.msvc||[]).find(x=>x.id===id); const F=(this._msvcGuiaF||{})[id]; if(!m||!F) return; const sb=this._sbClient(); if(!sb||!this.cloudOn()){ this.toast('Sin conexión a la nube'); return; }
     const tel=String(F.telefono||'').replace(/\D/g,''); if(!String(F.ciudad||'').trim()||String(F.direccion||'').trim().length<6||tel.length<7){ this.toast('Completa ciudad, dirección y celular'); return; }
     if(!window.confirm('¿Crear guía Coordinadora para '+(m.numero||'')+' · '+(u.nombre||m.destinatario||'')+' · '+F.ciudad+'?')) return;
@@ -18220,8 +18235,14 @@ Instrucciones de respuesta:
   _detAlistSel(v){ const s=(this.state.pedAlistModo||{})[v.id]; if(s) return s; const al=v.alist||{}; return al.modo||(al.data&&al.data.modo)||v.logEnvioModo||''; }
   _pedAlistModoDef(v){ if(v.logEnvioModo) return v.logEnvioModo; if(this.logEsRecoge&&this.logEsRecoge(v)) return 'recoge'; if(String(v.guia||'').trim()) return 'guia'; return (this.logZona&&this.logZona(v.ciudad)==='cali')?'mensajero':'guia'; }
   _pedAlistData(v, modo){ const cD=this.clienteDatosPara?this.clienteDatosPara({cliente:v.cliente, celular:v.celular}):{}; const ml=(this.PED_ALIST_MODOS().find(m=>m.k===modo)||{}).l||modo;
+    // 23-oct→23-nov (usuario: «sale el nombre de la referencia pero no qué aceite o qué roll-on es»): Shopify manda el título GENÉRICO
+    // del producto («Aceites Esenciales 100% Puros», «Punto Mágico (Rollon)») y la variante solo queda en el código. Para bodega el
+    // nombre sale del catálogo del Hub por código (el aroma/tamaño exacto) y en los kits se listan los productos que lleva.
+    const nomDe=(c)=>{ const p=(this.state.productos||[]).find(x=>x.codigo===c)||(this.state.productos||[]).find(x=>this.padSku(x.codigo)===this.padSku(c)); if(p) return p.nombre; const m=(this.state.materias||[]).find(x=>x.codigo===c); return m? m.nombre : ''; };
     const items=[]; (v.items||[]).forEach(it=>{ if(it.soloIngreso) return; const code=it.productoCodigo||it.referencia; const k=(this.state.kits||[]).find(x=>x.codigo===code);
-      items.push({ nombre:(it.producto||(k&&k.nombre)||code||''), codigo:code||'', unidades:Number(it.unidades)||1 }); });
+      const kis=(k||it.kitItems)? (this.kitItemsEn(code, v.fecha, it)||[]) : []; const comp=kis.filter(ki=>ki.tipo==='producto').map(ki=>((Number(ki.cantidad)||1)>1?((Number(ki.cantidad)||1)+'× '):'')+(nomDe(ki.codigo)||ki.codigo));
+      const base=(k&&k.nombre)||nomDe(code)||it.producto||code||'';
+      items.push({ nombre:base, codigo:code||'', unidades:Number(it.unidades)||1, ...(comp.length?{ detalle:'Lleva: '+comp.join(' · ') }:{}), ...(it.producto && it.producto!==base?{ nombreTienda:it.producto }:{}) }); });
     // 30-oct: el material de empaque va APARTE (la app lo muestra en su propio bloque y bodega puede sumar más).
     const empaques=this._pedAlistEmpaques(v);
     const guia=String(v.guia||'').trim();
@@ -21602,7 +21623,7 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
     if(st.modal==='disputa'){ out.disputaCuentaOptions=this.cuentasList().map(c=>c.nombre); out.disputaEsAprobada=(st.draft.estado==='aprobada'); }
     if(st.modal==='msvclist'){ const arr=(st.msvc||[]).slice().sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||''))); out.msvcListRows=arr.map(m=>{ const costo=this.msvcCosto(m); const g=m.guiaCoord&&!m.guiaCoord.anulada?m.guiaCoord:null; const uds=(m.items||[]).reduce((a,it)=>a+(Number(it.unidades)||0),0); return { numero:(m.numero||'—'), fechaFmt:this.fmtFecha(m.fecha), quien:(m.responsableNombre||''), dest:(m.destinatario||'—'), motivo:(m.motivo||'—'), esCaso:!!m.casoId, origenTxt:(m.casoId?'Servicio al cliente':'Manual'), origenBg:(m.casoId?'rgba(101,150,166,0.16)':'var(--surface-raised)'), origenFg:(m.casoId?'#3F6A7A':'var(--text-muted)'), items:((m.items||[]).map(it=>(Number(it.unidades)||0)+'× '+(it.nombre||it.productoCodigo)).join(', ')||'—'), uds, costoFmt:this.fmt(Math.round(costo)), envioTxt:(g?('Guía '+g.remision+' · Coordinadora'):((Number(m.fleteEntrega)||0)>0?('Mensajero '+this.fmt(m.fleteEntrega)+(m.fleteCuenta?(' · '+m.fleteCuenta):'')):'')), hayEnvio:!!g||(Number(m.fleteEntrega)||0)>0, hayGuia:!!g, onRotulo:()=>{ if(g) this._coordRotuloDescargar(g.remision); },
         // 20-nov (usuario): crear la guía de una muestra DESPUÉS de registrarla (antes solo se podía al crearla o desde UGC).
-        ...(()=>{ if(g || (Number(m.fleteEntrega)||0)>0) return { guiaPuede:false }; const u=(m.ugcId && (st.ugc||[]).find(x=>x.id===m.ugcId)) || { nombre:m.destinatario||'', ciudad:m.ciudad||'', direccion:m.direccion||'', celular:m.celular||m.telefono||'', cedula:m.cedula||'' };
+        ...(()=>{ if(g || (Number(m.fleteEntrega)||0)>0) return { guiaPuede:false }; const u=(m.ugcId && (st.ugc||[]).find(x=>x.id===m.ugcId)) || this._msvcDestDatos(m);
           const puede=!!(this.isAdminUser&&this.isAdminUser()) || ['inventario','ventas','logistica','marketing'].some(k=>this._modLevel(this.access()||{},k)==='write'); return this._msvcEnvioVals(m, u, puede); })() }; });
       out.coordCiudadesOptsM=(st.coordCiudades||[]).map(c=>c.label); out.msvcListVacio=arr.length===0; out.msvcListCerrar=()=>this.setState({modal:null}); }
     out.isModalMsvcList=st.modal==='msvclist'; out.isModalUgc=st.modal==='ugc'; out.ugcEstadoOpts=this.ugcEstados().map(e=>({k:e[0], l:e[1]}));
