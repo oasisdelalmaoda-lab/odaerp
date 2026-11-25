@@ -14286,7 +14286,7 @@ Instrucciones de respuesta:
     if(r.resultado==='omitida') return 'omitida: '+(mot[r.motivo]||r.motivo||''); return mot[r.resultado]||r.error||r.resultado||'error'; }
   // Lote (selección o atraso): SIEMPRE primero simular_lote (no emite). Por tandas de 15 para no pasar el tiempo de la función.
   async feLoteSimular(ids, titulo){ ids=[...new Set((ids||[]).filter(Boolean))]; if(!ids.length){ this.toast('No hay pedidos para facturar'); return; }
-    if(this.state.feLote && /ando$/.test(this.state.feLote.fase||'')) return;
+    if(this.state.feLote && /^(simulando|emitiendo)$/.test(this.state.feLote.fase||'')) return;
     this.setState({feLote:{titulo, fase:'simulando', total:ids.length, hechos:0, ok:[], mal:[], ya:[], emitidas:[], fallidas:[]}});
     const ok=[], mal=[], ya=[];
     for(let i=0;i<ids.length;i+=15){ const tanda=ids.slice(i,i+15); const r=await this._siigoLlamar('simular_lote', null, {venta_ids:tanda});
@@ -14307,7 +14307,7 @@ Instrucciones de respuesta:
       this.setState(s=>({feLote:{...(s.feLote||{}), hechos:Math.min(ids.length,i+10), emitidas:em.slice(), fallidas:fa.slice()}}));
       if(r && !r.ok && /401|403|Administrador/i.test(String(r.error||''))) break; }
     this.setState(s=>({feLote:{...(s.feLote||{}), fase:'fin'}, feSel:{}})); this.feCargarPanel(); }
-  feLoteCerrar(){ const L=this.state.feLote; if(L && /ando$/.test(L.fase||'')) return; this.setState({feLote:null}); }
+  feLoteCerrar(){ const L=this.state.feLote; if(L && /^(simulando|emitiendo)$/.test(L.fase||'')) return; this.setState({feLote:null}); }
   feAtrasoSimular(){ const nums=this.feAtrasoNums(); const porNum={}; (this.state.ventas||[]).forEach(v=>{ if(this._siigoEsShopify(v)) porNum[this._siigoShopNum(v)]=v; });
     const ids=[]; let faltan=0, fuera=0, sinDatos=0; nums.forEach(n=>{ const v=porNum[n]; if(!v){ faltan++; return; } if(v.siigo&&(v.siigo.id||v.siigo.numero)) return; if(!this._siigoElegible(v).ok){ fuera++; return; }
       // Sin datos de facturación de Shopify saldría a consumidor final por error: esos esperan al sync o a «Corregir datos».
@@ -14369,13 +14369,14 @@ Instrucciones de respuesta:
       out.onFeAtraso=()=>this.feAtrasoSimular(); }
     // lote
     const L=st.feLote; out.feLoteShow=!!L;
-    if(L){ out.feLoteTitulo=L.titulo; out.feLoteSimulando=L.fase==='simulando'; out.feLoteRevisar=L.fase==='revisar'; out.feLoteEmitiendo=L.fase==='emitiendo'; out.feLoteFin=L.fase==='fin';
+    if(L){ const _A=(x)=>Array.isArray(x)?x:[]; L.ok=_A(L.ok); L.mal=_A(L.mal); L.ya=_A(L.ya); L.emitidas=_A(L.emitidas); L.fallidas=_A(L.fallidas);
+      out.feLoteTitulo=L.titulo||'Facturación'; out.feLoteSimulando=L.fase==='simulando'; out.feLoteRevisar=L.fase==='revisar'; out.feLoteEmitiendo=L.fase==='emitiendo'; out.feLoteFin=L.fase==='fin';
       out.feLoteProg=L.hechos+' de '+L.total; out.feLoteNOk=L.ok.length; out.feLoteNMal=L.mal.length; out.feLoteNYa=L.ya.length;
       out.feLoteTotOk=this.fmt(L.ok.reduce((a,x)=>a+(Number(x.total)||0),0)); out.feLoteHayOk=L.ok.length>0;
       const fx=(x)=>({ ped:x.ped, cliente:x.cliente||'', valor:this.fmt(x.total||0), motivo:x.motivo||'', numero:x.numero||'' });
       out.feLoteOk=L.ok.slice(0,200).map(fx); out.feLoteMal=L.mal.map(fx); out.feLoteHayMal=L.mal.length>0; out.feLoteYa=L.ya.map(fx); out.feLoteHayYa=L.ya.length>0;
       out.feLoteEm=(L.emitidas||[]).map(fx); out.feLoteFa=(L.fallidas||[]).map(fx); out.feLoteNEm=(L.emitidas||[]).length; out.feLoteNFa=(L.fallidas||[]).length; out.feLoteHayFa=(L.fallidas||[]).length>0;
-      out.onFeLoteEmitir=()=>this.feLoteEmitir(); out.onFeLoteCerrar=()=>this.feLoteCerrar(); out.feLoteCerrable=!/ando$/.test(L.fase||''); }
+      out.onFeLoteEmitir=()=>this.feLoteEmitir(); out.onFeLoteCerrar=()=>this.feLoteCerrar(); out.feLoteCerrable=!/^(simulando|emitiendo)$/.test(L.fase||''); }
     // corregir datos
     const E=st.feEdit; out.feEditShow=!!E;
     if(E){ out.feEdit=E; out.feEditTipos=[['nit','NIT empresa'],['cc','Cédula'],['cf','Consumidor final']].map(([k,l])=>({ k, l, sel:E.tipo===k, on:()=>this.setState(s=>({feEdit:{...s.feEdit, tipo:k}})), estilo:E.tipo===k? 'background:var(--brand-ink);color:#fff;border-color:var(--brand-ink);' : 'background:transparent;color:var(--text-body);border-color:var(--border-strong);' }));
@@ -19882,7 +19883,7 @@ Instrucciones de respuesta:
       out.coordCiudadesOptsU=(st.coordCiudades||[]).map(c=>c.label);
       out.ugcVacio=!rows.length; out.ugcVacioTxt=all.length?'Ningún creador coincide con el filtro.':'Todavía no hay creadores. Agrega el primero con «Nuevo creador».'; }
     if(out.showMktWa) this._buildCampWa(out, st);
-    if(out.showFinFe) this._buildFe(out, st);
+    if(out.showFinFe){ try{ this._buildFe(out, st); }catch(e){ console.error('Factura electrónica', e); out.feAdm=true; out.fePanelErr='Error de la pantalla: '+((e&&e.message)||e)+' · recarga cuando termine lo que esté en curso'; out.feHayPanelErr=true; } }
     out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='logistica' && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
     if(st.module==='soporte'){ out.crumb='ODA Labs'; out.pageTitle='Soporte ODA'; }
     else if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
