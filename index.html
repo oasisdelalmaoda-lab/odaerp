@@ -345,6 +345,7 @@
               <sc-if value="{{ vF_gastos }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.gastos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinGastos.c }};background:{{ subFinGastos.bg }};border-left:2px solid {{ subFinGastos.b }};">Gastos</div></sc-if>
               <sc-if value="{{ vF_pyg }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.pyg }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinPyg.c }};background:{{ subFinPyg.bg }};border-left:2px solid {{ subFinPyg.b }};">Estado de resultados</div></sc-if>
               <sc-if value="{{ vF_imp }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.impuestos }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinImp.c }};background:{{ subFinImp.bg }};border-left:2px solid {{ subFinImp.b }};">IVA y retenciones</div></sc-if>
+              <sc-if value="{{ vF_fe }}" hint-placeholder-val="{{ true }}"><div class="oda-navitem" onClick="{{ subnavFin.facturae }}" style="display:flex;align-items:center;gap:10px;padding:8px 11px 8px 30px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:{{ subFinFe.c }};background:{{ subFinFe.bg }};border-left:2px solid {{ subFinFe.b }};">Factura electrónica</div></sc-if>
             </div>
           </sc-if>
           </sc-if>
@@ -5201,6 +5202,136 @@
             </div>
           </sc-if>
 
+          <!-- ===== FINANZAS · FACTURA ELECTRÓNICA (25-nov) ===== -->
+          <sc-if value="{{ showFinFe }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <p style="font-size:13.5px;color:var(--text-body);margin:0 0 6px;line-height:1.55;max-width:900px;">Los pedidos pagados se facturan desde aquí: manuales con IVA y Shopify desde el #5332. Antes de emitir, el Hub simula la factura con Siigo; la factura se valida ante la DIAN.</p>
+              <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;line-height:1.5;max-width:900px;">{{ feAutoTxt }}</p>
+              <sc-if value="{{ feHayDry }}" hint-placeholder-val="{{ false }}"><div style="margin:0 0 14px;padding:10px 14px;border-radius:var(--radius-md);background:rgba(212,150,80,0.12);border:1px solid rgba(212,150,80,0.35);color:#9A6B2E;font-size:12.5px;">{{ feDryTxt }}</div></sc-if>
+              <sc-if value="{{ feHayPanelErr }}" hint-placeholder-val="{{ false }}"><div style="margin:0 0 14px;padding:10px 14px;border-radius:var(--radius-md);background:rgba(181,80,60,0.08);border:1px solid rgba(181,80,60,0.3);color:#B5503C;font-size:12.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><span style="flex:1;">No se pudo consultar Siigo: {{ fePanelErr }}</span><button onClick="{{ onFeRecargar }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:var(--radius-pill);border:1px solid #B5503C;background:transparent;color:#B5503C;cursor:pointer;">Reintentar</button></div></sc-if>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;margin-bottom:18px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Facturas del mes</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--text-strong);line-height:1.2;margin-top:6px;">{{ feK1 }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);font-weight:600;">{{ feK1Sub }}</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Por facturar</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--text-strong);line-height:1.2;margin-top:6px;">{{ feK2 }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);font-weight:600;">{{ feK2Sub }}</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Siguiente factura</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--text-strong);line-height:1.2;margin-top:6px;">{{ feK3 }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);font-weight:600;">{{ feK3Sub }}</div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;">
+                  <div style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Números disponibles</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--text-strong);line-height:1.2;margin-top:6px;">{{ feK4 }}</div>
+                  <div style="font-size:12px;color:{{ feK4Col }};font-weight:600;">{{ feK4Sub }}</div>
+                </div>
+              </div>
+
+              <sc-if value="{{ feAtrasoShow }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-brand);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+                  <div style="flex:1;min-width:260px;">
+                    <div style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:3px;">Atraso Shopify #5332–#5442</div>
+                    <div style="font-size:13px;color:var(--text-body);">{{ feAtrasoTxt }}</div>
+                    <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;line-height:1.5;">No entra al automático. Primero se simula todo sin emitir; luego tú decides emitir las que salgan sin errores.</div>
+                  </div>
+                  <button onClick="{{ onFeAtraso }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">Simular el atraso</button>
+                </div>
+              </sc-if>
+
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;">
+                <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px;">
+                  <div style="flex:1;min-width:260px;">
+                    <div style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Por facturar</div>
+                    <div style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">De la más nueva a la más antigua. Shopify toma solo la dirección de <strong>facturación</strong> (nunca la de envío); sin documento sale a consumidor final.</div>
+                  </div>
+                  <input type="search" placeholder="Buscar pedido, cliente o documento" value="{{ feQ }}" onInput="{{ onFeQ }}" style="font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);min-width:240px;">
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+                  <sc-for list="{{ feChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.on }}" style="font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid;cursor:pointer;{{ c.estilo }}">{{ c.txt }}</button></sc-for>
+                  <span style="flex:1;"></span>
+                  <sc-if value="{{ feHaySel }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12.5px;color:var(--text-body);font-weight:600;">{{ feNSel }} seleccionados</span>
+                    <button onClick="{{ onFeLimpiarSel }}" style="font-family:inherit;font-size:12px;padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;">Quitar selección</button>
+                    <button onClick="{{ onFeLoteSel }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">Facturar {{ feNSel }} pedidos</button>
+                  </sc-if>
+                </div>
+                <div style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:860px;">
+                    <thead><tr style="text-align:left;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">
+                      <th style="padding:10px 8px;width:30px;"><input type="checkbox" checked="{{ feTodasChk }}" onChange="{{ onFeTodas }}" title="Marcar las listas"></th>
+                      <th style="padding:10px 8px;">Pedido</th><th style="padding:10px 8px;">Fecha</th><th style="padding:10px 8px;">Cliente</th><th style="padding:10px 8px;">Producto</th><th style="padding:10px 8px;text-align:right;">Valor</th><th style="padding:10px 8px;">Datos</th><th style="padding:10px 8px;"></th>
+                    </tr></thead>
+                    <tbody>
+                      <sc-for list="{{ feFilas }}" as="r" hint-placeholder-count="4">
+                        <tr style="border-top:1px solid var(--border-subtle);vertical-align:top;">
+                          <td style="padding:12px 8px;"><sc-if value="{{ r.puedeChk }}" hint-placeholder-val="{{ true }}"><input type="checkbox" checked="{{ r.chk }}" onChange="{{ r.onChk }}"></sc-if></td>
+                          <td style="padding:12px 8px;white-space:nowrap;"><span onClick="{{ r.onVer }}" style="font-weight:700;color:var(--brand-ink);cursor:pointer;">{{ r.ped }}</span><span style="display:block;font-size:11px;color:var(--text-muted);">{{ r.sub }}</span></td>
+                          <td style="padding:12px 8px;white-space:nowrap;color:var(--text-body);">{{ r.fecha }}</td>
+                          <td style="padding:12px 8px;"><span style="font-weight:700;color:var(--text-strong);">{{ r.cliente }}</span><span style="display:block;font-size:11px;color:var(--text-muted);">{{ r.doc }}</span></td>
+                          <td style="padding:12px 8px;color:var(--text-body);max-width:260px;">{{ r.producto }}</td>
+                          <td style="padding:12px 8px;text-align:right;white-space:nowrap;font-weight:600;">{{ r.valor }}</td>
+                          <td style="padding:12px 8px;max-width:280px;"><span style="display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:99px;{{ r.pillEstilo }}">{{ r.pill }}</span><sc-if value="{{ r.hayFaltan }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#B5503C;margin-top:4px;line-height:1.45;">{{ r.faltan }}</div></sc-if><sc-if value="{{ r.errShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#B5503C;margin-top:4px;line-height:1.45;"><strong>Siigo:</strong> {{ r.errTxt }}</div></sc-if></td>
+                          <td style="padding:10px 8px;white-space:nowrap;text-align:right;">
+                            <button onClick="{{ r.onExterna }}" title="La factura ya se hizo directo en Siigo: marcarla con su número" style="font-family:inherit;font-size:11.5px;padding:7px 10px;border-radius:var(--radius-pill);border:none;background:transparent;color:var(--text-muted);cursor:pointer;text-decoration:underline;">Ya está en Siigo</button>
+                            <sc-if value="{{ r.corregirShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onCorregir }}" style="font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-strong);cursor:pointer;margin-left:4px;">Corregir datos</button></sc-if>
+                            <button onClick="{{ r.onFacturar }}" disabled="{{ r.facturarOff }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:#fff;cursor:{{ r.facturarCur }};opacity:{{ r.facturarOp }};margin-left:4px;">{{ r.facturarTxt }}</button>
+                          </td>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+                <sc-if value="{{ feVacio }}" hint-placeholder-val="{{ false }}"><div style="padding:26px 8px;text-align:center;color:var(--text-muted);font-size:13px;">No hay pedidos por facturar con este filtro.</div></sc-if>
+                <sc-if value="{{ feHayMas }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 8px;color:var(--text-muted);font-size:12px;">y {{ feMas }} más · usa el buscador</div></sc-if>
+              </div>
+
+              <sc-if value="{{ feLoteShow }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;background:rgba(30,24,18,0.45);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;">
+                  <div style="background:var(--surface-card);border-radius:var(--radius-lg);max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin:0;flex:1;">{{ feLoteTitulo }}</h3><sc-if value="{{ feLoteCerrable }}" hint-placeholder-val="{{ true }}"><button onClick="{{ onFeLoteCerrar }}" style="font-family:inherit;font-size:13px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;">Cerrar</button></sc-if></div>
+                    <sc-if value="{{ feLoteSimulando }}" hint-placeholder-val="{{ false }}"><p style="font-size:13px;color:var(--text-body);">Simulando con Siigo (no se emite nada)… {{ feLoteProg }}</p></sc-if>
+                    <sc-if value="{{ feLoteEmitiendo }}" hint-placeholder-val="{{ false }}"><p style="font-size:13px;color:var(--text-body);">Emitiendo… {{ feLoteProg }} · no cierres esta pestaña</p></sc-if>
+                    <sc-if value="{{ feLoteRevisar }}" hint-placeholder-val="{{ false }}">
+                      <p style="font-size:13px;color:var(--text-body);margin:0 0 12px;line-height:1.5;"><strong style="color:#4C6149;">{{ feLoteNOk }} sin errores</strong> por {{ feLoteTotOk }} · <strong style="color:#B5503C;">{{ feLoteNMal }} con errores</strong> · {{ feLoteNYa }} ya facturadas. Nada se ha emitido todavía.</p>
+                      <sc-if value="{{ feLoteHayOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:flex-end;margin-bottom:12px;"><button onClick="{{ onFeLoteEmitir }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:#4C6149;color:#fff;cursor:pointer;">Emitir las {{ feLoteNOk }} sin errores</button></div></sc-if>
+                    </sc-if>
+                    <sc-if value="{{ feLoteFin }}" hint-placeholder-val="{{ false }}"><p style="font-size:13px;color:var(--text-body);margin:0 0 12px;"><strong style="color:#4C6149;">{{ feLoteNEm }} emitidas</strong> · <strong style="color:#B5503C;">{{ feLoteNFa }} no salieron</strong>.</p></sc-if>
+                    <sc-if value="{{ feLoteHayMal }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#B5503C;font-weight:700;margin:6px 0;">Con errores (corrige y vuelve a intentar)</div>
+                      <sc-for list="{{ feLoteMal }}" as="x" hint-placeholder-count="2"><div style="font-size:12.5px;padding:6px 0;border-top:1px solid var(--border-subtle);"><strong>{{ x.ped }}</strong> · {{ x.cliente }} · {{ x.valor }}<div style="color:#B5503C;font-size:12px;line-height:1.45;">{{ x.motivo }}</div></div></sc-for></sc-if>
+                    <sc-if value="{{ feLoteHayFa }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#B5503C;font-weight:700;margin:10px 0 6px;">No salieron</div>
+                      <sc-for list="{{ feLoteFa }}" as="x" hint-placeholder-count="1"><div style="font-size:12.5px;padding:6px 0;border-top:1px solid var(--border-subtle);"><strong>{{ x.ped }}</strong> · {{ x.cliente }}<div style="color:#B5503C;font-size:12px;">{{ x.motivo }}</div></div></sc-for></sc-if>
+                    <sc-if value="{{ feLoteFin }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#4C6149;font-weight:700;margin:10px 0 6px;">Emitidas</div>
+                      <sc-for list="{{ feLoteEm }}" as="x" hint-placeholder-count="1"><div style="font-size:12.5px;padding:5px 0;border-top:1px solid var(--border-subtle);"><strong>{{ x.ped }}</strong> · {{ x.cliente }} · {{ x.numero }}</div></sc-for></sc-if>
+                    <sc-if value="{{ feLoteRevisar }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#4C6149;font-weight:700;margin:10px 0 6px;">Sin errores</div>
+                      <sc-for list="{{ feLoteOk }}" as="x" hint-placeholder-count="2"><div style="font-size:12.5px;padding:5px 0;border-top:1px solid var(--border-subtle);"><strong>{{ x.ped }}</strong> · {{ x.cliente }} · {{ x.valor }}</div></sc-for></sc-if>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ feEditShow }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;background:rgba(30,24,18,0.45);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;">
+                  <div style="background:var(--surface-card);border-radius:var(--radius-lg);max-width:520px;width:100%;max-height:86vh;overflow:auto;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin:0 0 4px;">Datos de facturación · {{ feEdit.ped }}</h3>
+                    <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px;line-height:1.5;">Solo para la factura. No cambia la dirección de envío ({{ feEdit.envioTxt }}) ni Shopify.</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><sc-for list="{{ feEditTipos }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.on }}" style="font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid;cursor:pointer;{{ t.estilo }}">{{ t.l }}</button></sc-for></div>
+                    <sc-if value="{{ feEditPideDoc }}" hint-placeholder-val="{{ true }}"><label style="display:block;font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:10px;">Número de documento <span style="font-weight:400;color:var(--text-muted);">{{ feEditDv }}</span><input name="doc" value="{{ feEdit.doc }}" onInput="{{ onFeEditInput }}" inputmode="numeric" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label></sc-if>
+                    <label style="display:block;font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:10px;">{{ feEditNombreLbl }}<input name="nombre" value="{{ feEdit.nombre }}" onInput="{{ onFeEditInput }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                    <label style="display:block;font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:10px;">Correo de facturación electrónica<input name="correo" value="{{ feEdit.correo }}" onInput="{{ onFeEditInput }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                    <label style="display:block;font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:10px;">Ciudad de facturación<input name="ciudad" value="{{ feEdit.ciudad }}" onInput="{{ onFeEditInput }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                    <label style="display:block;font-size:11.5px;font-weight:700;color:var(--text-body);margin-bottom:16px;">Dirección de facturación<input name="direccion" value="{{ feEdit.direccion }}" onInput="{{ onFeEditInput }}" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 12px;margin-top:5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                    <div style="display:flex;justify-content:flex-end;gap:10px;"><button onClick="{{ onFeEditCerrar }}" style="font-family:inherit;font-size:13px;padding:9px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-body);cursor:pointer;">Cancelar</button><button onClick="{{ onFeEditGuardar }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border-radius:var(--radius-pill);border:none;background:var(--brand-primary);color:#fff;cursor:pointer;">Guardar</button></div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
           <!-- ===== VENTAS · LISTADO DE PEDIDOS ===== -->
           <sc-if value="{{ showVentasListado }}" hint-placeholder-val="{{ false }}">
             <div>
@@ -8185,6 +8316,7 @@
                     <sc-if value="{{ detFactHayVer }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ onFactPdf }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;min-height:36px;border-radius:var(--radius-pill);cursor:pointer;border:none;background:var(--brand-ink);color:#fff;">Descargar PDF</button></sc-if><sc-if value="{{ detFactHayUrl }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ onFactVer }}" title="Abrir el visor de Siigo (no es el PDF oficial)" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;min-height:36px;border-radius:var(--radius-pill);cursor:pointer;border:1px solid var(--border-strong);background:transparent;color:var(--text-body);">Ver en Siigo ↗</button></sc-if>
                     <sc-if value="{{ detFactPuedeExterna }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onFactExterna }}" title="La factura ya se hizo directo en Siigo: marcarla con su número" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;min-height:36px;border-radius:var(--radius-pill);cursor:pointer;border:1px solid var(--border-strong);background:transparent;color:var(--text-body);">Ya está facturada en Siigo</button></sc-if>
                     <sc-if value="{{ detFactEsExterna }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onFactQuitarExterna }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;min-height:36px;border-radius:var(--radius-pill);cursor:pointer;border:none;background:transparent;color:var(--text-muted);text-decoration:underline;">Quitar marca</button></sc-if>
+                    <sc-if value="{{ detFactIrFe }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onFactIrFe }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;min-height:36px;border-radius:var(--radius-pill);cursor:pointer;background:transparent;border:1px solid var(--brand-primary);color:var(--brand-primary);">Ver en Factura electrónica</button></sc-if>
                     <sc-if value="{{ detFactPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onFactSimular }}" disabled="{{ detFactBusy }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;min-height:36px;border-radius:var(--radius-pill);cursor:pointer;background:var(--brand-primary);border:1px solid var(--brand-primary);color:#fff;">{{ detFactBtnTxt }}</button></sc-if>
                   </div>
                   <sc-if value="{{ detFactHayCufe }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;word-break:break-all;">CUFE: {{ detFact.cufe }} · DIAN: {{ detFact.dian }}</div></sc-if>
@@ -12194,7 +12326,7 @@ Instrucciones de respuesta:
         // Cambio de mes: un pedido NUEVO de un mes posterior al abierto espera (los existentes se siguen actualizando).
         if(exI<0){ const _m=String(o.fecha||'').slice(0,7); const _tope=opts.abrirMes? (mesNuevo||mesAb) : mesAb; if(_m>_tope){ retenidos[_m]=(retenidos[_m]||0)+1; return; } }
         const items=(o.items||[]).map(it=>{ const c=this.padSku(it.productoCodigo||it.referencia); const code=this.skuExiste(c)?c:(this.resolveSkuByName(it.producto)||c); const bruto=Number(it.valorBruto)||Number(it.valorUnit)||0; return { referencia:code, producto:it.producto||'', productoCodigo:code, unidades:Number(it.unidades)||0, valorUnit:Number(it.valorUnit)||0, valorBruto:bruto, descPct:Number(it.descPct)||0, costoUnit:this._itemConCosto(it, code), kitItems:this._itemKitSnap(it, code, o.fecha) }; });
-        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanalVenta({canal:(o.canal||'Página Web'), sourceName:o.sourceName||''}), sourceName:o.sourceName||'', bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), direccion:String(o.direccion||'').trim(), envioTitulo:String(o.envioTitulo||''), recoge:(o.recoge===true), listoRetiroAt:String(o.listoRetiroAt||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined), creadoAt:(o.creadoAt||''), despachoAt:(o.despachoAt||''), transportadora:(o.transportadora||''), trackingUrl:(o.trackingUrl||''), entregadoAt:(o.entregaAt||(this.logTagEntregado(o.tags)?this._logFechaEtiqueta(o):'')), entregaFuente:(o.entregaAt?'shopify':(this.logTagEntregado(o.tags)&&o.updatedAt?'etiqueta':'')), entregaSinFecha:(!o.entregaAt && this.logTagEntregado(o.tags) && !o.updatedAt), logVisto:Date.now() };
+        const bruto0={ fecha:o.fecha||new Date().toISOString().slice(0,10), pedido:o.pedido||'', canal:this.canonCanalVenta({canal:(o.canal||'Página Web'), sourceName:o.sourceName||''}), sourceName:o.sourceName||'', bodega:o.bodega||'Principal', cliente:this.titleCase(o.cliente||''), celular:String(o.celular||'').replace(/\s+/g,' ').trim(), correo:o.correo||'', ciudad:this.canonCiudad(o.ciudad||''), direccion:String(o.direccion||'').trim(), envioTitulo:String(o.envioTitulo||''), recoge:(o.recoge===true), listoRetiroAt:String(o.listoRetiroAt||''), items, envio:(o.cancelado?0:Number(o.envio)||0), metodoPago:o.metodoPago||'', origen:'shopify', shopifyId:o.shopifyId||'', tags:String(o.tags||''), ordFulfill:this.normKey(o.fulfillmentStatus||o.ordFulfill||''), cancelada:!!o.cancelado, cancelMotivo:o.cancelMotivo||'', atrib:(o.atrib&&o.atrib.fuente? o.atrib : undefined), creadoAt:(o.creadoAt||''), despachoAt:(o.despachoAt||''), transportadora:(o.transportadora||''), trackingUrl:(o.trackingUrl||''), entregadoAt:(o.entregaAt||(this.logTagEntregado(o.tags)?this._logFechaEtiqueta(o):'')), entregaFuente:(o.entregaAt?'shopify':(this.logTagEntregado(o.tags)&&o.updatedAt?'etiqueta':'')), entregaSinFecha:(!o.entregaAt && this.logTagEntregado(o.tags) && !o.updatedAt), logVisto:Date.now(), financialStatus:String(o.financialStatus||''), ...((o.facturacion && typeof o.facturacion==='object')? {facturacion:o.facturacion} : {}) };
         if(exI>=0){
           // Actualiza el existente PERO conserva lo conciliado (OV, guía, liquidación, cobro, consignación).
           const ex=list[exI];
@@ -12205,7 +12337,12 @@ Instrucciones de respuesta:
           const merged={ ...ex,
             items:(ex.itemsLocked? ex.items : bruto0.items), envio:bruto0.envio, cliente:bruto0.cliente, celular:bruto0.celular, correo:bruto0.correo, ciudad:bruto0.ciudad, direccion:(ex.direccion||bruto0.direccion||''), envioTitulo:(bruto0.envioTitulo||ex.envioTitulo||''), recoge:(bruto0.recoge||ex.recoge===true), listoRetiroAt:(bruto0.listoRetiroAt||ex.listoRetiroAt||''), sourceName:(ex.sourceName||bruto0.sourceName||''), canal:this.canonCanalVenta({canal:(ex.canal||bruto0.canal), sourceName:(ex.sourceName||bruto0.sourceName||'')}), bodega:(ex.bodega||bruto0.bodega),
             guia:(this._guiaShopVigente(ex,o)? o.guia : (ex.guia||o.guia||'')), guiaShop:(o.guia||ex.guiaShop||''), cancelada:bruto0.cancelada, cancelMotivo:bruto0.cancelMotivo, shopifyId:(ex.shopifyId||bruto0.shopifyId), tags:(bruto0.tags||ex.tags||''), ordFulfill:(bruto0.ordFulfill||ex.ordFulfill||''), itemsLocked:(ex.itemsLocked||false), atrib:(ex.atrib&&ex.atrib.fuente? ex.atrib : bruto0.atrib), id:ex.id,
-            creadoAt:(ex.creadoAt||bruto0.creadoAt||''), despachoAt:(ex.despachoAt||bruto0.despachoAt||''), transportadora:(ex.transportadora||bruto0.transportadora||''), trackingUrl:(ex.trackingUrl||bruto0.trackingUrl||'') };
+            creadoAt:(ex.creadoAt||bruto0.creadoAt||''), despachoAt:(ex.despachoAt||bruto0.despachoAt||''), transportadora:(ex.transportadora||bruto0.transportadora||''), trackingUrl:(ex.trackingUrl||bruto0.trackingUrl||''),
+            // 25-nov: facturación electrónica. financialStatus y la dirección de FACTURACIÓN sí se refrescan (no son clasificación de recaudo).
+            // Si alguien la corrigió en Factura electrónica (editadoHub), Shopify no la pisa.
+            financialStatus:(bruto0.financialStatus||ex.financialStatus||''),
+            facturacion:((ex.facturacion&&ex.facturacion.editadoHub)? ex.facturacion : (bruto0.facturacion||ex.facturacion||undefined)) };
+          if(merged.facturacion===undefined) delete merged.facturacion;
           // Excepción ACOTADA al congelado (30-sep, #5216 Addi falló → pagó Bold): si la función resolvió el
           // método por la transacción exitosa y el pedido sigue con el método del primer intento (nadie lo
           // cambió), sin liquidar y sin abonos manuales, se corrige el método. Lo demás financiero no se toca.
@@ -13222,6 +13359,9 @@ Instrucciones de respuesta:
     if(ed&&ed.form) return this.campWaEditPut({...ed, form:{...ed.form, ...patch}});
     return this.campWaSet(patch); }
   // Un ejemplo plausible por variable: Meta exige tantas muestras como {{n}} tenga el cuerpo.
+  // Único destino fuera de la web permitido en campañas: el WhatsApp de ventas (otro número, lo atiende una persona).
+  WA_VENTAS(){ return '573134063259'; }
+  esWaVentas(u){ const n=this.WA_VENTAS(); return new RegExp('^(https:\\/\\/)?(wa\\.me\\/'+n+'|api\\.whatsapp\\.com\\/send\\?phone='+n+')([?&][^\\s]*)?$','i').test(String(u||'')); }
   CAMPWA_EJEMPLOS(){ return ['María','ODA-00123','Coordinadora','1234567890','2 de octubre','Kit Calma','$150.000','10%']; }
   campWaEjemplos(cuerpo){ let n=0; for(const m of String(cuerpo||'').matchAll(/\{\{(\d+)\}\}/g)) n=Math.max(n, Number(m[1])||0);
     const E=this.CAMPWA_EJEMPLOS(); return Array.from({length:n}, (_,i)=>E[i]||('dato '+(i+1))); }
@@ -13277,10 +13417,10 @@ Instrucciones de respuesta:
     if(!nombre){ this.toast('Ponle nombre a la plantilla (ej. promo_2026_09)'); return; }
     if(!cuerpo){ this.toast('Escribe el cuerpo del mensaje'); return; }
     const urls=cuerpo.match(/https?:\/\/[^\s]+|[a-z0-9-]+\.[a-z]{2,}\/[^\s]*/gi)||[];
-    const ajenos=urls.filter(u=>!/oasisdelalma\.co/i.test(u));
-    if(ajenos.length){ this.toast('El cuerpo tiene un link que no es de oasisdelalma.co: '+ajenos[0]); return; }
+    const ajenos=urls.filter(u=>!/^(https?:\/\/)?(www\.)?oasisdelalma\.co(\/|$|\?)/i.test(u) && !this.esWaVentas(u));
+    if(ajenos.length){ this.toast('El cuerpo tiene un link que no es de oasisdelalma.co ni del WhatsApp de ventas: '+ajenos[0]); return; }
     const btnUrl=String(c.btnUrl||'').trim();
-    if(btnUrl && !/^https:\/\/(www\.)?oasisdelalma\.co/i.test(btnUrl)){ this.toast('El botón solo puede apuntar a oasisdelalma.co'); return; }
+    if(btnUrl && !/^https:\/\/(www\.)?oasisdelalma\.co(\/|$|\?)/i.test(btnUrl) && !(this.esWaVentas(btnUrl) && /^https:/i.test(btnUrl))){ this.toast('El botón solo puede apuntar a oasisdelalma.co o a https://wa.me/'+this.WA_VENTAS()); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     const botones=[];
     if(String(c.btnTexto||'').trim() && btnUrl) botones.push({tipo:'URL', texto:String(c.btnTexto).trim(), url:btnUrl});
@@ -14064,10 +14204,10 @@ Instrucciones de respuesta:
   // 5-nov (usuario): estado de facturación en la lista de Ventas. Se facturan SOLO pedidos manuales del Hub con IVA desde
   // SIIGO_DESDE (lo de Shopify lo factura Siigo directo). null = no se factura.
   SIIGO_DESDE='2026-11-01';
-  facturaEstado(v){ if(!v || !this._siigoElegible(v).ok || String(v.fecha||'').slice(0,10)<this.SIIGO_DESDE) return null;
+  facturaEstado(v){ if(!v || !this._siigoElegible(v).ok || (!this._siigoEsShopify(v) && String(v.fecha||'').slice(0,10)<this.SIIGO_DESDE)) return null;
     const sg=v.siigo||null; if(sg && (sg.numero||sg.id)) return { k:'ok', txt:(sg.estado==='externa'? ('Facturada '+(sg.numero||'')+' · en Siigo') : ('Facturada '+(sg.numero||''))), title:(sg.estado==='externa'?('Marcada a mano por '+(sg.marcadaPor||'')+' · factura hecha directo en Siigo'):'Factura electrónica emitida desde el Hub'), bg:'rgba(76,97,73,0.14)', fg:'#4C6149' };
     const fal=this._siigoDatosFaltan(v); if(fal.length) return { k:'falta', txt:'Por facturar · falta datos', title:fal.join(' · '), bg:'rgba(181,80,60,0.12)', fg:'#B5503C' };
-    return { k:'pend', txt:'Por facturar', title:'Lista para facturar: ábrela y usa «Facturar»', bg:'rgba(201,161,90,0.20)', fg:'#7A5E36' }; }
+    return { k:'pend', txt:'Por facturar', title:'Lista para facturar en Finanzas → Factura electrónica', bg:'rgba(201,161,90,0.20)', fg:'#7A5E36' }; }
   // Factura hecha DIRECTO en Siigo (fuera del Hub): se marca con su número. El espejo v.siigo.id hace que el backend responda
   // «ya_facturada» y nunca emita una segunda factura de ese pedido.
   // 5-nov (usuario: «que el Hub lo revise»): las facturas emitidas sin CUFE (DIAN aún procesando) o sin enlace se consultan solas
@@ -14095,13 +14235,154 @@ Instrucciones de respuesta:
     this.setState(st=>({ventas:(st.ventas||[]).map(x=>x.id===v.id?nv:x)}),()=>this.persist()); if(this.cloudOn()) await this.cloudSaveVenta(nv); this.toast('Pedido marcado como facturado en Siigo · '+num); }
   async siigoQuitarExterna(v){ if(!v||!v.siigo||v.siigo.estado!=='externa'||!this.isAdminUser()) return; if(!window.confirm('¿Quitar la marca de factura '+(v.siigo.numero||'')+'? El pedido vuelve a «Por facturar».')) return;
     const {siigo:_s, ...resto}=v; const nv={...resto}; this.setState(st=>({ventas:(st.ventas||[]).map(x=>x.id===v.id?nv:x)}),()=>this.persist()); if(this.cloudOn()) await this.cloudSaveVenta(nv); this.toast('Marca quitada'); }
+  // 25-nov (Andrés): el Hub también factura Shopify (Moship nunca se montó; la última del conector viejo fue FV-2-929 = #5331).
+  // Misma regla que siigo-facturas: Shopify pagado desde #5332 (con IVA salvo cobraIva===false) · manual con cobraIva===true ·
+  // MSVC nunca (esObsequio, tipoPedido ≠ venta, canal MSVC; las muestras formales viven en la tabla msvc, no en ventas).
+  SIIGO_SHOP_DESDE_NUM=5332;
+  _siigoEsShopify(v){ return !!v && (v.origen==='shopify' || !!v.shopifyId); }
+  _siigoEsMsvc(v){ if(!v) return false; if(v.esObsequio===true || v.msvc===true) return true; const t=String(v.tipoPedido||'venta').toLowerCase(); if(t && t!=='venta') return true; return String(v.canal||'').trim().toUpperCase()==='MSVC'; }
+  // Contraentrega/transferencia: solo cuando está pagado (Shopify «paid» o el Hub con el cobro completo). Igual que siigo-facturas.
+  _siigoShopPagada(v){ const st=String(v.financialStatus||'').toLowerCase().trim(); if(['refunded','voided','partially_refunded'].includes(st)) return false; if(st==='paid') return true; const t=this.ventaTotal(v); return t>0 && (Number(v.pagado)||0)>=t-1; }
+  _siigoShopNum(v){ return Number(String((v&&v.pedido)||'').replace(/\D/g,''))||0; }
   _siigoElegible(v){ if(!v) return {ok:false, motivo:'sin pedido'};
-    if(v.origen!=='manual' || v.shopifyId) return {ok:false, motivo:'Los pedidos de Shopify los factura Siigo por su conector'};
-    if(v.cobraIva!==true) return {ok:false, motivo:'Pedido sin IVA: no se factura'};
+    const shop=this._siigoEsShopify(v);
+    if(!shop && v.origen!=='manual') return {ok:false, motivo:'No es un pedido manual ni de Shopify'};
     if(v.cancelada) return {ok:false, motivo:'Pedido cancelado'};
-    if(v.esObsequio || (v.tipoPedido && v.tipoPedido!=='venta')) return {ok:false, motivo:'No es una venta (obsequio o muestra)'};
+    if(this._siigoEsMsvc(v)) return {ok:false, motivo:'Es una muestra u obsequio (MSVC): no se factura'};
+    if(shop){ if(v.cobraIva===false) return {ok:false, motivo:'Pedido sin IVA: no se factura'};
+      if(!(this._siigoShopNum(v)>=this.SIIGO_SHOP_DESDE_NUM)) return {ok:false, motivo:'Shopify anterior al #'+this.SIIGO_SHOP_DESDE_NUM+': ya lo facturó el conector de Siigo'};
+      if(!this._siigoShopPagada(v)) return {ok:false, motivo:'Shopify sin pagar: se factura cuando entre el pago'}; }
+    else if(v.cobraIva!==true) return {ok:false, motivo:'Pedido sin IVA: no se factura'};
     if(!(this.ventaTotal(v)>0)) return {ok:false, motivo:'Total en cero'};
     return {ok:true}; }
+
+  // ===== FINANZAS → FACTURA ELECTRÓNICA (25-nov, Andrés · calcada de Una Mamá Más) =====
+  // Única puerta para emitir. En Ventas y en el detalle solo queda el estado y el PDF. Solo Administrador (siigo-hub lo exige).
+  // El navegador NUNCA llama 'barrer' ni 'programado' (el automático de las 11 p. m. lo corre el cron con el token).
+  // Atraso Shopify #5332–#5442: lista canónica del CSV del 25-nov (111 pedidos, 8 no facturables) → acción explícita, nunca el cron.
+  FE_ATRASO_NO=[5343,5369,5387,5402,5409,5423,5434,5436];
+  feAtrasoNums(){ const out=[]; for(let n=5332;n<=5442;n++) if(!this.FE_ATRASO_NO.includes(n)) out.push(n); return out; }
+  async feCargarPanel(){ if(this._fePanelBusy || !this.isAdminUser()) return; this._fePanelBusy=true; this.setState({fePanelCargando:true});
+    try{ const r=await this._siigoLlamar('panel'); if(r && r.ok) this.setState({fePanel:r, fePanelErr:''}); else this.setState({fePanelErr:(r&&r.error)||'sin respuesta', fePanel:this.state.fePanel||{}}); }
+    finally{ this._fePanelBusy=false; this.setState({fePanelCargando:false}); } }
+  feFilas(){ const out=[]; (this.state.ventas||[]).forEach(v=>{ const fe=this.facturaEstado(v); if(!fe || fe.k==='ok') return;
+      if(v.siigo && (v.siigo.id||v.siigo.numero)) return;
+      const shop=this._siigoEsShopify(v); const fal=this._siigoDatosFaltan(v);
+      const d=shop? this._shopDocFact(v) : null; const doc=shop? d.doc : String(v.cedula||v.nit||'').trim();
+      const cf=shop? d.tipo==='cf' : !String(v.cedula||v.nit||'').replace(/\D/g,'') && !(v.fact&&v.fact.nit);
+      const sinFac=shop && !(v.facturacion && typeof v.facturacion==='object');
+      out.push({ v, shop, fal, lista:!fal.length, cf:(cf && !sinFac), sinFac, doc:(sinFac? 'NIT o cédula: se trae de Shopify' : doc), nombre:(shop? String((v.facturacion&&v.facturacion.nombre)||v.cliente||'') : String(v.cliente||'')), fecha:String(v.fecha||'').slice(0,10), total:this.ventaTotal(v) }); });
+    out.sort((a,b)=> (b.fecha.localeCompare(a.fecha)) || (this._siigoShopNum(b.v)-this._siigoShopNum(a.v)));
+    return out; }
+  feToggleSel(id){ this.setState(s=>{ const m={...(s.feSel||{})}; if(m[id]) delete m[id]; else m[id]=true; return {feSel:m}; }); }
+  feSelListas(filas){ const m={}; const todas=filas.filter(r=>r.lista); const ya=todas.length && todas.every(r=>(this.state.feSel||{})[r.v.id]); if(!ya) todas.forEach(r=>{ m[r.v.id]=true; }); this.setState({feSel:m}); }
+  // Facturar UNO: simula; con errores los muestra en la fila; sin errores pide confirmación y emite (siigoEmitir ya confirma).
+  async feFacturarUno(v){ if(this._siigoBusy){ this.toast('Ya hay una factura en curso, espera un momento'); return; }
+    await this.siigoSimular(v); const sim=(this.state.siigoSim||{})[v.id];
+    if(!sim || !sim.ok || (sim.errores||[]).length){ this.setState(s=>({feAbierta:v.id})); this.toast('No se puede facturar '+(v.pedido||v.ov||'')+': revisa el motivo en la fila'); return; }
+    await this.siigoEmitir(v); this.feCargarPanel(); }
+  _feErrTxt(r){ if(!r) return 'sin respuesta'; const e=(r.errores||[]).map(x=>this._siigoErrTxt(x)).filter(Boolean); if(e.length) return e.join(' · ');
+    const mot={no_existe:'el pedido no existe en el servidor', ya_facturada:'ya estaba facturada '+(r.numero||''), en_curso:'ya se está enviando', sin_cambios:'corrige el pedido antes de reintentar', shopify_ya_facturado_por_conector:'ya la facturó el conector viejo', no_pagada:'Shopify sin pagar', msvc:'es MSVC', sin_iva:'sin IVA'};
+    if(r.resultado==='omitida') return 'omitida: '+(mot[r.motivo]||r.motivo||''); return mot[r.resultado]||r.error||r.resultado||'error'; }
+  // Lote (selección o atraso): SIEMPRE primero simular_lote (no emite). Por tandas de 15 para no pasar el tiempo de la función.
+  async feLoteSimular(ids, titulo){ ids=[...new Set((ids||[]).filter(Boolean))]; if(!ids.length){ this.toast('No hay pedidos para facturar'); return; }
+    if(this.state.feLote && /ando$/.test(this.state.feLote.fase||'')) return;
+    this.setState({feLote:{titulo, fase:'simulando', total:ids.length, hechos:0, ok:[], mal:[], ya:[], emitidas:[], fallidas:[]}});
+    const ok=[], mal=[], ya=[];
+    for(let i=0;i<ids.length;i+=15){ const tanda=ids.slice(i,i+15); const r=await this._siigoLlamar('simular_lote', null, {venta_ids:tanda});
+      const res=(r&&r.ok&&Array.isArray(r.resultados))? r.resultados : tanda.map(id=>({venta_id:id, resultado:'error', error:(r&&r.error)||'sin respuesta'}));
+      res.forEach(x=>{ const v=(this.state.ventas||[]).find(y=>y.id===x.venta_id)||{}; const fila={id:x.venta_id, ped:v.pedido||v.ov||x.venta_id, cliente:(x.cliente&&Array.isArray(x.cliente.name)? x.cliente.name.filter(Boolean).join(' ') : (v.cliente||'')), total:Number(x.total)||this.ventaTotal(v), motivo:''};
+        if(x.resultado==='dry_run' && x.ok && !(x.errores||[]).length) ok.push(fila); else if(x.resultado==='ya_facturada'){ fila.motivo='ya facturada '+(x.numero||''); ya.push(fila); } else { fila.motivo=this._feErrTxt(x); mal.push(fila); } });
+      this.setState(s=>({feLote:{...(s.feLote||{}), hechos:Math.min(ids.length,i+15), ok:ok.slice(), mal:mal.slice(), ya:ya.slice()}})); }
+    this.setState(s=>({feLote:{...(s.feLote||{}), fase:'revisar'}})); }
+  async feLoteEmitir(){ const L=this.state.feLote; if(!L || L.fase!=='revisar' || !L.ok.length) return;
+    const tot=L.ok.reduce((a,x)=>a+(Number(x.total)||0),0);
+    if(!window.confirm('¿Emitir '+L.ok.length+' facturas electrónicas por '+this.fmt(tot)+'?\n\nSolo salen las que simularon sin errores. Se envían a Siigo y a la DIAN y no se pueden borrar desde el Hub.')) return;
+    const ids=L.ok.map(x=>x.id); const em=[], fa=[];
+    this.setState(s=>({feLote:{...(s.feLote||{}), fase:'emitiendo', total:ids.length, hechos:0}}));
+    for(let i=0;i<ids.length;i+=10){ const tanda=ids.slice(i,i+10); const r=await this._siigoLlamar('facturar_lote', null, {venta_ids:tanda});
+      const res=(r&&r.ok&&Array.isArray(r.resultados))? r.resultados : tanda.map(id=>({venta_id:id, resultado:'error', error:(r&&r.error)||'sin respuesta'}));
+      res.forEach(x=>{ const f=L.ok.find(y=>y.id===x.venta_id)||{id:x.venta_id, ped:x.venta_id};
+        if(x.resultado==='emitida' || x.resultado==='ya_facturada') em.push({...f, numero:x.numero||''}); else if(x.resultado==='dry_run') fa.push({...f, motivo:'Siigo está en modo simulación: no se emitió (faltan las 3 llaves)'}); else fa.push({...f, motivo:this._feErrTxt(x)}); });
+      this.setState(s=>({feLote:{...(s.feLote||{}), hechos:Math.min(ids.length,i+10), emitidas:em.slice(), fallidas:fa.slice()}}));
+      if(r && !r.ok && /401|403|Administrador/i.test(String(r.error||''))) break; }
+    this.setState(s=>({feLote:{...(s.feLote||{}), fase:'fin'}, feSel:{}})); this.feCargarPanel(); }
+  feLoteCerrar(){ const L=this.state.feLote; if(L && /ando$/.test(L.fase||'')) return; this.setState({feLote:null}); }
+  feAtrasoSimular(){ const nums=this.feAtrasoNums(); const porNum={}; (this.state.ventas||[]).forEach(v=>{ if(this._siigoEsShopify(v)) porNum[this._siigoShopNum(v)]=v; });
+    const ids=[]; let faltan=0, fuera=0, sinDatos=0; nums.forEach(n=>{ const v=porNum[n]; if(!v){ faltan++; return; } if(v.siigo&&(v.siigo.id||v.siigo.numero)) return; if(!this._siigoElegible(v).ok){ fuera++; return; }
+      // Sin datos de facturación de Shopify saldría a consumidor final por error: esos esperan al sync o a «Corregir datos».
+      if(this._siigoDatosFaltan(v).length){ sinDatos++; return; } ids.push(v.id); });
+    const av=[faltan?faltan+' no están en el Hub':'', fuera?fuera+' ya no son facturables (cancelados o sin pagar)':'', sinDatos?sinDatos+' con «Faltan datos» quedan por fuera hasta corregirlos':''].filter(Boolean).join(' · ');
+    if(!ids.length){ this.toast('No queda nada del atraso listo para facturar'+(av?(' · '+av):'')); return; }
+    if(av) this.toast('Atraso: '+av);
+    this.feLoteSimular(ids, 'Atraso Shopify #5332–#5442'); }
+  // Corregir datos: Shopify → v.facturacion (marcado editadoHub para que el sync no lo pise). NUNCA la dirección de envío.
+  feCorregir(v){ if(!this._siigoEsShopify(v)){ this.verVenta(v); this.toast('Corrige el cliente con «Editar» en el pedido y guarda'); return; }
+    const f=v.facturacion||{}; const d=this._shopDocFact(v);
+    this.setState({feEdit:{ id:v.id, ped:v.pedido||v.ov||'', tipo:d.tipo, doc:(d.doc||'').replace(/-\d$/,''), nombre:String(f.nombre||v.cliente||''), correo:String(f.correo||v.correo||''), ciudad:String(f.ciudad||''), direccion:String(f.direccion||''), envioTxt:[v.cliente, v.ciudad, v.direccion].filter(Boolean).join(' · ') }}); }
+  feEditInput(e){ const t=e&&e.target; if(!t||!t.name) return; const val=t.value; this.setState(s=>({feEdit:{...(s.feEdit||{}), [t.name]:val}})); }
+  async feEditGuardar(){ const d=this.state.feEdit; if(!d) return; const v=(this.state.ventas||[]).find(x=>x.id===d.id); if(!v){ this.setState({feEdit:null}); return; }
+    const num=String(d.doc||'').replace(/\D/g,''); let company='';
+    if(d.tipo==='nit'){ if(num.length!==9){ this.toast('El NIT debe tener 9 dígitos (sin el dígito de verificación)'); return; } company=num+'-'+this._dvNit(num); }
+    else if(d.tipo==='cc'){ if(num.length<5||num.length>10){ this.toast('La cédula debe tener entre 5 y 10 dígitos'); return; } if(num.length===9 && /^[89]/.test(num)){ this.toast('Ese número parece un NIT: elige «NIT empresa»'); return; } company=num; }
+    if(!String(d.nombre||'').trim()){ this.toast('Escribe la razón social o el nombre'); return; }
+    if(d.correo && !/@/.test(d.correo)){ this.toast('El correo no es válido'); return; }
+    const fac={ ...(v.facturacion||{}), company, documento:company, nombre:String(d.nombre).trim(), correo:String(d.correo||'').trim(), ciudad:String(d.ciudad||'').trim(), direccion:String(d.direccion||'').trim(), editadoHub:true, editadoPor:(this.casoUserName?this.casoUserName():''), editadoAt:new Date().toISOString() };
+    const nv={...v, facturacion:fac}; this.setState(st=>({ventas:(st.ventas||[]).map(x=>x.id===v.id?nv:x), feEdit:null}),()=>this.persist()); if(this.cloudOn()) await this.cloudSaveVenta(nv);
+    this.toast('Datos de facturación guardados · '+(d.tipo==='cf'?'consumidor final':(d.tipo==='nit'?'NIT '+company:'CC '+company))); }
+  irFacturaElectronica(v){ this.setState({modal:null, module:'finanzas', sub:'finfacturae', feQ:(v&&(v.pedido||v.ov))||''}); }
+  _buildFe(out, st){ const adm=this.isAdminUser(); out.feAdm=adm; if(!adm) return;
+    if(!st.fePanel && !this._fePanelBusy && !st.fePanelErr) setTimeout(()=>this.feCargarPanel(),0);
+    const P=st.fePanel||{}; const D=(P.documento&&!P.documento.error)? P.documento : null; const M=P.facturas_mes||null;
+    const filasAll=this.feFilas(); const q=this._feNorm(st.feQ||'');
+    const filasQ=q? filasAll.filter(r=>this._feNorm([r.v.pedido,r.v.ov,r.nombre,r.v.cliente,r.doc].join(' ')).includes(q)) : filasAll;
+    const fil=st.feFiltro||'todas'; const filas=filasQ.filter(r=> fil==='listas'? r.lista : (fil==='faltan'? !r.lista : true));
+    const nL=filasQ.filter(r=>r.lista).length, nF=filasQ.length-nL;
+    out.feK1=M? String(M.n) : '—'; out.feK1Sub=M? (this.fmt(M.total)+' facturado este mes') : (st.fePanelErr? 'sin conexión con Siigo' : 'consultando…');
+    out.feK2=String(filasAll.length); out.feK2Sub=this.fmt(filasAll.reduce((a,r)=>a+r.total,0))+' en ventas';
+    out.feK3=(D&&D.siguiente)||'—'; out.feK3Sub=(D&&D.resolucion)? ('Resolución '+D.resolucion) : (D? 'Resolución sin dato en Siigo' : (P.documento&&P.documento.error? 'Siigo: '+P.documento.error : '—'));
+    out.feK4=(D&&D.disponibles!=null)? String(D.disponibles) : '—';
+    out.feK4Sub=D? ([ (D.desde&&D.hasta)? (D.desde+'–'+D.hasta) : '', D.vence? ('vence '+this.fmtFecha(String(D.vence).slice(0,10))) : '' ].filter(Boolean).join(' · ') || 'rango sin dato en Siigo') : '—';
+    { const pocos=D && D.disponibles!=null && D.disponibles<50; const ven=D && D.vence && (Date.parse(String(D.vence).slice(0,10))-Date.now())<45*86400000; out.feK4Col=(pocos||ven)? '#B5503C' : 'var(--text-muted)'; }
+    out.fePanelErr=st.fePanelErr||''; out.feHayPanelErr=!!st.fePanelErr; out.onFeRecargar=()=>{ this.setState({fePanelErr:''}); this.feCargarPanel(); }; out.fePanelCargando=!!st.fePanelCargando;
+    out.feAutoTxt=(P.auto&&P.auto.activo)? ('Automático encendido: los pedidos desde el '+this.fmtFecha(P.auto.desde||'')+' se facturan solos el día hábil siguiente a las 11:00 p. m. (viernes → lunes). El último día del mes, todo lo del mes desde las 8:00 p. m. Contraentrega, cuando se paga.') : 'Automático apagado: por ahora se factura desde esta pantalla. Al encenderlo, los pedidos nuevos se facturan solos el día hábil siguiente a las 11:00 p. m. (viernes → lunes), el último día del mes todo lo del mes desde las 8:00 p. m., y contraentrega cuando se paga. El atraso no entra.';
+    out.feDryTxt=P.dry_run===true? 'Siigo está en modo simulación: «Facturar» no emite nada hasta activar las 3 llaves.' : ''; out.feHayDry=!!out.feDryTxt;
+    out.feQ=st.feQ||''; out.onFeQ=(e)=>this.setState({feQ:e.target.value});
+    out.feChips=[['todas','Todas',filasQ.length],['listas','Listas',nL],['faltan','Faltan datos',nF]].map(([k,l,n])=>({ txt:l+' · '+n, on:()=>this.setState({feFiltro:k}), estilo: fil===k? 'background:var(--brand-ink);color:#fff;border-color:var(--brand-ink);' : 'background:transparent;color:var(--text-body);border-color:var(--border-strong);' }));
+    const sel=st.feSel||{}; const busy=st.siigoBusy; const sim=st.siigoSim||{};
+    out.feFilas=filas.slice(0,300).map(r=>{ const v=r.v; const s=sim[v.id]; const abierta=st.feAbierta===v.id && s && (!s.ok || (s.errores||[]).length);
+      return { id:v.id, ped:(r.shop? (v.pedido||'') : (v.ov||'')), sub:(r.shop? ('Shopify · '+(v.ov||'')) : ('Manual · '+(v.canal||''))), fecha:this.fmtFecha(r.fecha), cliente:r.nombre||'—',
+        doc:(r.cf? 'Consumidor final' : r.doc), producto:((v.items||[]).filter(it=>Number(it.valorUnit)>0).map(it=>it.producto||it.productoCodigo).slice(0,2).join(', ')+(((v.items||[]).length>2)?' …':'')), valor:this.fmt(r.total),
+        pill:(r.lista? ('✓ Lista'+(r.sinFac?' · datos de Shopify al facturar':(r.cf?' · consumidor final':''))) : 'Faltan datos'), pillEstilo:(r.lista? 'background:rgba(76,97,73,0.14);color:#4C6149;' : 'background:rgba(181,80,60,0.12);color:#B5503C;'),
+        faltan:r.fal.join(' · '), hayFaltan:!r.lista, chk:!!sel[v.id], onChk:()=>this.feToggleSel(v.id), puedeChk:r.lista,
+        corregirShow:(!r.lista || r.cf || r.sinFac), onCorregir:()=>this.feCorregir(v), facturarTxt:(busy===v.id? 'Consultando…' : 'Facturar'), onFacturar:()=>this.feFacturarUno(v), facturarOff:(!!busy || !r.lista), facturarOp:(!!busy || !r.lista)? '0.4' : '1', facturarCur:(!!busy || !r.lista)? 'not-allowed' : 'pointer',
+        onExterna:()=>this.siigoMarcarExterna(v), onVer:()=>this.verVenta(v),
+        errShow:!!abierta, errTxt:abierta? ((s.error?s.error+' · ':'')+(s.errores||[]).map(e=>this._siigoErrTxt(e)).join(' · ')) : '' }; });
+    out.feVacio=!filas.length; out.feMas=filas.length>300? (filas.length-300) : 0; out.feHayMas=filas.length>300;
+    const listas=filas.filter(r=>r.lista); out.feTodasChk=listas.length>0 && listas.every(r=>sel[r.v.id]); out.onFeTodas=()=>this.feSelListas(filas);
+    const nSel=Object.keys(sel).filter(id=>filasAll.some(r=>r.v.id===id&&r.lista)).length; out.feNSel=nSel; out.feHaySel=nSel>0;
+    out.onFeLoteSel=()=>this.feLoteSimular(Object.keys(sel).filter(id=>filasAll.some(r=>r.v.id===id&&r.lista)), nSel+' pedidos seleccionados'); out.onFeLimpiarSel=()=>this.setState({feSel:{}});
+    // atraso
+    { const nums=this.feAtrasoNums(); const porNum={}; (st.ventas||[]).forEach(v=>{ if(this._siigoEsShopify(v)) porNum[this._siigoShopNum(v)]=v; });
+      let pend=0, hechas=0, sinHub=0, val=0, sinD=0; nums.forEach(n=>{ const v=porNum[n]; if(!v){ sinHub++; return; } if(v.siigo&&(v.siigo.id||v.siigo.numero)){ hechas++; return; } if(this._siigoElegible(v).ok){ pend++; val+=this.ventaTotal(v); if(this._siigoDatosFaltan(v).length) sinD++; } });
+      out.feAtrasoShow=pend>0; out.feAtrasoTxt=pend+' de '+nums.length+' pedidos por '+this.fmt(val)+(hechas?(' · '+hechas+' ya facturados'):'')+(sinHub?(' · '+sinHub+' no están en el Hub'):'')+(sinD?(' · '+sinD+' con «Faltan datos»'):'');
+      out.onFeAtraso=()=>this.feAtrasoSimular(); }
+    // lote
+    const L=st.feLote; out.feLoteShow=!!L;
+    if(L){ out.feLoteTitulo=L.titulo; out.feLoteSimulando=L.fase==='simulando'; out.feLoteRevisar=L.fase==='revisar'; out.feLoteEmitiendo=L.fase==='emitiendo'; out.feLoteFin=L.fase==='fin';
+      out.feLoteProg=L.hechos+' de '+L.total; out.feLoteNOk=L.ok.length; out.feLoteNMal=L.mal.length; out.feLoteNYa=L.ya.length;
+      out.feLoteTotOk=this.fmt(L.ok.reduce((a,x)=>a+(Number(x.total)||0),0)); out.feLoteHayOk=L.ok.length>0;
+      const fx=(x)=>({ ped:x.ped, cliente:x.cliente||'', valor:this.fmt(x.total||0), motivo:x.motivo||'', numero:x.numero||'' });
+      out.feLoteOk=L.ok.slice(0,200).map(fx); out.feLoteMal=L.mal.map(fx); out.feLoteHayMal=L.mal.length>0; out.feLoteYa=L.ya.map(fx); out.feLoteHayYa=L.ya.length>0;
+      out.feLoteEm=(L.emitidas||[]).map(fx); out.feLoteFa=(L.fallidas||[]).map(fx); out.feLoteNEm=(L.emitidas||[]).length; out.feLoteNFa=(L.fallidas||[]).length; out.feLoteHayFa=(L.fallidas||[]).length>0;
+      out.onFeLoteEmitir=()=>this.feLoteEmitir(); out.onFeLoteCerrar=()=>this.feLoteCerrar(); out.feLoteCerrable=!/ando$/.test(L.fase||''); }
+    // corregir datos
+    const E=st.feEdit; out.feEditShow=!!E;
+    if(E){ out.feEdit=E; out.feEditTipos=[['nit','NIT empresa'],['cc','Cédula'],['cf','Consumidor final']].map(([k,l])=>({ k, l, sel:E.tipo===k, on:()=>this.setState(s=>({feEdit:{...s.feEdit, tipo:k}})), estilo:E.tipo===k? 'background:var(--brand-ink);color:#fff;border-color:var(--brand-ink);' : 'background:transparent;color:var(--text-body);border-color:var(--border-strong);' }));
+      out.feEditPideDoc=E.tipo!=='cf'; const n=String(E.doc||'').replace(/\D/g,''); out.feEditDv=(E.tipo==='nit' && n.length===9)? ('DV '+this._dvNit(n)) : '';
+      out.feEditNombreLbl=E.tipo==='nit'? 'Razón social' : 'Nombre completo';
+      out.onFeEditInput=(e)=>this.feEditInput(e); out.onFeEditGuardar=()=>this.feEditGuardar(); out.onFeEditCerrar=()=>this.setState({feEdit:null}); }
+  }
   // ===== FICHAS DE CLIENTE (4-nov) · B2B, tiendas y distribuidores: contacto + datos del RUT para facturación electrónica =====
   // Viven en la tabla clientes_fact (id, data). Se llenan una vez (a mano o leyendo el PDF del RUT con la función rut-leer) y el
   // pedido toma de ahí el cliente; al guardar el pedido queda una COPIA de los datos fiscales en v.fact (lo que se facturó).
@@ -14180,7 +14461,33 @@ Instrucciones de respuesta:
         return {fichaDraft:d, fichaBusy:false, fichaAvisos:['RUT leído: revisa los datos antes de guardar.'].concat(data.avisos||[]).concat(rutPath?[]:['El PDF no se pudo guardar (los datos sí se leyeron).'])}; });
     }catch(err){ this.setState({fichaBusy:false, fichaAvisos:['No se pudo leer el RUT: '+((err&&err.message)||err)+'. Puedes llenar los datos a mano.']}); } }
   async fichaVerRut(){ const d=this.state.fichaDraft; const sb=this._sbClient(); if(!d||!d.rutPath||!sb) return; try{ const {data,error}=await sb.storage.from('adjuntos').createSignedUrl(d.rutPath, 600); if(error) throw error; window.open(data.signedUrl,'_blank'); }catch(e){ this.toast('No se pudo abrir el RUT: '+((e&&e.message)||e)); } }
-  _siigoDatosFaltan(v){ const out=[];
+  // Documento de la dirección de FACTURACIÓN de Shopify (company). Igual que parseDocEnTexto del backend. Nunca la de envío.
+  _shopDocFact(v){ const f=(v&&v.facturacion)||{}; const s=String(f.company||f.documento||f.nit||'').trim(); if(!s) return {tipo:'cf', doc:''};
+    const m=s.match(/(\d{3}\.?\d{3}\.?\d{3})\s*[-–—]\s*(\d)/); if(m){ const b=m[1].replace(/\D/g,''); return {tipo:'nit', doc:b+'-'+this._dvNit(b)}; }
+    const d=s.replace(/\D/g,''); if(d.length===10 && /^[89]/.test(d) && this._dvNit(d.slice(0,9))===d[9]) return {tipo:'nit', doc:d.slice(0,9)+'-'+d[9]};
+    if(d.length===9 && /^[89]/.test(d)) return {tipo:'nit', doc:d+'-'+this._dvNit(d)};
+    if(d.length>=5 && d.length<=10) return {tipo:'cc', doc:d}; return {tipo:'cf', doc:''}; }
+  _feNorm(x){ return String(x==null?'':x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' '); }
+  // Medio de pago con código en Siigo (lista real de siigo_config.pagos, que trae el panel). Mismos alias que idPagoDe.
+  // Contraentrega: en el Hub llega como la transportadora que recauda (Coordinadora, Interrapidísimo) → forma de pago «Contraentrega» en Siigo.
+  _feEsContra(m){ return /^(coordinadora|interrapid|inter rapid|cash on delivery|contra ?-?entrega|pago contra ?entrega)|\bcod\b/.test(this._feNorm(m)); }
+  _fePagoTxt(m){ return this._feEsContra(m)? ('Contraentrega («'+m+'»): falta crear la forma de pago «Contraentrega» en Siigo') : ('El medio de pago «'+m+'» no tiene código en Siigo (siigo_config.pagos)'); }
+  _fePagoOk(metodo){ const P=((this.state.fePanel||{}).pagos)||null; if(!P) return true; const n=this._feNorm(metodo); if(!n) return true;
+    if(this._feEsContra(metodo)) return P.some(k=>/contra\s*-?\s*entrega/.test(this._feNorm(k)));
+    if(P.some(k=>this._feNorm(k)===n)) return true;
+    const al=[[/^addi/,'addi'],[/^bold/,'bold'],[/^bank deposit/,'bank deposit'],[/^transferencia/,'transferencia'],[/^efectivo/,'efectivo']];
+    for(const [re,k] of al){ if(re.test(n) && P.some(x=>this._feNorm(x).startsWith(k))) return true; } return false; }
+  _siigoDatosFaltanShop(v){ const out=[]; const f=v.facturacion;
+    // 25-nov (Andrés: que no se pare): sin facturación guardada, siigo-facturas la trae sola de Shopify al facturar (o la noche
+    // del automático). No bloquea aquí; si Shopify no responde, el servidor la bloquea y el motivo sale en la fila.
+    if(!f || typeof f!=='object') { const met0=String(v.metodoPago||'').trim(); if(met0 && !this._fePagoOk(met0)) out.push(this._fePagoTxt(met0)); return out; }
+    const d=this._shopDocFact(v); const P=this.state.fePanel||{};
+    if(d.tipo!=='cf'){ const c=String(f.ciudad||v.ciudad||'').trim(); if(!c) out.push('Sin ciudad de facturación');
+      else if(Array.isArray(P.dane) && !P.dane.includes(this._feNorm(c))) out.push('Ciudad «'+c+'» sin código DANE: si el cliente no existe ya en Siigo, no se puede crear');
+      if(!String(f.direccion||v.direccion||'').trim()) out.push('Sin dirección de facturación'); }
+    const met=String(v.metodoPago||'').trim(); if(met && !this._fePagoOk(met)) out.push(this._fePagoTxt(met));
+    return out; }
+  _siigoDatosFaltan(v){ if(this._siigoEsShopify(v)) return this._siigoDatosFaltanShop(v); const out=[];
     // 4-nov: con ficha de cliente (v.fact o la ficha vinculada) se valida contra los datos del RUT.
     { const fv=this._fichaDePedido(v); const ff=fv||(v.fact&&v.fact.nit?v.fact:null);
       if(ff){ this.fichaFaltan(ff).forEach(x=>out.push('Ficha del cliente: falta '+x)); if((Number(v.pagado)||0)>0 && !String(v.metodoPago||v.abonoMetodo||'').trim()) out.push('Pagado sin método de pago'); return out; }
@@ -14193,8 +14500,8 @@ Instrucciones de respuesta:
     if(doc && !String(v.direccion||'').trim()) out.push('Sin dirección (Siigo la pide para crear el cliente)');
     if((Number(v.pagado)||0)>0 && !String(v.metodoPago||v.abonoMetodo||'').trim()) out.push('Pagado sin método de pago');
     return out; }
-  async _siigoLlamar(modo, ventaId){ const sb=this._sbClient(); if(!sb || !this.cloudOn()) return {ok:false, error:'Sin conexión a la nube'};
-    try{ const {data, error}=await sb.functions.invoke('siigo-hub', { body:{ modo, venta_id:ventaId } });
+  async _siigoLlamar(modo, ventaId, extra){ const sb=this._sbClient(); if(!sb || !this.cloudOn()) return {ok:false, error:'Sin conexión a la nube'};
+    try{ const {data, error}=await sb.functions.invoke('siigo-hub', { body:{ modo, ...(ventaId?{venta_id:ventaId}:{}), ...(extra||{}) } });
       if(data && typeof data==='object' && (data.ok!==undefined || data.error)) return data;
       let msg=''; if(error){ try{ const ctx=error.context; if(ctx && typeof ctx.json==='function'){ const j=await ctx.json(); if(j && typeof j==='object') return j; } }catch(_){} msg=error.message||''; }
       return {ok:false, error:(msg||'sin respuesta de la función siigo-hub')+(/not found|404/i.test(msg)?' · ¿ya se desplegó siigo-hub?':'')}; }
@@ -18471,7 +18778,7 @@ Instrucciones de respuesta:
     out.vP_mez=subVis('produccion','prodmez'); out.vP_pt=subVis('produccion','prodpt');
     out.vI_resumen=subVis('inventario','resumen'); out.vI_items=subVis('inventario','items'); out.vI_mp=out.vI_items; out.vI_ins=out.vI_items; out.vI_pt=out.vI_items; out.vI_conteos=subVis('inventario','conteos'); out.vI_consig=subVis('inventario','consig'); out.vI_kardex=subVis('inventario','kardex'); out.vC_reorden=subVis('compras','reorden'); out.vX_bandeja=subVis('conversaciones','bandeja'); out.vX_agente=subVis('conversaciones','agente'); out.canConversaciones=out.vX_bandeja||out.vX_agente;
     out.vV_reg=subVis('ventas','registro'); out.vV_base=subVis('ventas','base'); out.vV_cot=subVis('ventas','cotizador'); out.vV_carritos=false; out.vV_svc=subVis('ventas','servicio');
-    out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_bold=subVis('finanzas','finbold'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos');
+    out.vF_resumen=subVis('finanzas','finresumen'); out.vF_pagar=subVis('finanzas','finpagar'); out.vF_cobrar=subVis('finanzas','fincobrar'); out.vF_recaudos=subVis('finanzas','finrecaudos'); out.vF_bold=subVis('finanzas','finbold'); out.vF_caja=subVis('finanzas','fincaja'); out.vF_gastos=subVis('finanzas','gastos'); out.vF_pyg=subVis('finanzas','pyg'); out.vF_imp=subVis('finanzas','impuestos'); out.vF_fe=this.isAdminUser();
     // un módulo se muestra solo si tiene al menos un subgrupo visible
     out.vM_resumen=subVis('marketing','mktresumen'); out.vM_wa=subVis('marketing','mktwa'); out.vM_ugc=subVis('marketing','mktugc'); out.vM_camp=false; out.vM_recom=false; out.vM_creativos=false; out.vM_publicos=false; out.vM_conexion=subVis('marketing','mktconexion');
     out.canCompras=out.vC_resumen||out.vC_prov||out.vC_mat||out.vC_svc||out.vC_ord||out.vC_reorden; out.canDesarrollo=out.vD_mez||out.vD_prod||out.vD_kits; out.canProduccion=out.vP_mez||out.vP_pt; out.canInventario=out.vI_resumen||out.vI_mp||out.vI_ins||out.vI_pt||out.vI_consig||out.vI_kardex; out.canVentas=out.vV_reg||out.vV_base||out.vV_cot||out.vV_carritos||out.vV_svc; out.canFinanzas=out.vF_resumen||out.vF_pagar||out.vF_cobrar||out.vF_recaudos||out.vF_caja||out.vF_gastos||out.vF_pyg||out.vF_imp; out.canMarketing=out.vM_resumen||out.vM_camp||out.vM_recom||out.vM_creativos||out.vM_publicos||out.vM_conexion;
@@ -18760,8 +19067,8 @@ Instrucciones de respuesta:
     out.finNavBg = onFin? 'rgba(167,134,89,0.18)':'transparent';
     out.finNavColor = onFin? '#D9BE92':'rgba(251,248,242,0.85)';
     const subStyF=(k)=>{ const a=onFin&&st.sub===k; return { c:a?'#F3E9D8':'rgba(251,248,242,0.62)', bg:a?'rgba(167,134,89,0.14)':'transparent', b:a?'var(--brand-primary)':'transparent' }; };
-    out.subFinResumen=subStyF('finresumen'); out.subFinPagar=subStyF('finpagar'); out.subFinCobrar=subStyF('fincobrar'); out.subFinRecaudos=subStyF('finrecaudos'); out.subFinBold=subStyF('finbold'); out.subFinCaja=subStyF('fincaja'); out.subFinGastos=subStyF('fingastos'); out.subFinPyg=subStyF('finpyg'); out.subFinImp=subStyF('finimpuestos');
-    out.subnavFin={ resumen:()=>this.setState({module:'finanzas',sub:'finresumen'}), pagar:()=>this.setState({module:'finanzas',sub:'finpagar'}), cobrar:()=>this.setState({module:'finanzas',sub:'fincobrar'}), recaudos:()=>this.setState({module:'finanzas',sub:'finrecaudos'}), bold:()=>{ this.setState({module:'finanzas',sub:'finbold'}); this.cloudLoadBold(); }, caja:()=>this.setState({module:'finanzas',sub:'fincaja'}), gastos:()=>this.setState({module:'finanzas',sub:'fingastos'}), pyg:()=>this.setState({module:'finanzas',sub:'finpyg'}), impuestos:()=>this.setState({module:'finanzas',sub:'finimpuestos'}) };
+    out.subFinResumen=subStyF('finresumen'); out.subFinPagar=subStyF('finpagar'); out.subFinCobrar=subStyF('fincobrar'); out.subFinRecaudos=subStyF('finrecaudos'); out.subFinBold=subStyF('finbold'); out.subFinCaja=subStyF('fincaja'); out.subFinGastos=subStyF('fingastos'); out.subFinPyg=subStyF('finpyg'); out.subFinImp=subStyF('finimpuestos'); out.subFinFe=subStyF('finfacturae');
+    out.subnavFin={ resumen:()=>this.setState({module:'finanzas',sub:'finresumen'}), pagar:()=>this.setState({module:'finanzas',sub:'finpagar'}), cobrar:()=>this.setState({module:'finanzas',sub:'fincobrar'}), recaudos:()=>this.setState({module:'finanzas',sub:'finrecaudos'}), bold:()=>{ this.setState({module:'finanzas',sub:'finbold'}); this.cloudLoadBold(); }, caja:()=>this.setState({module:'finanzas',sub:'fincaja'}), gastos:()=>this.setState({module:'finanzas',sub:'fingastos'}), pyg:()=>this.setState({module:'finanzas',sub:'finpyg'}), impuestos:()=>this.setState({module:'finanzas',sub:'finimpuestos'}), facturae:()=>{ this.setState({module:'finanzas',sub:'finfacturae'}); this.feCargarPanel(); } };
     const finAcc = this._modLevel(acc,'finanzas');
     out.canWriteFin = finAcc==='write';
 
@@ -18930,7 +19237,7 @@ Instrucciones de respuesta:
       const tItems=(T&&T.items)||[];
       const estMeta=(s)=>s==='APPROVED'?{bg:'rgba(98,123,96,0.16)',fg:'#4C6149',l:'Aprobada'}:(s==='REJECTED'?{bg:'rgba(181,80,60,0.14)',fg:'#8E3F2F',l:'Rechazada'}:{bg:'rgba(196,146,63,0.16)',fg:'#8A6522',l:(s||'—')});
       const _esAdmin=this.isAdminUser();
-      out.canalesPlantillas=tItems.map(t=>{ const em=estMeta(t.estado); const ext=(t.externos||[]);
+      out.canalesPlantillas=tItems.map(t=>{ const em=estMeta(t.estado); const _waV=(t.botones||[]).some(b=>this.esWaVentas(b.url)); const ext=(t.externos||[]).filter(h=>!(_waV && (h==='wa.me'||h==='api.whatsapp.com')));
         const prot=this.canTplProtegida(t.nombre); const pidiendo=(st.canTplDel===t.nombre); const borrando=(st.canTplBorrando===t.nombre);
         return { nombre:t.nombre, meta:(t.categoria||'')+' · '+(t.idioma||''), estado:em.l, estBg:em.bg, estFg:em.fg,
                  hayExternos:ext.length>0, externos:ext.join(', '), borde: (pidiendo? 'rgba(181,80,60,0.6)' : (ext.length? 'rgba(181,80,60,0.3)':'var(--border-subtle)')),
@@ -19534,6 +19841,7 @@ Instrucciones de respuesta:
     out.showFinGastos = onFin && st.sub==='fingastos';
     out.showFinPyg = onFin && st.sub==='finpyg';
     out.showFinImp = onFin && st.sub==='finimpuestos';
+    out.showFinFe = onFin && st.sub==='finfacturae' && this.isAdminUser();
     out.showMktResumen = onMkt && st.sub==='mktresumen';
     out.showMktCampanas = false;
     out.showMktRecom = false;
@@ -19572,6 +19880,7 @@ Instrucciones de respuesta:
       out.coordCiudadesOptsU=(st.coordCiudades||[]).map(c=>c.label);
       out.ugcVacio=!rows.length; out.ugcVacioTxt=all.length?'Ningún creador coincide con el filtro.':'Todavía no hay creadores. Agrega el primero con «Nuevo creador».'; }
     if(out.showMktWa) this._buildCampWa(out, st);
+    if(out.showFinFe) this._buildFe(out, st);
     out.showPronto = !onComp && !onDes && !onProd && !onInv && !onVen && !onFin && !onMkt && !onConv && st.module!=='logistica' && st.module!=='admin' && st.module!=='inicio' && st.module!=='informes' && st.module!=='soporte';
     if(st.module==='soporte'){ out.crumb='ODA Labs'; out.pageTitle='Soporte ODA'; }
     else if(st.module==='inicio'){ out.crumb='Hub Intelligence'; out.pageTitle='Inicio'; }
@@ -19583,7 +19892,7 @@ Instrucciones de respuesta:
     else if(onInv){ out.crumb='Inventario'; out.pageTitle={resumen:'Resumen de inventario',items:'Existencias',mp:'Existencias',insumos:'Existencias',pt:'Existencias',kardex:'Kardex de movimientos'}[st.sub]||'Inventario'; }
     else if(onConv){ out.crumb='Conversaciones'; out.pageTitle= st.sub==='agente'?'Agente IA · configuración':(st.sub==='informe'?'Informe del chatbot':(st.sub==='canales'?'Canales · estado de conexión':'Bandeja de conversaciones')); }
     else if(onVen){ out.crumb='Ventas'; out.pageTitle={registro:'Ventas',base:'Base de datos · análisis',listado:'Listado de pedidos',pedidos:'Pedidos manuales',cotizador:'Leads',carritos:'Carritos abandonados',servicio:'Servicio al cliente'}[st.sub]||'Ventas'; }
-    else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',finbold:'Bold · pagos y conciliación',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones'}[st.sub]||'Finanzas'; }
+    else if(onFin){ out.crumb='Finanzas'; out.pageTitle={finresumen:'Tablero financiero',finpagar:'Cuentas por pagar',fincobrar:'Cuentas por cobrar',finrecaudos:'Recaudos por cruzar',finbold:'Bold · pagos y conciliación',fincaja:'Caja y bancos',fingastos:'Gastos',finpyg:'Estado de resultados',finimpuestos:'IVA y retenciones',finfacturae:'Factura electrónica'}[st.sub]||'Finanzas'; }
     else if(st.module==='admin'){ out.crumb='Administración'; out.pageTitle = st.sub==='tablero' ? 'Tablero · reglas de negocio' : 'Usuarios y permisos'; }
     else if(onMkt){ out.crumb=(st.sub==='mktugc')?'Marketing · UGC':(st.sub==='mktwa')?'Marketing · WhatsApp':'Marketing · Meta Ads'; out.pageTitle={mktresumen:'Resumen de rendimiento',mktugc:'UGC · creadores de contenido',mktwa:'Campañas de WhatsApp',mktcampanas:'Campañas',mktrecom:'Recomendaciones IA',mktcreativos:'Creativos y anuncios',mktpublicos:'Públicos y audiencias',mktconexion:'Conexión de la cuenta Meta'}[st.sub]||'Marketing'; }
     else { out.crumb='Hub Intelligence'; out.pageTitle=modNames[st.module]||'Módulo'; }
@@ -20859,7 +21168,7 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
     const nombreItem=(it)=>{ const c=it.productoCodigo||it.referencia; const p=(this.state.productos||[]).find(x=>x.codigo===c); const k=(this.state.kits||[]).find(x=>x.codigo===c); return p?p.nombre:(k?k.nombre:(this.fixTxt(it.producto)||it.referencia||'—')); };
     const mapV=(v)=>{ const cs=this.canalStyle(v.canal); const ep=this.ventaEstadoPago(v); const its=v.items||[]; const total=this.ventaTotal(v); const saldo=this.ventaSaldo(v); const metOpts=this.metodoOptsVenta(v, metodoBaseOpts);
       const _probs=this.ventaProblemas(v);
-      return {...v, tieneProblema:_probs.length>0, problemaTxt:(_probs.length? (_probs.map(p=>p.sku+': '+p.motivo).join(' · ')) : ''), cliente:this.ventaClienteTxt(v), fechaFmt:this.fmtFecha(v.fecha), canalBg:cs.bg, canalFg:cs.fg, productoResumen: its.length? (nombreItem(its[0]) + (its.length>1? ('  +'+(its.length-1)):'')) : '—', unidades:this.ventaUnidades(v), totalFmt:this.fmt(Math.round(total)), netoFmt:this.fmt(Math.round(this.ventaNeta(v))), ivaFmt:this.fmt(Math.round(this.ventaIvaTotal(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.max(0,Math.round(saldo))), saldoPos:saldo>0, hayExc:saldo<-0.5, excFmt:this.fmt(Math.round(-saldo)), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), pagada:(ep.key==='pagada'), editable:(!v.cancelada && ep.key!=='pagada'), origenLabel:this.origenLabel(v.origen), metodoPagoTxt:v.metodoPago||'—', metodoOptions:metOpts, onSetMetodo:(e)=>this.setVentaMetodo(v.id, e.target.value), necesitaBanco:this.metodoNecesitaBanco(v.metodoPago), cuentaRecaudo:v.cuentaRecaudo||'', hayCuentaRec:!!v.cuentaRecaudo, cuentasOptions:this.cuentasParaMetodo(v.metodoPago), onSetCuenta:(e)=>this.setVentaCuenta(v.id, e.target.value), stopRow:(e)=>{ e.stopPropagation(); }, guiaTxt:v.guia||'—', ciudadTxt:this.titleCase(v.ciudad)||'—', pedidoTxt:v.pedido||'—', ...((fe)=>{ const g=v.siigo||{}; const puedePdf=!!(fe&&fe.k==='ok'&&g.id&&!String(g.id).startsWith('externa:')); return { facturaShow:!!fe && !puedePdf, facturaLink:!!puedePdf, facturaUrl:g.public_url||'', facturaTxt:(fe?fe.txt:''), facturaTitle:(fe?(puedePdf?'Descargar el PDF de la factura · '+fe.title:fe.title):''), facturaEstilo:(fe?('background:'+fe.bg+';color:'+fe.fg+';'):''), onFacturaPdf:(e)=>{ if(e)e.stopPropagation(); this.siigoDescargarPdf(v); }, facturarShow:!!(fe&&fe.k==='pend'&&this.isAdminUser()), facturarTxt:(this.state.siigoBusy===v.id?'Facturando…':'Facturar'), onFacturar:(e)=>{ if(e)e.stopPropagation(); this.siigoFacturarRapido(v); } }; })(this.facturaEstado(v)), waTiene:false /* 29-oct: botón WhatsApp de la fila oculto a pedido del usuario; para volver: !!String(v.celular||'').replace(/\D/g,'') */, waMenuOpen:this.state.waMenuId===v.id, onWaToggle:(e)=>{ if(e)e.stopPropagation(); this.setState(s=>({waMenuId:(s.waMenuId===v.id?null:v.id)})); }, waOpts:(this.state.waMenuId===v.id? Object.entries(this.waTemplates()).map(([key,t])=>({label:t.label, enviado:this.waYaEnviado(v,key), onClick:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); this.waSendManual(v,key); }})) : []), onWaCerrar:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); }, onWaChat:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); const to=String(v.celular||'').replace(/\D/g,''); window.open('https://wa.me/'+(to.length===10?'57'+to:to),'_blank'); }, onVer:()=>this.verVenta(v), onEdit:()=>this.editVenta(v), esManual:(v.origen==='manual'), onDescargar:(e)=>{ if(e)e.stopPropagation(); this.descargarPedido(v); }, onPreview:(e)=>{ if(e)e.stopPropagation(); this.previewPedido(v); } }; };
+      return {...v, tieneProblema:_probs.length>0, problemaTxt:(_probs.length? (_probs.map(p=>p.sku+': '+p.motivo).join(' · ')) : ''), cliente:this.ventaClienteTxt(v), fechaFmt:this.fmtFecha(v.fecha), canalBg:cs.bg, canalFg:cs.fg, productoResumen: its.length? (nombreItem(its[0]) + (its.length>1? ('  +'+(its.length-1)):'')) : '—', unidades:this.ventaUnidades(v), totalFmt:this.fmt(Math.round(total)), netoFmt:this.fmt(Math.round(this.ventaNeta(v))), ivaFmt:this.fmt(Math.round(this.ventaIvaTotal(v))), pagadoFmt:this.fmt(Number(v.pagado)||0), saldoFmt:this.fmt(Math.max(0,Math.round(saldo))), saldoPos:saldo>0, hayExc:saldo<-0.5, excFmt:this.fmt(Math.round(-saldo)), epLabel:(v.cancelada?'Cancelada':ep.label), epBg:(v.cancelada?'rgba(181,80,60,0.16)':ep.bg), epFg:(v.cancelada?'#B5503C':ep.fg), pagada:(ep.key==='pagada'), editable:(!v.cancelada && ep.key!=='pagada'), origenLabel:this.origenLabel(v.origen), metodoPagoTxt:v.metodoPago||'—', metodoOptions:metOpts, onSetMetodo:(e)=>this.setVentaMetodo(v.id, e.target.value), necesitaBanco:this.metodoNecesitaBanco(v.metodoPago), cuentaRecaudo:v.cuentaRecaudo||'', hayCuentaRec:!!v.cuentaRecaudo, cuentasOptions:this.cuentasParaMetodo(v.metodoPago), onSetCuenta:(e)=>this.setVentaCuenta(v.id, e.target.value), stopRow:(e)=>{ e.stopPropagation(); }, guiaTxt:v.guia||'—', ciudadTxt:this.titleCase(v.ciudad)||'—', pedidoTxt:v.pedido||'—', ...((fe)=>{ const g=v.siigo||{}; const puedePdf=!!(fe&&fe.k==='ok'&&g.id&&!String(g.id).startsWith('externa:')); return { facturaShow:!!fe && !puedePdf, facturaLink:!!puedePdf, facturaUrl:g.public_url||'', facturaTxt:(fe?fe.txt:''), facturaTitle:(fe?(puedePdf?'Descargar el PDF de la factura · '+fe.title:fe.title):''), facturaEstilo:(fe?('background:'+fe.bg+';color:'+fe.fg+';'):''), onFacturaPdf:(e)=>{ if(e)e.stopPropagation(); this.siigoDescargarPdf(v); }, facturarShow:false, facturarTxt:(this.state.siigoBusy===v.id?'Facturando…':'Facturar'), onFacturar:(e)=>{ if(e)e.stopPropagation(); this.siigoFacturarRapido(v); } }; })(this.facturaEstado(v)), waTiene:false /* 29-oct: botón WhatsApp de la fila oculto a pedido del usuario; para volver: !!String(v.celular||'').replace(/\D/g,'') */, waMenuOpen:this.state.waMenuId===v.id, onWaToggle:(e)=>{ if(e)e.stopPropagation(); this.setState(s=>({waMenuId:(s.waMenuId===v.id?null:v.id)})); }, waOpts:(this.state.waMenuId===v.id? Object.entries(this.waTemplates()).map(([key,t])=>({label:t.label, enviado:this.waYaEnviado(v,key), onClick:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); this.waSendManual(v,key); }})) : []), onWaCerrar:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); }, onWaChat:(e)=>{ if(e)e.stopPropagation(); this.setState({waMenuId:null}); const to=String(v.celular||'').replace(/\D/g,''); window.open('https://wa.me/'+(to.length===10?'57'+to:to),'_blank'); }, onVer:()=>this.verVenta(v), onEdit:()=>this.editVenta(v), esManual:(v.origen==='manual'), onDescargar:(e)=>{ if(e)e.stopPropagation(); this.descargarPedido(v); }, onPreview:(e)=>{ if(e)e.stopPropagation(); this.previewPedido(v); } }; };
     if(out.showVentasReg){
       out.qVenta=st.qVenta; out.onQVenta=(e)=>this.setState({qVenta:e.target.value});
       out.filtroCanal=st.filtroCanal||'todos'; out.onFiltroCanal=(e)=>this.setState({filtroCanal:e.target.value});
@@ -21400,15 +21709,16 @@ const _neg=this.pygNeg(); const p=this.finPyGNeg(ym,_neg); const pp=this.finPyGN
         out.detFact={ estadoTxt:(estado? (lbl[estado]||estado) : 'Sin factura'), estadoCol:(col[estado]||'var(--text-muted)'),
           numero:(fila&&fila.numero)||(esp&&esp.numero)||'', cufe:(fila&&fila.cufe)||(esp&&esp.cufe)||'', dian:(fila&&fila.stamp_status)||(esp&&esp.stamp)||'',
           errores:((fila&&Array.isArray(fila.errores))? fila.errores.map(e=>this._siigoErrTxt(e)).filter(Boolean) : []), errorCarga:info.error||'' };
-        out.detFactHayNumero=!!out.detFact.numero; out.detFactHayCufe=!!out.detFact.cufe; out.detFactHayErr=out.detFact.errores.length>0; { const _inc=((fila&&fila.estado)==='incierto') || out.detFact.errores.some(e=>/timed_out|timeout|504|502|503|429/i.test(String(e))); out.detFactErrAyuda=_inc? 'Siigo no respondió a tiempo: la factura pudo crearse o no. Busca en Siigo una factura de este cliente de hoy. Si existe, usa «Ya está facturada en Siigo» con su número; si no, «Revisar de nuevo» la reintenta sin duplicarla (misma llave de envío). No hace falta editar el pedido.' : 'Corrige el pedido (Editar), guarda y vuelve a intentar.'; } out.detFactHayErrCarga=!!out.detFact.errorCarga;
+        out.detFactHayNumero=!!out.detFact.numero; out.detFactHayCufe=!!out.detFact.cufe; out.detFactHayErr=out.detFact.errores.length>0; { const _inc=((fila&&fila.estado)==='incierto') || out.detFact.errores.some(e=>/timed_out|timeout|504|502|503|429/i.test(String(e))); out.detFactErrAyuda=_inc? 'Siigo no respondió a tiempo: la factura pudo crearse o no. Busca en Siigo una factura de este cliente de hoy. Si existe, márcala con su número en Finanzas → Factura electrónica («Ya está en Siigo»); si no, «Facturar» allí la reintenta sin duplicarla (misma llave de envío). No hace falta editar el pedido.' : 'Corrige el pedido (Editar), guarda y vuelve a facturar desde Finanzas → Factura electrónica.'; } out.detFactHayErrCarga=!!out.detFact.errorCarga;
         const puede=el.ok && estado!=='emitida' && estado!=='enviando';
-        out.detFactPuede=puede; out.detFactBusy=busy;
+        // 25-nov (Andrés): se factura SOLO desde Finanzas → Factura electrónica. Aquí queda el estado, el PDF y un enlace.
+        out.detFactPuede=false; out.detFactBusy=busy; out.detFactIrFe=puede; out.onFactIrFe=()=>this.irFacturaElectronica(v);
         out.detFactBtnTxt=busy? 'Consultando Siigo…' : ((estado==='bloqueada'||estado==='error')? 'Reintentar (simular de nuevo)' : (estado==='incierto'? 'Revisar de nuevo' : 'Facturar'));
         out.detFactFaltan=puede? this._siigoDatosFaltan(v) : []; out.detFactHayFaltan=out.detFactFaltan.length>0;
         out.onFactSimular=()=>this.siigoSimular(v); out.onFactEmitir=()=>this.siigoEmitir(v); out.onFactRefrescar=()=>this._siigoCargar(v);
         out.detFactHayVer=!!(esp&&esp.id&&!String(esp.id).startsWith('externa:')); out.detFactHayUrl=!!(esp&&esp.public_url); out.onFactVer=()=>this.siigoVerFactura(v); out.onFactPdf=()=>this.siigoDescargarPdf(v); out.detFactDianTxt=(()=>{ const d=String((fila&&fila.stamp_status)||(esp&&esp.stamp)||''); if(!out.detFactHayVer) return ''; if(esp&&esp.cufe) return 'DIAN: aceptada'; return d? ('DIAN: '+({Sending:'en envío',Accepted:'aceptada',Rejected:'rechazada'}[d]||d)) : ''; })(); out.detFactHayDian=!!out.detFactDianTxt;
-        out.detFactPuedeExterna=puede && !busy; out.onFactExterna=()=>this.siigoMarcarExterna(v); out.detFactEsExterna=!!(esp&&esp.estado==='externa'); out.onFactQuitarExterna=()=>this.siigoQuitarExterna(v);
-        out.detFactSimShow=!!sim && puede;
+        out.detFactPuedeExterna=false; out.onFactExterna=()=>this.siigoMarcarExterna(v); out.detFactEsExterna=!!(esp&&esp.estado==='externa'); out.onFactQuitarExterna=()=>this.siigoQuitarExterna(v);
+        out.detFactSimShow=false;
         if(sim){ const f=sim.factura||{}; const ok=!!sim.ok && !(sim.errores||[]).length && sim.resultado==='dry_run';
           const cli=sim.cliente||{}; const tipoCli={empresa:'Empresa (NIT)', persona:'Persona (cédula)', consumidor_final:'Consumidor final'}[cli.tipo]||'';
           out.detFactSim={ ok, error:(!sim.ok? (sim.error||'') : (sim.resultado!=='dry_run'? ('No aplica: '+(sim.motivo||sim.resultado||'')) : '')),
