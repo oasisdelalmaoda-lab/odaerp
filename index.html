@@ -95,7 +95,7 @@
     .oda-shell > main > header > button:nth-of-type(2){display:none !important;}
     .oda-shell > main > header [style*="font-size: 25px"]{font-size:19px !important;}
     .oda-shell > main > header > div:last-child{display:none !important;}
-    .oda-shell > main > div{padding:14px 12px 96px !important;}
+    .oda-shell > main > div{padding:14px 12px 125px !important;min-height:calc(100vh - 64px) !important;}
     /* Todo lo que es grid de varias columnas pasa a UNA columna (los KPI a dos) */
     .oda-shell > main [style*="grid-template-columns"]:not(.oda-kpi4):not(.oda-convgrid):not(.oda-keep){grid-template-columns:1fr !important;}
     .oda-shell > main [style*="max-width:"][style*="px;"]{max-width:none !important;}
@@ -454,7 +454,7 @@
           </div>
         </header>
 
-        <div style="padding:28px 32px 60px;">
+        <div style="padding:28px 32px 109px;position:relative;min-height:calc(100vh - 85px);box-sizing:border-box;">
 
           <!-- ===== INICIO ===== -->
           <sc-if value="{{ showInicio }}" hint-placeholder-val="{{ true }}">
@@ -5652,7 +5652,7 @@
                 <sc-for list="{{ ugcRows }}" as="u" hint-placeholder-count="3">
                   <div style="border-bottom:1px solid var(--border-subtle);background:{{ u.rowBg }};">
                     <div onClick="{{ u.toggle }}" style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto;gap:12px;align-items:center;padding:13px 18px;cursor:pointer;">
-                      <div style="min-width:0;"><div style="font-weight:700;font-size:14px;color:var(--brand-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.nombre }}</div><div style="font-size:12px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.handle }}</div></div>
+                      <div style="min-width:0;"><div style="font-weight:700;font-size:14px;color:var(--brand-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.nombre }}<sc-if value="{{ u.esMarken }}" hint-placeholder-val="{{ false }}"><span title="{{ u.markenTitle }}" style="margin-left:7px;display:inline-block;vertical-align:middle;font-size:9.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(214,92,140,0.14);color:#B0456F;">Marken</span></sc-if></div><div style="font-size:12px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.handle }}</div></div>
                       <div style="font-size:12.5px;color:var(--text-body);">{{ u.seguidores }}<div style="font-size:11px;color:var(--text-muted);">{{ u.ciudad }}</div></div>
                       <div style="font-size:12.5px;color:var(--text-body);">{{ u.enviosTxt }}<div style="font-size:11px;color:var(--text-muted);">{{ u.costoTxt }}</div></div>
                       <div style="font-size:12px;color:var(--text-body);">{{ u.contenidoTxt }}<div style="font-size:11px;color:{{ u.esperaFg }};">{{ u.esperaTxt }}</div></div>
@@ -6484,7 +6484,7 @@
             </div>
           </sc-if>
 
-          <div style="margin:44px -32px -60px;height:65px;box-sizing:border-box;padding:0 32px;border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;">
+          <div style="position:absolute;left:0;right:0;bottom:0;height:65px;box-sizing:border-box;padding:0 32px;border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;">
             <span style="display:inline-flex;align-items:center;gap:7px;">
               <span style="font-family:'Sora',sans-serif;font-size:11.5px;color:var(--text-muted);">Desarrollado por</span>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3F3A4E" stroke-width="3.4" stroke-linecap="butt"><path d="M12 2.5a9.5 9.5 0 0 1 8.2 4.7"></path><path d="M21.5 12a9.5 9.5 0 0 1-4.7 8.2"></path><path d="M12 21.5a9.5 9.5 0 0 1-8.2-4.7"></path><path d="M2.5 12a9.5 9.5 0 0 1 4.7-8.2"></path></svg>
@@ -12572,10 +12572,18 @@ Instrucciones de respuesta:
     }catch(e){ this.toast('No se pudo revisar: '+((e&&e.message)||e)); }
     this.setState({ gaBusy:'' }); }
   _gaAprVisibles(){ const st=this.state; const vById={}; (st.ventas||[]).forEach(v=>{ vById[v.id]=v; });
-    const sinGuia=(id)=>{ const v=vById[id]; return !v || (!v.cancelada && !String(v.guia||'').trim() && !(v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada)); };
+    // 25-nov (caso #5436): dos avisos de Shopify al mismo tiempo crearon la venta DOS veces; el Hub fusionó el duplicado y la fila
+    // «por crear» quedó apuntando a la venta borrada → seguía saliendo aunque la guía ya existía en la otra. Si la venta ya no existe
+    // (o el mismo n.º de Shopify ya tiene guía en otra venta), la fila no se muestra.
+    const tieneGuia=(v)=>!!(String(v.guia||'').trim() || (v.guiaCoord&&v.guiaCoord.remision&&!v.guiaCoord.anulada));
+    const porPed={}; (st.ventas||[]).forEach(v=>{ const n=this.pedidoNum(v); if(n && v.origen==='shopify') (porPed[n]=porPed[n]||[]).push(v); });
+    const hayVentas=(st.ventas||[]).length>0;
+    const sinGuia=(id, r)=>{ const v=vById[id]; if(v) return !v.cancelada && !tieneGuia(v);
+      const n=this.pedidoNum({pedido:(r&&r.data&&r.data.pedido)||''}); const otras=n? (porPed[n]||[]) : [];
+      if(otras.some(x=>x.cancelada||tieneGuia(x))) return false; return !hayVentas || otras.length>0; };
     const inc={}; (st.gaInc||[]).forEach(r=>{ inc[r.venta_id]=r; });
-    const L=(st.gaApr||[]).filter(r=>sinGuia(r.venta_id)).map(r=>inc[r.venta_id]? {...r, _inc:inc[r.venta_id]} : r);
-    (st.gaInc||[]).forEach(r=>{ if(sinGuia(r.venta_id) && !L.some(x=>x.venta_id===r.venta_id)) L.push({ id:'inc-'+r.venta_id, venta_id:r.venta_id, fecha:r.fecha, creado_at:r.creado_at, data:{...(r.data||{}), llegada:(r.data||{}).tomado}, _inc:r }); });
+    const L=(st.gaApr||[]).filter(r=>sinGuia(r.venta_id, r)).map(r=>inc[r.venta_id]? {...r, _inc:inc[r.venta_id]} : r);
+    (st.gaInc||[]).forEach(r=>{ if(sinGuia(r.venta_id, r) && !L.some(x=>x.venta_id===r.venta_id)) L.push({ id:'inc-'+r.venta_id, venta_id:r.venta_id, fecha:r.fecha, creado_at:r.creado_at, data:{...(r.data||{}), llegada:(r.data||{}).tomado}, _inc:r }); });
     return L; }
   // 20-nov: resolver una guía «incierta»: si existe en Coordinadora se registra su número; si no, se libera y se crea de nuevo.
   async gaIncierto(r){ if(this.state.gaBusy) return; const d=r.data||{}; const ped=d.pedido||'';
@@ -14589,7 +14597,7 @@ Instrucciones de respuesta:
       ()=>{ this.cloudLoadConvs(); this.cloudLoadAgenteCfg(); this.cloudLoadRecordatorios(); },
       ()=>{ this.cloudSubscribePermisos(); this.cloudSubscribeProveedores(); this.cloudSubscribeMaterias(); this.cloudSubscribeProductos(); this.cloudSubscribeKits(); this.cloudSubscribeMezclas(); },
       ()=>{ this.cloudSubscribeProducciones(); this.cloudSubscribeProdMez(); this.cloudSubscribeVentas(); this.cloudSubscribeCotizaciones(); this.cloudSubscribeCuentas(); this.cloudSubscribeMovimientos(); },
-      ()=>{ this.cloudSubscribeFichas(); this.cloudSubscribeGastos(); this.cloudSubscribeMetodos(); this.cloudSubscribeLiquidaciones(); this.cloudSubscribeServicios(); this.cloudSubscribeOrdenes(); this.cloudSubscribeTiendas(); this.cloudSubscribeRecepciones(); },
+      ()=>{ this.cloudSubscribeFichas(); this.cloudSubscribeUgc(); this.cloudSubscribeGastos(); this.cloudSubscribeMetodos(); this.cloudSubscribeLiquidaciones(); this.cloudSubscribeServicios(); this.cloudSubscribeOrdenes(); this.cloudSubscribeTiendas(); this.cloudSubscribeRecepciones(); },
       ()=>{ this.cloudSubscribeRemisiones(); this.cloudSubscribeMsvc(); this.cloudSubscribeCasos(); this.cloudSubscribeCreditos(); this.cloudSubscribeConvs(); this.cloudSubscribeRecordatorios(); },
     ];
     tandas.forEach((f,ix)=>{ if(ix===0){ try{ f(); }catch(e){} return; } setTimeout(()=>{ try{ f(); }catch(e){} }, ix*450); });
@@ -15366,6 +15374,8 @@ Instrucciones de respuesta:
   cloudLoadMsvc(){ this._cloudLoadList('msvc','msvc', this.state.msvc); }
   cloudSaveMsvc(o){ this._cloudSaveOne('msvc', o); }
   cloudLoadUgc(){ this._cloudLoadList('ugc','ugc', this.state.ugc); }
+  // 24-nov: el agente Marken escribe en UGC por API → el Hub recibe sus cambios al instante (si no, al guardar desde el Hub se pisaban).
+  cloudSubscribeUgc(){ this._cloudSubTable('ugc','_ugcSub','ugc'); }
   async cloudSaveUgc(o){ const sb=this._sbClient(); if(!sb||!o) return false; try{ const {data,error}=await sb.from('ugc').upsert(this._finToDb(o)).select('id'); if(error||!data||!data.length) throw (error||new Error('la nube no confirmó')); return true; }
     catch(e){ const m=String((e&&e.message)||e); this.toast(/ugc/.test(m)&&/exist|schema|relation/i.test(m)?'Falta correr supabase-ugc.sql':'UGC no se guardó en la nube: '+m); try{ window.odaEstado&&window.odaEstado('ugc: '+m.slice(0,90)); }catch(_e){} return false; } }
   cloudSubscribeMsvc(){ this._cloudSubTable('msvc','_msvcSub','msvc'); }
@@ -19477,7 +19487,7 @@ Instrucciones de respuesta:
       out.ugcRows=rows.map(u=>{ const em=this.ugcEstadoMeta(u.estado); const ev=this.ugcEnvios(u.id); const open=st.ugcOpen===u.id; const cs=u.contenidos||[]; const tel=String(u.celular||'').replace(/\D/g,'');
         const ult=ev[0]; const dias=ult?Math.floor((Date.now()-new Date(String(ult.fecha)+'T12:00:00').getTime())/86400000):0;
         const perfil=u.usuario? (u.red==='TikTok'?'https://www.tiktok.com/'+u.usuario:(u.red==='Instagram'?'https://www.instagram.com/'+u.usuario.replace(/^@/,''):'')) : '';
-        return { nombre:u.nombre, handle:[u.usuario,u.red].filter(Boolean).join(' · ')||'—', seguidores:(u.seguidores?nf(u.seguidores)+' seguidores':'Seguidores —'), ciudad:u.ciudad||'Sin ciudad',
+        return { esMarken:(u.creadoPorId==='marken'||u.editadoPorId==='marken'), markenTitle:(u.creadoPorId==='marken'?'Creado por el agente Marken':'Editado por el agente Marken'+(u.editadoAt?(' · '+this.fmtFecha(String(u.editadoAt).slice(0,10))):'')), nombre:u.nombre, handle:[u.usuario,u.red].filter(Boolean).join(' · ')||'—', seguidores:(u.seguidores?nf(u.seguidores)+' seguidores':'Seguidores —'), ciudad:u.ciudad||'Sin ciudad',
           enviosTxt:(ev.length?(ev.length+' envío'+(ev.length===1?'':'s')):'Sin envíos'), costoTxt:(ev.length?(this.fmt(Math.round(ev.reduce((a,m)=>a+this.msvcCosto(m),0)))+' al costo'):''),
           contenidoTxt:(cs.length?(cs.length+' contenido'+(cs.length===1?'':'s')):'Sin contenido'), esperaTxt:((u.estado==='enviado'&&ult)?('Enviado hace '+dias+' d'):''), esperaFg:(dias>15?'#9A3F2E':'var(--text-muted)'),
           estL:em.l, estBg:em.bg, estFg:em.fg, estado:(u.estado||'prospecto'), noPuede:!puede, estOpts:this.ugcEstados().map(x=>({k:x[0], l:x[1]})), stop:(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); },
