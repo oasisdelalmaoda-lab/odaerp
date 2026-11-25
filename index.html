@@ -14467,6 +14467,8 @@ Instrucciones de respuesta:
     const d=s.replace(/\D/g,''); if(d.length===10 && /^[89]/.test(d) && this._dvNit(d.slice(0,9))===d[9]) return {tipo:'nit', doc:d.slice(0,9)+'-'+d[9]};
     if(d.length===9 && /^[89]/.test(d)) return {tipo:'nit', doc:d+'-'+this._dvNit(d)};
     if(d.length>=5 && d.length<=10) return {tipo:'cc', doc:d}; return {tipo:'cf', doc:''}; }
+  // Igual que daneDe del backend: prueba el texto entero, sin paréntesis, antes de la coma, de la barra y del guion.
+  _feDaneOk(c, L){ const n=this._feNorm(c); return [n, n.replace(/\(.*?\)/g,' '), n.split(',')[0], n.split('/')[0], n.split('-')[0], n.replace(/\b(d\.?\s?c\.?|distrito capital)\b/g,' ')].map(x=>x.replace(/[.]+$/,'').replace(/\s+/g,' ').trim()).some(x=>x && L.includes(x)); }
   _feNorm(x){ return String(x==null?'':x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' '); }
   // Medio de pago con código en Siigo (lista real de siigo_config.pagos, que trae el panel). Mismos alias que idPagoDe.
   // Contraentrega: en el Hub llega como la transportadora que recauda (Coordinadora, Interrapidísimo) → forma de pago «Contraentrega» en Siigo.
@@ -14483,7 +14485,7 @@ Instrucciones de respuesta:
     if(!f || typeof f!=='object') { const met0=String(v.metodoPago||'').trim(); if(met0 && !this._fePagoOk(met0)) out.push(this._fePagoTxt(met0)); return out; }
     const d=this._shopDocFact(v); const P=this.state.fePanel||{};
     if(d.tipo!=='cf'){ const c=String(f.ciudad||v.ciudad||'').trim(); if(!c) out.push('Sin ciudad de facturación');
-      else if(Array.isArray(P.dane) && !P.dane.includes(this._feNorm(c))) out.push('Ciudad «'+c+'» sin código DANE: si el cliente no existe ya en Siigo, no se puede crear');
+      else if(Array.isArray(P.dane) && !this._feDaneOk(c, P.dane)) out.push('Ciudad «'+c+'» sin código DANE: si el cliente no existe ya en Siigo, no se puede crear');
       if(!String(f.direccion||v.direccion||'').trim()) out.push('Sin dirección de facturación'); }
     const met=String(v.metodoPago||'').trim(); if(met && !this._fePagoOk(met)) out.push(this._fePagoTxt(met));
     return out; }
