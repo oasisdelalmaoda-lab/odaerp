@@ -5716,6 +5716,34 @@
                 <div style="background:rgba(212,150,80,0.12);border:1px solid rgba(212,150,80,0.35);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:#9A6B2E;">Puedes ver las campañas, pero crear plantillas y enviar requiere permiso de escritura en Marketing.</div>
               </sc-if>
 
+
+              <sc-if value="{{ mkHayProps }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--brand-primary);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:16px;">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
+                    <div>
+                      <div style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--brand-primary);font-weight:700;margin-bottom:3px;">Propuestas de Marken</div>
+                      <p style="font-size:12.5px;color:var(--text-muted);margin:0;line-height:1.5;">Marken armó estas campañas. «Cargar» llena el Paso 2 con su plantilla y su público; el envío sigue siendo tuyo con «Revisar y enviar».</p>
+                    </div>
+                    <button onClick="{{ onMkPropsRecargar }}" style="font-family:inherit;font-size:12px;font-weight:600;padding:6px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Actualizar</button>
+                  </div>
+                  <sc-for list="{{ mkProps }}" as="p" hint-placeholder-count="1">
+                    <div style="border-top:1px solid var(--border-subtle);padding:12px 0 2px;margin-top:10px;">
+                      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+                        <div style="min-width:0;flex:1 1 320px;">
+                          <div style="font-size:14px;font-weight:700;color:var(--text-strong);">{{ p.titulo }} <span style="font-size:11px;font-weight:400;color:var(--text-muted);">· {{ p.fecha }}</span></div>
+                          <div style="font-size:12px;margin-top:3px;">Plantilla <strong>{{ p.plantilla }}</strong> · <span style="color:{{ p.tplFg }};font-weight:600;">{{ p.tplEstado }}</span><sc-if value="{{ p.conFoto }}" hint-placeholder-val="{{ false }}"> · con foto</sc-if></div>
+                          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">{{ p.filtros }}</div>
+                          <div style="font-size:12.5px;color:var(--text-body);margin-top:6px;line-height:1.5;white-space:pre-wrap;">{{ p.porQue }}</div>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-shrink:0;">
+                          <button onClick="{{ p.onRechazar }}" disabled="{{ p.bloq }}" style="font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Rechazar</button>
+                          <button onClick="{{ p.onUsar }}" disabled="{{ p.bloq }}" style="font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#FFF;cursor:pointer;">Cargar en el envío</button>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
               <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;margin-bottom:16px;">
 
                 <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:22px 24px;">
@@ -12983,6 +13011,28 @@ Instrucciones de respuesta:
       envDias:Number(d.envDias)||0, envNoRep:(d.envNoRep==null?30:Number(d.envNoRep)), envLimite:Number(d.envLimite)||0,
       pruebaTel:d.pruebaTel||'' };
     return this._campWa; }
+  // ===== Propuestas de campaña de Marken (25-nov) =====
+  // Marken arma la campaña (plantilla + público + filtros) en `marken_propuestas`; acá una persona la carga en el Paso 2
+  // y es ella quien oprime «Revisar y enviar». Marken nunca dispara envíos.
+  async mkPropCargar(force){ if(this._mkPropLoad && !force) return; this._mkPropLoad=true; const sb=this._sbClient(); if(!sb){ this._mkPropLoad=false; return; }
+    try{ const {data,error}=await sb.from('marken_propuestas').select('*').eq('estado','pendiente').order('creado_at',{ascending:false}).limit(20); if(error) throw error;
+      this.setState({mkProps:data||[], mkPropsErr:''}); }
+    catch(e){ const m=String((e&&e.message)||e); this.setState({mkProps:[], mkPropsErr:/marken_propuestas|does not exist|schema cache/i.test(m)?'':m}); } }
+  async mkPropResolver(p, estado, nota){ const sb=this._sbClient(); if(!sb) return false;
+    const {data,error}=await sb.from('marken_propuestas').update({estado, resuelto_por:this._auditUser()||'', resuelto_at:new Date().toISOString(), nota_resolucion:nota||''}).eq('id',p.id).eq('estado','pendiente').select('id');
+    if(error){ this.toast('No se pudo actualizar la propuesta: '+error.message,'error'); return false; }
+    this.setState(s=>({mkProps:(s.mkProps||[]).filter(x=>x.id!==p.id)}));
+    if(!(data||[]).length){ this.toast('Esa propuesta ya la había resuelto otra persona o Marken la retiró'); return false; }
+    return true; }
+  async mkPropUsar(p){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
+    const d=p.data||{};
+    if(!(await this.mkPropResolver(p,'cargada',''))) return;
+    this.campWaSet({ envTpl:d.plantilla||'', imgUrl:d.imgUrl||'', imgNombre:d.imgUrl?'foto de Marken':'', envSegs:Array.isArray(d.segmentos)?d.segmentos:[],
+      envCanales:Array.isArray(d.canales)?d.canales:[], envDias:Number(d.diasSinComprar)||0, envNoRep:(d.noRepetir==null?30:Number(d.noRepetir)||0), envLimite:Number(d.tope)||0 });
+    this.campWaCargarPlantillas(true);
+    this.toast('Propuesta cargada en «Enviar la campaña» · revisa el público y, si estás de acuerdo, oprime «Revisar y enviar»','ok'); }
+  async mkPropRechazar(p){ if(!this.campWaPuede()) return; const nota=window.prompt('¿Por qué la rechazas? (Marken lo verá)',''); if(nota===null) return;
+    if(await this.mkPropResolver(p,'rechazada',nota)) this.toast('Propuesta rechazada'); }
   campWaSet(patch){ this._campWa={...this.campWaGet(), ...patch};
     try{ localStorage.setItem('oda_hub_campwa_v1', JSON.stringify(this._campWa)); }catch(e){}
     this.forceUpdate(); }
@@ -13601,7 +13651,7 @@ Instrucciones de respuesta:
       let hay=false;
       out.cwTxPruebas=Object.keys(reqs).map(k=>{ const v=this.campWaVentaEjemplo(k); if(v) hay=true;
         const _tr=k==='postventa'?(st.campWaTpls||[]).find(t=>t.nombre==='postventa_resena'):null;
-        const tf=(_tr&&_tr.estado==='APPROVED')?_tr:this.waFotoTpl(k); const fe=(_tr?(' Judge.me '+({APPROVED:'✓',PENDING:'en revisión',REJECTED:'rechazada'}[_tr.estado]||_tr.estado)+' · '):'')+tf? ({APPROVED:'con foto ✓',PENDING:'foto en revisión',REJECTED:'foto rechazada'}[tf.estado]||('foto '+tf.estado)) : 'sin foto';
+        const tf=(_tr&&_tr.estado==='APPROVED')?_tr:this.waFotoTpl(k); const fe=(_tr?(' Judge.me '+({APPROVED:'✓',PENDING:'en revisión',REJECTED:'rechazada'}[_tr.estado]||_tr.estado)+' · '):'')+(tf? ({APPROVED:'con foto ✓',PENDING:'foto en revisión',REJECTED:'foto rechazada'}[tf.estado]||('foto '+tf.estado)) : 'sin foto');
         return { key:k, label:reqs[k].label,
           detalle: (v? ('con '+this.ventaRef(v)) : 'sin pedido de ejemplo')+' · '+fe,
           off: puede? (!v || !!enviando) : true,
@@ -13611,6 +13661,20 @@ Instrucciones de respuesta:
       out.cwFotosRes=(st.waFotosRes||[]).map(t=>({t})); out.cwFotosHayRes=!!(st.waFotosRes||[]).length;
       if(!st.campWaTpls && !this._campTplLoad && !st.campWaTplsErr) setTimeout(()=>this.campWaCargarPlantillas(),0); }
     out.cwPreparando=!!st.campWaPreparando; out.onCwPreparar=()=>this.campWaPreparar();
+    // propuestas de Marken
+    { if(st.mkProps===undefined && !this._mkPropLoad) setTimeout(()=>this.mkPropCargar(),0);
+      const tpls=st.campWaTpls||[]; const puedeMk=this.campWaPuede();
+      out.mkProps=(st.mkProps||[]).map(p=>{ const d=p.data||{}; const t=tpls.find(x=>x.nombre===d.plantilla);
+        const est=t? t.estado : (d.plantillaEstado||'');
+        const filtros=[ (d.segmentos||[]).length? ('Segmentos: '+d.segmentos.join(', ')) : 'Todos los segmentos',
+          (d.canales||[]).length? ('Canales: '+d.canales.join(', ')) : '', Number(d.diasSinComprar)>0? ('≥ '+d.diasSinComprar+' días sin comprar') : '',
+          'no repetir en '+(d.noRepetir==null?30:d.noRepetir)+' días', Number(d.tope)>0? ('tope '+d.tope) : 'sin tope' ].filter(Boolean).join(' · ');
+        return { id:p.id, titulo:d.titulo||'(sin título)', plantilla:d.plantilla||'', porQue:d.porQue||'', filtros,
+          fecha:new Date(p.creado_at).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+          tplEstado: est==='APPROVED'?'aprobada':(est? ('en '+est+' · aún no se puede enviar') : 'no aparece en Meta'),
+          tplFg: est==='APPROVED'?'#2E7D4F':'#9A6B2E', conFoto:!!d.imgUrl,
+          puede:puedeMk, bloq:!puedeMk, onUsar:()=>this.mkPropUsar(p), onRechazar:()=>this.mkPropRechazar(p) }; });
+      out.mkHayProps=out.mkProps.length>0; out.onMkPropsRecargar=()=>this.mkPropCargar(true); }
     // confirmación
     const cf=st.campWaConfirm;
     out.cwConfirmShow=!!cf;
@@ -17805,7 +17869,15 @@ Instrucciones de respuesta:
   agAutoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('autosCustom', (cfg.autosCustom||[]).filter((_,x)=>x!==i)); }
   agPagoSet(i,k,v){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).map((p,x)=> x===i? {...p,[k]:v} : p)); }
   agPagoDel(i){ const cfg=this.agenteCfgGet(); this.setAgenteCfg('pagos', (cfg.pagos||[]).filter((_,x)=>x!==i)); }
-  setAgenteCfg(k,v){ const cfg={...this.agenteCfgGet(), [k]:v}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); localStorage.setItem('oda_hub_agente_ts_v1', String(Date.now())); }catch(e){} clearTimeout(this._agCfgT); this._agCfgT=setTimeout(()=>this.cloudSaveAgenteCfg(this.agenteCfgGet()), 800); }
+  setAgenteCfg(k,v){ const cfg={...this.agenteCfgGet(), [k]:v}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); localStorage.setItem('oda_hub_agente_ts_v1', String(Date.now())); }catch(e){} this._agCfgPend={...(this._agCfgPend||{}), [k]:v}; clearTimeout(this._agCfgT); this._agCfgT=setTimeout(()=>this.cloudMergeAgenteCfg(), 800); }
+  // Solo viajan las claves que cambiaste (agente_cfg_merge: config = config || cambios). Antes se reescribía TODA la config
+  // desde la copia local y una pestaña vieja devolvía lo que Marken u otra persona hubiera cambiado.
+  async cloudMergeAgenteCfg(){ const p=this._agCfgPend||{}; this._agCfgPend={}; if(!Object.keys(p).length) return; const sb=this._sbClient(); if(!sb) return;
+    try{ const {data,error}=await sb.rpc('agente_cfg_merge',{p}); if(error) throw error;
+      if(data && typeof data==='object' && !Object.keys(this._agCfgPend||{}).length){ const cfg={...this.agenteCfgGet(), ...data}; this.setState({agenteCfg:cfg}); try{ localStorage.setItem('oda_hub_agente_v1', JSON.stringify(cfg)); }catch(e){} } }
+    catch(e){ const m=String((e&&(e.message||e.code))||'');
+      if(/agente_cfg_merge|PGRST202|schema cache/i.test(m)) return this.cloudSaveAgenteCfg(this.agenteCfgGet());   // falta el SQL: como antes
+      this._agCfgPend={...p, ...(this._agCfgPend||{})}; this.toast('No se pudo guardar la config del agente en la nube — revisa tu conexión'); } }
   convHoraTxt(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
   convUpdate(id, fn){ const list=this.convList().map(c=> c.id===id? fn({...c, mensajes:(c.mensajes||[]).slice()}) : c); this.persistConvs(list); }
   convAsignar(id, uid){ this.convUpdate(id, c=>({...c, asignadoA:uid, estado:(uid? (c.estado==='resuelta'?'resuelta':'humano') : c.estado)})); this.cloudSaveConv(id,{asignado_a:uid, ...(uid?{estado:'humano'}:{})}); if(uid) this.toast('Conversación asignada a '+((this.users.find(u=>u.id===uid)||{}).name||this.leadUName(uid)||'asesor')); }
