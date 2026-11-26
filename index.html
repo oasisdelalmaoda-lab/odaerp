@@ -6524,6 +6524,7 @@
                                 <sc-if value="{{ r.trackShow }}" hint-placeholder-val="{{ false }}"><a href="{{ r.trackUrl }}" target="_blank" rel="noopener" style="font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);color:var(--text-body);text-decoration:none;">Rastrear guía</a></sc-if>
                                 <button onClick="{{ r.onWa }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:none;background:#1FA855;color:#fff;cursor:pointer;">Escribir por WhatsApp</button>
                                 <button onClick="{{ r.onCaso }}" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Crear caso de servicio</button>
+                                <sc-if value="{{ r.corrGuiaShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onCorrGuia }}" title="La guía está mal o el envío no salió con ella" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text-body);cursor:pointer;">Corregir guía</button></sc-if>
                               </div>
                               <div style="font-size:11px;color:var(--text-muted);">{{ r.fuenteTxt }}</div>
                               <sc-if value="{{ r.sinGuia }}" hint-placeholder-val="{{ false }}"><div><button onClick="{{ r.onCrearGuia }}" style="font-family:inherit;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;border:1px solid var(--brand-primary);background:transparent;color:var(--brand-primary);cursor:pointer;">Crear guía Coordinadora</button></div></sc-if>
@@ -12591,6 +12592,28 @@ Instrucciones de respuesta:
   logConfirmar(v){ this._logGuardar(v.id, {logConfirmado:true, logConfirmadoAt:new Date().toISOString(), logPorConfirmar:false, logConfirmadoPor:this.casoUserName()}, 'Confirmado · la promesa de despacho corre desde hoy'); }
   logDejarPorConfirmar(v){ this._logGuardar(v.id, {logConfirmado:false, logConfirmadoAt:'', logPorConfirmar:true}, 'Pasó a despacho pendiente de confirmación'); }
   logQuitarDespacho(v){ this._logGuardar(v.id, {despachoAt:'', despachoFuente:''}, 'Despacho desmarcado'); }
+  // 26-nov (Andrés, MSVC-00034: «esto no se fue con esta guía, pero no me deja corregirla desde ahí»): corregir o quitar la guía
+  // desde Seguimiento de entregas. Número nuevo → se cambia y se vuelve a consultar en Coordinadora. Vacío → la guía no se usó:
+  // sale del seguimiento y, si confirmas, se anula en Coordinadora para que no quede una guía suelta.
+  async logCorregirGuia(v){ if(!v) return; const vieja=String(v.guia||'').replace(/\D/g,'');
+    const r=window.prompt('Guía actual: '+(vieja||'(ninguna)')+'\n\nEscribe el número de guía correcto.\nDéjalo VACÍO si el envío no salió con guía (la quita del seguimiento).', ''); if(r===null) return;
+    const nueva=String(r).replace(/\D/g,''); if(r.trim() && nueva.length<8){ this.toast('El número de guía debe tener al menos 8 dígitos'); return; }
+    if(nueva && nueva===vieja){ this.toast('Es la misma guía'); return; }
+    const quien=this.casoUserName(); const ahora=new Date().toISOString();
+    let anularVieja=false; if(vieja && vieja.length>=10 && (!v.transportadora||/coordinadora/i.test(v.transportadora))) anularVieja=window.confirm('¿Anular también la guía '+vieja+' en Coordinadora?\n\nHazlo solo si esa guía nunca se usó (no se pegó en ningún paquete). No se puede deshacer.');
+    if(anularVieja){ try{ const sb=this._sbClient(); const {data}=await sb.functions.invoke('coordinadora',{ body:{ modo:'anular', remision:vieja } }); if(!data||!data.ok){ if(!window.confirm('Coordinadora no la anuló ('+((data&&data.error)||'sin respuesta')+').\n¿Corregir igual en el Hub?')) return; } }catch(e){ if(!window.confirm('No se pudo anular en Coordinadora.\n¿Corregir igual en el Hub?')) return; } }
+    const track=nueva? ('https://coordinadora.com/rastreo/rastreo-de-guia/detalle-de-rastreo-de-guia/?guia='+nueva) : '';
+    const limpiar=(o)=>{ ['coordRevisado','coordError','coordEstado','coordEventos','coordSinMov','coordNoEncontrada','despachoAt','despachoFuente','recogidoAt'].forEach(k=>{ delete o[k]; }); return o; };
+    if(v._msvcId){ this._msvcGuardar(v._msvcId, m=>{ const g=m.guiaCoord||{};
+        if(!nueva) return {...m, guiaCoord:{...g, anulada:true, anuladaAt:ahora, anuladaPor:quien, motivoAnula:(anularVieja?'anulada en Coordinadora':'no se usó')}};
+        return {...m, guiaCoord:limpiar({...g, remision:nueva, remisionAnterior:vieja||g.remisionAnterior||'', corregidaPor:quien, corregidaAt:ahora})}; }, nueva? ('Guía corregida · '+nueva) : 'Guía quitada del seguimiento');
+      if(nueva) setTimeout(()=>this.coordSync(['msvc:'+v._msvcId], true), 600); return; }
+    if(String(v.id).indexOf('caso:')===0){ this.toast('Las guías de los casos se corrigen desde el caso'); return; }
+    const x=(this.state.ventas||[]).find(y=>y.id===v.id); if(!x) return;
+    const patch=limpiar({ guia:nueva, guiaShop:(nueva? x.guiaShop : ''), trackingUrl:track, transportadora:(nueva?'Coordinadora':(x.transportadora||'')), guiaAnterior:vieja, guiaCambioAt:ahora, guiaCambioPor:quien,
+      ...(x.guiaCoord && String(x.guiaCoord.remision||'')===vieja ? {guiaCoord:(nueva? {...x.guiaCoord, remision:nueva, corregidaPor:quien, corregidaAt:ahora} : {...x.guiaCoord, anulada:true, anuladaAt:ahora})} : {}) });
+    await this._logGuardar(v.id, patch, nueva? ('Guía corregida · '+nueva+(x.shopifyId?' · si ya estaba marcado enviado en Shopify, el rastreo allá no cambia':'')) : 'Guía quitada');
+    if(nueva) setTimeout(()=>this.coordSync([v.id], true), 600); }
   logMarcarEntregado(v){ const f=(this.state.logEntFecha||{})[v.id]||this._logIso(new Date()); this._logGuardar(v.id, {entregadoAt:new Date(f+'T12:00:00').toISOString(), entregaFuente:'manual', entregaSinFecha:false, entregaPor:this.casoUserName()}, 'Marcado como entregado · '+this.fmtFecha(f)); }
   logQuitarEntrega(v){ this._logGuardar(v.id, {entregadoAt:'', entregaFuente:'', entregaSinFecha:false}, 'Entrega desmarcada'); }
   logSetMotivo(v, motivo){ this._logGuardar(v.id, {logMotivo:motivo, logMotivoAt:Date.now()}, motivo?('Motivo: '+motivo):'Motivo quitado'); }
@@ -19809,6 +19832,7 @@ Instrucciones de respuesta:
             fuenteTxt:[i.estado==='guiaSinMov'?('Despacho: la guía se generó'+(v.despachoAt?(' el '+this.fmtFecha(this._logIso(new Date(v.despachoAt)))):'')+' pero Coordinadora no la ha recogido'):(i.despIso?('Despacho: '+(v.despachoFuente==='manual'?'marcado a mano':(v.despachoFuente==='coordinadora'?'recogida Coordinadora':'guía en Shopify (sin confirmar recogida)'))):''), i.entIso?('Entrega: '+(i.estado==='porVerificar'?'etiqueta (fecha en que se vio, no la real — revisa el rastreo y corrígela)':(fu[v.entregaFuente]||'—'))+(v.entregaPor?(' · '+v.entregaPor):'')):''].filter(Boolean).join(' · '),
             onWa:()=>this.logWhatsApp(v), onCaso:()=>(v._casoId? this.setState({module:'ventas', sub:'servicio', casoOpenId:v._casoId}) : (v._msvcId? this.setState({module:'marketing', sub:'mktugc', ugcOpen:((this.state.msvc||[]).find(x=>x.id===v._msvcId)||{}).ugcId||null}) : this.logCrearCaso(v))),
             sinGuia:!v.guia && !v.cancelada && v.origen==='manual', onCrearGuia:()=>this.verVenta(v),
+            corrGuiaShow:!!String(v.guia||'').trim() && out.logCanWrite && String(v.id).indexOf('caso:')!==0, onCorrGuia:()=>this.logCorregirGuia(v),
             coordShow:!!(String(v.guia||'').replace(/\D/g,'').length>=10 && (!v.transportadora||/coordinadora/i.test(v.transportadora))), onCoord:()=>this.coordSync([v.id], true),
             coordTxt:((v.coordSinMov||v.coordNoEncontrada)? ('Coordinadora: '+(v.coordNoEncontrada?'no encuentra la guía':'sin movimiento registrado')+' · revisado '+this.fmtFecha(String(v.coordRevisado||'').slice(0,10))) : v.coordEstado? ('Coordinadora: '+v.coordEstado+(v.coordRevisado?(' · revisado '+this.fmtFecha(String(v.coordRevisado).slice(0,10))):'')) : (v.coordError? ('Coordinadora: '+v.coordError) : '')),
             showDesp:!i.despIso && !i.despSinFecha && out.logCanWrite, onDesp:()=>this.logMarcarDespachado(v), showQuitarDesp:(v.despachoFuente==='manual' && out.logCanWrite), onQuitarDesp:()=>this.logQuitarDespacho(v),
