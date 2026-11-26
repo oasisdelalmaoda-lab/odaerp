@@ -12749,7 +12749,11 @@ Instrucciones de respuesta:
     const inc={}; (st.gaInc||[]).forEach(r=>{ inc[r.venta_id]=r; });
     const L=(st.gaApr||[]).filter(r=>sinGuia(r.venta_id, r)).map(r=>inc[r.venta_id]? {...r, _inc:inc[r.venta_id]} : r);
     (st.gaInc||[]).forEach(r=>{ if(sinGuia(r.venta_id, r) && !L.some(x=>x.venta_id===r.venta_id)) L.push({ id:'inc-'+r.venta_id, venta_id:r.venta_id, fecha:r.fecha, creado_at:r.creado_at, data:{...(r.data||{}), llegada:(r.data||{}).tomado}, _inc:r }); });
-    return L; }
+    // 26-nov (#5453 salía 3 veces, #5449 dos): un solo renglón por n.º de pedido. Se queda el de la venta que existe (y si hay
+    // una guía incierta, ese, porque crear otra sería duplicarla). Los de ventas duplicadas que el Hub ya fusionó se ocultan.
+    const porN={}; const sinN=[]; L.forEach(r=>{ const n=this.pedidoNum({pedido:(r.data&&r.data.pedido)||''}); if(!n){ sinN.push(r); return; } (porN[n]=porN[n]||[]).push(r); });
+    const pesa=(r)=>(r._inc?4:0)+(vById[r.venta_id]?2:0);
+    return sinN.concat(Object.values(porN).map(g=>g.slice().sort((a,b)=>pesa(b)-pesa(a))[0])); }
   // 20-nov: resolver una guía «incierta»: si existe en Coordinadora se registra su número; si no, se libera y se crea de nuevo.
   async gaIncierto(r){ if(this.state.gaBusy) return; const d=r.data||{}; const ped=d.pedido||'';
     const num=window.prompt('Coordinadora no respondió cuando se creó la guía de '+ped+' ('+(d.cliente||'')+'), así que pudo quedar creada.\n\nBúscala en el portal de Coordinadora (referencia '+ped+').\n· Si EXISTE: escribe aquí su número de guía y la registro (queda en el pedido y como enviado en Shopify).\n· Si NO existe: deja vacío y acepta para crearla de nuevo.','');
