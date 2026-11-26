@@ -13396,7 +13396,7 @@ Instrucciones de respuesta:
       if(/^data:/.test(String(url||''))){ this.setState({campWaImgSubiendo:false}); this.toast('No se pudo subir la foto a la nube. Corre supabase-adjuntos.sql y vuelve a intentar.'); return; }
       fetch(url,{method:'HEAD'}).then(r=>{ this.setState({campWaImgSubiendo:false});
         if(!r.ok){ this.toast('La foto subió pero su URL no es pública (HTTP '+r.status+'). Revisa el bucket «adjuntos».'); return; }
-        this.campWaSet({imgUrl:url, imgNombre:nombre||''}); })
+        this.campWaFormSet({imgUrl:url, imgNombre:nombre||''}); })
         .catch(()=>{ this.setState({campWaImgSubiendo:false}); this.toast('La foto subió pero no se pudo verificar su URL pública.'); });
     }); }
   // 26-nov (Andrés: «el paso uno es para crear plantillas; la foto para enviar debería estar abajo»): la foto con la que SALE una
@@ -13493,7 +13493,7 @@ Instrucciones de respuesta:
     if(ajenos.length && esMkt){ this.toast('El cuerpo tiene un link que no es de oasisdelalma.co: '+ajenos[0], 'error'); return; }
     // Meta no conserva la foto al editar: hay que volver a subirla o el encabezado se pierde.
     if(ed.foto && !String(c.imgUrl||'').trim()){
-      this.toast('Esta plantilla lleva foto de encabezado. Vuelve a subirla arriba: Meta no la conserva al editar.', 'error'); return; }
+      this.toast('Esta plantilla lleva foto de encabezado. Súbela de nuevo en «Foto del encabezado» (aquí mismo, en el formulario de edición): Meta no la conserva al editar.', 'error'); return; }
     const btnUrl=String(c.btnUrl||'').trim();
     if(btnUrl && esMkt && !/^https:\/\/(www\.)?oasisdelalma\.co/i.test(btnUrl)){ this.toast('El botón solo puede apuntar a oasisdelalma.co', 'error'); return; }
     if(btnUrl && !esMkt && !/^https:\/\//i.test(btnUrl)){ this.toast('El botón debe apuntar a una dirección https://', 'error'); return; }
