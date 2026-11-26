@@ -13570,9 +13570,20 @@ Instrucciones de respuesta:
     if(t.tieneImagen && !this.campWaEnvImg()){ this.toast('Esta plantilla lleva foto: súbela en «Foto de este envío» (Paso 2) antes de probar'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     this.setState({campWaProbando:true});
+    const desde=new Date(Date.now()-5000).toISOString();
     const r=await this._campWaUno(sb, t, this.campWaEnvImg(), tel, 'Prueba', true);
+    if(!r.ok){ this.setState({campWaProbando:false}); this.toast('La prueba falló: '+r.detalle,'error'); return; }
+    // 26-nov (Andrés: «sale como enviada pero nunca me llegó»): Meta ACEPTA el mensaje y segundos después avisa si no lo entregó
+    // (p. ej. 131049 · límite de mensajes de marketing por persona). Ese aviso llega por whatsapp-inbound a la conversación:
+    // se espera hasta 12 s y se muestra el resultado real en vez de «enviada».
+    this.toast('Prueba aceptada por WhatsApp · confirmando la entrega…');
+    let fallo=null; const n10=String(tel).replace(/\D/g,''); const ids=[...new Set(['wa_'+n10, 'wa_'+(n10.length===10?'57'+n10:n10)])];
+    for(let i=0;i<6 && !fallo;i++){ await new Promise(z=>setTimeout(z,2000));
+      try{ const {data}=await sb.from('mensajes').select('texto,meta,creado_at').in('conversacion_id',ids).eq('de','sistema').gte('creado_at',desde).order('creado_at',{ascending:false}).limit(1); if(data&&data[0]&&data[0].meta&&data[0].meta.codigo) fallo=data[0]; }catch(e){ break; } }
     this.setState({campWaProbando:false});
-    this.toast(r.ok? ('Prueba enviada a '+tel+' · revisa tu WhatsApp') : ('La prueba falló: '+r.detalle), r.ok?'ok':'error'); }
+    if(fallo){ const lim=fallo.meta.limiteMarketing||fallo.meta.codigo===131049;
+      this.toast('WhatsApp NO la entregó'+(fallo.meta.codigo?(' (código '+fallo.meta.codigo+')'):'')+': '+(lim? 'tu número ya recibió el máximo de promociones que Meta permite por persona en estos días. No es un error del Hub ni de la plantilla: prueba con otro número o espera 1–2 días.' : String(fallo.texto||fallo.meta.motivo||'')), 'error'); return; }
+    this.toast('Prueba enviada a '+tel+' · sin rechazo de WhatsApp en 12 s: revisa tu WhatsApp','ok'); }
   // PRUEBA DE LAS PLANTILLAS TRANSACCIONALES (despachado, recordatorio, contraentrega,
   // postventa, carrito): se manda al número de prueba con los datos de un pedido REAL
   // reciente — así se ve tal cual le llega al cliente. No escribe waLog ni toca el pedido,
