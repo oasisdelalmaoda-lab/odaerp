@@ -5907,7 +5907,8 @@
                     <div style="font-size:11px;color:var(--text-muted);margin-top:-6px;">{{ cwCuerpoLen }} de 1024 caracteres</div>
 
                     <div style="border-top:1px solid var(--border-subtle);padding-top:13px;">
-                      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:9px;">Foto del encabezado</div>
+                      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Foto del encabezado (opcional)</div>
+                      <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:9px;line-height:1.45;">Si la subes, la plantilla queda con foto y Meta la revisa con esta imagen de ejemplo. La foto con la que sale cada campaña se elige en el Paso 2.</div>
                       <sc-if value="{{ cwHayImg }}" hint-placeholder-val="{{ false }}">
                         <div style="display:flex;align-items:center;gap:12px;">
                           <div role="img" aria-label="Encabezado de la campaña" style="width:74px;height:74px;border-radius:var(--radius-md);border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ cwImgCss }};"></div>
@@ -6059,8 +6060,24 @@
                   <sc-if value="{{ cwDestHayMas }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">y {{ cwDestMas }} más…</div></sc-if>
                 </div>
 
-                <sc-if value="{{ cwFaltaFoto }}" hint-placeholder-val="{{ false }}">
-                  <div style="background:rgba(181,80,60,0.1);border:1px solid rgba(181,80,60,0.3);border-radius:var(--radius-md);padding:11px 14px;font-size:12.5px;color:#B5503C;margin-bottom:14px;line-height:1.5;">Esta plantilla lleva foto en el encabezado y no hay ninguna cargada: sube la imagen en el Paso 1 antes de enviar.</div>
+                <sc-if value="{{ cwEnvImgShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;">
+                    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Foto de este envío</div>
+                    <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:9px;line-height:1.45;">Esta plantilla lleva foto arriba del mensaje. Es la que verán los clientes en esta campaña.</div>
+                    <sc-if value="{{ cwEnvHayImg }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:12px;">
+                        <div role="img" aria-label="Foto del envío" style="width:74px;height:74px;border-radius:var(--radius-md);border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ cwEnvImgCss }};"></div>
+                        <div style="flex:1;min-width:0;font-size:12.5px;font-weight:700;">{{ cwEnvImgNombre }}
+                          <sc-if value="{{ cwEnvImgPropia }}" hint-placeholder-val="{{ false }}"><div><button onClick="{{ onCwEnvImgQuitar }}" style="margin-top:6px;font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:transparent;color:var(--text-body);cursor:pointer;">Quitar</button></div></sc-if>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ cwFaltaFoto }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#B5503C;font-weight:600;">Falta la foto: sin ella Meta no deja enviar esta plantilla.</div></sc-if>
+                    <label style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-family:inherit;font-size:12px;font-weight:700;padding:8px 15px;border:1px dashed var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-raised);cursor:pointer;">{{ cwEnvImgBtn }}
+                      <input type="file" accept="image/*" onChange="{{ onCwEnvImg }}" style="display:none;" />
+                    </label>
+                    <sc-if value="{{ cwEnvImgSubiendo }}" hint-placeholder-val="{{ false }}"><span style="margin-left:10px;font-size:12px;color:var(--brand-primary);">Subiendo…</span></sc-if>
+                  </div>
                 </sc-if>
 
                 <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--border-subtle);">
@@ -6144,6 +6161,37 @@
                     </sc-if>
                   </div>
                 </sc-if>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;margin-top:16px;">
+                <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;">
+                  <div style="display:flex;align-items:center;gap:10px;"><h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0;flex:1;">Número de campañas</h3><button onClick="{{ onWpLeer }}" style="font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-body);cursor:pointer;">Revisar estado</button></div>
+                  <div style="font-size:12.5px;color:var(--text-muted);margin-top:6px;">{{ wpNumeroTxt }}</div>
+                </div>
+              </div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;margin-top:16px;">
+                <div style="display:flex;align-items:center;gap:10px;"><h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0;flex:1;">Perfil en WhatsApp</h3><button onClick="{{ onWpLeer }}" style="font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:transparent;color:var(--text-body);cursor:pointer;">{{ wpLeerTxt }}</button></div>
+                <div style="font-size:12.5px;color:var(--text-muted);margin:4px 0 14px;">Lo que ven los clientes al abrir el chat del número de campañas. Nombre visible: <strong style="color:var(--text-strong);">{{ wpNombre }}</strong>.</div>
+                <sc-if value="{{ wpHayErr }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#B5503C;margin-bottom:12px;">{{ wpErr }}</div></sc-if>
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+                  <div role="img" aria-label="Foto de perfil" style="width:64px;height:64px;border-radius:50%;border:1px solid var(--border-subtle);background-color:var(--surface-linen);background-size:cover;background-position:center;background-image:{{ wpFotoCss }};"></div>
+                  <div><label style="display:inline-flex;align-items:center;font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface-raised);cursor:pointer;">{{ wpFotoBtn }}<input type="file" accept="image/jpeg,image/png" onChange="{{ onWpFoto }}" disabled="{{ wpSoloVer }}" style="display:none;" /></label>
+                    <div style="font-size:11.5px;color:var(--text-muted);margin-top:5px;">Cuadrada, se recorta al centro. Se ve en círculo.{{ wpFotoNota }}</div></div>
+                </div>
+                <label style="display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:12px;">Info (frase corta) · {{ wpAboutLen }} de 139
+                  <input name="about" value="{{ wpD.about }}" onInput="{{ onWpInput }}" maxlength="139" disabled="{{ wpSoloVer }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;text-transform:none;letter-spacing:0;font-weight:400;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                <label style="display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:12px;">Descripción del negocio · {{ wpDescLen }} de 512
+                  <textarea name="description" value="{{ wpD.description }}" onInput="{{ onWpInput }}" maxlength="512" rows="4" disabled="{{ wpSoloVer }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;text-transform:none;letter-spacing:0;font-weight:400;line-height:1.5;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></textarea></label>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;margin-bottom:12px;">
+                  <label style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Correo<input name="email" value="{{ wpD.email }}" onInput="{{ onWpInput }}" disabled="{{ wpSoloVer }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;text-transform:none;letter-spacing:0;font-weight:400;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                  <label style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Sitio web<input name="website" value="{{ wpD.website }}" onInput="{{ onWpInput }}" disabled="{{ wpSoloVer }}" placeholder="https://oasisdelalma.co" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;text-transform:none;letter-spacing:0;font-weight:400;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);"></label>
+                </div>
+                <label style="display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:16px;">Categoría
+                  <select name="vertical" value="{{ wpD.vertical }}" onChange="{{ onWpInput }}" disabled="{{ wpSoloVer }}" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:13.5px;text-transform:none;letter-spacing:0;font-weight:400;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-page);color:var(--text-strong);">
+                    <sc-for list="{{ wpVerticales }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+                  </select></label>
+                <sc-if value="{{ wpPuede }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onWpGuardar }}" disabled="{{ wpGuardando }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border:none;border-radius:var(--radius-pill);background:var(--brand-primary);color:#fff;cursor:pointer;">{{ wpGuardarTxt }}</button></sc-if>
+                <sc-if value="{{ wpSoloVer }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--text-muted);">Solo Administrador o Marketing en escritura puede cambiar el perfil.</div></sc-if>
               </div>
             </div>
           </sc-if>
@@ -13168,7 +13216,7 @@ Instrucciones de respuesta:
     const h=new Date(); const ym=h.getFullYear()+'_'+String(h.getMonth()+1).padStart(2,'0');
     this._campWa={ nombre:d.nombre||('promo_'+ym), categoria:d.categoria||'MARKETING',
       cuerpo:(d.cuerpo!=null?d.cuerpo:'{{1}}, llegó el mes de celebrar a quien amas ♥️🍃\n\nArmamos kits de bienestar para tu pareja, tu mejor amiga o esa persona que se merece un respiro. Todos vienen con regalo incluido y tarjeta personalizada, para que no tengas que preocuparte por nada más.'),
-      imgUrl:d.imgUrl||'', imgNombre:d.imgNombre||'',
+      imgUrl:d.imgUrl||'', imgNombre:d.imgNombre||'', envImgUrl:d.envImgUrl||'', envImgNombre:d.envImgNombre||'',
       btnTexto:(d.btnTexto!=null?d.btnTexto:'Ver la colección'), btnUrl:(d.btnUrl!=null?d.btnUrl:'https://oasisdelalma.co/collections/kits'),
       optout:d.optout!==false, envTpl:d.envTpl||'', envSegs:Array.isArray(d.envSegs)?d.envSegs:[],
       envCanales:Array.isArray(d.envCanales)?d.envCanales:[],
@@ -13191,7 +13239,7 @@ Instrucciones de respuesta:
   async mkPropUsar(p){ if(!this.campWaPuede()){ this.toast('No tienes permiso para enviar campañas'); return; }
     const d=p.data||{};
     if(!(await this.mkPropResolver(p,'cargada',''))) return;
-    this.campWaSet({ envTpl:d.plantilla||'', imgUrl:d.imgUrl||'', imgNombre:d.imgUrl?'foto de Marken':'', envSegs:Array.isArray(d.segmentos)?d.segmentos:[],
+    this.campWaSet({ envTpl:d.plantilla||'', envImgUrl:d.imgUrl||'', envImgNombre:d.imgUrl?'foto de Marken':'', envSegs:Array.isArray(d.segmentos)?d.segmentos:[],
       envCanales:Array.isArray(d.canales)?d.canales:[], envDias:Number(d.diasSinComprar)||0, envNoRep:(d.noRepetir==null?30:Number(d.noRepetir)||0), envLimite:Number(d.tope)||0 });
     this.campWaCargarPlantillas(true);
     this.toast('Propuesta cargada en «Enviar la campaña» · revisa el público y, si estás de acuerdo, oprime «Revisar y enviar»','ok'); }
@@ -13351,6 +13399,37 @@ Instrucciones de respuesta:
         this.campWaSet({imgUrl:url, imgNombre:nombre||''}); })
         .catch(()=>{ this.setState({campWaImgSubiendo:false}); this.toast('La foto subió pero no se pudo verificar su URL pública.'); });
     }); }
+  // 26-nov (Andrés: «el paso uno es para crear plantillas; la foto para enviar debería estar abajo»): la foto con la que SALE una
+  // plantilla que lleva encabezado se elige en el Paso 2. Si no se elige, se usa la que se subió al crear la plantilla en el Paso 1.
+  campWaEnvImg(){ const c=this.campWaGet(); return String(c.envImgUrl||c.imgUrl||'').trim(); }
+  onCampWaEnvImg(e){ const f=e.target.files&&e.target.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type||'')){ this.toast('La foto debe ser una imagen'); return; }
+    if(f.size>5*1024*1024){ this.toast('La imagen no puede pasar de 5 MB'); return; }
+    this.setState({campWaEnvImgSubiendo:true});
+    this.cloudUploadArchivo(f,'campanas',(url,nombre)=>{
+      if(/^data:/.test(String(url||''))){ this.setState({campWaEnvImgSubiendo:false}); this.toast('No se pudo subir la foto a la nube.'); return; }
+      fetch(url,{method:'HEAD'}).then(r=>{ this.setState({campWaEnvImgSubiendo:false}); if(!r.ok){ this.toast('La foto subió pero su URL no es pública (HTTP '+r.status+').'); return; } this.campWaSet({envImgUrl:url, envImgNombre:nombre||''}); })
+        .catch(()=>{ this.setState({campWaEnvImgSubiendo:false}); this.toast('La foto subió pero no se pudo verificar su URL pública.'); }); }); }
+  // ===== Perfil del número de WhatsApp de campañas (26-nov, como en Una Mamá Más) · función wa-perfil =====
+  WP_VERTICALES(){ return [['','— Elige —'],['BEAUTY','Belleza, spa y salud'],['HEALTH','Salud y bienestar'],['RETAIL','Tienda / comercio'],['APPAREL','Ropa y accesorios'],['EDU','Educación'],['PROF_SERVICES','Servicios profesionales'],['EVENT_PLAN','Eventos'],['GROCERY','Alimentos'],['OTHER','Otra']]; }
+  async wpLeer(){ const sb=this._sbClient(); if(!sb||this._wpBusy) return; this._wpBusy=true; this.setState({wpCargando:true, wpErr:''});
+    try{ const {data,error}=await sb.functions.invoke('wa-perfil',{ body:{ modo:'leer' } }); let err=(data&&data.error)||'';
+      if(error && !err){ try{ const j=await error.context.json(); err=(j&&j.error)||''; }catch(_e){} err=err||'La función wa-perfil no respondió (¿ya está desplegada?)'; }
+      if(err) throw new Error(err);
+      const p=data.perfil||{}; this.setState({wp:data, wpDraft:{ about:p.about||'', description:p.description||'', email:p.email||'', website:(p.websites||[])[0]||'', vertical:p.vertical||'' }, wpFotoUrl:''});
+    }catch(e){ this.setState({wpErr:(e&&e.message)||String(e)}); } finally{ this._wpBusy=false; this.setState({wpCargando:false}); } }
+  onWpFoto(e){ const f=e.target.files&&e.target.files[0]; if(!f) return; if(!/^image\/(jpeg|png)$/.test(f.type||'')){ this.toast('La foto debe ser JPG o PNG'); return; } if(f.size>5*1024*1024){ this.toast('La foto no puede pasar de 5 MB'); return; }
+    this.setState({wpFotoSubiendo:true}); this.cloudUploadArchivo(f,'campanas',(url)=>{ this.setState({wpFotoSubiendo:false}); if(/^data:/.test(String(url||''))){ this.toast('No se pudo subir la foto'); return; } this.setState({wpFotoUrl:url}); this.toast('Foto lista · oprime «Guardar perfil» para cambiarla en WhatsApp'); }); }
+  async wpGuardar(){ const d=this.state.wpDraft; const sb=this._sbClient(); if(!d||!sb) return;
+    if(!String(d.about||'').trim()){ this.toast('La info (frase corta) no puede quedar vacía'); return; }
+    if(d.website && !/^https?:\/\//i.test(d.website)){ this.toast('El sitio web debe empezar por https://'); return; }
+    if(!window.confirm('¿Guardar el perfil en WhatsApp? Lo ven todos los clientes al abrir el chat del número de campañas.')) return;
+    this.setState({wpGuardando:true});
+    try{ const {data,error}=await sb.functions.invoke('wa-perfil',{ body:{ modo:'guardar', perfil:{ about:d.about, description:d.description, email:d.email, websites:(d.website?[d.website]:[]), vertical:d.vertical }, fotoUrl:this.state.wpFotoUrl||'' } });
+      let err=(data&&data.error)||''; if(error && !err){ try{ const j=await error.context.json(); err=(j&&j.error)||''; }catch(_e){} err=err||'sin respuesta'; }
+      if(err) throw new Error(err);
+      this.toast('Perfil de WhatsApp guardado'+(data.avisoFoto?(' · la foto no cambió: '+data.avisoFoto):''), data.avisoFoto?'error':'ok'); await this.wpLeer();
+    }catch(e){ this.toast('No se guardó: '+((e&&e.message)||e),'error'); } finally{ this.setState({wpGuardando:false}); } }
   async campWaCargarPlantillas(force){ if(this._campTplLoad) return;
     if(this.state.campWaTpls && !force) return;
     this._campTplLoad=true; this.setState({campWaTplsLoading:true});
@@ -13488,10 +13567,10 @@ Instrucciones de respuesta:
     if(String(t.estado||'').toUpperCase()!=='APPROVED'){
       this.toast('«'+t.nombre+'» está en '+(t.estado||'revisión')+': Meta no permite enviarla, ni de prueba. Espera la aprobación (minutos a 24 h).', 'error'); return; }
     const tel=this.waNumber(c.pruebaTel); if(!tel){ this.toast('Escribe tu número para la prueba'); return; }
-    if(t.tieneImagen && !String(c.imgUrl||'').trim()){ this.toast('Esta plantilla lleva foto: súbela arriba antes de probar'); return; }
+    if(t.tieneImagen && !this.campWaEnvImg()){ this.toast('Esta plantilla lleva foto: súbela en «Foto de este envío» (Paso 2) antes de probar'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     this.setState({campWaProbando:true});
-    const r=await this._campWaUno(sb, t, String(c.imgUrl||''), tel, 'Prueba', true);
+    const r=await this._campWaUno(sb, t, this.campWaEnvImg(), tel, 'Prueba', true);
     this.setState({campWaProbando:false});
     this.toast(r.ok? ('Prueba enviada a '+tel+' · revisa tu WhatsApp') : ('La prueba falló: '+r.detalle), r.ok?'ok':'error'); }
   // PRUEBA DE LAS PLANTILLAS TRANSACCIONALES (despachado, recordatorio, contraentrega,
@@ -13613,8 +13692,8 @@ Instrucciones de respuesta:
     const c=this.campWaGet(); const t=this.campWaTplSel();
     if(!t){ this.toast('Elige la plantilla aprobada que vas a enviar'); return; }
     if(t.estado!=='APPROVED'){ this.toast('Esa plantilla está en '+t.estado+': Meta no la deja enviar todavía'); return; }
-    const imgUrl=String(c.imgUrl||'').trim();
-    if(t.tieneImagen && !imgUrl){ this.toast('Esta plantilla lleva foto en el encabezado: súbela antes de enviar'); return; }
+    const imgUrl=this.campWaEnvImg();
+    if(t.tieneImagen && !imgUrl){ this.toast('Esta plantilla lleva foto en el encabezado: súbela en «Foto de este envío» (Paso 2) antes de enviar'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     const destinos=this.campWaDestinos();
     if(!destinos.length){ this.toast('El filtro no deja ningún cliente con WhatsApp'); return; }
@@ -13795,7 +13874,20 @@ Instrucciones de respuesta:
     out.cwSelAprob=!!(sel&&sel.estado==='APPROVED');
     out.cwSelEstadoTxt=sel? (sel.estado==='APPROVED'?'aprobada por Meta':('en '+sel.estado+' · Meta no la deja enviar todavía')) : '';
     out.cwSelPideFoto=!!(sel&&sel.tieneImagen);
-    out.cwFaltaFoto=!!(sel&&sel.tieneImagen&&!c.imgUrl);
+    out.cwFaltaFoto=!!(sel&&sel.tieneImagen&&!this.campWaEnvImg());
+    { if(st.wp===undefined && !this._wpBusy && !st.wpErr) setTimeout(()=>this.wpLeer(),0);
+      const W=st.wp||{}; const N=W.numero||{}; const D=st.wpDraft||{}; const fotoU=st.wpFotoUrl||((W.perfil||{}).foto)||'';
+      out.wpNumeroTxt=st.wpCargando? 'Consultando a Meta…' : (N.error? ('No se pudo consultar: '+N.error) : (N.numero? [N.numero, N.nombre, 'nombre '+String(N.estadoNombre||'').toLowerCase(), 'calidad '+(N.calidad||'—')].filter(Boolean).join(' · ') : (st.wpErr? 'Sin datos' : '—')));
+      out.wpNombre=N.nombre||'—'; out.wpErr=st.wpErr||''; out.wpHayErr=!!st.wpErr; out.onWpLeer=()=>this.wpLeer(); out.wpLeerTxt=st.wpCargando?'Cargando…':'Recargar';
+      out.wpFotoCss=fotoU? ('url("'+String(fotoU).replace(/"/g,'%22')+'")') : 'none'; out.wpFotoBtn=st.wpFotoSubiendo?'Subiendo…':'Cambiar foto'; out.onWpFoto=(e)=>this.onWpFoto(e); out.wpFotoNota=st.wpFotoUrl?' Foto nueva lista: falta guardar.':'';
+      out.wpD={ about:D.about||'', description:D.description||'', email:D.email||'', website:D.website||'', vertical:D.vertical||'' };
+      out.wpAboutLen=String(D.about||'').length; out.wpDescLen=String(D.description||'').length;
+      out.onWpInput=(e)=>{ const t=e.target; const n=t.name, v=t.value; this.setState(s2=>({wpDraft:{...(s2.wpDraft||{}), [n]:v}})); };
+      const vs=this.WP_VERTICALES(); const cur=D.vertical||''; out.wpVerticales=(cur && !vs.some(x=>x[0]===cur)? vs.concat([[cur,cur]]) : vs).map(([v,l])=>({v,l}));
+      out.wpPuede=!!W.puedeEditar && !!st.wpDraft; out.wpSoloVer=!W.puedeEditar; out.wpGuardando=!!st.wpGuardando; out.wpGuardarTxt=st.wpGuardando?'Guardando…':'Guardar perfil'; out.onWpGuardar=()=>this.wpGuardar(); }
+    { const eu=this.campWaEnvImg(); out.cwEnvImgShow=!!(sel&&sel.tieneImagen); out.cwEnvHayImg=!!eu; out.cwEnvImgCss=eu? ('url("'+eu.replace(/"/g,'%22')+'")') : 'none';
+      out.cwEnvImgNombre=c.envImgUrl? (c.envImgNombre||'foto del envío') : (eu? 'la misma que se subió al crear la plantilla' : '');
+      out.cwEnvImgSubiendo=!!st.campWaEnvImgSubiendo; out.onCwEnvImg=(e)=>this.onCampWaEnvImg(e); out.onCwEnvImgQuitar=()=>this.campWaSet({envImgUrl:'', envImgNombre:''}); out.cwEnvImgPropia=!!c.envImgUrl; out.cwEnvImgBtn=eu?'Cambiar foto':'Subir foto'; }
     out.cwSegs=this.campWaSegs().map(s=>{ const on=(c.envSegs||[]).includes(s); const sty=this.segmentoStyle(s);
       return { label:s, bg:on?sty.bg:'transparent', fg:on?sty.fg:'var(--text-muted)', borde:on?sty.fg:'var(--border-strong)', on:()=>this.campWaToggleSeg(s) }; });
     out.cwSegTodos=(c.envSegs||[]).length===0;
