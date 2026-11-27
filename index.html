@@ -13153,13 +13153,20 @@ Instrucciones de respuesta:
       if(this.state.campWaTpls) this.setState(s=>({campWaTpls:(s.campWaTpls||[]).filter(t=>t.nombre!==nombre)}));
       this.toast('Plantilla «'+nombre+'» borrada de Meta');
     }catch(e){ this.setState({canTplBorrando:''}); this.toast('No se pudo borrar: '+((e&&e.message)||'error'), 'error'); } }
+  // 27-nov: el servidor devuelve como máximo 1000 filas por consulta, aunque se pida .limit(2000/5000).
+  // La campaña black_days_elena_v2 tuvo 5.249 filas y el panel mostraba «1000 destinatarios»; peor, el filtro
+  // «no repetir en X días» solo veía 1000 números. Esto pagina de 1000 en 1000 hasta traerlo todo (con tope).
+  async _sbTodas(armar, tope){ const pg=1000, max=tope||50000; let out=[];
+    for(let off=0; off<max; off+=pg){ const {data,error}=await armar().range(off, off+pg-1);
+      if(error) throw error; out=out.concat(data||[]); if(!data || data.length<pg) break; }
+    return out; }
   async cargarWaEnvios(){
     try{
       const sb=this._sbClient(); if(!sb){ this.setState({waEnvios:[]}); return; }
       // Los envíos de campaña van aparte: una sola campaña puede traer cientos de filas y
       // dejaría fuera del listado a las automatizaciones. Acá se agrupan por plantilla.
       const { data, error } = await sb.from('wa_envios').select('*').neq('tipo','campana').order('creado_at',{ascending:false}).limit(60);
-      let camp=[]; try{ const r=await sb.from('wa_envios').select('clave,destino,ok,detalle,creado_at').eq('tipo','campana').order('creado_at',{ascending:false}).limit(2000); camp=r.data||[]; }catch(_e){}
+      let camp=[]; try{ camp=await this._sbTodas(()=>sb.from('wa_envios').select('clave,ok,creado_at').eq('tipo','campana').order('creado_at',{ascending:false})); }catch(_e){}
       this.setState({waEnvios: (error? [] : (data||[])), waCampLog: camp});
     }catch(_e){ this.setState({waEnvios:[], waCampLog:[]}); }
   }
@@ -13710,11 +13717,11 @@ Instrucciones de respuesta:
     if(!destinos.length){ this.toast('El filtro no deja ningún cliente con WhatsApp'); return; }
     this.setState({campWaPreparando:true});
     const optout=new Set();
-    try{ const {data}=await sb.from('wa_optout').select('contacto').limit(5000);
+    try{ const data=await this._sbTodas(()=>sb.from('wa_optout').select('contacto').order('contacto'));
       (data||[]).forEach(r=>{ const n=String(r.contacto||'').replace(/\D/g,''); if(n){ optout.add(n); optout.add(n.replace(/^57/,'')); } }); }catch(e){}
     const recientes=new Set(); const noRep=Number(c.envNoRep)||0;
     if(noRep>0){ try{ const desde=new Date(Date.now()-noRep*86400000).toISOString();
-      const {data}=await sb.from('wa_envios').select('destino,creado_at,tipo').eq('tipo','campana').gte('creado_at',desde).limit(5000);
+      const data=await this._sbTodas(()=>sb.from('wa_envios').select('destino').eq('tipo','campana').eq('ok',true).gte('creado_at',desde).order('clave'));
       (data||[]).forEach(r=>{ const n=String(r.destino||'').replace(/\D/g,''); if(n){ recientes.add(n); recientes.add(n.replace(/^57/,'')); } }); }catch(e){} }
     const listos=[]; let omOpt=0, omRep=0;
     destinos.forEach(d=>{ const n=this.waNumber(d.celular); const n10=n.replace(/^57/,'');
@@ -19445,7 +19452,7 @@ Instrucciones de respuesta:
               estado: bien? 'Enviada':'Con errores',
               bg: bien? 'rgba(98,123,96,0.16)':'rgba(212,150,80,0.2)', fg: bien? '#4C6149':'#9A6B2E' }; });
           out.campLogVacio = st.waCampLog!==undefined && st.waCampLog!==null && arr.length===0;
-          out.campLogResumen = arr.length? (arr.length+' campaña'+(arr.length===1?'':'s')+' · '+cl.filter(e=>e.ok).length+' mensajes entregados a Meta') : ''; }
+          out.campLogResumen = arr.length? (arr.length+' campaña'+(arr.length===1?'':'s')+' · '+cl.filter(e=>e.ok).length+' mensajes aceptados por Meta') : ''; }
         out.autoEnviosResumen = rows.length? (rows.filter(r=>r.ok).length+' enviados · '+rows.filter(r=>!r.ok).length+' con error') : '';
         out.autoEnviosRefrescar=()=>{ this.setState({waEnvios:null}); this.cargarWaEnvios(); };
         out.autoCorrerTxt=st.autoCorriendo? 'Revisando Shopify…' : 'Correr ahora';
