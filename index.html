@@ -22,6 +22,279 @@
 <script src="_ds_bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* 27-nov: ciudad → DANE. Copia generada (esbuild) de la MISMA regla de siigo-facturas (resolver.ts). El catálogo DIVIPOLA
+   lo entrega el panel (fePanel.divipola), así hay una sola fuente. No editar a mano: regenerar desde resolver.ts. */
+var __odaDaneMod = (() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var resolver_exports = {};
+  __export(resolver_exports, {
+    daneResolver: () => daneResolver
+  });
+  const DNORM = (s) => String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[.]/g, " ").replace(/\s+/g, " ").trim();
+  const DEPNORM = (s) => {
+    let n = DNORM(s).replace(/,/g, " ").replace(/\s+/g, " ").replace(/^(departamento|depto|dpto)( del?)? /, "").trim();
+    if (!n) return "";
+    if (/^(bogota|santa ?fe de bogota|distrito capital|d ?c$|dc$)/.test(n)) return "bogota";
+    if (/san andres|providencia/.test(n)) return "san andres";
+    if (/^valle/.test(n)) return "valle del cauca";
+    if (/^(la )?guajira/.test(n)) return "la guajira";
+    if (/^(norte de santander|norte santander|n de santander|nte de santander|nte santander)$/.test(n)) return "norte de santander";
+    return n;
+  };
+  const DANE_NO_CIUDAD = /* @__PURE__ */ new Set([
+    "ciudad o municipio",
+    "ciudad",
+    "municipio",
+    "el municipio",
+    "ciudad municipio",
+    "n/a",
+    "na",
+    "n a",
+    "ninguna",
+    "ninguno",
+    "seleccione",
+    "selecciona",
+    "seleccionar",
+    "otra",
+    "otro",
+    "x",
+    "xx",
+    "xxx",
+    "-",
+    "colombia",
+    "city",
+    "town"
+  ]);
+  const DANE_LOC_BOGOTA = /* @__PURE__ */ new Set([
+    "usaquen",
+    "chapinero",
+    "santa fe",
+    "san cristobal",
+    "usme",
+    "tunjuelito",
+    "bosa",
+    "kennedy",
+    "fontibon",
+    "engativa",
+    "suba",
+    "barrios unidos",
+    "teusaquillo",
+    "los martires",
+    "martires",
+    "antonio narino",
+    "puente aranda",
+    "la candelaria",
+    "rafael uribe uribe",
+    "rafael uribe",
+    "ciudad bolivar",
+    "sumapaz",
+    "ciudad salitre",
+    "salitre",
+    "cedritos",
+    "modelia",
+    "hayuelos"
+  ]);
+  const DANE_CORREG = { "rozo": "76520", "pance": "76001", "la buitrera de palmira": "76520", "doradal": "05591", "robledo": "05001", "el poblado": "05001", "laureles": "05001" };
+  const DANE_ALIAS = {
+    "santiago de cali": "76001",
+    "buga": "76111",
+    "cartagena": "13001",
+    "cucuta": "54001",
+    "tumaco": "52835",
+    "ubate": "25843",
+    "mompox": "13468",
+    "mompos": "13468",
+    "tolu": "70820",
+    "carmen de viboral": "05148",
+    "el retiro": "05607",
+    "san juan de pasto": "52001",
+    "bogota": "11001",
+    "bogota d c": "11001",
+    "bogota dc": "11001",
+    "santa fe de bogota": "11001",
+    "bogota distrito capital": "11001",
+    "palmira": "76520",
+    "jamundi": "76364",
+    "yumbo": "76892",
+    "candelaria": "76130",
+    "tulua": "76834",
+    "cartago": "76147",
+    "buenaventura": "76109",
+    "medellin": "05001",
+    "envigado": "05266",
+    "itagui": "05360",
+    "sabaneta": "05631",
+    "bello": "05088",
+    "rionegro": "05615",
+    "barranquilla": "08001",
+    "santa marta": "47001",
+    "bucaramanga": "68001",
+    "floridablanca": "68276",
+    "pereira": "66001",
+    "dosquebradas": "66170",
+    "manizales": "17001",
+    "armenia": "63001",
+    "ibague": "73001",
+    "neiva": "41001",
+    "pasto": "52001",
+    "popayan": "19001",
+    "villavicencio": "50001",
+    "monteria": "23001",
+    "sincelejo": "70001",
+    "valledupar": "20001",
+    "tunja": "15001",
+    "chia": "25175",
+    "soacha": "25754",
+    "zipaquira": "25899",
+    "cajica": "25126",
+    "cota": "25214",
+    "funza": "25286",
+    "mosquera": "25473",
+    "madrid": "25430",
+    "girardot": "25307",
+    "entrerrios": "05264",
+    "la estrella": "05380",
+    "caldas": "05129",
+    "copacabana": "05212",
+    "girardota": "05308",
+    "barbosa": "05079",
+    "la ceja": "05376",
+    "marinilla": "05440",
+    "retiro": "05607",
+    "guarne": "05318",
+    "tocancipa": "25817",
+    "sopo": "25758",
+    "la calera": "25377",
+    "tabio": "25785",
+    "tenjo": "25799",
+    "facatativa": "25269",
+    "fusagasuga": "25290",
+    "soledad": "08758",
+    "puerto colombia": "08573",
+    "cartagena de indias": "13001",
+    "piedecuesta": "68547",
+    "giron": "68307",
+    "villa del rosario": "54874",
+    "los patios": "54405",
+    "santa rosa de cabal": "66682"
+  };
+  let _daneIdx = null;
+  let _daneIdxKey = "";
+  function daneIndice(mun, dep) {
+    const key = mun.length + ":" + dep.length;
+    if (_daneIdx && _daneIdxKey === key) return _daneIdx;
+    const deps = {};
+    for (const x of dep.split("|")) if (x) deps[x.slice(0, 2)] = x.slice(2);
+    const porCod = {};
+    const porNombre = {};
+    for (const x of mun.split("|")) {
+      if (x.length < 6) continue;
+      const c = x.slice(0, 5), nombre = x.slice(5), depNombre = deps[c.slice(0, 2)] || "";
+      porCod[c] = { c, nombre, dep: DEPNORM(depNombre), depNombre };
+      const k = DNORM(nombre);
+      (porNombre[k] = porNombre[k] || []).push(c);
+    }
+    _daneIdx = { porCod, porNombre };
+    _daneIdxKey = key;
+    return _daneIdx;
+  }
+  function daneCandidatos(ciudad) {
+    const n = DNORM(ciudad);
+    if (!n) return [];
+    const base = [
+      n,
+      n.replace(/\(.*?\)/g, " "),
+      n.split(",")[0],
+      n.split(",").slice(-1)[0],
+      n.split("/")[0],
+      n.split(" - ")[0],
+      n.split("-")[0],
+      n.replace(/\b(d c|dc|distrito capital)\b/g, " ")
+    ].map((x) => x.replace(/[,;:]+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean);
+    return Array.from(new Set(base));
+  }
+  function daneUno(I, ciudad, depto) {
+    const dep = DEPNORM(depto);
+    const cands = daneCandidatos(ciudad);
+    const nom = (c) => I.porCod[c] ? I.porCod[c].nombre : c;
+    const ok = (c, aviso) => ({ dane: [c.slice(0, 2), c], nombre: nom(c), ...aviso ? { aviso } : {} });
+    let placeholder = false, ambigua = null;
+    const fases = [[cands, false], [[], true]];
+    for (const c of cands) {
+      const t = c.split(" ");
+      for (let k = t.length - 1; k >= 1; k--) fases[1][0].push(t.slice(0, k).join(" "));
+    }
+    for (const [lista, porPrefijo] of fases) {
+      for (const c of lista) {
+        if (!c) continue;
+        if (DANE_NO_CIUDAD.has(c)) {
+          placeholder = true;
+          continue;
+        }
+        if (porPrefijo && c.length < 4) continue;
+        const comoPref = porPrefijo ? ` (se tom\xF3 \xAB${c}\xBB de \xAB${String(ciudad).trim()}\xBB)` : "";
+        if (dep === "bogota" && (DANE_LOC_BOGOTA.has(c) || /^bogota/.test(c))) return ok("11001", DANE_LOC_BOGOTA.has(c) ? `\xAB${String(ciudad).trim()}\xBB es una localidad de Bogot\xE1: se us\xF3 Bogot\xE1 D.C.` : comoPref ? "Bogot\xE1 D.C." + comoPref : void 0);
+        let hits = (I.porNombre[c] || []).slice();
+        const al = DANE_ALIAS[c];
+        if (al && !hits.includes(al)) hits.push(al);
+        if (hits.length) {
+          if (dep) {
+            const m = hits.filter((h) => I.porCod[h] && (I.porCod[h].dep === dep || h === "11001" && dep === "cundinamarca"));
+            if (m.length === 1) return ok(m[0], comoPref ? nom(m[0]) + comoPref : void 0);
+            if (hits.length === 1) return ok(hits[0], `el departamento \xAB${String(depto).trim()}\xBB no corresponde a ${nom(hits[0])} (${I.porCod[hits[0]] ? I.porCod[hits[0]].depNombre : ""}); se us\xF3 el municipio`);
+            ambigua = ambigua || { c, hits };
+            continue;
+          }
+          if (hits.length === 1) return ok(hits[0], comoPref ? nom(hits[0]) + comoPref : void 0);
+          if (al) return ok(al, `\xAB${String(ciudad).trim()}\xBB existe en varios departamentos y no vino el departamento: se us\xF3 ${nom(al)} (${I.porCod[al] ? I.porCod[al].depNombre : ""}), como antes`);
+          ambigua = ambigua || { c, hits };
+          continue;
+        }
+        if (!dep && DANE_LOC_BOGOTA.has(c)) return ok("11001", `\xAB${String(ciudad).trim()}\xBB es una localidad de Bogot\xE1: se us\xF3 Bogot\xE1 D.C.`);
+        const co = DANE_CORREG[c];
+        if (co && (!dep || I.porCod[co] && I.porCod[co].dep === dep)) return ok(co, `\xAB${String(ciudad).trim()}\xBB no es un municipio: se us\xF3 ${nom(co)}`);
+      }
+    }
+    if (ambigua) {
+      const ds = ambigua.hits.map((h) => I.porCod[h] ? I.porCod[h].depNombre : h).join(", ");
+      return { error: `\xAB${String(ciudad).trim()}\xBB existe en varios departamentos (${ds})` + (dep ? ` y el departamento \xAB${String(depto).trim()}\xBB no es ninguno de ellos` : ": falta el departamento"), ambigua: true };
+    }
+    if (placeholder) return { error: `la ciudad \xAB${String(ciudad).trim()}\xBB no es un municipio (texto de relleno de Shopify)`, placeholder: true };
+    return { error: `ciudad \xAB${String(ciudad).trim()}\xBB${dep ? " (" + String(depto).trim() + ")" : ""} no aparece en el DIVIPOLA` };
+  }
+  function daneResolver(mun, dep, e) {
+    const I = daneIndice(mun, dep);
+    const ciudad = String(e.ciudad == null ? "" : e.ciudad).trim();
+    const envio = String(e.ciudadEnvio == null ? "" : e.ciudadEnvio).trim();
+    const r1 = ciudad ? daneUno(I, ciudad, e.depto) : { error: "sin ciudad de facturaci\xF3n" };
+    if (r1.dane) return r1;
+    if (envio && DNORM(envio) !== DNORM(ciudad)) {
+      const r2 = daneUno(I, envio, e.depto);
+      if (r2.dane) return { ...r2, aviso: `se us\xF3 la ciudad de env\xEDo \xAB${envio}\xBB porque la de facturaci\xF3n no se pudo ubicar (${r1.error})` + (r2.aviso ? " \xB7 " + r2.aviso : "") };
+    }
+    if (DEPNORM(e.depto) === "bogota") return { dane: ["11", "11001"], nombre: "BOGOT\xC1. D.C.", aviso: `se us\xF3 Bogot\xE1 D.C. por el departamento (${r1.error})` };
+    return r1;
+  }
+  return __toCommonJS(resolver_exports);
+})();
+</script>
 <style>
   *{box-sizing:border-box;}
   body{margin:0;}
@@ -13533,7 +13806,9 @@ Instrucciones de respuesta:
     const ajenos=urls.filter(u=>!/^(https?:\/\/)?(www\.)?oasisdelalma\.co(\/|$|\?)/i.test(u) && !this.esWaVentas(u));
     if(ajenos.length){ this.toast('El cuerpo tiene un link que no es de oasisdelalma.co ni del WhatsApp de ventas: '+ajenos[0]); return; }
     const btnUrl=String(c.btnUrl||'').trim();
-    if(btnUrl && !/^https:\/\/(www\.)?oasisdelalma\.co(\/|$|\?)/i.test(btnUrl) && !(this.esWaVentas(btnUrl) && /^https:/i.test(btnUrl))){ this.toast('El botón solo puede apuntar a oasisdelalma.co o a https://wa.me/'+this.WA_VENTAS()); return; }
+    // 27-nov: Meta no acepta botones que abran WhatsApp (wa.me): para el chat de ventas va https://oasisdelalma.co/elena.
+    if(btnUrl && /^(https?:\/\/)?(wa\.me|api\.whatsapp\.com|chat\.whatsapp\.com)/i.test(btnUrl)){ this.toast('Meta no acepta botones que abran WhatsApp. Para el chat de ventas usa https://oasisdelalma.co/elena'); return; }
+    if(btnUrl && !/^https:\/\/(www\.)?oasisdelalma\.co(\/|$|\?)/i.test(btnUrl)){ this.toast('El botón solo puede apuntar a https://oasisdelalma.co (chat de ventas: https://oasisdelalma.co/elena)'); return; }
     const sb=this._sbClient(); if(!sb){ this.toast('Servidor no listo'); return; }
     const botones=[];
     if(String(c.btnTexto||'').trim() && btnUrl) botones.push({tipo:'URL', texto:String(c.btnTexto).trim(), url:btnUrl});
@@ -14610,10 +14885,18 @@ Instrucciones de respuesta:
   _feNorm(x){ return String(x==null?'':x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' '); }
   // Medio de pago con código en Siigo (lista real de siigo_config.pagos, que trae el panel). Mismos alias que idPagoDe.
   // Contraentrega: en el Hub llega como la transportadora que recauda (Coordinadora, Interrapidísimo) → forma de pago «Contraentrega» en Siigo.
-  _feEsContra(m){ return /^(coordinadora|interrapid|inter rapid|cash on delivery|contra ?-?entrega|pago contra ?entrega)|\bcod\b/.test(this._feNorm(m)); }
-  _fePagoTxt(m){ return this._feEsContra(m)? ('Contraentrega («'+m+'»): falta crear la forma de pago «Contraentrega» en Siigo') : ('El medio de pago «'+m+'» no tiene código en Siigo (siigo_config.pagos)'); }
+  _feEsContra(m){ return /^(coordinadora|interrapid|inter rapid|inter( |$)|cash on delivery|cash delivery|contra ?-?entrega|pago contra ?entrega)|\bcod\b/.test(this._feNorm(m)); }
+  // 27-nov (Andrés): contraentrega = forma de pago de la TRANSPORTADORA que recauda (igual que transportadoraContra del servidor).
+  _feTransp(m){ const n=this._feNorm(m); if(!n || !this._feEsContra(m)) return null;
+    if(/^coordinadora/.test(n)) return 'Coordinadora'; if(/^(interrapid|inter rapid|inter( |$))/.test(n)) return 'Interrapidísimo';
+    if(/cash (on )?delivery|\bcod\b/.test(n)) return 'Cash Delivery'; return 'sin_transportadora'; }
+  _feReTransp(t){ return t==='Coordinadora'? /coordinadora/ : t==='Interrapidísimo'? /\binter\b|interrapid|inter rapid/ : /cash/; }
+  _fePagoTxt(m){ const t=this._feTransp(m); if(!t) return 'El medio de pago «'+m+'» no tiene código en Siigo (siigo_config.pagos)';
+    if(t==='sin_transportadora') return 'Contraentrega («'+m+'»): no dice qué transportadora recaudó · corrige el medio de pago a Coordinadora o Interrapidísimo';
+    const ce=(((this.state.fePanel||{}).contraentrega)||{})[t]; const det=(ce&&ce.error)? (': '+ce.error) : '';
+    return 'Contraentrega de '+t+' («'+m+'»): no se encontró su forma de pago en Siigo'+det; }
   _fePagoOk(metodo){ const P=((this.state.fePanel||{}).pagos)||null; if(!P) return true; const n=this._feNorm(metodo); if(!n) return true;
-    if(this._feEsContra(metodo)) return P.some(k=>/contra\s*-?\s*entrega/.test(this._feNorm(k)));
+    { const t=this._feTransp(metodo); if(t){ if(t==='sin_transportadora') return false; const re=this._feReTransp(t); return P.some(k=>re.test(this._feNorm(k))); } }
     if(P.some(k=>this._feNorm(k)===n)) return true;
     const al=[[/^addi/,'addi'],[/^bold/,'bold'],[/^bank deposit/,'bank deposit'],[/^transferencia/,'transferencia'],[/^efectivo/,'efectivo']];
     for(const [re,k] of al){ if(re.test(n) && P.some(x=>this._feNorm(x).startsWith(k))) return true; } return false; }
@@ -14622,7 +14905,11 @@ Instrucciones de respuesta:
     // del automático). No bloquea aquí; si Shopify no responde, el servidor la bloquea y el motivo sale en la fila.
     if(!f || typeof f!=='object') { const met0=String(v.metodoPago||'').trim(); if(met0 && !this._fePagoOk(met0)) out.push(this._fePagoTxt(met0)); return out; }
     const d=this._shopDocFact(v); const P=this.state.fePanel||{};
-    if(d.tipo!=='cf'){ const c=String(f.ciudad||v.ciudad||'').trim(); if(!c) out.push('Sin ciudad de facturación');
+    if(d.tipo!=='cf'){ const c=String(f.ciudad||v.ciudad||'').trim();
+      // 27-nov: misma regla que el servidor (DIVIPOLA + departamento + respaldo a la ciudad de envío). Panel viejo → regla vieja.
+      const R=(P.divipola && P.divipola.mun && window.__odaDaneMod)? window.__odaDaneMod.daneResolver(P.divipola.mun, P.divipola.dep, {ciudad:f.ciudad, depto:f.depto, ciudadEnvio:v.ciudad}) : null;
+      if(R){ if(!R.dane) out.push('Ciudad: '+R.error+' · corrígela con «Corregir datos»'); }
+      else if(!c) out.push('Sin ciudad de facturación');
       else if(Array.isArray(P.dane) && !this._feDaneOk(c, P.dane)) out.push('Ciudad «'+c+'» sin código DANE: si el cliente no existe ya en Siigo, no se puede crear');
       if(!String(f.direccion||v.direccion||'').trim()) out.push('Sin dirección de facturación'); }
     const met=String(v.metodoPago||'').trim(); if(met && !this._fePagoOk(met)) out.push(this._fePagoTxt(met));
